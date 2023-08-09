@@ -75,7 +75,7 @@ android {
 
     namespace "com.trk"
     defaultConfig {
-        applicationId "com.trk"
+        applicationId "com.nagimo.trk"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
