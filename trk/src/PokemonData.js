@@ -23,7 +23,7 @@ const PokemonList = [
     spd: 3,
   },
   {
-    name: 'Charmander',
+    name: 'Charmanderr',
     description: 'Awesome pokemon',
     no: 4,
     type: [Type.Fire],
@@ -77,4 +77,4 @@ const PokemonMap = PokemonList.reduce((acc, p) => {
   return acc;
 }, {});
 
-export {PokemonList, PokemonMap};
+export { PokemonList, PokemonMap };
