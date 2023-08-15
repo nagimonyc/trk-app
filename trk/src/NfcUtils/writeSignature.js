@@ -3,6 +3,7 @@ import * as HexUtils from '../Utils/HexUtils';
 import * as Signer from '../Utils/Signer';
 
 async function writeSignature(pokemonBytes) {
+  // tag uid
   const tag = await NfcManager.getTag();
   const msgHex = HexUtils.bytesToHex(pokemonBytes) + tag.id;
   console.warn('msg', msgHex);

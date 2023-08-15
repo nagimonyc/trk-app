@@ -7,15 +7,15 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import {Button} from 'react-native-paper';
-import NfcManager, {NfcTech} from 'react-native-nfc-manager';
+import { Button } from 'react-native-paper';
+import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import readPokemon from '../../NfcUtils/readPokemon';
 import verifySignature from '../../NfcUtils/verifySignature';
 import Image from '../../Components/Image';
 import AndroidPrompt from '../../Components/AndroidPrompt';
 
 function HomeScreen(props) {
-  const {navigation} = props;
+  const { navigation } = props;
   const androidPromptRef = React.useRef();
 
   const [hasNfc, setHasNfc] = React.useState(null);
@@ -88,11 +88,13 @@ function HomeScreen(props) {
                   });
                 } else {
                   Alert.alert('Error', 'Signature Validation Fail!', [
-                    {text: 'OK'},
+                    { text: 'OK' },
                   ]);
                 }
               } catch (ex) {
                 console.warn(ex);
+                Alert.alert('Error', ex.message, [{ text: 'OK' }]);
+
               } finally {
                 NfcManager.cancelTechnologyRequest();
               }

@@ -6,7 +6,7 @@ async function readPokemon() {
   let respBytes = [];
 
   respBytes = await NfcManager.nfcAHandler.transceive([0x30, 4]);
-  if (respBytes.length !== 16) {
+  if (respBytes.length !== 4) {
     throw new Error('fail to read');
   }
   tagData = [...tagData, ...respBytes];
@@ -20,7 +20,7 @@ async function readPokemon() {
     tagData = [...tagData, ...respBytes];
   }
 
-  climb.nameLength = (tagData[0] << 8) + tagData[1];
+  climb.nameLength = tagData[0];
   climb.difficulty = (tagData[2] << 8) + tagData[3];
 
   let nameBytes = [];

@@ -93,7 +93,7 @@ function PokemonDetail(props) {
                 await ensurePasswordProtection();
                 await writePokemon(climb);
               } catch (ex) {
-                console.log(ex);
+                console.log("I HAVE AN ISSUE HERE CHATGPT");
                 console.warn(ex);
               } finally {
                 NfcManager.cancelTechnologyRequest();

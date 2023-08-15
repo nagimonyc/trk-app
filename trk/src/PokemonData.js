@@ -23,28 +23,28 @@ const ClimbDifficulty = {
 const ClimbList = [
   {
     // copy what's been done to the PokemonList variable but with climbs
-    name: 'The Nose',
+    name: 'a',
     description: 'Tough climb for beginners',
     difficulty: ClimbDifficulty.V5,
   },
   {
-    name: 'The Arch',
+    name: 'b',
     description: 'A climb for the ages',
     difficulty: ClimbDifficulty.V10,
 
   },
   {
-    name: 'The Slab',
+    name: 'c',
     description: 'A tricky climb',
     difficulty: ClimbDifficulty.V3,
   },
   {
-    name: 'The Overhang',
+    name: 'd',
     description: 'Easy to start, hard to finish',
     difficulty: ClimbDifficulty.V7,
   },
   {
-    name: 'The Cave',
+    name: 'e',
     description: 'The hardest in town',
     difficulty: ClimbDifficulty.V12,
   }

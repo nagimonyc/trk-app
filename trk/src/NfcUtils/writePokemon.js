@@ -7,12 +7,13 @@ async function writePokemon(climb) {
   let respBytes = [];
   let allBytes = [];
 
+  if (climb.name.length > 20) {
+    throw new Error('Climb name exceeds the allowed length of 20 characters');
+  }
+
   // Block 4
-  // - 0, 1: name length (as it might not fit in one byte)
-  // - 2, 3: climb difficulty
   blockData = [0, 0, 0, 0];
-  blockData[0] = climb.name.length >>> 8;
-  blockData[1] = climb.name.length & 0xff;
+  blockData[0] = climb.name.length;
   blockData[2] = climb.difficulty >>> 8;
   blockData[3] = climb.difficulty & 0xff;
   respBytes = await NfcManager.nfcAHandler.transceive([0xa2, 4, ...blockData]);
@@ -22,9 +23,7 @@ async function writePokemon(climb) {
   allBytes = [...allBytes, ...blockData];
 
   // Block 5 ~ 9: the name of the climb (20 characters)
-  let nameBytes = Array.from(climb.name).map((_, i) => {
-    return climb.name.charCodeAt(i);
-  });
+  let nameBytes = Array.from(climb.name).map((c) => c.charCodeAt(0));
 
   while (nameBytes.length < 20) {
     nameBytes.push(0);
