@@ -11,7 +11,9 @@ async function ensurePasswordProtection() {
 
   // check if this is NTAG 213 or NTAG 215
   respBytes = await NfcManager.nfcAHandler.transceive([0x30, 0]);
+  console.warn("respbytes 1 is:" + respBytes);
   const cc2 = respBytes[14];
+  console.warn(cc2);
   if (cc2 * 8 > 256) {
     authPageIdx = 131; // NTAG 215
   } else {
@@ -21,6 +23,8 @@ async function ensurePasswordProtection() {
   // check if AUTH is enabled
   respBytes = await NfcManager.nfcAHandler.transceive([0x30, authPageIdx]);
   const auth = respBytes[3];
+  console.warn(respBytes);
+  console.warn(auth);
 
   if (auth === 255) {
     // configure the tag to support password protection

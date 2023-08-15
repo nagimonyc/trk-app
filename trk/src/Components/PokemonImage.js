@@ -1,8 +1,8 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
-function Unknown({style = {}, ...props}) {
+function Unknown({ style = {}, ...props }) {
   return (
     <FastImage
       source={require('../../images/pokeball.png')}
@@ -13,7 +13,7 @@ function Unknown({style = {}, ...props}) {
   );
 }
 
-function Bulbasaur({style = {}, ...props}) {
+function Bulbasaur({ style = {}, ...props }) {
   return (
     <FastImage
       source={require('../../images/Bulbasaur/figure.png')}
@@ -24,7 +24,7 @@ function Bulbasaur({style = {}, ...props}) {
   );
 }
 
-function Charmander({style = {}, ...props}) {
+function Charmander({ style = {}, ...props }) {
   return (
     <FastImage
       source={require('../../images/Charmander/figure.png')}
@@ -35,7 +35,7 @@ function Charmander({style = {}, ...props}) {
   );
 }
 
-function Geodude({style = {}, ...props}) {
+function Geodude({ style = {}, ...props }) {
   return (
     <FastImage
       source={require('../../images/Geodude/figure.png')}
@@ -46,7 +46,7 @@ function Geodude({style = {}, ...props}) {
   );
 }
 
-function Pikachu({style = {}, ...props}) {
+function Pikachu({ style = {}, ...props }) {
   return (
     <FastImage
       source={require('../../images/Pikachu/figure.png')}
@@ -57,7 +57,7 @@ function Pikachu({style = {}, ...props}) {
   );
 }
 
-function Squirtle({style = {}, ...props}) {
+function Squirtle({ style = {}, ...props }) {
   return (
     <FastImage
       source={require('../../images/Squirtle/figure.png')}
@@ -68,16 +68,16 @@ function Squirtle({style = {}, ...props}) {
   );
 }
 
-function PokemonImage({name, ...props}) {
-  if (name === 'Bulbasaur') {
+function PokemonImage({ name, ...props }) {
+  if (name === 'The Nose') {
     return <Bulbasaur {...props} />;
-  } else if (name === 'Charmander') {
+  } else if (name === 'The Arch') {
     return <Charmander {...props} />;
-  } else if (name === 'Geodude') {
+  } else if (name === 'The Slab') {
     return <Geodude {...props} />;
-  } else if (name === 'Pikachu') {
+  } else if (name === 'The Overhang') {
     return <Pikachu {...props} />;
-  } else if (name === 'Squirtle') {
+  } else if (name === 'The Cave') {
     return <Squirtle {...props} />;
   }
   return <Unknown {...props} />;

@@ -1,23 +1,23 @@
 import * as React from 'react';
 import { ScrollView } from 'react-native';
 import { List } from 'react-native-paper';
-import PokemonImage from '../../Components/PokemonImage';
-import { PokemonList } from '../../PokemonData';
+import ClimbImage from '../../Components/PokemonImage'; // Change to a suitable component for climbs
+import { ClimbList } from '../../PokemonData'; // Change to the source for climb data
 
 function PokemonListScreen(props) {
   const { navigation } = props;
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
-      {PokemonList.map(p => {
+      {ClimbList.map(c => {
         return (
           <List.Item
-            key={p.name}
-            title={p.name}
-            description={p.description}
-            left={() => <PokemonImage name={p.name} />}
+            key={c.name}
+            title={c.name}
+            description={c.description}
+            left={() => <ClimbImage name={c.name} />} // Change to a suitable component for climbs
             onPress={() => {
-              navigation.navigate('Detail', { pokemon: p, allowCreate: true });
+              navigation.navigate('Detail', { climb: c, allowCreate: true });
             }}
           />
         );
