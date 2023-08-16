@@ -81,11 +81,16 @@ function HomeScreen(props) {
               try {
                 await NfcManager.requestTechnology(NfcTech.NfcA);
                 const [pokemon, pokemonBytes] = await readPokemon();
+                console.log(pokemon);
+                console.log(pokemonBytes);
                 const result = await verifySignature(pokemonBytes);
                 if (result) {
-                  navigation.navigate('Detail', {
-                    pokemon,
-                  });
+                  // navigation.navigate('Detail', {
+                  //   pokemon,
+                  // });
+                  Alert.alert('Success', 'Signature Validation Success!', [
+                    { text: 'OK' },
+                  ]);
                 } else {
                   Alert.alert('Error', 'Signature Validation Fail!', [
                     { text: 'OK' },
