@@ -13,7 +13,7 @@ import PokemonImage from '../../Components/PokemonImage';
 import AndroidPrompt from '../../Components/AndroidPrompt';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import NfcManager, {NfcTech} from 'react-native-nfc-manager';
-import writePokemon from '../../NfcUtils/writePokemon';
+import writePokemon from '../../NfcUtils/writeClimbData';
 import writeSignature from '../../NfcUtils/writeSignature';
 import ensurePasswordProtection from '../../NfcUtils/ensurePasswordProtection';
 

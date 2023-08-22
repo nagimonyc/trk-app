@@ -1,15 +1,15 @@
 import * as React from 'react';
-import {ScrollView} from 'react-native';
-import {List} from 'react-native-paper';
+import { ScrollView } from 'react-native';
+import { List } from 'react-native-paper';
 import PokemonImage from '../../Components/PokemonImage';
-import {PokemonList} from '../../PokemonData';
+import { WallList } from '../../ClimbData';
 
 function PokemonListScreen(props) {
-  const {navigation} = props;
+  const { navigation } = props;
 
   return (
-    <ScrollView style={{flex: 1, backgroundColor: 'white'}}>
-      {PokemonList.map(p => {
+    <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
+      {WallList.map(p => {
         return (
           <List.Item
             key={p.name}
@@ -17,7 +17,7 @@ function PokemonListScreen(props) {
             description={p.description}
             left={() => <PokemonImage name={p.name} />}
             onPress={() => {
-              navigation.navigate('Detail', {pokemon: p, allowCreate: true});
+              navigation.navigate('Detail', { wall: p, allowCreate: true });
             }}
           />
         );
