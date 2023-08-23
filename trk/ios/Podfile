@@ -5,7 +5,10 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+$RNFirebaseAsStaticFramework = true;
+
 platform :ios, min_ios_version_supported
+use_frameworks!
 prepare_react_native_project!
 
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
@@ -31,7 +34,7 @@ target 'trk' do
   # Flags change depending on the env values.
   flags = get_default_flags()
 
-  use_frameworks! :linkage => :static
+  
 
   use_react_native!(
     :path => config[:reactNativePath],
