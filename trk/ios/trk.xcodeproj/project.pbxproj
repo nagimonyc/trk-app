@@ -12,6 +12,10 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		6CD942162A955CC400760F08 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CD942152A955CC400760F08 /* GoogleService-Info.plist */; };
+		6CD942192A9561E500760F08 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 6CD942182A9561E500760F08 /* FirebaseAuth */; };
+		6CD9421B2A9561E500760F08 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 6CD9421A2A9561E500760F08 /* FirebaseDatabase */; };
+		6CD9421D2A9561E500760F08 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6CD9421C2A9561E500760F08 /* FirebaseDatabaseSwift */; };
 		7699B88040F8A987B510C191 /* libPods-trk-trkTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-trk-trkTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
@@ -42,6 +46,7 @@
 		5B7EB9410499542E8C5724F5 /* Pods-trk-trkTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trk-trkTests.debug.xcconfig"; path = "Target Support Files/Pods-trk-trkTests/Pods-trk-trkTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-trk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-trk.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CB04EA42A82FA40004C9447 /* trk.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = trk.entitlements; path = trk/trk.entitlements; sourceTree = "<group>"; };
+		6CD942152A955CC400760F08 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = trk/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-trk-trkTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-trk-trkTests.release.xcconfig"; path = "Target Support Files/Pods-trk-trkTests/Pods-trk-trkTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -60,7 +65,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6CD9421D2A9561E500760F08 /* FirebaseDatabaseSwift in Frameworks */,
+				6CD9421B2A9561E500760F08 /* FirebaseDatabase in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-trk.a in Frameworks */,
+				6CD942192A9561E500760F08 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +95,7 @@
 		13B07FAE1A68108700A75B9A /* trk */ = {
 			isa = PBXGroup;
 			children = (
+				6CD942152A955CC400760F08 /* GoogleService-Info.plist */,
 				6CB04EA42A82FA40004C9447 /* trk.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -192,6 +201,11 @@
 			dependencies = (
 			);
 			name = trk;
+			packageProductDependencies = (
+				6CD942182A9561E500760F08 /* FirebaseAuth */,
+				6CD9421A2A9561E500760F08 /* FirebaseDatabase */,
+				6CD9421C2A9561E500760F08 /* FirebaseDatabaseSwift */,
+			);
 			productName = trk;
 			productReference = 13B07F961A680F5B00A75B9A /* trk.app */;
 			productType = "com.apple.product-type.application";
@@ -222,6 +236,9 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				6CD942172A9561E400760F08 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -246,6 +263,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				6CD942162A955CC400760F08 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -707,6 +725,35 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6CD942172A9561E400760F08 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6CD942182A9561E500760F08 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6CD942172A9561E400760F08 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		6CD9421A2A9561E500760F08 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6CD942172A9561E400760F08 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		6CD9421C2A9561E500760F08 /* FirebaseDatabaseSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6CD942172A9561E400760F08 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabaseSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
