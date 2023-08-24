@@ -20,8 +20,26 @@ const ClimbInputData = () => {
 
     addClimb(climb)
       .then((newClimbId) => {
-        console.log("New climb added with ID:", newClimbId);
-        // You can now use newClimbId for other purposes
+        async () => {
+          if (Platform.OS === 'android') {
+            androidPromptRef.current.setVisible(true);
+          }
+
+          try {
+            await NfcManager.requestTechnology(NfcTech.NfcA);
+            await ensurePasswordProtection();
+            const climbBytes = await writePokemon(newClimbId);
+            await writeSignature(climbBytes);
+          } catch (ex) {
+            console.warn(ex);
+          } finally {
+            NfcManager.cancelTechnologyRequest();
+          }
+
+          if (Platform.OS === 'android') {
+            androidPromptRef.current.setVisible(false);
+          }
+        }
 
         setName("");
         setGrade("");
