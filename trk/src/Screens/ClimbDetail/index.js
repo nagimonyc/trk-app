@@ -17,7 +17,7 @@ import writePokemon from '../../NfcUtils/writeClimb';
 import writeSignature from '../../NfcUtils/writeSignature';
 import ensurePasswordProtection from '../../NfcUtils/ensurePasswordProtection';
 
-function PokemonDetail(props) {
+function ClimbDetail(props) {
   const androidPromptRef = React.useRef();
   const { navigation, route } = props;
   const { pokemon, allowCreate = false } = route.params;
@@ -179,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PokemonDetail;
+export default ClimbDetail;

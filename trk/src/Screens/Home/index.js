@@ -1,26 +1,18 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  Platform,
-} from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { Button } from 'react-native-paper';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
-import readPokemon from '../../NfcUtils/readPokemon';
-import verifySignature from '../../NfcUtils/verifySignature';
+import readClimb from '../../NfcUtils/readClimb';
+import ClimbsApi from '../../api/ClimbsApi';
 import Image from '../../Components/Image';
 import AndroidPrompt from '../../Components/AndroidPrompt';
 
 function HomeScreen(props) {
-
   const { navigation } = props;
   const androidPromptRef = React.useRef();
-
   const [hasNfc, setHasNfc] = React.useState(null);
   const [enabled, setEnabled] = React.useState(null);
+  const { getClimb } = ClimbsApi(); // Use getClimb from your ClimbsApi
 
   React.useEffect(() => {
     async function checkNfc() {
@@ -31,31 +23,49 @@ function HomeScreen(props) {
       }
       setHasNfc(supported);
     }
-
     checkNfc();
   }, []);
+
+  async function identifyClimb() {
+    if (Platform.OS === 'android') {
+      androidPromptRef.current.setVisible(true);
+    }
+
+    try {
+      await NfcManager.requestTechnology(NfcTech.NfcA);
+      const climbId = await readClimb();
+      const climbData = await getClimb(climbId); // Fetch climb data using ID
+      if (climbData.exists) {
+        navigation.navigate('Detail', {
+          climb: climbData.data(),
+        });
+      } else {
+        Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
+      }
+    } catch (ex) {
+      console.warn(ex);
+    } finally {
+      NfcManager.cancelTechnologyRequest();
+    }
+
+    if (Platform.OS === 'android') {
+      androidPromptRef.current.setVisible(false);
+    }
+  }
 
   function renderNfcButtons() {
     if (hasNfc === null) {
       return null;
     } else if (!hasNfc) {
-      return <Text>You device doesn't support NFC</Text>;
+      return <Text>Your device doesn't support NFC</Text>;
     } else if (!enabled) {
       return (
         <>
           <Text>Your NFC is not enabled!</Text>
-
-          <TouchableOpacity
-            onPress={() => {
-              NfcManager.goToNfcSetting();
-            }}>
+          <TouchableOpacity onPress={() => { NfcManager.goToNfcSetting(); }}>
             <Text>GO TO NFC SETTINGS</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={async () => {
-              setEnabled(await NfcManager.isEnabled());
-            }}>
+          <TouchableOpacity onPress={async () => { setEnabled(await NfcManager.isEnabled()); }}>
             <Text>CHECK AGAIN</Text>
           </TouchableOpacity>
         </>
@@ -63,46 +73,11 @@ function HomeScreen(props) {
     } else {
       return (
         <>
-          <Button
-            mode="contained"
-            style={styles.btn}
-            onPress={() => {
-              navigation.navigate('List');
-            }}>
+          <Button mode="contained" style={styles.btn} onPress={() => { navigation.navigate('List'); }}>
             Create Climb
           </Button>
-          <Button
-            mode="contained"
-            style={styles.btn}
-            onPress={async () => {
-              if (Platform.OS === 'android') {
-                androidPromptRef.current.setVisible(true);
-              }
-
-              try {
-                await NfcManager.requestTechnology(NfcTech.NfcA);
-                const [pokemon, pokemonBytes] = await readPokemon();
-                const result = await verifySignature(pokemonBytes);
-                if (result) {
-                  navigation.navigate('Detail', {
-                    pokemon,
-                  });
-                } else {
-                  Alert.alert('Error', 'Signature Validation Fail!', [
-                    { text: 'OK' },
-                  ]);
-                }
-              } catch (ex) {
-                console.warn(ex);
-              } finally {
-                NfcManager.cancelTechnologyRequest();
-              }
-
-              if (Platform.OS === 'android') {
-                androidPromptRef.current.setVisible(false);
-              }
-            }}>
-            Identify Pokemon
+          <Button mode="contained" style={styles.btn} onPress={identifyClimb}>
+            Identify Climb
           </Button>
         </>
       );
@@ -112,17 +87,10 @@ function HomeScreen(props) {
   return (
     <>
       <View style={[styles.wrapper, styles.center]}>
-        <Image
-          source={require('../../../images/pokeball.png')}
-          style={styles.banner}
-          resizeMode="contain"
-        />
+        <Image source={require('../../../images/pokeball.png')} style={styles.banner} resizeMode="contain" />
         {renderNfcButtons()}
       </View>
-      <AndroidPrompt
-        ref={androidPromptRef}
-        onCancelPress={() => NfcManager.cancelTechnologyRequest()}
-      />
+      <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} />
     </>
   );
 }

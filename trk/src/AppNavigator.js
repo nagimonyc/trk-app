@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LandingScreen from './Screens/Landing';
 import HomeScreen from './Screens/Home';
 import PokemonListScreen from './Screens/ClimbList';
-import PokemonDetailScreen from './Screens/ClimbDetail';
+import ClimbDetail from './Screens/ClimbDetail';
 import ClimbInputData from './Screens/ClimbList';
 
 const HomeStack = createStackNavigator();
@@ -34,7 +34,7 @@ function AppNav(props) {
       <RootStack.Navigator headerMode="none" mode="modal">
         <RootStack.Screen name="Landing" component={LandingScreen} />
         <RootStack.Screen name="Home" component={Home} />
-        <RootStack.Screen name="Detail" component={PokemonDetailScreen} />
+        <RootStack.Screen name="Detail" component={ClimbDetail} />
       </RootStack.Navigator>
     </NavigationContainer>
   );

@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert } from "react-native";
+import { NfcTech } from "react-native-nfc-manager";
+import NfcManager from "react-native-nfc-manager";
+import writeClimb from "../../NfcUtils/writeClimb";
+import writeSignature from "../../NfcUtils/writeSignature";
+import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
+import androidPromptRef from "../../Components/AndroidPrompt";
 import ClimbsApi from "../../api/ClimbsApi";
 
 const ClimbInputData = () => {
@@ -19,33 +25,31 @@ const ClimbInputData = () => {
     };
 
     addClimb(climb)
-      .then((newClimbId) => {
-        async () => {
-          if (Platform.OS === 'android') {
-            androidPromptRef.current.setVisible(true);
-          }
+      .then(async (newClimbId) => { // Notice the async here
+        if (Platform.OS === 'android') {
+          androidPromptRef.current.setVisible(true);
+        }
 
-          try {
-            await NfcManager.requestTechnology(NfcTech.NfcA);
-            await ensurePasswordProtection();
-            const climbBytes = await writePokemon(newClimbId);
-            await writeSignature(climbBytes);
-          } catch (ex) {
-            console.warn(ex);
-          } finally {
-            NfcManager.cancelTechnologyRequest();
-          }
+        try {
+          await NfcManager.requestTechnology(NfcTech.NfcA);
+          await ensurePasswordProtection();
+          const climbBytes = await writeClimb(newClimbId);
+          await writeSignature(climbBytes);
+        } catch (ex) {
+          console.warn(ex);
+        } finally {
+          NfcManager.cancelTechnologyRequest();
+        }
 
-          if (Platform.OS === 'android') {
-            androidPromptRef.current.setVisible(false);
-          }
+        if (Platform.OS === 'android') {
+          androidPromptRef.current.setVisible(false);
         }
 
         setName("");
         setGrade("");
         setLocation("");
         setImage("");
-        Alert.alert("Climb saved!");
+        // Alert.alert("Climb saved!");
       })
       .catch((err) => {
         Alert.alert("Error saving climb");
