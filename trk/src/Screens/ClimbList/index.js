@@ -14,7 +14,7 @@ const ClimbInputData = () => {
   const [location, setLocation] = useState("");
   const [image, setImage] = useState("");
 
-  const { addClimb } = ClimbsApi();
+  const { addClimb, getClimb } = ClimbsApi();
 
   function handleAddClimb() {
     const climb = {
@@ -33,7 +33,7 @@ const ClimbInputData = () => {
         try {
           await NfcManager.requestTechnology(NfcTech.NfcA);
           await ensurePasswordProtection();
-          const climbBytes = await writeClimb(newClimbId);
+          const climbBytes = await writeClimb(newClimbId._documentPath._parts[1]);
           await writeSignature(climbBytes);
         } catch (ex) {
           console.warn(ex);

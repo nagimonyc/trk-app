@@ -36,9 +36,10 @@ function HomeScreen(props) {
       const climbId = await readClimb();
       const climbData = await getClimb(climbId); // Fetch climb data using ID
       if (climbData.exists) {
-        navigation.navigate('Detail', {
-          climb: climbData.data(),
-        });
+        Alert.alert('Success', `Climb found: ${climbData.data().name}`, [{ text: 'OK' }]);
+        // navigation.navigate('Detail', {
+        //   climb: climbData.data(),
+        // });
       } else {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
       }

@@ -1,24 +1,29 @@
 import NfcManager from 'react-native-nfc-manager';
 
 async function writeClimb(climbID) {
-  if (climbID.length > 16) {
-    throw new Error('climbID is too long, it must be 16 characters or less.');
+  if (typeof climbID !== 'string' || climbID.length > 16) {
+    throw new Error('climbID must be a string of 16 characters or less.');
   }
 
-  // Convert the climbID string to an array of ASCII values
-  const blockData = climbID.split('').map(c => c.charCodeAt(0));
+  const firstBlock = climbID.slice(0, 8).split('').map(c => c.charCodeAt(0));
+  const secondBlock = climbID.slice(8).split('').map(c => c.charCodeAt(0));
 
-  // If the climbID is less than 16 characters, fill the rest of the block with 0
-  while (blockData.length < 16) {
-    blockData.push(0);
+  while (firstBlock.length < 8) firstBlock.push(0);
+  while (secondBlock.length < 8) secondBlock.push(0);
+
+  const respBytes1 = await NfcManager.nfcAHandler.transceive([0xa2, 4, ...firstBlock]);
+  console.warn('block 4', firstBlock, respBytes1);
+  if (respBytes1[0] !== 0xa) {
+    throw new Error('fail to write block 4');
   }
 
-  const respBytes = await NfcManager.nfcAHandler.transceive([0xa2, 4, ...blockData]);
-  console.warn('block 4', blockData, respBytes);
-
-  if (respBytes[0] !== 0xa) {
-    throw new Error('fail to write');
+  const respBytes2 = await NfcManager.nfcAHandler.transceive([0xa2, 5, ...secondBlock]);
+  console.warn('block 5', secondBlock, respBytes2);
+  if (respBytes2[0] !== 0xa) {
+    throw new Error('fail to write block 5');
   }
 }
 
 export default writeClimb;
+
+
