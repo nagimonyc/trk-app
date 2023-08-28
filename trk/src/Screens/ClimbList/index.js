@@ -34,8 +34,6 @@ const ClimbInputData = () => {
           await NfcManager.requestTechnology(NfcTech.NfcA);
           await ensurePasswordProtection();
           const climbBytes = await writeClimb(newClimbId._documentPath._parts[1]);
-          console.log("this is the climb id" + newClimbId._documentPath._parts[1]);
-          console.log("this is the climb bytes: " + climbBytes);
           await writeSignature(climbBytes);
         } catch (ex) {
           console.warn(ex);
@@ -51,7 +49,6 @@ const ClimbInputData = () => {
         setGrade("");
         setLocation("");
         setImage("");
-        // Alert.alert("Climb saved!");
       })
       .catch((err) => {
         Alert.alert("Error saving climb");

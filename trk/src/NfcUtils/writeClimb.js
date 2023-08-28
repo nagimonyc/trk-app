@@ -1,3 +1,5 @@
+import NfcManager from 'react-native-nfc-manager';
+
 async function writeClimb(climbID) {
   console.log(climbID);
   if (typeof climbID !== 'string' || climbID.length !== 20) {
@@ -36,3 +38,5 @@ async function writeClimb(climbID) {
 
   return allBytes;
 }
+
+export default writeClimb;

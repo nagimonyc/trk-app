@@ -34,12 +34,9 @@ function HomeScreen(props) {
     try {
       await NfcManager.requestTechnology(NfcTech.NfcA);
       const climbId = await readClimb();
-      const climbData = await getClimb(climbId); // Fetch climb data using ID
+      const climbData = await getClimb(climbId[0]); // Fetch climb data using ID
       if (climbData.exists) {
-        Alert.alert('Success', `Climb found: ${climbData.data().name}`, [{ text: 'OK' }]);
-        // navigation.navigate('Detail', {
-        //   climb: climbData.data(),
-        // });
+        console.log('Climb found:', climbData.data());
       } else {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
       }
