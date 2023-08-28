@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>786555738802-njd05j9c61cv8ou41hmcub0p7l711n29.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.786555738802-njd05j9c61cv8ou41hmcub0p7l711n29</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCKayOSRXmcOnEU15l2Kuw-1SjoT-wU6pI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>786555738802</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.nagimo.trk</string>
+	<key>PROJECT_ID</key>
+	<string>trk-app-505a1</string>
+	<key>STORAGE_BUCKET</key>
+	<string>trk-app-505a1.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:786555738802:ios:26fc9325218898422847ab</string>
+</dict>
+</plist>
