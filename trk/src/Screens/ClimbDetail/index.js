@@ -8,19 +8,19 @@ import {
   Platform,
   Animated,
 } from 'react-native';
-import {Button} from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import PokemonImage from '../../Components/PokemonImage';
 import AndroidPrompt from '../../Components/AndroidPrompt';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import NfcManager, {NfcTech} from 'react-native-nfc-manager';
-import writePokemon from '../../NfcUtils/writePokemon';
+import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+import writePokemon from '../../NfcUtils/writeClimb';
 import writeSignature from '../../NfcUtils/writeSignature';
 import ensurePasswordProtection from '../../NfcUtils/ensurePasswordProtection';
 
-function PokemonDetail(props) {
+function ClimbDetail(props) {
   const androidPromptRef = React.useRef();
-  const {navigation, route} = props;
-  const {pokemon, allowCreate = false} = route.params;
+  const { navigation, route } = props;
+  const { pokemon, allowCreate = false } = route.params;
   const [reveal, setReveal] = React.useState(allowCreate);
   const animValue = React.useRef(new Animated.Value(allowCreate ? 1 : 0))
     .current;
@@ -42,7 +42,7 @@ function PokemonDetail(props) {
           duration: 600,
           useNativeDriver: false,
         }),
-        {iterations: 20},
+        { iterations: 20 },
       ).start();
     }
   }, [animValue, animValueLooped, allowCreate]);
@@ -79,42 +79,6 @@ function PokemonDetail(props) {
 
   return (
     <View style={[styles.wrapper]}>
-      <SafeAreaView />
-      <View style={[styles.wrapper, styles.center]}>
-        <Text style={styles.name}>{reveal ? pokemon.name : '???'}</Text>
-        <View style={[styles.circle, styles.center]}>
-          <Animated.View style={[styles.absPos, fadeIn]}>
-            <PokemonImage
-              name={pokemon.name}
-              style={styles.img}
-              resizeMode="cover"
-            />
-          </Animated.View>
-          <Animated.View style={[styles.absPos, fadeOut]}>
-            <PokemonImage style={styles.img} resizeMode="cover" />
-          </Animated.View>
-        </View>
-        <View style={styles.profile}>
-          <Text style={styles.profileTxt}>
-            HP: {reveal ? pokemon.hp : '???'}
-          </Text>
-          <Text style={styles.profileTxt}>
-            ATK: {reveal ? pokemon.atk : '???'}
-          </Text>
-          <Text style={styles.profileTxt}>
-            DEF: {reveal ? pokemon.def : '???'}
-          </Text>
-          <Text style={styles.profileTxt}>
-            SATK: {reveal ? pokemon.satk : '???'}
-          </Text>
-          <Text style={styles.profileTxt}>
-            SDEF: {reveal ? pokemon.sdef : '???'}
-          </Text>
-          <Text style={styles.profileTxt}>
-            SPD: {reveal ? pokemon.spd : '???'}
-          </Text>
-        </View>
-      </View>
 
       {allowCreate && (
         <View style={styles.center}>
@@ -215,4 +179,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PokemonDetail;
+export default ClimbDetail;
