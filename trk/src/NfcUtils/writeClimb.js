@@ -19,14 +19,12 @@ async function writeClimb(climbID) {
     allBytes = [...allBytes, ...block];
   }
 
-  console.log('Blocks:', blocks);
 
   // Assuming starting from block 4, change as necessary
   let startBlock = 4;
 
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i];
-    console.log(`Writing to block ${startBlock + i}:`, block);
     const respBytes = await NfcManager.nfcAHandler.transceive([0xa2, startBlock + i, ...block]);
 
     if (respBytes[0] !== 0xa) {
