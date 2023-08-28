@@ -35,7 +35,7 @@ const ClimbInputData = () => {
           await ensurePasswordProtection();
           const climbBytes = await writeClimb(newClimbId._documentPath._parts[1]);
           console.log("this is the climb id" + newClimbId._documentPath._parts[1]);
-          console.log("this is the climb bytes" + climbBytes);
+          console.log("this is the climb bytes: " + climbBytes);
           await writeSignature(climbBytes);
         } catch (ex) {
           console.warn(ex);
