@@ -9,9 +9,9 @@ PODS:
     - React-Core (= 0.72.3)
     - React-jsi (= 0.72.3)
     - ReactCommon/turbomodule/core (= 0.72.3)
-  - Firebase/CoreOnly (10.12.0):
-    - FirebaseCore (= 10.12.0)
-  - FirebaseCore (10.12.0):
+  - Firebase/CoreOnly (10.14.0):
+    - FirebaseCore (= 10.14.0)
+  - FirebaseCore (10.14.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/Logger (~> 7.8)
@@ -461,8 +461,8 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNFBApp (18.3.0):
-    - Firebase/CoreOnly (= 10.12.0)
+  - RNFBApp (18.3.1):
+    - Firebase/CoreOnly (= 10.14.0)
     - React-Core
   - RNGestureHandler (2.12.1):
     - React-Core
@@ -679,8 +679,8 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 4cce221dd782d3ff7c4172167bba09d58af67ccb
   FBReactNativeSpec: c6bd9e179757b3c0ecf815864fae8032377903ef
-  Firebase: 07150e75d142fb9399f6777fa56a187b17f833a0
-  FirebaseCore: f86a1394906b97ac445ae49c92552a9425831bed
+  Firebase: 6c1bf3f534bc422d52af2e41fe0d50bf08b6b773
+  FirebaseCore: 6fc17ac9f03509d51c131298aacb3ee5698b4f02
   FirebaseCoreInternal: d558159ee6cc4b823c2296ecc193de9f6d9a5bb3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
@@ -698,7 +698,7 @@ SPEC CHECKSUMS:
   React-Core: aaacca67f9ca54f142827e67f44bfbd815875eb6
   React-CoreModules: 32fab1d62416849a3b6dac6feff9d54e5ddc2d1e
   React-cxxreact: 37765b4975541105b2a3322a4b473417c158c869
-  React-debug: 9a8c41b6b03f50f44a32030a3cd93a06daa86f5c
+  React-debug: a38183c58055cf552456983f03b45b63b84d7b34
   React-hermes: 935ae71fb3d7654e947beba8498835cd5e479707
   React-jsi: ec628dc7a15ffea969f237b0ea6d2fde212b19dd
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
@@ -706,7 +706,7 @@ SPEC CHECKSUMS:
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
   react-native-nfc-manager: c103935a3c0874250a0122e3160ddce87d7a156b
   react-native-safe-area-context: 9697629f7b2cda43cf52169bb7e0767d330648c2
-  React-NativeModulesApple: 729813bbdacdfff5732e6457b328ce2d48a185b4
+  React-NativeModulesApple: 59af8bc7193f9bc7c96c1a2025972b720f865cdf
   React-perflogger: 6bd153e776e6beed54c56b0847e1220a3ff92ba5
   React-RCTActionSheet: c0b62af44e610e69d9a2049a682f5dba4e9dff17
   React-RCTAnimation: fe7005136b58f58871cab2f70732343b6e330d30
@@ -720,12 +720,12 @@ SPEC CHECKSUMS:
   React-RCTVibration: ea3a68a49873a54ced927c90923fc6932baf344a
   React-rncore: 9672a017af4a7da7495d911f0b690cbcae9dd18d
   React-runtimeexecutor: 369ae9bb3f83b65201c0c8f7d50b72280b5a1dbc
-  React-runtimescheduler: 513d7b0c4292efc646fb66f414cbb52c665cf1b9
-  React-utils: 833a34b9c1cd1bec019361b704ac3128988c114e
-  ReactCommon: b75d2271cbb99f818df90d7a5cd830e0dc95c89a
+  React-runtimescheduler: 4fa3637d301f18846b03eb57183975313221c396
+  React-utils: c7ecbe121fe1136ca0d3a34f707eb4a6c9cfb12b
+  ReactCommon: 7193be58b328c61e66bb77a112c7ad4019ec0477
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
-  RNFBApp: f0b5cf917b0b91a0ae890fbbaec0fb5d3285ea46
+  RNFBApp: 73795c4680eba994f9639c6bb8e0aed3c0a14394
   RNGestureHandler: c0d04458598fcb26052494ae23dda8f8f5162b13
   RNReanimated: 726395a2fa2f04cea340274ba57a4e659bc0d9c1
   RNScreens: b21dc57dfa2b710c30ec600786a3fc223b1b92e7
