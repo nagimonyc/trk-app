@@ -6,7 +6,7 @@ import writeClimb from "../../NfcUtils/writeClimb";
 import writeSignature from "../../NfcUtils/writeSignature";
 import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
 import androidPromptRef from "../../Components/AndroidPrompt";
-import ClimbsApi from "../../api/ClimbsApi";
+import ClimbsApi from "../../Services/ClimbsApi";
 
 const ClimbInputData = () => {
   const [name, setName] = useState("");

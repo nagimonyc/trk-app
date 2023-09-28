@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform } from 'react
 import { Button } from 'react-native-paper';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import readClimb from '../../NfcUtils/readClimb';
-import ClimbsApi from '../../api/ClimbsApi';
+import ClimbsApi from '../../Services/ClimbsApi';
 import Image from '../../Components/Image';
 import AndroidPrompt from '../../Components/AndroidPrompt';
 
