@@ -85,7 +85,7 @@ function HomeScreen(props) {
   return (
     <>
       <View style={[styles.wrapper, styles.center]}>
-        <Image source={require('../../../images/climb.png')} style={styles.banner} resizeMode="contain" />
+        <Image source={require('../../../assets/climb.png')} style={styles.banner} resizeMode="contain" />
         {renderNfcButtons()}
       </View>
       <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} />
