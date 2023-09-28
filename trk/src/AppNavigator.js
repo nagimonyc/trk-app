@@ -3,39 +3,52 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LandingScreen from './Screens/Landing';
 import HomeScreen from './Screens/Home';
-import PokemonListScreen from './Screens/ClimbList';
 import ClimbDetail from './Screens/ClimbDetail';
 import ClimbInputData from './Screens/ClimbList';
 
-const HomeStack = createStackNavigator();
-
-function Home(props) {
-  return (
-    <HomeStack.Navigator headerMode="screen">
-      <HomeStack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ title: 'NFC Climb' }}
-      />
-      <HomeStack.Screen
-        name="List"
-        component={ClimbInputData}
-        options={{ title: 'Choose Climb' }}
-      />
-    </HomeStack.Navigator>
-  );
-}
-
-const RootStack = createStackNavigator();
+const Stack = createStackNavigator();
 
 function AppNav(props) {
   return (
     <NavigationContainer>
-      <RootStack.Navigator headerMode="none" mode="modal">
-        <RootStack.Screen name="Landing" component={LandingScreen} />
-        <RootStack.Screen name="Home" component={Home} />
-        <RootStack.Screen name="Detail" component={ClimbDetail} />
-      </RootStack.Navigator>
+      <Stack.Navigator screenOptions={{ headerMode: 'float' }}>
+        <Stack.Screen
+          name="Landing"
+          component={LandingScreen}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            title: 'Home: NFC Climb',
+            headerStyle: {
+              backgroundColor: 'blue', // Customize header background color
+            },
+            headerTintColor: 'white', // Customize text color of header title
+            headerTitleStyle: {
+              fontWeight: 'bold', // Customize font weight of header title
+            },
+          }}
+        />
+        <Stack.Screen
+          name="List"
+          component={ClimbInputData}
+          options={{
+            title: 'Choose Climb',
+            headerStyle: {
+              backgroundColor: 'blue', // Customize header background color
+            },
+            headerTintColor: 'white', // Customize text color of header title
+            headerTitleStyle: {
+              fontWeight: 'bold', // Customize font weight of header title
+            },
+          }}
+        />
+        <Stack.Screen
+          name="Detail"
+          component={ClimbDetail}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

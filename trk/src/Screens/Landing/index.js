@@ -50,7 +50,7 @@ function LandingScreen(props) {
           transform: [{scale: scaleAnimValue}],
         }}>
         <Image
-          source={require('../../../images/pokeball.png')}
+          source={require('../../../images/climb.png')}
           style={styles.banner}
           resizeMode="contain"
         />

@@ -9,18 +9,17 @@ import {
   Animated,
 } from 'react-native';
 import { Button } from 'react-native-paper';
-import PokemonImage from '../../Components/PokemonImage';
 import AndroidPrompt from '../../Components/AndroidPrompt';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
-import writePokemon from '../../NfcUtils/writeClimb';
+import writeClimb from '../../NfcUtils/writeClimb';
 import writeSignature from '../../NfcUtils/writeSignature';
 import ensurePasswordProtection from '../../NfcUtils/ensurePasswordProtection';
 
 function ClimbDetail(props) {
   const androidPromptRef = React.useRef();
   const { navigation, route } = props;
-  const { pokemon, allowCreate = false } = route.params;
+  const { climbs, allowCreate = false } = route.params;
   const [reveal, setReveal] = React.useState(allowCreate);
   const animValue = React.useRef(new Animated.Value(allowCreate ? 1 : 0))
     .current;
@@ -93,8 +92,8 @@ function ClimbDetail(props) {
               try {
                 await NfcManager.requestTechnology(NfcTech.NfcA);
                 await ensurePasswordProtection();
-                const pokemonBytes = await writePokemon(pokemon);
-                await writeSignature(pokemonBytes);
+                const ClimbBytes = await writeClimb(climbs);
+                await writeSignature(ClimbBytes);
               } catch (ex) {
                 console.warn(ex);
               } finally {
