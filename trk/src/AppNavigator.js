@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LandingScreen from './Screens/Landing';
 import HomeScreen from './Screens/Home';
-import ClimbDetail from './Screens/ClimbDetail';
 import ClimbInputData from './Screens/ClimbList';
 
 const Stack = createStackNavigator();
@@ -43,10 +42,6 @@ function AppNav(props) {
               fontWeight: 'bold', // Customize font weight of header title
             },
           }}
-        />
-        <Stack.Screen
-          name="Detail"
-          component={ClimbDetail}
         />
       </Stack.Navigator>
     </NavigationContainer>
