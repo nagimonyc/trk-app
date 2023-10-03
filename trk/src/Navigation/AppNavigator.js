@@ -1,10 +1,9 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import LandingScreen from './Screens/Landing';
-import HomeScreen from './Screens/Home';
-import ClimbDetail from './Screens/ClimbDetail';
-import ClimbInputData from './Screens/ClimbList';
+import LandingScreen from '../Screens/Landing';
+import HomeScreen from '../Screens/Home';
+import ClimbInputData from '../Screens/ClimbList';
 
 const Stack = createStackNavigator();
 
