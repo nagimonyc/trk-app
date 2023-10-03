@@ -1,10 +1,12 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import LandingScreen from './Screens/Landing';
-import HomeScreen from './Screens/Home';
-import ClimbInputData from './Screens/ClimbList';
-import ClimbDetailScreen from './Screens/ClimbDetail'
+
+import LandingScreen from '../Screens/Landing';
+import HomeScreen from '../Screens/Home';
+import ClimbInputData from '../Screens/ClimbList';
+import ClimbDetailScreen from '../Screens/ClimbDetail';
+
 
 const Stack = createStackNavigator();
 
@@ -46,6 +48,7 @@ function AppNav(props) {
         />
         <Stack.Screen
           name="Detail"
+
           component={ClimbDetailScreen}
           options={{
             title: 'Climb Info',
@@ -57,6 +60,9 @@ function AppNav(props) {
               fontWeight: 'bold', // Customize font weight of header title
             },
           }}
+
+          
+
         />
       </Stack.Navigator>
     </NavigationContainer>

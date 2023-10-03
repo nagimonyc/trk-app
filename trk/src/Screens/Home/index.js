@@ -6,6 +6,7 @@ import readClimb from '../../NfcUtils/readClimb';
 import ClimbsApi from '../../api/ClimbsApi';
 import Image from '../../Components/Image';
 import AndroidPrompt from '../../Components/AndroidPrompt';
+import auth from '@react-native-firebase/auth';
 
 function HomeScreen(props) {
   const { navigation } = props;
@@ -25,6 +26,18 @@ function HomeScreen(props) {
     }
     checkNfc();
   }, []);
+
+  const signOutUser = () => {
+    auth()
+      .signOut()
+      .then(() => {
+        console.log('User signed out!');
+        // Optionally, you can navigate the user to the landing page or log-in screen
+      })
+      .catch((error) => {
+        console.log('Error signing out: ', error);
+      });
+  };
 
   async function identifyClimb() {
     if (Platform.OS === 'android') {
@@ -89,6 +102,9 @@ function HomeScreen(props) {
       <View style={[styles.wrapper, styles.center]}>
         <Image source={require('../../../assets/climb.png')} style={styles.banner} resizeMode="contain" />
         {renderNfcButtons()}
+        <Button mode="contained" onPress={signOutUser}>
+          Sign Out
+        </Button>
       </View>
       <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} />
     </>
