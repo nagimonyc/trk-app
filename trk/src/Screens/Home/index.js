@@ -50,6 +50,7 @@ function HomeScreen(props) {
       const climbData = await getClimb(climbId[0]); // Fetch climb data using ID
       if (climbData.exists) {
         console.log('Climb found:', climbData.data());
+        Alert.alert('Success', `Climb ID: ${climbId[0]} has been successfully read!`, [{ text: 'OK' }])
       } else {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
       }
@@ -98,7 +99,7 @@ function HomeScreen(props) {
   return (
     <>
       <View style={[styles.wrapper, styles.center]}>
-        <Image source={require('../../../images/climb.png')} style={styles.banner} resizeMode="contain" />
+        <Image source={require('../../../assets/climb.png')} style={styles.banner} resizeMode="contain" />
         {renderNfcButtons()}
         <Button mode="contained" onPress={signOutUser}>
           Sign Out

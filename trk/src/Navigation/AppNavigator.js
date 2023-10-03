@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import LandingScreen from '../Screens/Landing';
-import HomeScreen from '../Screens/Home';
-import ClimbDetail from '../Screens/ClimbDetail';
-import ClimbInputData from '../Screens/ClimbList';
+import LandingScreen from './Screens/Landing';
+import HomeScreen from './Screens/Home';
+import ClimbDetail from './Screens/ClimbDetail';
+import ClimbInputData from './Screens/ClimbList';
 
 const Stack = createStackNavigator();
 
@@ -12,18 +12,21 @@ function AppNav(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerMode: 'float' }}>
-        <Stack.Screen name="Landing" component={LandingScreen} />
+        <Stack.Screen
+          name="Landing"
+          component={LandingScreen}
+        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={{
             title: 'Home: NFC Climb',
             headerStyle: {
-              backgroundColor: 'blue',
+              backgroundColor: 'blue', // Customize header background color
             },
-            headerTintColor: 'white',
+            headerTintColor: 'white', // Customize text color of header title
             headerTitleStyle: {
-              fontWeight: 'bold',
+              fontWeight: 'bold', // Customize font weight of header title
             },
           }}
         />
@@ -33,15 +36,18 @@ function AppNav(props) {
           options={{
             title: 'Choose Climb',
             headerStyle: {
-              backgroundColor: 'blue',
+              backgroundColor: 'blue', // Customize header background color
             },
-            headerTintColor: 'white',
+            headerTintColor: 'white', // Customize text color of header title
             headerTitleStyle: {
-              fontWeight: 'bold',
+              fontWeight: 'bold', // Customize font weight of header title
             },
           }}
         />
-        <Stack.Screen name="Detail" component={ClimbDetail} />
+        <Stack.Screen
+          name="Detail"
+          component={ClimbDetail}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
