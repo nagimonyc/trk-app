@@ -1,21 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import SignIn from './SignIn'; // Your sign-in component
 import SignUp from './SignUp'; // Your sign-up component
 
 const Authentication = () => {
-    const [isSignIn, setIsSignIn] = useState(true); // state to toggle between sign in and sign up
+    const [isSignIn, setIsSignIn] = useState(true);
 
     return (
-        <View>
-            {isSignIn ? <SignIn /> : <SignUp />}
-            <TouchableOpacity onPress={() => setIsSignIn(!isSignIn)}>
-                <Text>
-                    {isSignIn ? 'Go to Sign Up' : 'Go to Sign In'}
-                </Text>
-            </TouchableOpacity>
+        <View style={styles.container}>
+            <View style={styles.formContainer}>
+                {isSignIn ? <SignIn /> : <SignUp />}
+            </View>
+            <View style={styles.buttonContainer}>
+                <Button
+                    title={isSignIn ? 'Go to Sign Up' : 'Go to Sign In'}
+                    onPress={() => setIsSignIn(!isSignIn)}
+                />
+            </View>
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#F5FCFF',
+    },
+    formContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonContainer: {
+        marginTop: 20,
+        marginBottom: 20,
+    }
+});
 
 export default Authentication;
