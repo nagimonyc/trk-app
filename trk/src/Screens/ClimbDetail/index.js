@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, Animated} from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 
 function ClimbDetail(props) {
   return (
-    <View>
+    <View style={[styles.wrapper]} >
       <SafeAreaView/>
-      <View>
+      <View style={[styles.center]}>
         <Text>Climb Title</Text>
         <Text>Climb Level</Text>
         <Text>Climb Location</Text>
@@ -15,5 +15,16 @@ function ClimbDetail(props) {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    padding: 15
+  }, 
+  center: {
+    alignItems: 'center',
+     
+  }
+})
 
 export default ClimbDetail;
