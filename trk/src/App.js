@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import AppNavigator from './AppNavigator';
 import auth from '@react-native-firebase/auth';
+import { AuthNavigator } from './AppNavigator';
 import SignIn from './Components/SignIn';
 import SignUp from './Components/SignUp';
 
@@ -25,8 +27,9 @@ function App(props) {
     return (
       <PaperProvider>
         {/* You can put SignIn and SignUp in a stack navigator, or render as separate components */}
-        <SignIn />
-        <SignUp />
+        <NavigationContainer>
+          <AuthNavigator />
+        </NavigationContainer>
       </PaperProvider>
     );
   }

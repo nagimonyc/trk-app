@@ -14,7 +14,6 @@ const SignUp = ({ navigation }) => {
                 // Get the user object
                 const user = userCredential.user;
                 console.log('User signed up:', userCredential.user);
-                navigation.navigate('Home');  // Redirect to Home screen
 
                 // Create a new document in Firestore 'Users' collection
                 firestore()
@@ -27,6 +26,7 @@ const SignUp = ({ navigation }) => {
                     })
                     .then(() => {
                         console.log('User added to Firestore');
+                        navigation.navigate('Home');  // Redirect to Home screen
                     })
                     .catch((error) => {
                         console.log('Error adding user to Firestore: ', error);

@@ -5,9 +5,23 @@ import LandingScreen from './Screens/Landing';
 import HomeScreen from './Screens/Home';
 import ClimbDetail from './Screens/ClimbDetail';
 import ClimbInputData from './Screens/ClimbList';
+import SignIn from './Components/SignIn';
+import SignUp from './Components/SignUp';
+
+
+const AuthStack = createStackNavigator();
+
+
+export function AuthNavigator() {
+  return (
+    <AuthStack.Navigator>
+      <AuthStack.Screen name="SignIn" component={SignIn} />
+      <AuthStack.Screen name="SignUp" component={SignUp} />
+    </AuthStack.Navigator>
+  );
+}
 
 const Stack = createStackNavigator();
-
 function AppNav(props) {
   return (
     <NavigationContainer>
@@ -22,11 +36,11 @@ function AppNav(props) {
           options={{
             title: 'Home: NFC Climb',
             headerStyle: {
-              backgroundColor: 'blue', // Customize header background color
+              backgroundColor: 'blue',
             },
-            headerTintColor: 'white', // Customize text color of header title
+            headerTintColor: 'white',
             headerTitleStyle: {
-              fontWeight: 'bold', // Customize font weight of header title
+              fontWeight: 'bold',
             },
           }}
         />
@@ -36,11 +50,11 @@ function AppNav(props) {
           options={{
             title: 'Choose Climb',
             headerStyle: {
-              backgroundColor: 'blue', // Customize header background color
+              backgroundColor: 'blue',
             },
-            headerTintColor: 'white', // Customize text color of header title
+            headerTintColor: 'white',
             headerTitleStyle: {
-              fontWeight: 'bold', // Customize font weight of header title
+              fontWeight: 'bold',
             },
           }}
         />
