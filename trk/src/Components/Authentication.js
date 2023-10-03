@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import SignIn from './SignIn'; // Your sign-in component
-import SignUp from './SignUp'; // Your sign-up component
+import { View, Button, StyleSheet } from 'react-native';
+import SignIn from './SignIn';
+import SignUp from './SignUp';
 
 const Authentication = () => {
     const [isSignIn, setIsSignIn] = useState(true);
