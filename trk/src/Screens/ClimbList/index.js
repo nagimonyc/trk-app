@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert } from "react-native";
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
@@ -7,13 +7,15 @@ import writeSignature from "../../NfcUtils/writeSignature";
 import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
 import androidPromptRef from "../../Components/AndroidPrompt";
 import ClimbsApi from "../../api/ClimbsApi";
-import { firebase } from "@react-native-firebase/firestore";
-import auth from '@react-native-firebase/auth';
+import { AuthContext } from '../../Utils/AuthContext';
 
 
-const ClimbInputData = ({ route }) => {
-  const { currentUser } = route.params;
-  const setter = currentUser.uid;
+const ClimbInputData = () => {
+
+  const { currentUser } = useContext(AuthContext);
+  const setter = currentUser;
+
+
   const { addClimb } = ClimbsApi();
 
   const [name, setName] = useState("");
@@ -28,7 +30,7 @@ const ClimbInputData = ({ route }) => {
       grade,
       location,
       image,
-      setter
+      setter: setter.uid
     };
 
     addClimb(climb)
@@ -101,7 +103,7 @@ const ClimbInputData = ({ route }) => {
         <Text style={styles.label}>Setter</Text>
         <TextInput
           style={styles.input}
-          value={setter}
+          value={setter.email}
         />
       </View>
 

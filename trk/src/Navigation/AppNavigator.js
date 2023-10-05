@@ -35,7 +35,6 @@ function AppNav(props) {
         <Stack.Screen
           name="List"
           component={ClimbInputData}
-          initialParams={{ currentUser: props.currentUser }}
           options={{
             title: 'Choose Climb',
             headerStyle: {
