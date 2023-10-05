@@ -11,9 +11,10 @@ import SignOut from '../../Components/SignOut';
 function HomeScreen(props) {
   const { navigation } = props;
   const androidPromptRef = React.useRef();
+  const { getClimb } = ClimbsApi();
+
   const [hasNfc, setHasNfc] = React.useState(null);
   const [enabled, setEnabled] = React.useState(null);
-  const { getClimb } = ClimbsApi(); // Use getClimb from your ClimbsApi
 
   React.useEffect(() => {
     async function checkNfc() {
