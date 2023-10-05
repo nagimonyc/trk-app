@@ -7,14 +7,20 @@ import writeSignature from "../../NfcUtils/writeSignature";
 import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
 import androidPromptRef from "../../Components/AndroidPrompt";
 import ClimbsApi from "../../api/ClimbsApi";
+import { firebase } from "@react-native-firebase/firestore";
+import auth from '@react-native-firebase/auth';
 
-const ClimbInputData = () => {
+
+const ClimbInputData = ({ route }) => {
+  const { currentUser } = route.params;
+  const setter = currentUser.uid;
+  const { addClimb } = ClimbsApi();
+
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
   const [location, setLocation] = useState("");
   const [image, setImage] = useState("");
 
-  const { addClimb, getClimb } = ClimbsApi();
 
   function handleAddClimb() {
     const climb = {
@@ -22,6 +28,7 @@ const ClimbInputData = () => {
       grade,
       location,
       image,
+      setter
     };
 
     addClimb(climb)
@@ -89,6 +96,12 @@ const ClimbInputData = () => {
           value={image}
           onChangeText={setImage}
           placeholder="Enter image"
+        />
+
+        <Text style={styles.label}>Setter</Text>
+        <TextInput
+          style={styles.input}
+          value={setter}
         />
       </View>
 

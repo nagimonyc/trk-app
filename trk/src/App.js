@@ -22,7 +22,7 @@ function App(props) {
 
   return (
     <PaperProvider>
-      {user ? <AppNavigator /> : <AuthNavigator />}
+      {user ? <AppNavigator currentUser={user} /> : <AuthNavigator />}
     </PaperProvider>
   );
 }
