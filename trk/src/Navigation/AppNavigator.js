@@ -61,7 +61,7 @@ function AppNav(props) {
             },
           }}
 
-          
+
 
         />
       </Stack.Navigator>

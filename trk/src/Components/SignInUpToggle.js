@@ -3,7 +3,7 @@ import { View, Button, StyleSheet } from 'react-native';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 
-const Authentication = () => {
+const SignInUpToggle = () => {
     const [isSignIn, setIsSignIn] = useState(true);
 
     return (
@@ -37,4 +37,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Authentication;
+export default SignInUpToggle;
