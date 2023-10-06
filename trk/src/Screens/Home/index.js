@@ -51,7 +51,7 @@ function HomeScreen(props) {
       if (climbData.exists) {
         console.log('Climb found:', climbData.data());
         Alert.alert('Success', `Climb ID: ${climbId[0]} has been successfully read!`, [{ text: 'OK' }])
-        navigation.navigate('Detail')
+        navigation.navigate('Detail', { climbData: climbData.data() });
       } else {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
       }
