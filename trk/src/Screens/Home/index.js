@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { Button } from 'react-native-paper';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
@@ -7,14 +7,27 @@ import ClimbsApi from '../../api/ClimbsApi';
 import Image from '../../Components/Image';
 import AndroidPrompt from '../../Components/AndroidPrompt';
 import SignOut from '../../Components/SignOut';
+import { AuthContext } from '../../Utils/AuthContext';
+import TapsApi from '../../api/TapsApi';
 
 function HomeScreen(props) {
-  const { navigation } = props;
+  // Android
   const androidPromptRef = React.useRef();
-  const { getClimb } = ClimbsApi();
 
+  // Navigation
+  const { navigation } = props;
+
+  // API Call to database
+  const { getClimb } = ClimbsApi();
+  const { addTap } = TapsApi();
+
+
+  // States
   const [hasNfc, setHasNfc] = React.useState(null);
   const [enabled, setEnabled] = React.useState(null);
+
+  // user check
+  const { currentUser } = useContext(AuthContext);
 
   React.useEffect(() => {
     async function checkNfc() {
@@ -37,9 +50,17 @@ function HomeScreen(props) {
       await NfcManager.requestTechnology(NfcTech.NfcA);
       const climbId = await readClimb();
       const climbData = await getClimb(climbId[0]); // Fetch climb data using ID
-      if (climbData.exists) {
+      if (climbData.exists) { //check if climb exists and if the user is the setter, if not, allow them to read the climb
         console.log('Climb found:', climbData.data());
         Alert.alert('Success', `Climb ID: ${climbId[0]} has been successfully read!`, [{ text: 'OK' }])
+        if (currentUser.uid !== climbData.data().setter) {
+          const tap = {
+            climb: climbId[0],
+            user: currentUser.uid,
+            timestamp: new Date()
+          }
+          addTap(tap);
+        }
         navigation.navigate('Detail')
       } else {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
