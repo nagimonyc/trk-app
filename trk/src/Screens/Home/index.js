@@ -53,6 +53,7 @@ function HomeScreen(props) {
       if (climbData.exists) { //check if climb exists and if the user is the setter, if not, allow them to read the climb
         console.log('Climb found:', climbData.data());
         Alert.alert('Success', `Climb ID: ${climbId[0]} has been successfully read!`, [{ text: 'OK' }])
+
         if (currentUser.uid !== climbData.data().setter) {
           const tap = {
             climb: climbId[0],
@@ -61,7 +62,8 @@ function HomeScreen(props) {
           }
           addTap(tap);
         }
-        navigation.navigate('Detail')
+        navigation.navigate('Detail', { climbData: climbData.data() })
+
       } else {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
       }
