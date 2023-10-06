@@ -1,30 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import AppNavigator from './Navigation/AppNavigator';
 import AuthNavigator from './Navigation/AuthNavigator';
+import { AuthProvider, AuthContext } from './Utils/AuthContext';
+
+
+function AppWrapper() {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  );
+}
+
 
 function App(props) {
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
 
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
-
-  if (initializing) return null;
+  const { currentUser } = useContext(AuthContext);
 
   return (
     <PaperProvider>
-      {user ? <AppNavigator /> : <AuthNavigator />}
+      {currentUser ? <AppNavigator /> : <AuthNavigator />}
     </PaperProvider>
   );
 }
 
-export default App;
+export default AppWrapper;

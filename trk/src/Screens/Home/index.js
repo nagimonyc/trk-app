@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { Button } from 'react-native-paper';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
@@ -6,14 +6,28 @@ import readClimb from '../../NfcUtils/readClimb';
 import ClimbsApi from '../../api/ClimbsApi';
 import Image from '../../Components/Image';
 import AndroidPrompt from '../../Components/AndroidPrompt';
-import auth from '@react-native-firebase/auth';
+import SignOut from '../../Components/SignOut';
+import { AuthContext } from '../../Utils/AuthContext';
+import TapsApi from '../../api/TapsApi';
 
 function HomeScreen(props) {
-  const { navigation } = props;
+  // Android
   const androidPromptRef = React.useRef();
+
+  // Navigation
+  const { navigation } = props;
+
+  // API Call to database
+  const { getClimb } = ClimbsApi();
+  const { addTap } = TapsApi();
+
+
+  // States
   const [hasNfc, setHasNfc] = React.useState(null);
   const [enabled, setEnabled] = React.useState(null);
-  const { getClimb } = ClimbsApi(); // Use getClimb from your ClimbsApi
+
+  // user check
+  const { currentUser } = useContext(AuthContext);
 
   React.useEffect(() => {
     async function checkNfc() {
@@ -27,18 +41,6 @@ function HomeScreen(props) {
     checkNfc();
   }, []);
 
-  const signOutUser = () => {
-    auth()
-      .signOut()
-      .then(() => {
-        console.log('User signed out!');
-        // Optionally, you can navigate the user to the landing page or log-in screen
-      })
-      .catch((error) => {
-        console.log('Error signing out: ', error);
-      });
-  };
-
   async function identifyClimb() {
     if (Platform.OS === 'android') {
       androidPromptRef.current.setVisible(true);
@@ -48,10 +50,20 @@ function HomeScreen(props) {
       await NfcManager.requestTechnology(NfcTech.NfcA);
       const climbId = await readClimb();
       const climbData = await getClimb(climbId[0]); // Fetch climb data using ID
-      if (climbData.exists) {
+      if (climbData.exists) { //check if climb exists and if the user is the setter, if not, allow them to read the climb
         console.log('Climb found:', climbData.data());
         Alert.alert('Success', `Climb ID: ${climbId[0]} has been successfully read!`, [{ text: 'OK' }])
-        navigation.navigate('Detail', { climbData: climbData.data() });
+
+        if (currentUser.uid !== climbData.data().setter) {
+          const tap = {
+            climb: climbId[0],
+            user: currentUser.uid,
+            timestamp: new Date()
+          }
+          addTap(tap);
+        }
+        navigation.navigate('Detail', { climbData: climbData.data() })
+
       } else {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
       }
@@ -102,7 +114,7 @@ function HomeScreen(props) {
       <View style={[styles.wrapper, styles.center]}>
         <Image source={require('../../../assets/climb.png')} style={styles.banner} resizeMode="contain" />
         {renderNfcButtons()}
-        <Button mode="contained" onPress={signOutUser}>
+        <Button mode="contained" onPress={SignOut}>
           Sign Out
         </Button>
       </View>
