@@ -3,7 +3,7 @@ import { Text } from "react-native";
 
 const UserProfile = () => {
     return (
-        <Text> hello </Text>
+        <Text>Profile</Text>
     );
 }
 
