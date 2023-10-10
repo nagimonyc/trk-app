@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 function ClimbDetail(props) {
   return (
     <View style={[styles.wrapper]} >
-      <SafeAreaView/>
+      <SafeAreaView />
       <View style={[styles.center]}>
         <Text>Climb Title</Text>
         <Text>Climb Level</Text>
@@ -20,10 +20,10 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     padding: 15
-  }, 
+  },
   center: {
     alignItems: 'center',
-     
+
   }
 })
 

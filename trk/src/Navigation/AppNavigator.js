@@ -16,7 +16,9 @@ const Tab = createBottomTabNavigator();
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
+      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Detail" component={ClimbDetailScreen} />
     </Stack.Navigator>
   );
 }
@@ -24,7 +26,7 @@ function HomeStack() {
 function AppTabs() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
       <Tab.Screen name="Climb List" component={ClimbInputData} />
       <Tab.Screen name="Profile" component={UserProfile} />
     </Tab.Navigator>
