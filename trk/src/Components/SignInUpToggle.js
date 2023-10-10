@@ -24,7 +24,6 @@ const SignInUpToggle = () => {
             <View style={styles.formContainer}>
                 {isSignIn ? <SignIn /> : <SignUp role={isEnabled} />}
             </View>
-            <View><Text></Text></View>
 
             <View style={styles.buttonContainer}>
                 <Button
