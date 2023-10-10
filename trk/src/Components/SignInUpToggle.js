@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row', // Added this line
         alignItems: 'center', // Added this line
-        backgroundColor: 'red',
         justifyContent: 'flex-end',
         paddingRight: 20
     },
@@ -53,13 +52,11 @@ const styles = StyleSheet.create({
         flex: 5,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'blue'
     },
     buttonContainer: {
         flex: 1,
         marginTop: 20,
         marginBottom: 20,
-        backgroundColor: 'green',
         justifyContent: 'center',
     }
 });
