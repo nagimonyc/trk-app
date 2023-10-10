@@ -25,7 +25,7 @@ function HomeStack() {
 }
 
 function AppTabs() {
-  const { currentUser, role } = useContext(AuthContext);
+  const { role } = useContext(AuthContext);
 
   return (
     <Tab.Navigator>
