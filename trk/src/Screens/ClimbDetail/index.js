@@ -41,10 +41,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 15,
     backgroundColor: 'white',
+    borderRadius: 8.78,
+    borderColor: '#f2f2f2',
+    borderWidth: 1.49, 
+
   },
   top: {
     flexDirection: 'row',
-    marginTop: 28,
+    marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -91,7 +95,8 @@ const styles = StyleSheet.create({
     width: 197, 
     height: 287,
     marginTop: 42,
-    backgroundColor: '#ff9a00'
+    backgroundColor: '#ff9a00', 
+    borderRadius: 3.88,
   },
 })
 
