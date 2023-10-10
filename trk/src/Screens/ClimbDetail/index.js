@@ -5,7 +5,7 @@ function ClimbDetail(props) {
   const { climbData } = props.route.params;
   return (
     <View style={[styles.wrapper]} >
-      <SafeAreaView/>
+      <SafeAreaView />
       <View style={[styles.center]}>
         {Object.entries(climbData).map(([key, value], index) => (
           <View key={index} style={styles.row}>
@@ -22,6 +22,7 @@ function ClimbDetail(props) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
+
     padding: 15,
   }, 
   center: {

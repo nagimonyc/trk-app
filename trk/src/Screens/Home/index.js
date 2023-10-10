@@ -98,9 +98,6 @@ function HomeScreen(props) {
     } else {
       return (
         <>
-          <Button mode="contained" style={styles.btn} onPress={() => { navigation.navigate('List'); }}>
-            Create Climb
-          </Button>
           <Button mode="contained" style={styles.btn} onPress={identifyClimb}>
             Identify Climb
           </Button>
