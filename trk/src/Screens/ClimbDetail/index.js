@@ -12,6 +12,7 @@ function ClimbDetail(props) {
           <View style={styles.gradeCircle}>
             <Text>{climbData.grade}</Text>
           </View>
+
           <Text style={styles.titleText}>{climbData.name}</Text>
         </View>
         <View style={styles.setterCircle}>
@@ -44,7 +45,6 @@ const styles = StyleSheet.create({
     borderRadius: 8.78,
     borderColor: '#f2f2f2',
     borderWidth: 1.49, 
-
   },
   top: {
     flexDirection: 'row',

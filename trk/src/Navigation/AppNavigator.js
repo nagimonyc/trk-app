@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -8,6 +8,7 @@ import ClimbInputData from '../Screens/ClimbList';
 import ClimbDetailScreen from '../Screens/ClimbDetail';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UserProfile from '../Screens/Profile';
+import { AuthContext } from '../Utils/AuthContext';
 
 
 const Stack = createStackNavigator();
@@ -24,10 +25,12 @@ function HomeStack() {
 }
 
 function AppTabs() {
+  const { role } = useContext(AuthContext);
+
   return (
     <Tab.Navigator>
       <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-      <Tab.Screen name="Climb List" component={ClimbInputData} />
+      {role === 'climber' ? null : <Tab.Screen name="Climb List" component={ClimbInputData} />}
       <Tab.Screen name="Profile" component={UserProfile} />
     </Tab.Navigator>
   );
