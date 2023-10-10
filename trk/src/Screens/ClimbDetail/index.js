@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 function ClimbDetail(props) {
   const { climbData } = props.route.params;
   return (
+    <View style={styles.container}>
     <View style={[styles.wrapper]} >
       <SafeAreaView />
       <View style={styles.top}>
@@ -14,26 +15,38 @@ function ClimbDetail(props) {
           <Text style={styles.titleText}>{climbData.name}</Text>
         </View>
         <View style={styles.setterCircle}>
-        <Text>{climbData.setter}</Text>
+          <Text>Insert setter photo</Text>
         </View>
       </View>
+      <View style={styles.line}></View>
+      <View style={styles.climbPhoto}>
+        <Text>Insert climb photo</Text>
+      </View>
 
+    </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
+  container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  wrapper: {
+    width: 317,
+    height: 539.89,
     alignItems: 'center',
     padding: 15,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   top: {
     flexDirection: 'row',
-    margin: 50, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    marginTop: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   titleText: {
@@ -45,25 +58,40 @@ const styles = StyleSheet.create({
 
   topLeft: {
     flexDirection: 'row',
-    alignItems: 'center', 
-    justifyContent: 'center', 
-  }, 
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   gradeCircle: {
-    width: 50,            
-    height: 50,          
-    borderRadius: 25,     
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: '#C73B3B', //this color is hardcoded for now, but needs to match the level/grading system of the gym
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   setterCircle: {
-    width: 90,            
-    height: 90,          
-    borderRadius: 47,     
-    backgroundColor: '#C73B3B', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: '#CDB58F',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginLeft: 50,
+    overflow: 'hidden',
+  },
+  line: {
+    width: 200,
+    height: 1,
+    borderTopWidth: 1,
+    borderColor: 'rgba(0, 0, 0, 0.26)',
+    marginTop: 55,
+  },
+
+  climbPhoto: {
+    width: 197, 
+    height: 287,
+    marginTop: 42,
+    backgroundColor: '#ff9a00'
   },
 })
 
