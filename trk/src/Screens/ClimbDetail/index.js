@@ -6,15 +6,18 @@ function ClimbDetail(props) {
   return (
     <View style={[styles.wrapper]} >
       <SafeAreaView />
-      <View style={[styles.center]}>
-        {Object.entries(climbData).map(([key, value], index) => (
-          <View key={index} style={styles.row}>
-            <Text style={styles.keyText}>{key}</Text>
-            <Text style={styles.valueText}>{value}</Text>
+      <View style={styles.top}>
+        <View style={styles.topLeft}>
+          <View style={styles.gradeCircle}>
+            <Text>{climbData.grade}</Text>
           </View>
-        ))}
-     
+          <Text style={styles.titleText}>{climbData.name}</Text>
+        </View>
+        <View style={styles.setterCircle}>
+        <Text>{climbData.setter}</Text>
+        </View>
       </View>
+
     </View>
   )
 }
@@ -22,24 +25,45 @@ function ClimbDetail(props) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-
-    padding: 15,
-  }, 
-  center: {
     alignItems: 'center',
-     
+    padding: 15,
+    backgroundColor: 'white'
   },
-  row: {
+  top: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
+    margin: 50, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
   },
-  keyText: {
-    fontWeight: 'bold',
-    marginRight: 10,
-  },
-  valueText: {
+
+  titleText: {
     flexShrink: 1, // To prevent text overflow
+    fontWeight: 'bold',
+    marginLeft: 15,
+    fontSize: 17.57,
+  },
+
+  topLeft: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  }, 
+  gradeCircle: {
+    width: 50,            
+    height: 50,          
+    borderRadius: 25,     
+    backgroundColor: '#C73B3B', //this color is hardcoded for now, but needs to match the level/grading system of the gym
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  setterCircle: {
+    width: 90,            
+    height: 90,          
+    borderRadius: 47,     
+    backgroundColor: '#C73B3B', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    marginLeft: 50,
   },
 })
 
