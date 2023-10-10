@@ -8,7 +8,10 @@ import ClimbInputData from '../Screens/ClimbList';
 import ClimbDetailScreen from '../Screens/ClimbDetail';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UserProfile from '../Screens/Profile';
+import { AuthContext } from '../Utils/AuthContext';
 
+
+const { currentUser } = useContext(AuthContext);
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -27,6 +30,7 @@ function AppTabs() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
+      { currentUser ? }
       <Tab.Screen name="Climb List" component={ClimbInputData} />
       <Tab.Screen name="Profile" component={UserProfile} />
     </Tab.Navigator>
