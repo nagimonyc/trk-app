@@ -13,7 +13,7 @@ function ClimbDetail(props) {
             <Text style={styles.valueText}>{value}</Text>
           </View>
         ))}
-     
+
       </View>
     </View>
   )
@@ -22,12 +22,10 @@ function ClimbDetail(props) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-
     padding: 15,
-  }, 
+  },
   center: {
     alignItems: 'center',
-     
   },
   row: {
     flexDirection: 'row',

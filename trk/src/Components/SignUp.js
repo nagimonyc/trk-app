@@ -3,11 +3,12 @@ import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-const SignUp = ({ navigation }) => {
+const SignUp = ({ role }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSignUp = () => {
+        console.log('role is: ' + role);
         auth()
             .createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
@@ -22,11 +23,11 @@ const SignUp = ({ navigation }) => {
                     .set({
                         email: user.email, // user's email address
                         uid: user.uid, // unique ID for the user
+                        role: role ? 'setter' : 'climber', // user's role
                         // add other user-related information here
                     })
                     .then(() => {
                         console.log('User added to Firestore');
-                        navigation.navigate('Home');  // Redirect to Home screen
                     })
                     .catch((error) => {
                         console.log('Error adding user to Firestore: ', error);
