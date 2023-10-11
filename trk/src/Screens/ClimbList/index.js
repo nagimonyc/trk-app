@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity } from "react-native";
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
 import writeClimb from "../../NfcUtils/writeClimb";
@@ -93,6 +93,9 @@ const ClimbInputData = () => {
         />
 
         <Text style={styles.label}>Image</Text>
+        <TouchableOpacity>
+          <Text>Insert climb image</Text>
+        </TouchableOpacity>
 
 
         <Text style={styles.label}>Setter</Text>
