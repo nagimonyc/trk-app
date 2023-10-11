@@ -106,7 +106,6 @@ const ClimbInputData = () => {
       </View>
 
       <Button
-        style={styles.button}
         onPress={handleAddClimb}
         mode="contained"
         disabled={!name || !grade || !location || !image}
@@ -114,13 +113,6 @@ const ClimbInputData = () => {
       >
       </Button>
 
-      <Button
-        style={styles.button}
-        onPress={() => navigation.navigate("List")}
-        mode="contained"
-        title="Go to Climb List"
-      >
-      </Button>
     </SafeAreaView>
   );
 };
