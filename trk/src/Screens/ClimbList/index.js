@@ -95,6 +95,7 @@ const ClimbInputData = () => {
         <Text style={styles.label}>Image</Text>
         <TouchableOpacity style={styles.uploadButton}>
           <Text style={styles.uploadText}>Insert climb image</Text>
+          <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
         </TouchableOpacity>
 
 
@@ -138,10 +139,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDDDDD',
     padding: 10,
     height: 100,
+    marginBottom: 16,
   },
   uploadText: {
     color: '#acabad'
-  }
+  }, 
+  imageIcon: {
+    width: 40,
+    height: 40,
+  },
 });
 
 export default ClimbInputData;
