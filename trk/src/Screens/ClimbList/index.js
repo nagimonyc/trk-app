@@ -93,12 +93,7 @@ const ClimbInputData = () => {
         />
 
         <Text style={styles.label}>Image</Text>
-        <TextInput
-          style={styles.input}
-          value={image}
-          onChangeText={setImage}
-          placeholder="Enter image"
-        />
+
 
         <Text style={styles.label}>Setter</Text>
         <TextInput
