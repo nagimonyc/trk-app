@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity } from "react-native";
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
 import writeClimb from "../../NfcUtils/writeClimb";
@@ -93,12 +93,11 @@ const ClimbInputData = () => {
         />
 
         <Text style={styles.label}>Image</Text>
-        <TextInput
-          style={styles.input}
-          value={image}
-          onChangeText={setImage}
-          placeholder="Enter image"
-        />
+        <TouchableOpacity style={styles.uploadButton}>
+          <Text style={styles.uploadText}>Insert climb image</Text>
+          <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
+        </TouchableOpacity>
+
 
         <Text style={styles.label}>Setter</Text>
         <TextInput
@@ -108,7 +107,6 @@ const ClimbInputData = () => {
       </View>
 
       <Button
-        style={styles.button}
         onPress={handleAddClimb}
         mode="contained"
         disabled={!name || !grade || !location || !image}
@@ -116,13 +114,6 @@ const ClimbInputData = () => {
       >
       </Button>
 
-      <Button
-        style={styles.button}
-        onPress={() => navigation.navigate("List")}
-        mode="contained"
-        title="Go to Climb List"
-      >
-      </Button>
     </SafeAreaView>
   );
 };
@@ -141,7 +132,22 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "#e0e0e0",
     marginBottom: 16
-  }
+  }, 
+  uploadButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#DDDDDD',
+    padding: 10,
+    height: 100,
+    marginBottom: 16,
+  },
+  uploadText: {
+    color: '#acabad'
+  }, 
+  imageIcon: {
+    width: 40,
+    height: 40,
+  },
 });
 
 export default ClimbInputData;
