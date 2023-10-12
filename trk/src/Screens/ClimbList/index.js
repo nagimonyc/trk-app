@@ -109,7 +109,7 @@ const ClimbInputData = () => {
       <Button
         onPress={handleAddClimb}
         mode="contained"
-        disabled={!name || !grade || !location || !image}
+        disabled={!name || !grade || !location}
         title="Add Climb"
       >
       </Button>
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "#e0e0e0",
     marginBottom: 16
-  }, 
+  },
   uploadButton: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   uploadText: {
     color: '#acabad'
-  }, 
+  },
   imageIcon: {
     width: 40,
     height: 40,

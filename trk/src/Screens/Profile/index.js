@@ -1,14 +1,19 @@
 import React from "react";
 import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
+import { AuthContext } from "../../Utils/AuthContext";
+import TapsApi from "../../api/TapsApi";
 
 const UserProfile = () => {
+    const { currentUser } = React.useContext(AuthContext);
+    const { getTapsBySomeField } = TapsApi();
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
                 <View style={styles.title}><Text style={styles.titleText}>Activity</Text></View>
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, { backgroundColor: 'blue' }]}>
-                        <Text>DB Call</Text>
+                        <Text>getTapsBySomeField()</Text>
                         <Text>Total Climbs</Text>
                     </View>
                     <View style={[styles.effortRecapChild, { backgroundColor: 'orange' }]}>
