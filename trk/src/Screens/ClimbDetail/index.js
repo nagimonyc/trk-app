@@ -1,8 +1,32 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import React, {useState, useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
+import storage from '@react-native-firebase/storage';
 
 function ClimbDetail(props) {
   const { climbData } = props.route.params;
+  const [climbImageUrl, setClimbImageUrl] = useState(null);
+  const [setterImageUrl, setSetterImageUrl] = useState(null);
+
+  useEffect(() => {
+    const climbReference = storage().ref('climb photos/the_crag.png');
+    climbReference.getDownloadURL()
+      .then((url) => {
+        setClimbImageUrl(url);
+      })
+      .catch((error) => {
+        console.error("Error getting climb image URL: ", error);
+      });
+    
+    const setterReference = storage().ref('profile photos/epset.png');
+    setterReference.getDownloadURL()
+      .then((url) => {
+        setSetterImageUrl(url);
+      })
+      .catch((error) => {
+        console.error("Error getting setter image URL: ", error);
+      });
+  }, []);
+ 
   return (
     <View style={styles.container}>
     <View style={[styles.wrapper]} >
@@ -16,12 +40,12 @@ function ClimbDetail(props) {
           <Text style={styles.titleText}>{climbData.name}</Text>
         </View>
         <View style={styles.setterCircle}>
-          <Text>Insert setter photo</Text>
+          { setterImageUrl ? <Image source={{ uri: setterImageUrl }} style={{width: '100%', height: '100%'}} /> : <Text>Loading...</Text> }
         </View>
       </View>
       <View style={styles.line}></View>
       <View style={styles.climbPhoto}>
-        <Text>Insert climb photo</Text>
+      { climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{width: '100%', height: '100%'}} /> : <Text>Loading...</Text> }
       </View>
 
     </View>
