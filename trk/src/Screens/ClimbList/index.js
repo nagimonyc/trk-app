@@ -8,6 +8,7 @@ import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
 import androidPromptRef from "../../Components/AndroidPrompt";
 import ClimbsApi from "../../api/ClimbsApi";
 import { AuthContext } from '../../Utils/AuthContext';
+import { launchImageLibrary } from "react-native-image-picker";
 
 
 const ClimbInputData = () => {
