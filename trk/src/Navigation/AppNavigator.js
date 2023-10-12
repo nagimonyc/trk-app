@@ -15,6 +15,7 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeStack() {
+  console.log('[TEST] HomeStack called');
   return (
     <Stack.Navigator>
       {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
@@ -25,6 +26,7 @@ function HomeStack() {
 }
 
 function AppTabs() {
+  console.log('[TEST] AppTabs called');
   const { role } = useContext(AuthContext);
 
   return (
@@ -37,6 +39,7 @@ function AppTabs() {
 }
 
 function AppNav(props) {
+  console.log('[TEST] AppNav called');
   return (
     <NavigationContainer>
       <AppTabs></AppTabs>

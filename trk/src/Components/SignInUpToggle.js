@@ -4,6 +4,7 @@ import SignIn from './SignIn';
 import SignUp from './SignUp';
 
 const SignInUpToggle = () => {
+    console.log("[TEST] sign in up toggle call");
     const [isSignIn, setIsSignIn] = useState(true);
     const [isEnabled, setIsEnabled] = useState(false);
 

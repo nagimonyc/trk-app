@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 
 function ClimbDetail(props) {
+  console.log('[TEST] ClimbDetail called');
   const { climbData } = props.route.params;
   return (
     <View style={styles.container}>

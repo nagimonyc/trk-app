@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 
 // Create a provider component
 export const AuthProvider = ({ children }) => {
+    console.log('[TEST] AuthProvider called');
     const [currentUser, setCurrentUser] = useState(null);
     const [initializing, setInitializing] = useState(true);
     const [role, setRole] = useState(null);
@@ -19,6 +20,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     useEffect(() => {
+        console.log('[DATABASE] use effect called Auth Provider 1');
         // Subscribe to Firebase auth state changes
         const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
 
@@ -27,8 +29,10 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
+        console.log('[TEST] use effect called Auth Provider 2');
         if (currentUser) {
             // Fetch the role from Firestore when currentUser changes.
+            console.log('[DATABASE] use effect called Auth Provider 2(prime)');
             const unsubscribe = firestore()
                 .collection('users')
                 .doc(currentUser.uid)

@@ -1,14 +1,16 @@
 import React from 'react';
-import {View, StyleSheet, Animated, ActivityIndicator} from 'react-native';
+import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 import Image from '../../Components/Image';
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function LandingScreen(props) {
+  console.log('[TEST] LandingScreen called');
   const opacityAnimValue = React.useRef(new Animated.Value(0)).current;
   const scaleAnimValue = React.useRef(new Animated.Value(1)).current;
 
   React.useEffect(() => {
+    console.log('[TEST] LandingScreen useEffect called');
     async function initialize() {
       Animated.timing(opacityAnimValue, {
         duration: 600,
@@ -35,7 +37,7 @@ function LandingScreen(props) {
 
       props.navigation.reset({
         index: 0,
-        routes: [{name: 'Home'}],
+        routes: [{ name: 'Home' }],
       });
     }
 
@@ -47,7 +49,7 @@ function LandingScreen(props) {
       <Animated.View
         style={{
           opacity: opacityAnimValue,
-          transform: [{scale: scaleAnimValue}],
+          transform: [{ scale: scaleAnimValue }],
         }}>
         <Image
           source={require('../../../assets/climb.png')}
@@ -55,7 +57,7 @@ function LandingScreen(props) {
           resizeMode="contain"
         />
       </Animated.View>
-      <ActivityIndicator style={{marginTop: 10}} />
+      <ActivityIndicator style={{ marginTop: 10 }} />
     </View>
   );
 }

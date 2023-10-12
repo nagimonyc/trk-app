@@ -7,6 +7,7 @@ import { AuthProvider, AuthContext } from './Utils/AuthContext';
 
 
 function AppWrapper() {
+  console.log('[TEST] AppWrapper called');
   return (
     <AuthProvider>
       <App />
@@ -16,6 +17,7 @@ function AppWrapper() {
 
 
 function App(props) {
+  console.log('[TEST] App called');
 
   const { currentUser } = useContext(AuthContext);
 

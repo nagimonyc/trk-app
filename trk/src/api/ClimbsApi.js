@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 
 function ClimbsApi() {
+    console.log('[DATABASE] ClimbsAPI called');
 
     const ref = firebase.firestore().collection("climbs");
 

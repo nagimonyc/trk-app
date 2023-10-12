@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 const SignIn = () => {
+    console.log("[TEST] sign in call");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 

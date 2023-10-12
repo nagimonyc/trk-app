@@ -3,8 +3,8 @@ import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
 import { AuthContext } from "../../Utils/AuthContext";
 
 const UserProfile = () => {
+    console.log('[TEST] UserProfile called');
     const { tapCount } = React.useContext(AuthContext);
-    console.log(tapCount);
 
     return (
         <SafeAreaView style={styles.container}>

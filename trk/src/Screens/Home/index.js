@@ -11,6 +11,7 @@ import { AuthContext } from '../../Utils/AuthContext';
 import TapsApi from '../../api/TapsApi';
 
 function HomeScreen(props) {
+  console.log('[TEST] HomeScreen called');
   // Android
   const androidPromptRef = React.useRef();
 
@@ -30,6 +31,7 @@ function HomeScreen(props) {
   const { currentUser } = useContext(AuthContext);
 
   React.useEffect(() => {
+    console.log('[TEST] HomeScreen useEffect called');
     async function checkNfc() {
       const supported = await NfcManager.isSupported();
       if (supported) {

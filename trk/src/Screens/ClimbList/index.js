@@ -11,6 +11,7 @@ import { AuthContext } from '../../Utils/AuthContext';
 
 
 const ClimbInputData = () => {
+  console.log('[TEST] ClimbList called');
 
   const { currentUser } = useContext(AuthContext);
   const setter = currentUser;
