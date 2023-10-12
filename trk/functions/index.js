@@ -37,8 +37,8 @@ exports.incrementUserTapCounter = functions.firestore
 
             // If user document exists and has a 'tapCount' field, increment it
             if (userSnap.exists) {
-                const currentCount = userSnap.data().tapCount || 0; // Use 0 if 'tapCount' field doesn't exist
-                transaction.update(userRef, { tapCount: currentCount + 1 });
+                const currentCount = userSnap.data().taps;
+                transaction.update(userRef, { taps: currentCount + 1 });
             }
         });
     });

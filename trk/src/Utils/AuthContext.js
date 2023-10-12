@@ -9,7 +9,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [initializing, setInitializing] = useState(true);
-    const [role, setRole] = useState(null); // <-- Add this line
+    const [role, setRole] = useState(null);
+    const [tapCount, setTapCount] = useState(0);
 
     // Handle user state changes
     function onAuthStateChanged(user) {
@@ -32,7 +33,11 @@ export const AuthProvider = ({ children }) => {
                 .collection('users')
                 .doc(currentUser.uid)
                 .onSnapshot(documentSnapshot => {
-                    setRole(documentSnapshot.data().role);
+                    const userData = documentSnapshot.data();
+                    if (userData) {
+                        setRole(userData?.role);
+                        setTapCount(userData?.taps);
+                    }
                 });
 
             // Detach listener when the component unmounts
@@ -42,7 +47,7 @@ export const AuthProvider = ({ children }) => {
 
     // Return the provider component
     return (
-        <AuthContext.Provider value={{ currentUser, initializing, role }}>
+        <AuthContext.Provider value={{ currentUser, initializing, role, tapCount }}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,11 +1,10 @@
 import React from "react";
 import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
 import { AuthContext } from "../../Utils/AuthContext";
-import TapsApi from "../../api/TapsApi";
 
 const UserProfile = () => {
-    const { currentUser } = React.useContext(AuthContext);
-    const { getTapsBySomeField } = TapsApi();
+    const { tapCount } = React.useContext(AuthContext);
+    console.log(tapCount);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -13,7 +12,7 @@ const UserProfile = () => {
                 <View style={styles.title}><Text style={styles.titleText}>Activity</Text></View>
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, { backgroundColor: 'blue' }]}>
-                        <Text>getTapsBySomeField()</Text>
+                        <Text>{tapCount}</Text>
                         <Text>Total Climbs</Text>
                     </View>
                     <View style={[styles.effortRecapChild, { backgroundColor: 'orange' }]}>

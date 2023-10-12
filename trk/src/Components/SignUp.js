@@ -24,6 +24,7 @@ const SignUp = ({ role }) => {
                         email: user.email, // user's email address
                         uid: user.uid, // unique ID for the user
                         role: role ? 'setter' : 'climber', // user's role
+                        taps: 0, // number of taps
                         // add other user-related information here
                     })
                     .then(() => {
