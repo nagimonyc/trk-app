@@ -40,7 +40,7 @@ const ClimbInputData = () => {
       name,
       grade,
       location,
-      image,
+      image, //right now, the image path =! image key value pair and instead only is the local path of the image, this will be done in a later PR
       setter: setter.uid
     };
 
