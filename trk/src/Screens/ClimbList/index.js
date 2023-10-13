@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity } from "react-native";
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
@@ -8,7 +9,7 @@ import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
 import androidPromptRef from "../../Components/AndroidPrompt";
 import ClimbsApi from "../../api/ClimbsApi";
 import { AuthContext } from '../../Utils/AuthContext';
-import { launchImageLibrary } from "react-native-image-picker";
+import storage from '@react-native-firebase/storage';
 
 
 const ClimbInputData = () => {
@@ -24,6 +25,9 @@ const ClimbInputData = () => {
   const [location, setLocation] = useState("");
   const [image, setImage] = useState("");
 
+  
+
+
 
   function handleAddClimb() {
     const climb = {
@@ -33,28 +37,29 @@ const ClimbInputData = () => {
       image,
       setter: setter.uid
     };
-
+  
     addClimb(climb)
-      .then(async (newClimbId) => { // Notice the async here
+      .then(async (newClimbId) => {
         if (Platform.OS === 'android') {
           androidPromptRef.current.setVisible(true);
         }
-
+  
         try {
           await NfcManager.requestTechnology(NfcTech.NfcA);
           await ensurePasswordProtection();
           const climbBytes = await writeClimb(newClimbId._documentPath._parts[1]);
           await writeSignature(climbBytes);
+  
         } catch (ex) {
           console.warn(ex);
         } finally {
           NfcManager.cancelTechnologyRequest();
         }
-
+  
         if (Platform.OS === 'android') {
           androidPromptRef.current.setVisible(false);
         }
-
+  
         setName("");
         setGrade("");
         setLocation("");
@@ -64,6 +69,28 @@ const ClimbInputData = () => {
         Alert.alert("Error saving climb");
         console.error(err);
       });
+  }
+  
+
+  async function handleImagePick() {
+    try {
+      const image = await ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: true,
+      });
+  
+      setImage(image.path);
+  
+      // Upload to Firebase Storage
+      const climbId = 'id';  // Replace with actual climb ID
+      const reference = storage().ref(`climb_image/${climbId}`);
+      await reference.putFile(image.path);
+
+  
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -94,7 +121,7 @@ const ClimbInputData = () => {
         />
 
         <Text style={styles.label}>Image</Text>
-        <TouchableOpacity style={styles.uploadButton}>
+        <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick} >
           <Text style={styles.uploadText}>Insert climb image</Text>
           <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
         </TouchableOpacity>
@@ -110,10 +137,11 @@ const ClimbInputData = () => {
       <Button
         onPress={handleAddClimb}
         mode="contained"
-        disabled={!name || !grade || !location || !image}
+        disabled={!name || !grade || !location}
         title="Add Climb"
       >
       </Button>
+     
 
     </SafeAreaView>
   );
@@ -133,7 +161,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "#e0e0e0",
     marginBottom: 16
-  }, 
+  },
   uploadButton: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -144,11 +172,12 @@ const styles = StyleSheet.create({
   },
   uploadText: {
     color: '#acabad'
-  }, 
+  },
   imageIcon: {
     width: 40,
     height: 40,
   },
 });
+
 
 export default ClimbInputData;
