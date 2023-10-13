@@ -2,6 +2,7 @@ import React from "react";
 import auth from '@react-native-firebase/auth';
 
 const SignOut = () => {
+    console.log("[TEST] sign out call");
     auth()
         .signOut()
         .then(() => {

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
 import storage from '@react-native-firebase/storage';
 
 function ClimbDetail(props) {
+  console.log('[TEST] ClimbDetail called');
   const { climbData } = props.route.params;
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);

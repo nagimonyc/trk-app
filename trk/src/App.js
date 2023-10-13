@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
-import auth from '@react-native-firebase/auth';
 import AppNavigator from './Navigation/AppNavigator';
 import AuthNavigator from './Navigation/AuthNavigator';
 import { AuthProvider, AuthContext } from './Utils/AuthContext';
 
 
 function AppWrapper() {
+  console.log('[TEST] AppWrapper called');
   return (
     <AuthProvider>
       <App />
@@ -16,6 +16,7 @@ function AppWrapper() {
 
 
 function App(props) {
+  console.log('[TEST] App called');
 
   const { currentUser } = useContext(AuthContext);
 

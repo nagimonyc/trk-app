@@ -12,6 +12,7 @@ import { AuthContext } from '../../Utils/AuthContext';
 import storage from '@react-native-firebase/storage';
 
 const ClimbInputData = () => {
+  console.log('[TEST] ClimbList called');
   const { currentUser } = useContext(AuthContext);
   const setter = currentUser;
 

@@ -6,6 +6,7 @@ import SignInUpToggle from '../Components/SignInUpToggle';
 const AuthStack = createStackNavigator();
 
 function AuthNavigator() {
+    console.log('[TEST] AuthNavigator called');
     return (
         <NavigationContainer>
             <AuthStack.Navigator initialRouteName="SignInUpToggle">

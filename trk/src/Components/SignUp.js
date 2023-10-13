@@ -4,11 +4,12 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 const SignUp = ({ role }) => {
+    console.log("[TEST] sign up call");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSignUp = () => {
-        console.log('role is: ' + role);
+        console.log("[TEST] sign up call");
         auth()
             .createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
@@ -24,6 +25,7 @@ const SignUp = ({ role }) => {
                         email: user.email, // user's email address
                         uid: user.uid, // unique ID for the user
                         role: role ? 'setter' : 'climber', // user's role
+                        taps: 0, // number of taps
                         // add other user-related information here
                     })
                     .then(() => {

@@ -1,14 +1,18 @@
 import React from "react";
 import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
+import { AuthContext } from "../../Utils/AuthContext";
 
 const UserProfile = () => {
+    console.log('[TEST] UserProfile called');
+    const { tapCount } = React.useContext(AuthContext);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
                 <View style={styles.title}><Text style={styles.titleText}>Activity</Text></View>
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, { backgroundColor: 'blue' }]}>
-                        <Text>DB Call</Text>
+                        <Text>{tapCount}</Text>
                         <Text>Total Climbs</Text>
                     </View>
                     <View style={[styles.effortRecapChild, { backgroundColor: 'orange' }]}>

@@ -10,13 +10,15 @@ import {
 } from 'react-native';
 
 function AndroidPrompt(props, ref) {
-  const {onCancelPress} = props;
+  console.log('[TEST] AndroidPrompt called');
+  const { onCancelPress } = props;
   const [_visible, _setVisible] = React.useState(false);
   const [visible, setVisible] = React.useState(false);
   const [hintText, setHintText] = React.useState('');
   const animValue = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
+    console.log('[TEST] AndroidPrompt called');
     if (ref) {
       ref.current = {
         setVisible: _setVisible,
@@ -26,6 +28,7 @@ function AndroidPrompt(props, ref) {
   }, [ref]);
 
   React.useEffect(() => {
+    console.log('[TEST] AndroidPrompt useEffect called');
     if (_visible) {
       setVisible(true);
       Animated.timing(animValue, {
