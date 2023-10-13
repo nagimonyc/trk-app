@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
-import auth from '@react-native-firebase/auth';
 import AppNavigator from './Navigation/AppNavigator';
 import AuthNavigator from './Navigation/AuthNavigator';
 import { AuthProvider, AuthContext } from './Utils/AuthContext';

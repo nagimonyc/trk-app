@@ -13,14 +13,14 @@ import TapsApi from '../../api/TapsApi';
 function HomeScreen(props) {
   console.log('[TEST] HomeScreen called');
   // Android
-  const androidPromptRef = React.useRef();
+  if (Platform.OS === 'android') {
+    const androidPromptRef = React.useRef();
+  }
 
   // Navigation
   const { navigation } = props;
 
   // API Call to database
-  const { getClimb } = ClimbsApi();
-  const { addTap } = TapsApi();
 
 
   // States
@@ -50,6 +50,7 @@ function HomeScreen(props) {
 
     try {
       await NfcManager.requestTechnology(NfcTech.NfcA);
+      const { getClimb } = ClimbsApi();
       const climbId = await readClimb();
       const climbData = await getClimb(climbId[0]); // Fetch climb data using ID
       if (climbData.exists) { //check if climb exists and if the user is the setter, if not, allow them to read the climb
@@ -57,6 +58,7 @@ function HomeScreen(props) {
         Alert.alert('Success', `Climb ID: ${climbId[0]} has been successfully read!`, [{ text: 'OK' }])
 
         if (currentUser.uid !== climbData.data().setter) {
+          const { addTap } = TapsApi();
           const tap = {
             climb: climbId[0],
             user: currentUser.uid,
@@ -117,7 +119,7 @@ function HomeScreen(props) {
           Sign Out
         </Button>
       </View>
-      <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} />
+      {(Platform.OS === 'android') ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
     </>
   );
 }
