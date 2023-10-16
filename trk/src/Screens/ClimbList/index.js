@@ -16,7 +16,7 @@ const ClimbInputData = () => {
   const { currentUser } = useContext(AuthContext);
   const setter = currentUser;
 
-  const { addClimb } = ClimbsApi();
+
 
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
@@ -45,6 +45,7 @@ const ClimbInputData = () => {
       setter: setter.uid
     };
 
+    const { addClimb } = ClimbsApi();
     addClimb(climb)
       .then(async (newClimbId) => {
         if (Platform.OS === 'android') {
