@@ -11,11 +11,11 @@ const UserProfile = () => {
             <View style={styles.innerContainer}>
                 <View style={styles.title}><Text style={styles.titleText}>Activity</Text></View>
                 <View style={styles.effortRecap}>
-                    <View style={[styles.effortRecapChild, { backgroundColor: 'blue' }]}>
+                    <View style={[styles.effortRecapChild, {}]}>
                         <Text>{tapCount}</Text>
                         <Text>Total Climbs</Text>
                     </View>
-                    <View style={[styles.effortRecapChild, { backgroundColor: 'orange' }]}>
+                    <View style={[styles.effortRecapChild, {}]}>
                         <Text>CLIMB</Text>
                         <Text>Best Effort</Text>
                     </View>
@@ -28,7 +28,7 @@ const UserProfile = () => {
                     >
                     </Image>
                 </View>
-                <View style={styles.effortHistory}><Text>Hello</Text></View>
+                <View style={[styles.effortHistory, { alignItems: 'center' }]}><Text style={{ fontWeight: 'bold', }}>Recap</Text></View>
             </View>
         </SafeAreaView >
     );
@@ -37,7 +37,6 @@ const UserProfile = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'blue',
         flex: 1,
         paddingHorizontal: 20,
     },
@@ -45,7 +44,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        backgroundColor: 'red',
         flex: 1,
         justifyContent: 'center',
     },
@@ -54,7 +52,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     effortRecap: {
-        backgroundColor: 'green',
         flex: 2,
         flexDirection: 'row',
         paddingHorizontal: 20,
@@ -65,7 +62,6 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     effortRecapGraph: {
-        backgroundColor: 'purple',
         flex: 3,
         justifyContent: 'center',
         alignItems: 'center',
@@ -78,7 +74,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     effortHistory: {
-        backgroundColor: 'yellow',
         flex: 4,
         paddingHorizontal: 20,
     },
