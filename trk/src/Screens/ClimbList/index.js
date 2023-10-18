@@ -24,8 +24,8 @@ const ClimbInputData = () => {
   const [grade, setGrade] = useState("");
   const [location, setLocation] = useState("Gowanus");
   // const [image, setImage] = useState("");
-  const [type, setType]= useState("");
-  const [set, setSet]= useState("");
+  const [type, setType]= useState("Boulder");
+  const [set, setSet]= useState("Competition");
   const [ifsc, setIfsc]= useState("");
 
   // async function handleImagePick() {
@@ -128,22 +128,32 @@ const ClimbInputData = () => {
         />
 
     <Text style={styles.label}>Type</Text>
+    <View style={styles.segmentedControlContainer}>
 <SegmentedControl
       values={['Boulder', 'Lead', 'Top Rope']}
-      selectedIndex={type}
+      tintColor="#007AFF" 
+      selectedIndex={['Boulder', 'Lead', 'Top Rope'].indexOf(type)}
+      style={styles.segmentedControl}
       onChange={(event) => {
-        setType(event.nativeEvent.selectedSegmentIndex);
+        setType(event.nativeEvent.value); 
+        
       }}
     />
+    </View>
 
 <Text style={styles.label}>Set</Text>
+<View style={styles.segmentedControlContainer}>
     <SegmentedControl
       values={['Competition', 'Commercial']}
-      selectedIndex={set}
+      tintColor="#007AFF" 
+      style={styles.segmentedControl}
+      selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
       onChange={(event) => {
-        setSet(event.nativeEvent.selectedSegmentIndex);
+        setSet(event.nativeEvent.value); 
       }}
     />
+    </View>
+    
 
 
         <Text style={styles.label}>IFSC Score</Text>
@@ -207,6 +217,9 @@ const styles = StyleSheet.create({
   imageIcon: {
     width: 40,
     height: 40,
+  },
+  segmentedControlContainer: {
+    marginBottom: 10, // Adjust this value to add more or less space below the segmented control
   },
 
 });
