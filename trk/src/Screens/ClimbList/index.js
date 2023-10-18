@@ -64,9 +64,12 @@ const ClimbInputData = () => {
             const reference = storage().ref(`climb_image/${climbId}`);
             await reference.putFile(image);
           }
-        } catch (ex) {
-          console.warn(ex);
-        } finally {
+        }
+        catch (ex) {
+          // console.warn("error is hello world");
+        }
+
+        finally {
           NfcManager.cancelTechnologyRequest();
         }
 

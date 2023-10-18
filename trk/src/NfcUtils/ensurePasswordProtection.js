@@ -31,14 +31,14 @@ async function ensurePasswordProtection() {
       respBytes[14],
       respBytes[15],
     ]);
-    console.warn(writeRespBytes);
+    // console.warn(writeRespBytes);
 
     writeRespBytes = await NfcManager.nfcAHandler.transceive([
       0xa2,
       authPageIdx + 2,
       ...password,
     ]);
-    console.warn(writeRespBytes);
+    // console.warn(writeRespBytes);
 
     writeRespBytes = await NfcManager.nfcAHandler.transceive([
       0xa2,
@@ -48,7 +48,7 @@ async function ensurePasswordProtection() {
       respBytes[6],
       respBytes[7],
     ]);
-    console.warn(writeRespBytes);
+    // console.warn(writeRespBytes);
 
     writeRespBytes = await NfcManager.nfcAHandler.transceive([
       0xa2,
@@ -58,14 +58,14 @@ async function ensurePasswordProtection() {
       respBytes[2],
       4,
     ]);
-    console.warn(writeRespBytes);
+    // console.warn(writeRespBytes);
   } else {
     // send password to NFC tags, so we can perform write operations
     writeRespBytes = await NfcManager.nfcAHandler.transceive([
       0x1b,
       ...password,
     ]);
-    console.warn(writeRespBytes);
+    // console.warn(writeRespBytes);
     if (writeRespBytes[0] !== pack[0] || writeRespBytes[1] !== pack[1]) {
       throw new Error('incorrect password');
     }
