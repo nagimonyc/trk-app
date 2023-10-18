@@ -90,8 +90,8 @@ const ClimbInputData = () => {
         setGrade("");
         setLocation("Gowanus");
         // setImage("");
-        setType("");
-        setSet("");
+        setType("Boulder");
+        setSet("Competition");
         setIfsc("");
       })
       .catch((err) => {
@@ -180,7 +180,7 @@ const ClimbInputData = () => {
       <Button
         onPress={handleAddClimb}
         mode="contained"
-        disabled={!name || !grade || !location}
+        disabled={!name || !grade || !ifsc}
         title="Add Climb"
       >
       </Button>
