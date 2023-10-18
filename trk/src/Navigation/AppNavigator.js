@@ -19,7 +19,7 @@ function HomeStack() {
   return (
     <Stack.Navigator>
       {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
-      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Home2" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Detail" component={ClimbDetailScreen} />
     </Stack.Navigator>
   );

@@ -1,15 +1,55 @@
 import React from "react";
-import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
+import { SafeAreaView, Text, StyleSheet, View, Image, Button, TouchableOpacity, Alert } from "react-native";
 import { AuthContext } from "../../Utils/AuthContext";
+import firestore from '@react-native-firebase/firestore';
+import { firebase } from "@react-native-firebase/auth";
 
 const UserProfile = () => {
     console.log('[TEST] UserProfile called');
     const { tapCount } = React.useContext(AuthContext);
+    const { currentUser } = React.useContext(AuthContext);
+
+
+
+    const handleDeleteAccount = async () => {
+        Alert.alert(
+            "Delete Account",
+            "Are you sure you want to delete all user data?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Yes", onPress: async () => {
+                        try {
+                            // Assuming the user's Firestore document ID is their UID
+                            const userUID = currentUser.uid; // replace this with the actual user UID
+                            await firestore().collection('users').doc(userUID).delete();
+                            const user = firebase.auth().currentUser;
+                            try {
+                                await user.delete();
+                                // User account has been deleted from Firebase Authentication
+                            } catch (error) {
+                                console.error("Error deleting user account:", error);
+                            }
+                            // SignOut(); // navigate back to sign-in/sign-up
+                        } catch (error) {
+                            console.error("Error deleting user data:", error);
+                        }
+                    }
+                }
+            ]
+        );
+    };
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
-                <View style={styles.title}><Text style={styles.titleText}>Activity</Text></View>
+                <View style={styles.header}>
+                    <Text style={styles.titleText}>Activity</Text>
+                    <Button title="Delete Account" onPress={handleDeleteAccount}></Button>
+                </View>
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, {}]}>
                         <Text>{tapCount}</Text>
@@ -43,9 +83,11 @@ const styles = StyleSheet.create({
     innerContainer: {
         flex: 1,
     },
-    title: {
+    header: {
         flex: 1,
-        justifyContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     titleText: {
         fontSize: 20,

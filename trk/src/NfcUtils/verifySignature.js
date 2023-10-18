@@ -5,7 +5,7 @@ import * as Signer from '../Utils/Signer';
 async function verifySignature(pokemonBytes) {
   const tag = await NfcManager.getTag();
   const msgHex = HexUtils.bytesToHex(pokemonBytes) + tag.id;
-  console.warn('msg', msgHex);
+  // console.warn('msg', msgHex);
 
   const sigPageIdx = 12;
   let sigBytes = [];
@@ -20,7 +20,7 @@ async function verifySignature(pokemonBytes) {
   sigBytes = [...sigBytes, ...pageData];
 
   const sigHex = HexUtils.bytesToHex(sigBytes);
-  console.warn('sig', sigHex);
+  // console.warn('sig', sigHex);
   const result = Signer.verify(msgHex, {
     r: sigHex.slice(0, 64),
     s: sigHex.slice(64, 128),
