@@ -510,6 +510,8 @@
 				DEVELOPMENT_TEAM = F482H28QU6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = trk/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Nagimo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -538,6 +540,8 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = F482H28QU6;
 				INFOPLIST_FILE = trk/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Nagimo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
