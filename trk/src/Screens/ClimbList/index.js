@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import ImagePicker from 'react-native-image-crop-picker';
+// import ImagePicker from 'react-native-image-crop-picker';
 import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform } from "react-native";
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
@@ -9,7 +9,9 @@ import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
 import androidPromptRef from "../../Components/AndroidPrompt";
 import ClimbsApi from "../../api/ClimbsApi";
 import { AuthContext } from '../../Utils/AuthContext';
-import storage from '@react-native-firebase/storage';
+// import storage from '@react-native-firebase/storage';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+
 
 const ClimbInputData = () => {
   console.log('[TEST] ClimbList called');
@@ -20,28 +22,34 @@ const ClimbInputData = () => {
 
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
-  const [location, setLocation] = useState("");
-  const [image, setImage] = useState("");
+  const [location, setLocation] = useState("Gowanus");
+  // const [image, setImage] = useState("");
+  const [type, setType]= useState("");
+  const [set, setSet]= useState("");
+  const [ifsc, setIfsc]= useState("");
 
-  async function handleImagePick() {
-    try {
-      const pickedImage = await ImagePicker.openPicker({
-        width: 300,
-        height: 400,
-        cropping: true,
-      });
-      setImage(pickedImage.path);
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  // async function handleImagePick() {
+  //   try {
+  //     const pickedImage = await ImagePicker.openPicker({
+  //       width: 300,
+  //       height: 400,
+  //       cropping: true,
+  //     });
+  //     setImage(pickedImage.path);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 
   async function handleAddClimb() {
     const climb = {
       name,
       grade,
       location,
-      image, //right now, the image path =! image key value pair and instead only is the local path of the image, this will be done in a later PR
+      type,
+      set,
+      ifsc,
+      // image, 
       setter: setter.uid
     };
 
@@ -59,11 +67,11 @@ const ClimbInputData = () => {
           await writeSignature(climbBytes);
 
           // Image upload to Firebase here
-          if (image) {
-            const climbId = newClimbId._documentPath._parts[1];
-            const reference = storage().ref(`climb_image/${climbId}`);
-            await reference.putFile(image);
-          }
+          // if (image) {
+          //   const climbId = newClimbId._documentPath._parts[1];
+          //   const reference = storage().ref(`climb_image/${climbId}`);
+          //   await reference.putFile(image);
+          // }
         }
         catch (ex) {
           // console.warn("error is hello world");
@@ -80,8 +88,11 @@ const ClimbInputData = () => {
         // Reset form
         setName("");
         setGrade("");
-        setLocation("");
-        setImage("");
+        setLocation("Gowanus");
+        // setImage("");
+        setType("");
+        setSet("");
+        setIfsc("");
       })
       .catch((err) => {
         Alert.alert("Error saving climb");
@@ -116,11 +127,38 @@ const ClimbInputData = () => {
           placeholder="Enter location"
         />
 
-        <Text style={styles.label}>Image</Text>
+    <Text style={styles.label}>Type</Text>
+<SegmentedControl
+      values={['Boulder', 'Lead', 'Top Rope']}
+      selectedIndex={type}
+      onChange={(event) => {
+        setType(event.nativeEvent.selectedSegmentIndex);
+      }}
+    />
+
+<Text style={styles.label}>Set</Text>
+    <SegmentedControl
+      values={['Competition', 'Commercial']}
+      selectedIndex={set}
+      onChange={(event) => {
+        setSet(event.nativeEvent.selectedSegmentIndex);
+      }}
+    />
+
+
+        <Text style={styles.label}>IFSC Score</Text>
+        <TextInput
+          style={styles.input}
+          value={ifsc}
+          onChangeText={setIfsc}
+          placeholder="Enter score"
+        />
+
+        {/* <Text style={styles.label}>Image</Text>
         <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
           <Text style={styles.uploadText}>Insert climb image</Text>
           <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <Text style={styles.label}>Setter</Text>
         <TextInput
@@ -170,6 +208,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
+
 });
 
 export default ClimbInputData;
