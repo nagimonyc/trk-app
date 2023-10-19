@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
     const [initializing, setInitializing] = useState(true);
     const [role, setRole] = useState(null);
     const [tapCount, setTapCount] = useState(0);
+    const [nyuComp, setNyuComp] = useState(false);
 
     // Handle user state changes
     function onAuthStateChanged(user) {
@@ -41,6 +42,7 @@ export const AuthProvider = ({ children }) => {
                     if (userData) {
                         setRole(userData?.role);
                         setTapCount(userData?.taps);
+                        setNyuComp(userData?.nyuComp);
                     }
                 });
 
@@ -51,7 +53,7 @@ export const AuthProvider = ({ children }) => {
 
     // Return the provider component
     return (
-        <AuthContext.Provider value={{ currentUser, initializing, role, tapCount }}>
+        <AuthContext.Provider value={{ currentUser, initializing, role, tapCount, nyuComp }}>
             {children}
         </AuthContext.Provider>
     );
