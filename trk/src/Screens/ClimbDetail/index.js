@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
+
+import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button } from 'react-native';
+
 import storage from '@react-native-firebase/storage';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
   const { climbData } = props.route.params;
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
+  const [completion, setCompletion] = useState('1/2');
+  const [attempts, setAttempts] = useState('1/2');
+  const [witness1, setWitness1] = useState('');
+  const [witness2, setWitness2] = useState('');
 
   useEffect(() => {
     const climbReference = storage().ref('climb photos/the_crag.png');
@@ -27,6 +34,7 @@ function ClimbDetail(props) {
         console.error("Error getting setter image URL: ", error);
       });
   }, []);
+
   if (climbData.set === 'Competition') {
     return (
       <View style={styles.container}>
@@ -42,12 +50,68 @@ function ClimbDetail(props) {
             </View>
           </View>
           <View style={styles.line}></View>
-          <Text>IFSC score: {climbData.ifsc}</Text>
-          <Text>Type: {climbData.type}</Text>
-          <Text>% complete</Text>
-          <Text>Number of attemps</Text>
-          <Text>Witness 1</Text>
-          <Text>Witness 2</Text>
+
+
+          <SafeAreaView style={styles.contentArea} >
+            <View style={styles.group}>
+              <Text style={styles.title}>IFSC score:</Text>
+              <Text>{climbData.ifsc}</Text>
+            </View>
+            <View style={styles.group}>
+              <Text style={styles.title}>Type:</Text>
+              <Text>{climbData.type}</Text>
+            </View>
+            <View style={styles.group}>
+              <Text>Completion</Text>
+            </View>
+            <View style={styles.segmentedControlContainer}>
+              <SegmentedControl
+                values={['1/2', 'full']}
+                tintColor="#007AFF"
+                selectedIndex={0} // set the initially selected index
+                style={styles.segmentedControl}
+                onChange={(event) => {
+                  setCompletion(event.nativeEvent.value);
+                }}
+              />
+            </View>
+            <View style={styles.group}>
+            <Text>Attempts</Text>
+            <View style={styles.segmentedControlContainer}>
+              <SegmentedControl
+                values={['⚡️', '2', '3', '4']}
+                tintColor="#007AFF"
+                selectedIndex={0} // set the initially selected index
+                style={styles.segmentedControl}
+                onChange={(event) => {
+                  setAttempts(event.nativeEvent.value);
+                }}
+              />
+              </View>
+            </View>
+            <View style={styles.group}>
+              <Text style={styles.title}>Witness 1</Text>
+              <TextInput
+                style={styles.input}
+                value={witness1}
+                onChangeText={setWitness1}
+                placeholder="Enter witness 1"
+              />
+            </View>
+            <View style={styles.group}>
+            <Text style={styles.title}>Witness 2</Text>
+            <TextInput
+              style={styles.input}
+              value={witness2}
+              onChangeText={setWitness2}
+              placeholder="Enter witness 2"
+            />
+            </View>
+            <Button
+            title="Update"
+            disabled={!witness1|| !witness2 || !completion || !attempts}
+            ></Button>
+          </SafeAreaView>
 
         </View>
       </View>
@@ -149,6 +213,17 @@ const styles = StyleSheet.create({
     marginTop: 42,
     backgroundColor: '#ff9a00',
     borderRadius: 3.88,
+  },
+  contentArea: {
+    padding: 10,  // Add padding around the content
+    width: '100%',
+  },
+  group: {
+    marginBottom: 10,
+    marginTop: 10,  // Add space below each group
+  },
+  title: {
+    fontWeight: 'bold',
   },
 })
 
