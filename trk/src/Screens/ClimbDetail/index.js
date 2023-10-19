@@ -27,8 +27,34 @@ function ClimbDetail(props) {
         console.error("Error getting setter image URL: ", error);
       });
   }, []);
- 
+ if (climbData.set==='Competition') {
   return (
+    <View style={styles.container}>
+      <View style={[styles.wrapper]}>
+      <SafeAreaView />
+      <View style={styles.top}>
+        <View style={styles.topLeft}>
+          <View style={styles.gradeCircle}>
+            <Text>{climbData.grade}</Text>
+          </View>
+
+          <Text style={styles.titleText}>{climbData.name}</Text>
+        </View>
+      </View>
+      <View style={styles.line}></View>
+      <Text>IFSC score: {climbData.ifsc}</Text>
+      <Text>Type: {climbData.type}</Text>
+      <Text>% complete</Text>
+      <Text>Number of attemps</Text>
+      <Text>Witness 1</Text>
+      <Text>Witness 2</Text>
+  
+      </View>
+    </View>
+  )
+ }
+ else 
+{  return (
     <View style={styles.container}>
     <View style={[styles.wrapper]} >
       <SafeAreaView />
@@ -51,7 +77,7 @@ function ClimbDetail(props) {
 
     </View>
     </View>
-  )
+  )}
 }
 
 const styles = StyleSheet.create({
