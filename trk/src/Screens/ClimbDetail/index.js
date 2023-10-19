@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
 import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button } from 'react-native';
+
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
@@ -48,6 +50,7 @@ function ClimbDetail(props) {
             </View>
           </View>
           <View style={styles.line}></View>
+
 
           <SafeAreaView style={styles.contentArea} >
             <View style={styles.group}>
@@ -109,6 +112,7 @@ function ClimbDetail(props) {
             disabled={!witness1|| !witness2 || !completion || !attempts}
             ></Button>
           </SafeAreaView>
+
         </View>
       </View>
     )
