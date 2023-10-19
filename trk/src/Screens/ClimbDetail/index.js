@@ -51,10 +51,12 @@ function ClimbDetail(props) {
 
           <SafeAreaView style={styles.contentArea} >
             <View style={styles.group}>
-              <Text>IFSC score: {climbData.ifsc}</Text>
+              <Text style={styles.title}>IFSC score:</Text>
+              <Text>{climbData.ifsc}</Text>
             </View>
             <View style={styles.group}>
-              <Text>Type: {climbData.type}</Text>
+              <Text style={styles.title}>Type:</Text>
+              <Text>{climbData.type}</Text>
             </View>
             <View style={styles.group}>
               <Text>Completion</Text>
@@ -85,7 +87,7 @@ function ClimbDetail(props) {
               </View>
             </View>
             <View style={styles.group}>
-              <Text>Witness 1</Text>
+              <Text style={styles.title}>Witness 1</Text>
               <TextInput
                 style={styles.input}
                 value={witness1}
@@ -94,7 +96,7 @@ function ClimbDetail(props) {
               />
             </View>
             <View style={styles.group}>
-            <Text>Witness 2</Text>
+            <Text style={styles.title}>Witness 2</Text>
             <TextInput
               style={styles.input}
               value={witness2}
@@ -215,6 +217,9 @@ const styles = StyleSheet.create({
   group: {
     marginBottom: 10,
     marginTop: 10,  // Add space below each group
+  },
+  title: {
+    fontWeight: 'bold',
   },
 })
 
