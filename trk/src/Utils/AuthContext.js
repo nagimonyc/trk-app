@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
     const [initializing, setInitializing] = useState(true);
     const [role, setRole] = useState(null);
     const [tapCount, setTapCount] = useState(0);
-    const [nyuComp, setNyuComp] = useState(false);
 
     // Handle user state changes
     function onAuthStateChanged(user) {
@@ -42,7 +41,6 @@ export const AuthProvider = ({ children }) => {
                     if (userData) {
                         setRole(userData?.role);
                         setTapCount(userData?.taps);
-                        setNyuComp(userData?.nyuComp);
                     }
                 });
 
