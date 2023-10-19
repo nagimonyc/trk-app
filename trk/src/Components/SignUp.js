@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
-const SignUp = ({ role }) => {
+const SignUp = ({ role, nyuComp }) => {
     console.log("[TEST] sign up call");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -26,7 +26,7 @@ const SignUp = ({ role }) => {
                         uid: user.uid, // unique ID for the user
                         role: role ? 'setter' : 'climber', // user's role
                         taps: 0, // number of taps
-                        // add other user-related information here
+                        nyuComp: nyuComp, // whether the user is a part of the NYU climbing competition
                     })
                     .then(() => {
                         console.log('User added to Firestore');
