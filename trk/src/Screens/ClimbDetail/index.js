@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
@@ -8,7 +8,7 @@ function ClimbDetail(props) {
   const { climbData } = props.route.params;
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
-  const [type, setType] = useState('1/2');
+  const [completion, setCompletion] = useState('1/2');
   const [attempts, setAttempts] = useState('1/2');
   const [witness1, setWitness1] = useState('');
   const [witness2, setWitness2] = useState('');
@@ -66,7 +66,7 @@ function ClimbDetail(props) {
                 selectedIndex={0} // set the initially selected index
                 style={styles.segmentedControl}
                 onChange={(event) => {
-                  setType(event.nativeEvent.value);
+                  setCompletion(event.nativeEvent.value);
                 }}
               />
             </View>
@@ -102,6 +102,10 @@ function ClimbDetail(props) {
               placeholder="Enter witness 2"
             />
             </View>
+            <Button
+            title="Update"
+            disabled={!witness1|| !witness2 || !completion || !attempts}
+            ></Button>
           </SafeAreaView>
         </View>
       </View>
