@@ -1,12 +1,17 @@
-import React, {useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, Image, TextInput } from 'react-native';
 import storage from '@react-native-firebase/storage';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
   const { climbData } = props.route.params;
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
+  const [type, setType] = useState('1/2');
+  const [attempts, setAttempts] = useState('1/2');
+  const [witness1, setWitness1] = useState('');
+  const [witness2, setWitness2] = useState('');
 
   useEffect(() => {
     const climbReference = storage().ref('climb photos/the_crag.png');
@@ -17,7 +22,7 @@ function ClimbDetail(props) {
       .catch((error) => {
         console.error("Error getting climb image URL: ", error);
       });
-    
+
     const setterReference = storage().ref('profile photos/epset.png');
     setterReference.getDownloadURL()
       .then((url) => {
@@ -27,57 +32,107 @@ function ClimbDetail(props) {
         console.error("Error getting setter image URL: ", error);
       });
   }, []);
- if (climbData.set==='Competition') {
-  return (
-    <View style={styles.container}>
-      <View style={[styles.wrapper]}>
-      <SafeAreaView />
-      <View style={styles.top}>
-        <View style={styles.topLeft}>
-          <View style={styles.gradeCircle}>
-            <Text>{climbData.grade}</Text>
+
+  if (climbData.set === 'Competition') {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.wrapper]}>
+          <SafeAreaView />
+          <View style={styles.top}>
+            <View style={styles.topLeft}>
+              <View style={styles.gradeCircle}>
+                <Text>{climbData.grade}</Text>
+              </View>
+
+              <Text style={styles.titleText}>{climbData.name}</Text>
+            </View>
+          </View>
+          <View style={styles.line}></View>
+
+          <SafeAreaView style={styles.contentArea} >
+            <View style={styles.group}>
+              <Text>IFSC score: {climbData.ifsc}</Text>
+            </View>
+            <View style={styles.group}>
+              <Text>Type: {climbData.type}</Text>
+            </View>
+            <View style={styles.group}>
+              <Text>Completion</Text>
+            </View>
+            <View style={styles.segmentedControlContainer}>
+              <SegmentedControl
+                values={['1/2', 'full']}
+                tintColor="#007AFF"
+                selectedIndex={0} // set the initially selected index
+                style={styles.segmentedControl}
+                onChange={(event) => {
+                  setType(event.nativeEvent.value);
+                }}
+              />
+            </View>
+            <View style={styles.group}>
+            <Text>Attempts</Text>
+            <View style={styles.segmentedControlContainer}>
+              <SegmentedControl
+                values={['⚡️', '2', '3', '4']}
+                tintColor="#007AFF"
+                selectedIndex={0} // set the initially selected index
+                style={styles.segmentedControl}
+                onChange={(event) => {
+                  setAttempts(event.nativeEvent.value);
+                }}
+              />
+              </View>
+            </View>
+            <View style={styles.group}>
+              <Text>Witness 1</Text>
+              <TextInput
+                style={styles.input}
+                value={witness1}
+                onChangeText={setWitness1}
+                placeholder="Enter witness 1"
+              />
+            </View>
+            <View style={styles.group}>
+            <Text>Witness 2</Text>
+            <TextInput
+              style={styles.input}
+              value={witness2}
+              onChangeText={setWitness2}
+              placeholder="Enter witness 2"
+            />
+            </View>
+          </SafeAreaView>
+        </View>
+      </View>
+    )
+  }
+  else {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.wrapper]} >
+          <SafeAreaView />
+          <View style={styles.top}>
+            <View style={styles.topLeft}>
+              <View style={styles.gradeCircle}>
+                <Text>{climbData.grade}</Text>
+              </View>
+
+              <Text style={styles.titleText}>{climbData.name}</Text>
+            </View>
+            <View style={styles.setterCircle}>
+              {setterImageUrl ? <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
+            </View>
+          </View>
+          <View style={styles.line}></View>
+          <View style={styles.climbPhoto}>
+            {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
           </View>
 
-          <Text style={styles.titleText}>{climbData.name}</Text>
         </View>
       </View>
-      <View style={styles.line}></View>
-      <Text>IFSC score: {climbData.ifsc}</Text>
-      <Text>Type: {climbData.type}</Text>
-      <Text>% complete</Text>
-      <Text>Number of attemps</Text>
-      <Text>Witness 1</Text>
-      <Text>Witness 2</Text>
-  
-      </View>
-    </View>
-  )
- }
- else 
-{  return (
-    <View style={styles.container}>
-    <View style={[styles.wrapper]} >
-      <SafeAreaView />
-      <View style={styles.top}>
-        <View style={styles.topLeft}>
-          <View style={styles.gradeCircle}>
-            <Text>{climbData.grade}</Text>
-          </View>
-
-          <Text style={styles.titleText}>{climbData.name}</Text>
-        </View>
-        <View style={styles.setterCircle}>
-          { setterImageUrl ? <Image source={{ uri: setterImageUrl }} style={{width: '100%', height: '100%'}} /> : <Text>Loading...</Text> }
-        </View>
-      </View>
-      <View style={styles.line}></View>
-      <View style={styles.climbPhoto}>
-      { climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{width: '100%', height: '100%'}} /> : <Text>Loading...</Text> }
-      </View>
-
-    </View>
-    </View>
-  )}
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -95,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8.78,
     borderColor: '#f2f2f2',
-    borderWidth: 1.49, 
+    borderWidth: 1.49,
   },
   top: {
     flexDirection: 'row',
@@ -143,11 +198,19 @@ const styles = StyleSheet.create({
   },
 
   climbPhoto: {
-    width: 197, 
+    width: 197,
     height: 287,
     marginTop: 42,
-    backgroundColor: '#ff9a00', 
+    backgroundColor: '#ff9a00',
     borderRadius: 3.88,
+  },
+  contentArea: {
+    padding: 10,  // Add padding around the content
+    width: '100%',
+  },
+  group: {
+    marginBottom: 10,
+    marginTop: 10,  // Add space below each group
   },
 })
 
