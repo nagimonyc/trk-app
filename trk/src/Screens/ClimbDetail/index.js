@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
 import storage from '@react-native-firebase/storage';
 
@@ -17,7 +17,7 @@ function ClimbDetail(props) {
       .catch((error) => {
         console.error("Error getting climb image URL: ", error);
       });
-    
+
     const setterReference = storage().ref('profile photos/epset.png');
     setterReference.getDownloadURL()
       .then((url) => {
@@ -27,57 +27,58 @@ function ClimbDetail(props) {
         console.error("Error getting setter image URL: ", error);
       });
   }, []);
- if (climbData.set==='Competition') {
-  return (
-    <View style={styles.container}>
-      <View style={[styles.wrapper]}>
-      <SafeAreaView />
-      <View style={styles.top}>
-        <View style={styles.topLeft}>
-          <View style={styles.gradeCircle}>
-            <Text>{climbData.grade}</Text>
+  if (climbData.set === 'Competition') {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.wrapper]}>
+          <SafeAreaView />
+          <View style={styles.top}>
+            <View style={styles.topLeft}>
+              <View style={styles.gradeCircle}>
+                <Text>{climbData.grade}</Text>
+              </View>
+
+              <Text style={styles.titleText}>{climbData.name}</Text>
+            </View>
+          </View>
+          <View style={styles.line}></View>
+          <Text>IFSC score: {climbData.ifsc}</Text>
+          <Text>Type: {climbData.type}</Text>
+          <Text>% complete</Text>
+          <Text>Number of attemps</Text>
+          <Text>Witness 1</Text>
+          <Text>Witness 2</Text>
+
+        </View>
+      </View>
+    )
+  }
+  else {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.wrapper]} >
+          <SafeAreaView />
+          <View style={styles.top}>
+            <View style={styles.topLeft}>
+              <View style={styles.gradeCircle}>
+                <Text>{climbData.grade}</Text>
+              </View>
+
+              <Text style={styles.titleText}>{climbData.name}</Text>
+            </View>
+            <View style={styles.setterCircle}>
+              {setterImageUrl ? <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
+            </View>
+          </View>
+          <View style={styles.line}></View>
+          <View style={styles.climbPhoto}>
+            {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
           </View>
 
-          <Text style={styles.titleText}>{climbData.name}</Text>
         </View>
       </View>
-      <View style={styles.line}></View>
-      <Text>IFSC score: {climbData.ifsc}</Text>
-      <Text>Type: {climbData.type}</Text>
-      <Text>% complete</Text>
-      <Text>Number of attemps</Text>
-      <Text>Witness 1</Text>
-      <Text>Witness 2</Text>
-  
-      </View>
-    </View>
-  )
- }
- else 
-{  return (
-    <View style={styles.container}>
-    <View style={[styles.wrapper]} >
-      <SafeAreaView />
-      <View style={styles.top}>
-        <View style={styles.topLeft}>
-          <View style={styles.gradeCircle}>
-            <Text>{climbData.grade}</Text>
-          </View>
-
-          <Text style={styles.titleText}>{climbData.name}</Text>
-        </View>
-        <View style={styles.setterCircle}>
-          { setterImageUrl ? <Image source={{ uri: setterImageUrl }} style={{width: '100%', height: '100%'}} /> : <Text>Loading...</Text> }
-        </View>
-      </View>
-      <View style={styles.line}></View>
-      <View style={styles.climbPhoto}>
-      { climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{width: '100%', height: '100%'}} /> : <Text>Loading...</Text> }
-      </View>
-
-    </View>
-    </View>
-  )}
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8.78,
     borderColor: '#f2f2f2',
-    borderWidth: 1.49, 
+    borderWidth: 1.49,
   },
   top: {
     flexDirection: 'row',
@@ -143,10 +144,10 @@ const styles = StyleSheet.create({
   },
 
   climbPhoto: {
-    width: 197, 
+    width: 197,
     height: 287,
     marginTop: 42,
-    backgroundColor: '#ff9a00', 
+    backgroundColor: '#ff9a00',
     borderRadius: 3.88,
   },
 })

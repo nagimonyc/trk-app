@@ -25,6 +25,17 @@ function HomeStack() {
   );
 }
 
+function ProfileStack() {
+  console.log('[TEST] ProfileStack called');
+  return (
+    <Stack.Navigator>
+      {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
+      <Stack.Screen name="Profile" component={UserProfile} />
+      <Stack.Screen name="Detail" component={ClimbDetailScreen} />
+    </Stack.Navigator>
+  );
+}
+
 function AppTabs() {
   console.log('[TEST] AppTabs called');
   const { role } = useContext(AuthContext);
@@ -33,7 +44,7 @@ function AppTabs() {
     <Tab.Navigator>
       <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
       {role === 'climber' ? null : <Tab.Screen name="Climb List" component={ClimbInputData} />}
-      <Tab.Screen name="Profile" component={UserProfile} />
+      <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }

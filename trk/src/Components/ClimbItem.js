@@ -1,13 +1,22 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const ClimbItem = ({ climb }) => {
+    const navigation = useNavigation();
+
+    const navigateToDetail = () => {
+        navigation.navigate('Detail', { climbData: climb });
+    };
+
     return (
-        <View style={styles.climbContainer}>
-            <View style={styles.climbDot}></View>
-            <Image source={{ uri: climb.image }} style={styles.climbImage} />
-            <Text>{climb.name}</Text>
-        </View>
+        <TouchableOpacity onPress={navigateToDetail}>
+            <View style={styles.climbContainer}>
+                <View style={styles.climbDot}></View>
+                <Image source={{ uri: climb.image }} style={styles.climbImage} />
+                <Text>{climb.name}</Text>
+            </View>
+        </TouchableOpacity>
     );
 }
 
