@@ -62,7 +62,11 @@ function HomeScreen(props) {
           const tap = {
             climb: climbId[0],
             user: currentUser.uid,
-            timestamp: new Date()
+            timestamp: new Date(),
+            completion: '',
+            attempts: '',
+            witness1: '',
+            witness2: '',
           }
           addTap(tap);
         }
