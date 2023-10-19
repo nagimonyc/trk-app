@@ -6,24 +6,37 @@ import SignUp from './SignUp';
 const SignInUpToggle = () => {
     console.log("[TEST] sign in up toggle call");
     const [isSignIn, setIsSignIn] = useState(true);
-    const [isEnabled, setIsEnabled] = useState(false);
+    const [setterIsEnabled, setSetterIsEnabled] = useState(false);
+    const [nyuCompIsEnabled, setNyuCompIsEnabled] = useState(true);
 
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const toggleSwitchSetter = () => setSetterIsEnabled(previousState => !previousState);
+    const toggleSwitchNyu = () => setNyuCompIsEnabled(previousState => !previousState);
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.switchContainer}>
-                <Text style={{ marginRight: 10, fontWeight: 'bold' }}>Setter?</Text>
-                <Switch>
+                <View style={[styles.toggleSwitchView, { paddingLeft: 25, opacity: nyuCompIsEnabled ? 0 : 1 }]}>
+                    <Text style={{ marginRight: 10, fontWeight: 'bold' }}>Setter?</Text>
                     <Switch
                         ios_backgroundColor="#3e3e3e"
-                        onValueChange={toggleSwitch}
-                        value={isEnabled}
+                        onValueChange={toggleSwitchSetter}
+                        value={setterIsEnabled}
+                        disabled={nyuCompIsEnabled}
                     />
-                </Switch>
+                </View>
+
+                <View style={styles.toggleSwitchView}>
+                    <Text style={{ marginRight: 10, fontWeight: 'bold' }}>NYU Comp</Text>
+                    <Switch
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={toggleSwitchNyu}
+                        value={nyuCompIsEnabled}
+                        trackColor={{ false: "#767577", true: "#4F0F87" }}
+                    />
+                </View>
             </View>
             <View style={styles.formContainer}>
-                {isSignIn ? <SignIn /> : <SignUp role={isEnabled} />}
+                {isSignIn ? <SignIn /> : <SignUp role={setterIsEnabled} />}
             </View>
 
             <View style={styles.buttonContainer}>
@@ -42,11 +55,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5FCFF',
     },
     switchContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         flex: 1,
-        flexDirection: 'row', // Added this line
         alignItems: 'center', // Added this line
-        justifyContent: 'flex-end',
-        paddingRight: 20
+    },
+    toggleSwitchView: {
+        flexDirection: 'row',
+        flex: 1,
+        alignItems: 'center', // Added this line
     },
     formContainer: {
         flex: 5,
