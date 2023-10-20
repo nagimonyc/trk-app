@@ -2,11 +2,11 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const ClimbItem = ({ climb }) => {
+const ClimbItem = ({ climb, tapId }) => {
     const navigation = useNavigation();
 
     const navigateToDetail = () => {
-        navigation.navigate('Detail', { climbData: climb });
+        navigation.navigate('Detail', { climbData: climb, tapId: tapId, profileCheck: 1 });
     };
 
     return (
