@@ -8,33 +8,39 @@ function TapsApi() {
 
     // Add a new tap
     function addTap(tap) {
-            return ref.add(tap);
-        }
+        return ref.add(tap);
+    }
 
     // Get a tap by its ID
     function getTap(id) {
-            return ref.doc(id).get();
-        }
+        return ref.doc(id).get();
+    }
 
     // Get all taps
     function getAllTaps() {
-            return ref.get();
-        }
+        return ref.get();
+    }
 
     // Get taps with real-time updates
     function onTapsUpdate(callback) {
-            return ref.onSnapshot(callback);
-        }
+        return ref.onSnapshot(callback);
+    }
 
     // Get taps with some specific field value
     function getTapsBySomeField(field, value) {
-            return ref.where(field, '==', value).get();
-        }
+        return ref.where(field, '==', value).get();
+    }
 
     // Get top 10 most recent taps
     function getTopTenTaps() {
-            return ref.orderBy('createdAt', 'desc').limit(10).get();
-        }
+        return ref.orderBy('createdAt', 'desc').limit(10).get();
+    }
+
+    async function updateTap(tapId, updatedTap) {
+        const tapRef = firebase.firestore().collection("taps").doc(tapId);
+
+        return await tapRef.update(updatedTap);
+    }
 
     return {
         addTap,
@@ -42,7 +48,8 @@ function TapsApi() {
         getAllTaps,
         onTapsUpdate,
         getTapsBySomeField,
-        getTopTenTaps
+        getTopTenTaps,
+        updateTap,
     };
 }
 
