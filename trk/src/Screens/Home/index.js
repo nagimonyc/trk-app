@@ -68,9 +68,12 @@ function HomeScreen(props) {
             witness1: '',
             witness2: '',
           }
-          addTap(tap);
-        }
-        navigation.navigate('Detail', { climbData: climbData.data() })
+          const documentReference = await addTap(tap);
+          const newTapId = documentReference.id;
+          console.log("New Tap ID is:", newTapId);
+          navigation.navigate('Detail', { climbData: climbData.data(), tapId: newTapId });
+        } else {
+        navigation.navigate('Detail', { climbData: climbData.data() })}
 
       } else {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
