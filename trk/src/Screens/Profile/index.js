@@ -29,9 +29,13 @@ const UserProfile = () => {
 
             const climbsSnapshots = await Promise.all(climbsPromises);
 
-            const newClimbsHistory = climbsSnapshots.map(climbSnapshot => {
-                return climbSnapshot.exists ? climbSnapshot.data() : null;
+
+
+            const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
+                return climbSnapshot.exists ? { ...climbSnapshot.data(), tapId: tapsSnapshot.docs[index].id } : null;
             }).filter(climb => climb !== null);
+
+
 
             setClimbsHistory(newClimbsHistory);
         } catch (error) {
