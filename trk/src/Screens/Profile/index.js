@@ -87,8 +87,8 @@ const UserProfile = () => {
                         <Text>Total Climbs</Text>
                     </View>
                     <View style={[styles.effortRecapChild, {}]}>
-                        <Text>CLIMB</Text>
-                        <Text>Best Effort</Text>
+                        {/* <Text>CLIMB</Text>
+                        <Text>Best Effort</Text> */}
                     </View>
                 </View>
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
@@ -101,7 +101,7 @@ const UserProfile = () => {
                             <Text style={styles.buttonText}>Reload</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.effortHistoryList}>
+                    <View style={[styles.effortHistoryList, { backgroundColor: '#F2E5D6' }]}>
                         <TapHistory climbsHistory={climbsHistory} />
                     </View>
                 </View>

@@ -62,7 +62,7 @@ const CompRanking = () => {
 
     return (
         <View style={styles.container}>
-            <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', backgroundColor: 'red', flex: 0.5 }}>
+            <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', flex: 0.5 }}>
                 <View style={{ flex: 1 }}></View>
                 <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center' }}>
                     List
@@ -71,7 +71,7 @@ const CompRanking = () => {
                     <Text style={styles.buttonText}>Reload</Text>
                 </TouchableOpacity>
             </View>
-            <View style={{ flex: 6, width: '100 %', backgroundColor: 'green' }}>
+            <View style={{ flex: 6, width: '100 %', backgroundColor: '#F2E5D6' }}>
                 <RankHistory rankingHistory={rankingHistory} />
             </View>
         </View>
@@ -83,7 +83,6 @@ export default CompRanking;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'blue',
         margin: 20,
     },
     pillButton: {
