@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import LandingScreen from '../Screens/Landing';
+import CompRanking from '../Screens/CompRanking';
 import HomeScreen from '../Screens/Home';
 import ClimbInputData from '../Screens/ClimbList';
 import ClimbDetailScreen from '../Screens/ClimbDetail';
@@ -45,6 +45,7 @@ function AppTabs() {
       <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
       {role === 'climber' ? null : <Tab.Screen name="Climb List" component={ClimbInputData} />}
       <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} />
+      {role === 'climber' ? null : <Tab.Screen name="Ranking" component={CompRanking} />}
     </Tab.Navigator>
   );
 }
