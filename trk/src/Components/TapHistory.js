@@ -6,7 +6,7 @@ const TapHistory = (props) => {
     return (
         <ScrollView contentContainerStyle={{ padding: 10 }}>
             {props.climbsHistory.map((climb, index) => (
-                <ClimbItem key={index} climb={climb} />
+                <ClimbItem key={index} climb={climb} tapId={climb.tapId} />
             ))}
         </ScrollView>
     );
