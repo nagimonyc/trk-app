@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
+import TapsApi from '../../api/TapsApi';
 
 import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button } from 'react-native';
 
@@ -7,33 +9,122 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
+
+
   const { climbData } = props.route.params;
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
   const [completion, setCompletion] = useState('1/2');
-  const [attempts, setAttempts] = useState('1/2');
+  const [attempts, setAttempts] = useState('1');
   const [witness1, setWitness1] = useState('');
   const [witness2, setWitness2] = useState('');
 
-  useEffect(() => {
-    const climbReference = storage().ref('climb photos/the_crag.png');
-    climbReference.getDownloadURL()
-      .then((url) => {
-        setClimbImageUrl(url);
-      })
-      .catch((error) => {
-        console.error("Error getting climb image URL: ", error);
-      });
 
-    const setterReference = storage().ref('profile photos/epset.png');
-    setterReference.getDownloadURL()
-      .then((url) => {
-        setSetterImageUrl(url);
-      })
-      .catch((error) => {
-        console.error("Error getting setter image URL: ", error);
-      });
-  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (props.route.params.profileCheck) {
+        const { getTap } = TapsApi();
+        const { tapId } = props.route.params;
+        try {
+          const tap = (await getTap(tapId)).data();  // Using await here
+          let stringCompletion;
+          if (tap.completion === 0.5) {
+            stringCompletion = '1/2'
+          } else {
+            stringCompletion = 'full'
+          }
+          setCompletion(stringCompletion);
+
+          let stringAttempts;
+          if (tap.attempts === 1) {
+            stringAttempts = '1'
+          } else if (tap.attempts === 2) {
+            stringAttempts = '2'
+          } else if (tap.attempts === 3) {
+            stringAttempts = '3'
+          } else {
+            stringAttempts = '4'
+          }
+          setAttempts(stringAttempts);
+
+          setWitness1(tap.witness1);
+          setWitness2(tap.witness2);
+        } catch (error) {
+          console.error('Error getting tap:', error);
+        }
+      }
+    };
+
+    fetchData();  // Call the async function
+  }, [props.route.params.profileCheck, props.route.params.tapId]);  // dependencies array
+
+
+
+
+
+  const handleUpdate = async () => {
+    const { tapId } = props.route.params;
+
+    let numericCompletion;
+    if (completion === '1/2') {
+      numericCompletion = 0.5;
+    } else if (completion === 'full') {
+      numericCompletion = 1;
+    }
+
+    let numericAttempts;
+    if (attempts === '⚡️') {
+      numericAttempts = 1;
+    } else {
+      numericAttempts = parseInt(attempts, 10); // Convert to integer if it's not the flash emoji
+    }
+
+    const updatedTap = {
+      completion: numericCompletion,
+      attempts: numericAttempts,
+      witness1: witness1,
+      witness2: witness2,
+    };
+    try {
+      const { updateTap } = TapsApi();
+      await updateTap(tapId, updatedTap);
+      Alert.alert("Success", "Tap has been updated");
+    } catch (error) {
+      Alert.alert("Error", "Couldn't update tap");
+    }
+  }
+
+  const getSelectedIndex = (value) => {
+    if (value === '⚡️') {
+      return 0;  // '⚡️' represents a '1', so return 0 for the index
+    } else {
+      return parseInt(value, 10) - 1;
+    }
+  };
+
+
+
+  // useEffect(() => {
+  //   const climbReference = storage().ref('climb photos/the_crag.png');
+  //   climbReference.getDownloadURL()
+  //     .then((url) => {
+  //       setClimbImageUrl(url);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error getting climb image URL: ", error);
+  //     });
+
+  //   const setterReference = storage().ref('profile photos/epset.png');
+  //   setterReference.getDownloadURL()
+  //     .then((url) => {
+  //       setSetterImageUrl(url);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error getting setter image URL: ", error);
+  //     });
+  // }, []);
+
+
 
   if (climbData.set === 'Competition') {
     return (
@@ -68,7 +159,7 @@ function ClimbDetail(props) {
               <SegmentedControl
                 values={['1/2', 'full']}
                 tintColor="#007AFF"
-                selectedIndex={0} // set the initially selected index
+                selectedIndex={completion === "1/2" ? 0 : 1} // set the initially selected index
                 style={styles.segmentedControl}
                 onChange={(event) => {
                   setCompletion(event.nativeEvent.value);
@@ -76,17 +167,17 @@ function ClimbDetail(props) {
               />
             </View>
             <View style={styles.group}>
-            <Text>Attempts</Text>
-            <View style={styles.segmentedControlContainer}>
-              <SegmentedControl
-                values={['⚡️', '2', '3', '4']}
-                tintColor="#007AFF"
-                selectedIndex={0} // set the initially selected index
-                style={styles.segmentedControl}
-                onChange={(event) => {
-                  setAttempts(event.nativeEvent.value);
-                }}
-              />
+              <Text>Attempts</Text>
+              <View style={styles.segmentedControlContainer}>
+                <SegmentedControl
+                  values={['⚡️', '2', '3', '4']}
+                  tintColor="#007AFF"
+                  selectedIndex={getSelectedIndex(attempts)} // set the initially selected index
+                  style={styles.segmentedControl}
+                  onChange={(event) => {
+                    setAttempts(event.nativeEvent.value);
+                  }}
+                />
               </View>
             </View>
             <View style={styles.group}>
@@ -99,18 +190,21 @@ function ClimbDetail(props) {
               />
             </View>
             <View style={styles.group}>
-            <Text style={styles.title}>Witness 2</Text>
-            <TextInput
-              style={styles.input}
-              value={witness2}
-              onChangeText={setWitness2}
-              placeholder="Enter witness 2"
-            />
+              <Text style={styles.title}>Witness 2</Text>
+              <TextInput
+                style={styles.input}
+                value={witness2}
+                onChangeText={setWitness2}
+                placeholder="Enter witness 2"
+              />
             </View>
             <Button
-            title="Update"
-            disabled={!witness1|| !witness2 || !completion || !attempts}
-            ></Button>
+              title="Update"
+              disabled={!witness1 || !witness2 || !completion || !attempts}
+              onPress={handleUpdate}
+            >
+
+            </Button>
           </SafeAreaView>
 
         </View>
