@@ -3,18 +3,18 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const RankItem = ({ user }) => {
-    // const navigation = useNavigation();
+    const navigation = useNavigation();
 
-    // const navigateToDetail = () => {
-    //     navigation.navigate('Detail', { climbData: climb });
-    // };
+    const navigateToClimberPerformance = () => {
+        navigation.navigate('ClimberPerformance', { userData: user });
+    };
 
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={navigateToClimberPerformance}>
             <View style={styles.climbContainer}>
                 <View style={styles.climbDot}></View>
                 {/* <Image source={{ uri: climb.image }} style={styles.climbImage} /> */}
-                <Text>{user.email}</Text>
+                <Text>{user.email} - Points: {user.totalIFSC}</Text>
             </View>
         </TouchableOpacity>
     );

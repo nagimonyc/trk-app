@@ -9,6 +9,7 @@ import ClimbDetailScreen from '../Screens/ClimbDetail';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UserProfile from '../Screens/Profile';
 import { AuthContext } from '../Utils/AuthContext';
+import ClimberPerformance from '../Components/ClimberPerformance';
 
 
 const Stack = createStackNavigator();
@@ -36,6 +37,17 @@ function ProfileStack() {
   );
 }
 
+function RankStack() {
+  console.log('[TEST] RankStack called');
+  return (
+    <Stack.Navigator>
+      {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
+      <Stack.Screen name="Ranking" component={CompRanking} />
+      <Stack.Screen name="ClimberPerformance" component={ClimberPerformance} />
+    </Stack.Navigator>
+  );
+}
+
 function AppTabs() {
   console.log('[TEST] AppTabs called');
   const { role } = useContext(AuthContext);
@@ -45,7 +57,7 @@ function AppTabs() {
       <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
       {role === 'climber' ? null : <Tab.Screen name="Climb List" component={ClimbInputData} />}
       <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} />
-      {role === 'climber' ? null : <Tab.Screen name="Ranking" component={CompRanking} />}
+      {role === 'climber' ? null : <Tab.Screen name="Ranking" component={RankStack} options={{ headerShown: false }} />}
     </Tab.Navigator>
   );
 }
