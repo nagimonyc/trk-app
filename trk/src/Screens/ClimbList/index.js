@@ -24,9 +24,9 @@ const ClimbInputData = () => {
   const [grade, setGrade] = useState("");
   const [location, setLocation] = useState("Gowanus");
   // const [image, setImage] = useState("");
-  const [type, setType]= useState("Boulder");
-  const [set, setSet]= useState("Competition");
-  const [ifsc, setIfsc]= useState("");
+  const [type, setType] = useState("Boulder");
+  const [set, setSet] = useState("Competition");
+  const [ifsc, setIfsc] = useState("");
 
   // async function handleImagePick() {
   //   try {
@@ -127,33 +127,33 @@ const ClimbInputData = () => {
           placeholder="Enter location"
         />
 
-    <Text style={styles.label}>Type</Text>
-    <View style={styles.segmentedControlContainer}>
-<SegmentedControl
-      values={['Boulder', 'Lead', 'Top Rope']}
-      tintColor="#007AFF" 
-      selectedIndex={['Boulder', 'Lead', 'Top Rope'].indexOf(type)}
-      style={styles.segmentedControl}
-      onChange={(event) => {
-        setType(event.nativeEvent.value); 
-        
-      }}
-    />
-    </View>
+        <Text style={styles.label}>Type</Text>
+        <View style={styles.segmentedControlContainer}>
+          <SegmentedControl
+            values={['Boulder', 'Lead', 'Top Rope']}
+            tintColor="#007AFF"
+            selectedIndex={['Boulder', 'Lead', 'Top Rope'].indexOf(type)}
+            style={styles.segmentedControl}
+            onChange={(event) => {
+              setType(event.nativeEvent.value);
 
-<Text style={styles.label}>Set</Text>
-<View style={styles.segmentedControlContainer}>
-    <SegmentedControl
-      values={['Competition', 'Commercial']}
-      tintColor="#007AFF" 
-      style={styles.segmentedControl}
-      selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
-      onChange={(event) => {
-        setSet(event.nativeEvent.value); 
-      }}
-    />
-    </View>
-    
+            }}
+          />
+        </View>
+
+        <Text style={styles.label}>Set</Text>
+        <View style={styles.segmentedControlContainer}>
+          <SegmentedControl
+            values={['Competition', 'Commercial']}
+            tintColor="#007AFF"
+            style={styles.segmentedControl}
+            selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
+            onChange={(event) => {
+              setSet(event.nativeEvent.value);
+            }}
+          />
+        </View>
+
 
 
         <Text style={styles.label}>IFSC Score</Text>
