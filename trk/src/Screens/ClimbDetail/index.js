@@ -30,8 +30,10 @@ function ClimbDetail(props) {
           let stringCompletion;
           if (tap.completion === 0.5) {
             stringCompletion = '1/2'
-          } else {
+          } else if (tap.completion === 1) {
             stringCompletion = 'full'
+          } else {
+            stringCompletion = '1/2'
           }
           setCompletion(stringCompletion);
 
@@ -42,8 +44,10 @@ function ClimbDetail(props) {
             stringAttempts = '2'
           } else if (tap.attempts === 3) {
             stringAttempts = '3'
-          } else {
+          } else if (tap.attempts === 4) {
             stringAttempts = '4'
+          } else {
+            stringAttempts = '1'
           }
           setAttempts(stringAttempts);
 
