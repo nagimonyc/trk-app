@@ -7,7 +7,43 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:786555738802:android:7713963af93446252847ab",
+        "mobilesdk_app_id": "1:786555738802:android:ba7dd11c24f155ec2847ab",
+        "android_client_info": {
+          "package_name": "com.nagimo.Nagimo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiqvzPx-2Rx1fosAHCY58k9VdSGWZJ8P4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "786555738802-njd05j9c61cv8ou41hmcub0p7l711n29.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nagimo.trk"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786555738802:android:233448a93e6e61972847ab",
         "android_client_info": {
           "package_name": "com.nagimo.trk"
         }

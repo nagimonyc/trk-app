@@ -12,10 +12,9 @@ import TapsApi from '../../api/TapsApi';
 
 function HomeScreen(props) {
   console.log('[TEST] HomeScreen called');
-  // Android
-  if (Platform.OS === 'android') {
-    const androidPromptRef = React.useRef();
-  }
+
+  // Initialize androidPromptRef conditionally based on the platform
+  const androidPromptRef = Platform.OS === 'android' ? React.useRef() : null;
 
   // Navigation
   const { navigation } = props;
@@ -126,7 +125,7 @@ function HomeScreen(props) {
           Sign Out
         </Button>
       </View>
-      {(Platform.OS === 'android') ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
+      {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
     </>
   );
 }
