@@ -1,4 +1,4 @@
-package com.nagimo.trk;
+package com.nagimo.Nagimo;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
