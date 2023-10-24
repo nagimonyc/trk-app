@@ -42,3 +42,26 @@ exports.incrementUserTapCounter = functions.firestore
             }
         });
     });
+
+exports.decrementUserTapCounter = functions.firestore
+    .document('taps/{tapId}')
+    .onDelete(async (snap, context) => {
+        // Get the 'user' field from the deleted tap document
+        const userId = snap.data().user;
+
+        // Reference to the user's document in the 'users' collection
+        const userRef = admin.firestore().collection('users').doc(userId);
+
+        // Use a transaction to ensure atomicity
+        return admin.firestore().runTransaction(async transaction => {
+            const userSnap = await transaction.get(userRef);
+
+            // If user document exists and has a 'tapCount' field, decrement it
+            if (userSnap.exists) {
+                const currentCount = userSnap.data().taps;
+                // Ensure the tap count never goes below zero
+                const newCount = Math.max(0, currentCount - 1);
+                transaction.update(userRef, { taps: newCount });
+            }
+        });
+    });
