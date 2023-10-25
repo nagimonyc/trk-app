@@ -1,4 +1,4 @@
-package com.nagimo.trk;
+package com.nagimo.Nagimo;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

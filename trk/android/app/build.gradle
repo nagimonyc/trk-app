@@ -74,9 +74,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.nagimo.trk"
+    namespace "com.nagimo.Nagimo"
     defaultConfig {
-        applicationId "com.nagimo.trk"
+        applicationId "com.nagimo.Nagimo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

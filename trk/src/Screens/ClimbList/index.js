@@ -6,7 +6,7 @@ import NfcManager from "react-native-nfc-manager";
 import writeClimb from "../../NfcUtils/writeClimb";
 import writeSignature from "../../NfcUtils/writeSignature";
 import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
-import androidPromptRef from "../../Components/AndroidPrompt";
+import AndroidPrompt from '../../Components/AndroidPrompt';
 import ClimbsApi from "../../api/ClimbsApi";
 import { AuthContext } from '../../Utils/AuthContext';
 // import storage from '@react-native-firebase/storage';
@@ -18,7 +18,9 @@ const ClimbInputData = () => {
   const { currentUser } = useContext(AuthContext);
   const setter = currentUser;
 
-
+  const androidPromptRef = Platform.OS === 'android' ? React.useRef() : null;
+  console.log('platform: ', Platform.OS)
+  console.log('androidPromptRef:', androidPromptRef);
 
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
@@ -27,6 +29,10 @@ const ClimbInputData = () => {
   const [type, setType] = useState("Boulder");
   const [set, setSet] = useState("Competition");
   const [ifsc, setIfsc] = useState("");
+
+  const yourCancelFunction = () => {
+    console.log('Cancel button was pressed in AndroidPrompt');
+  };
 
   // async function handleImagePick() {
   //   try {
@@ -53,12 +59,15 @@ const ClimbInputData = () => {
       setter: setter.uid
     };
 
+
     const { addClimb } = ClimbsApi();
     addClimb(climb)
       .then(async (newClimbId) => {
-        if (Platform.OS === 'android') {
-          androidPromptRef.current.setVisible(true);
-        }
+
+        androidPromptRef ? androidPromptRef.current.setVisible(true) : null;
+        // if (Platform.OS === 'android') {
+        //   androidPromptRef.current.setVisible(true);
+        // }
 
         try {
           await NfcManager.requestTechnology(NfcTech.NfcA);
@@ -81,9 +90,7 @@ const ClimbInputData = () => {
           NfcManager.cancelTechnologyRequest();
         }
 
-        if (Platform.OS === 'android') {
-          androidPromptRef.current.setVisible(false);
-        }
+        androidPromptRef ? androidPromptRef.current.setVisible(false) : null;
 
         // Reset form
         setName("");
@@ -99,6 +106,7 @@ const ClimbInputData = () => {
         console.error(err);
       });
   }
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -176,6 +184,9 @@ const ClimbInputData = () => {
           value={setter.email}
         />
       </View>
+
+      {/* Include AndroidPrompt only for Android platform */}
+      {Platform.OS === 'android' && <AndroidPrompt ref={androidPromptRef} onCancelPress={yourCancelFunction} />}
 
       <Button
         onPress={handleAddClimb}

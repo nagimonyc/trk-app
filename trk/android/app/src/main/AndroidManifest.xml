@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.nagimo.trk">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.nagimo.Nagimo">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.NFC" />
@@ -26,7 +26,7 @@
         <intent-filter>
           <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
           <category android:name="android.intent.category.DEFAULT"/>
-          <data android:scheme="com.nagimo.trk"
+          <data android:scheme="com.nagimo.Nagimo"
           android:host="*" />
       </intent-filter>
 
@@ -34,7 +34,7 @@
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="com.nagimo.trk"
+        <data android:scheme="com.nagimo.Nagimo"
           android:host="*" />
       </intent-filter>
 
