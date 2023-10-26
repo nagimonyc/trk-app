@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     },
     effortHistory: {
         flex: 4,
-        paddingHorizontal: 20,
+        paddingHorizontal: 5,
     },
     effortHistoryList: {
         flex: 1,
