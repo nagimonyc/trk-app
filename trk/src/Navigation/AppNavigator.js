@@ -10,6 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UserProfile from '../Screens/Profile';
 import { AuthContext } from '../Utils/AuthContext';
 import ClimberPerformance from '../Components/ClimberPerformance';
+import SetDetail from '../Screens/SetDetail';
 
 
 const Stack = createStackNavigator();
@@ -33,6 +34,7 @@ function ProfileStack() {
       {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
       <Stack.Screen name="Profile" component={UserProfile} />
       <Stack.Screen name="Detail" component={ClimbDetailScreen} />
+      <Stack.Screen name="Set" component={SetDetail} />
     </Stack.Navigator>
   );
 }

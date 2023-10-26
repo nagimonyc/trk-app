@@ -6,7 +6,7 @@ import ClimbsApi from "../api/ClimbsApi";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 
-const SetterProfile = () => {
+const SetterProfile = (props) => {
 
     const { currentUser } = React.useContext(AuthContext);
 
@@ -21,7 +21,7 @@ const SetterProfile = () => {
             const setSnapshot = await getClimbsBySomeField('setter', currentUser.uid);
             console.log('setSnapshot:', setSnapshot);  // Log the snapshot here
             const newSetHistory = setSnapshot.docs.map(doc => {
-                return doc.exists ? doc.data() : null;
+                return doc.exists ? { id: doc.id, ...doc.data() } : null;
             }).filter(set => set !== null);
             console.log('newSetHistory:', newSetHistory);  // Log the processed climbs here
             setSetHistory(newSetHistory);
