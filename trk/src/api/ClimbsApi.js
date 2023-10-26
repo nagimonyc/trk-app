@@ -15,9 +15,14 @@ function ClimbsApi() {
         return ref.doc(id).get();
     }
 
+    function getClimbsBySomeField(field, value) {
+        return ref.where(field, '==', value).get();
+    }
+
     return {
         addClimb,
-        getClimb
+        getClimb,
+        getClimbsBySomeField
     };
 }
 
