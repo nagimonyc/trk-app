@@ -3,6 +3,8 @@ import { SafeAreaView, Text, StyleSheet, View, Image, Button, TouchableOpacity, 
 import { AuthContext } from "../../Utils/AuthContext";
 import TapHistory from "../../Components/TapHistory";
 import ClimbsApi from "../../api/ClimbsApi";
+import firestore from '@react-native-firebase/firestore';
+import { firebase } from "@react-native-firebase/auth";
 
 const SetterProfile = () => {
    
@@ -39,7 +41,7 @@ const SetterProfile = () => {
               {
                   text: "Yes", onPress: async () => {
                       try {
-                          const { currentUser } = React.useContext(AuthContext);
+                        
                           const userUID = currentUser.uid;
                           await firestore().collection('users').doc(userUID).delete();
                           const user = firebase.auth().currentUser;

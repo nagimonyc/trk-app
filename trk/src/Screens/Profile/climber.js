@@ -1,9 +1,11 @@
 import React, { useState, useContext } from "react";
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert } from "react-native";
 import { AuthContext } from "../../Utils/AuthContext";
 import TapHistory from "../../Components/TapHistory";
 import TapsApi from "../../api/TapsApi";
 import ClimbsApi from "../../api/ClimbsApi";
+import firestore from '@react-native-firebase/firestore';
+import { firebase } from "@react-native-firebase/auth";
 
 const ClimberProfile = () => {
     const { tapCount, currentUser } = useContext(AuthContext);
@@ -41,7 +43,7 @@ const ClimberProfile = () => {
               {
                   text: "Yes", onPress: async () => {
                       try {
-                          const { currentUser } = React.useContext(AuthContext);
+                     
                           const userUID = currentUser.uid;
                           await firestore().collection('users').doc(userUID).delete();
                           const user = firebase.auth().currentUser;
