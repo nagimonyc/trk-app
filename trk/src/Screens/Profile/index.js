@@ -43,6 +43,21 @@ const UserProfile = () => {
         }
     };
 
+    const handleClimbHistory = async () => {
+        const { getClimbsBySomeField } = ClimbsApi();
+        try {
+            const climbsSnapshot = await getClimbsBySomeField('setter', currentUser.uid);
+            console.log('climbsSnapshot:', climbsSnapshot);  // Log the snapshot here
+            const newClimbsHistory = climbsSnapshot.docs.map(doc => {
+                return doc.exists ? doc.data() : null;
+            }).filter(climb => climb !== null);
+            console.log('newClimbsHistory:', newClimbsHistory);  // Log the processed climbs here
+            setClimbsHistory(newClimbsHistory);
+        } catch (error) {
+            console.error("Error fetching climbs for user:", error);
+        }
+    };
+
     const handleDeleteAccount = async () => {
         Alert.alert(
             "Delete Account",
@@ -97,7 +112,10 @@ const UserProfile = () => {
                         <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center' }}>
                             Recap
                         </Text>
-                        <TouchableOpacity style={[styles.pillButton]} onPress={handleTapHistory}>
+                        <TouchableOpacity
+                            style={[styles.pillButton]}
+                            onPress={currentUser.role === 'climber' ? handleTapHistory : handleClimbHistory}
+                        >
                             <Text style={styles.buttonText}>Reload</Text>
                         </TouchableOpacity>
                     </View>
