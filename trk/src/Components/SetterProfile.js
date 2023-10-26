@@ -1,80 +1,79 @@
-import React, { useState, useContext } from "react";
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert } from "react-native";
-import { AuthContext } from "../../Utils/AuthContext";
-import TapHistory from "../../Components/TapHistory";
-import TapsApi from "../../api/TapsApi";
-import ClimbsApi from "../../api/ClimbsApi";
+import React from "react";
+import { SafeAreaView, Text, StyleSheet, View, Image, Button, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { AuthContext } from "../Utils/AuthContext";
+import TapHistory from "./TapHistory";
+import ClimbsApi from "../api/ClimbsApi";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 
-const ClimberProfile = () => {
-    const { tapCount, currentUser } = useContext(AuthContext);
-    const [climbsHistory, setClimbsHistory] = useState([]);
+const SetterProfile = () => {
 
-    const handleTapHistory = async () => {
-        const { getTapsBySomeField } = TapsApi();
-        const { getClimb } = ClimbsApi();
+    const { currentUser } = React.useContext(AuthContext);
+
+    const [setHistory, setSetHistory] = React.useState([]);
+
+
+
+
+    const handleSetHistory = async () => {
+        const { getClimbsBySomeField } = ClimbsApi();
         try {
-            const tapsSnapshot = await getTapsBySomeField('user', currentUser.uid);
-            const climbsPromises = [];
-            tapsSnapshot.docs.forEach(doc => {
-                const climbId = doc.data().climb;
-                const climbPromise = getClimb(climbId);
-                climbsPromises.push(climbPromise);
-            });
-            const climbsSnapshots = await Promise.all(climbsPromises);
-            const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
-                return climbSnapshot.exists ? { ...climbSnapshot.data(), tapId: tapsSnapshot.docs[index].id } : null;
-            }).filter(climb => climb !== null);
-            setClimbsHistory(newClimbsHistory);
+            const setSnapshot = await getClimbsBySomeField('setter', currentUser.uid);
+            console.log('setSnapshot:', setSnapshot);  // Log the snapshot here
+            const newSetHistory = setSnapshot.docs.map(doc => {
+                return doc.exists ? doc.data() : null;
+            }).filter(set => set !== null);
+            console.log('newSetHistory:', newSetHistory);  // Log the processed climbs here
+            setSetHistory(newSetHistory);
         } catch (error) {
-            console.error("Error fetching climbs for user:", error);
+            console.error("Error fetching sets for user:", error);
         }
     };
     const handleDeleteAccount = async () => {
-      Alert.alert(
-          "Delete Account",
-          "Are you sure you want to delete all user data?",
-          [
-              {
-                  text: "Cancel",
-                  style: "cancel"
-              },
-              {
-                  text: "Yes", onPress: async () => {
-                      try {
-                     
-                          const userUID = currentUser.uid;
-                          await firestore().collection('users').doc(userUID).delete();
-                          const user = firebase.auth().currentUser;
-                          try {
-                              await user.delete();
-                          } catch (error) {
-                              console.error("Error deleting user account:", error);
-                          }
-                      } catch (error) {
-                          console.error("Error deleting user data:", error);
-                      }
-                  }
-              }
-          ]
-      );
-  };
+        Alert.alert(
+            "Delete Account",
+            "Are you sure you want to delete all user data?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Yes", onPress: async () => {
+                        try {
+
+                            const userUID = currentUser.uid;
+                            await firestore().collection('users').doc(userUID).delete();
+                            const user = firebase.auth().currentUser;
+                            try {
+                                await user.delete();
+                            } catch (error) {
+                                console.error("Error deleting user account:", error);
+                            }
+                        } catch (error) {
+                            console.error("Error deleting user data:", error);
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
-            <View style={styles.header}>
+                <View style={styles.header}>
                     <Text style={styles.titleText}>Activity</Text>
                     <Button title="Delete Account" onPress={handleDeleteAccount}></Button>
                 </View>
+
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, {}]}>
-                        <Text>{tapCount }</Text>
-                        <Text>Total Climbs</Text>
+                        <Text>{setHistory.length}</Text>
+                        <Text>Total Climbs Set</Text>
                     </View>
                     <View style={[styles.effortRecapChild, {}]}>
-                        {/* <Text>CLIMB</Text>
-                        <Text>Best Effort</Text> */}
+
                     </View>
                 </View>
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
@@ -85,13 +84,13 @@ const ClimberProfile = () => {
                         </Text>
                         <TouchableOpacity
                             style={[styles.pillButton]}
-                            onPress={ handleTapHistory }
+                            onPress={handleSetHistory}
                         >
                             <Text style={styles.buttonText}>Reload</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={[styles.effortHistoryList, { backgroundColor: '#F2E5D6' }]}>
-                     <TapHistory climbsHistory={climbsHistory} />  
+                        <TapHistory climbsHistory={setHistory} />
                     </View>
                 </View>
             </View>
@@ -162,4 +161,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ClimberProfile;
+export default SetterProfile;

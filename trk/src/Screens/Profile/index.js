@@ -3,8 +3,8 @@ import { SafeAreaView, StyleSheet, View, Text, Button, Alert } from "react-nativ
 import { AuthContext } from "../../Utils/AuthContext";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
-import SetterProfile from "./setter";
-import ClimberProfile from "./climber";
+import SetterProfile from "../../Components/SetterProfile";
+import ClimberProfile from "../../Components/ClimberProfile";
 
 const UserProfile = () => {
     const { role } = React.useContext(AuthContext);
@@ -13,8 +13,8 @@ const UserProfile = () => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
-               
-                { role === 'climber' ? <ClimberProfile /> : <SetterProfile /> }
+
+                {role === 'climber' ? <ClimberProfile /> : <SetterProfile />}
             </View>
         </SafeAreaView>
     );
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     innerContainer: {
         flex: 1,
     },
-    
+
 });
 
 export default UserProfile;
