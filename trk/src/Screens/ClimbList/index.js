@@ -114,7 +114,7 @@ const ClimbInputData = () => {
 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
-        <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <ScrollView>
           <View style={styles.content}>
             <Text style={styles.label}>Name</Text>
@@ -134,6 +134,14 @@ const ClimbInputData = () => {
               onChangeText={setGrade}
               placeholder="Enter grade"
 
+            />
+
+            <Text style={styles.label}>IFSC Score</Text>
+            <TextInput
+              style={styles.input}
+              value={ifsc}
+              onChangeText={setIfsc}
+              placeholder="Enter score"
             />
 
             <Text style={styles.label}>Location</Text>
@@ -176,13 +184,7 @@ const ClimbInputData = () => {
 
 
 
-            <Text style={styles.label}>IFSC Score</Text>
-            <TextInput
-              style={styles.input}
-              value={ifsc}
-              onChangeText={setIfsc}
-              placeholder="Enter score"
-            />
+
 
             {/* <Text style={styles.label}>Image</Text>
         <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
@@ -208,8 +210,8 @@ const ClimbInputData = () => {
             title="Add Climb"
           >
           </Button>
-          </ScrollView>
-        </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
 
     </TouchableWithoutFeedback>
 
