@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 // import ImagePicker from 'react-native-image-crop-picker';
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform, ScrollView } from "react-native";
+
+import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from "react-native";
+
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
 import writeClimb from "../../NfcUtils/writeClimb";
@@ -109,99 +111,108 @@ const ClimbInputData = () => {
 
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-      <View style={styles.content}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Enter name"
-        />
 
-        <Text style={styles.label}>Grade</Text>
-        <TextInput
-          style={styles.input}
-          value={grade}
-          onChangeText={setGrade}
-          placeholder="Enter grade"
-        />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
-        <Text style={styles.label}>Location</Text>
-        <TextInput
-          style={styles.input}
-          value={location}
-          onChangeText={setLocation}
-          placeholder="Enter location"
-        />
+        <SafeAreaView style={styles.container}>
+        <ScrollView>
+          <View style={styles.content}>
+            <Text style={styles.label}>Name</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder="Enter name"
 
-        <Text style={styles.label}>Type</Text>
-        <View style={styles.segmentedControlContainer}>
-          <SegmentedControl
-            values={['Boulder', 'Lead', 'Top Rope']}
-            tintColor="#007AFF"
-            fontStyle= {{fontSize: 18, color: '#007AFF'}}
-            activeFontStyle={{fontSize: 18, color: 'black' }}
-            selectedIndex={['Boulder', 'Lead', 'Top Rope'].indexOf(type)}
-            style={styles.segmentedControl}
-            onChange={(event) => {
-              setType(event.nativeEvent.value);
-
-            }}
-          />
-        </View>
-
-        <Text style={styles.label}>Set</Text>
-        <View style={styles.segmentedControlContainer}>
-          <SegmentedControl
-            values={['Competition', 'Commercial']}
-            tintColor="#007AFF"
-            fontStyle= {{fontSize: 18, color: '#007AFF'}}
-            activeFontStyle={{fontSize: 18, color: 'black' }}
-            style={styles.segmentedControl}
-            selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
-            onChange={(event) => {
-              setSet(event.nativeEvent.value);
-            }}
-          />
-        </View>
+            />
 
 
+            <Text style={styles.label}>Grade</Text>
+            <TextInput
+              style={styles.input}
+              value={grade}
+              onChangeText={setGrade}
+              placeholder="Enter grade"
 
-        <Text style={styles.label}>IFSC Score</Text>
-        <TextInput
-          style={styles.input}
-          value={ifsc}
-          onChangeText={setIfsc}
-          placeholder="Enter score"
-        />
+            />
 
-        {/* <Text style={styles.label}>Image</Text>
+            <Text style={styles.label}>Location</Text>
+            <TextInput
+              style={styles.input}
+              value={location}
+              onChangeText={setLocation}
+              placeholder="Enter location"
+            />
+
+            <Text style={styles.label}>Type</Text>
+            <View style={styles.segmentedControlContainer}>
+              <SegmentedControl
+                values={['Boulder', 'Lead', 'Top Rope']}
+                tintColor="#007AFF"
+                fontStyle={{ fontSize: 18, color: '#007AFF' }}
+                activeFontStyle={{ fontSize: 18, color: 'black' }}
+                selectedIndex={['Boulder', 'Lead', 'Top Rope'].indexOf(type)}
+                style={styles.segmentedControl}
+                onChange={(event) => {
+                  setType(event.nativeEvent.value);
+                }}
+              />
+            </View>
+
+            <Text style={styles.label}>Set</Text>
+            <View style={styles.segmentedControlContainer}>
+              <SegmentedControl
+                values={['Competition', 'Commercial']}
+                tintColor="#007AFF"
+                fontStyle={{ fontSize: 18, color: '#007AFF' }}
+                activeFontStyle={{ fontSize: 18, color: 'black' }}
+                style={styles.segmentedControl}
+                selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
+                onChange={(event) => {
+                  setSet(event.nativeEvent.value);
+                }}
+              />
+            </View>
+
+
+
+            <Text style={styles.label}>IFSC Score</Text>
+            <TextInput
+              style={styles.input}
+              value={ifsc}
+              onChangeText={setIfsc}
+              placeholder="Enter score"
+            />
+
+            {/* <Text style={styles.label}>Image</Text>
         <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
           <Text style={styles.uploadText}>Insert climb image</Text>
           <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
         </TouchableOpacity> */}
 
-        <Text style={styles.label}>Setter</Text>
-        <TextInput
-          style={styles.input}
-          value={setter.email}
-        />
-      </View>
+            <Text style={styles.label}>Setter</Text>
+            <TextInput
+              style={styles.input}
+              value={setter.email}
+            />
+          </View>
 
-      {/* Include AndroidPrompt only for Android platform */}
-      {Platform.OS === 'android' && <AndroidPrompt ref={androidPromptRef} onCancelPress={yourCancelFunction} />}
+          {/* Include AndroidPrompt only for Android platform */}
+          {Platform.OS === 'android' && <AndroidPrompt ref={androidPromptRef} onCancelPress={yourCancelFunction} />}
 
-      <Button
-        onPress={handleAddClimb}
-        mode="contained"
-        disabled={!name || !grade || !ifsc}
-        title="Add Climb"
-      >
-      </Button>
-      </ScrollView>
-    </SafeAreaView>
+
+          <Button
+            onPress={handleAddClimb}
+            mode="contained"
+            disabled={!name || !grade || !ifsc}
+            title="Add Climb"
+          >
+          </Button>
+          </ScrollView>
+        </SafeAreaView>
+
+    </TouchableWithoutFeedback>
+
   );
 };
 
@@ -218,7 +229,7 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: "#e0e0e0",
-    marginBottom: 16, 
+    marginBottom: 16,
     fontSize: 18,
   },
   uploadButton: {
@@ -238,7 +249,7 @@ const styles = StyleSheet.create({
   },
   segmentedControlContainer: {
     marginBottom: 10, // Adjust this value to add more or less space below the segmented control
-    
+
   },
 
 });

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import TapsApi from '../../api/TapsApi';
 
-import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -132,113 +132,117 @@ function ClimbDetail(props) {
 
   if (climbData.set === 'Competition') {
     return (
-      <View style={styles.container}>
-        <View style={[styles.wrapper]}>
-          <SafeAreaView />
-          <View style={styles.top}>
-            <View style={styles.topLeft}>
-              <View style={styles.gradeCircle}>
-                <Text>{climbData.grade}</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <View style={[styles.wrapper]}>
+            <SafeAreaView />
+            <View style={styles.top}>
+              <View style={styles.topLeft}>
+                <View style={styles.gradeCircle}>
+                  <Text>{climbData.grade}</Text>
+                </View>
+
+                <Text style={styles.titleText}>{climbData.name}</Text>
               </View>
-
-              <Text style={styles.titleText}>{climbData.name}</Text>
             </View>
-          </View>
-          <View style={styles.line}></View>
+            <View style={styles.line}></View>
 
 
-          <SafeAreaView style={styles.contentArea} >
-            <View style={styles.group}>
-              <Text style={styles.title}>IFSC score:</Text>
-              <Text>{climbData.ifsc}</Text>
-            </View>
-            <View style={styles.group}>
-              <Text style={styles.title}>Type:</Text>
-              <Text>{climbData.type}</Text>
-            </View>
-            <View style={styles.group}>
-              <Text>Completion</Text>
-            </View>
-            <View style={styles.segmentedControlContainer}>
-              <SegmentedControl
-                values={['1/2', 'full']}
-                tintColor="#007AFF"
-                selectedIndex={completion === "1/2" ? 0 : 1} // set the initially selected index
-                style={styles.segmentedControl}
-                onChange={(event) => {
-                  setCompletion(event.nativeEvent.value);
-                }}
-              />
-            </View>
-            <View style={styles.group}>
-              <Text>Attempts</Text>
+            <SafeAreaView style={styles.contentArea} >
+              <View style={styles.group}>
+                <Text style={styles.title}>IFSC score:</Text>
+                <Text>{climbData.ifsc}</Text>
+              </View>
+              <View style={styles.group}>
+                <Text style={styles.title}>Type:</Text>
+                <Text>{climbData.type}</Text>
+              </View>
+              <View style={styles.group}>
+                <Text>Completion</Text>
+              </View>
               <View style={styles.segmentedControlContainer}>
                 <SegmentedControl
-                  values={['⚡️', '2', '3', '4']}
+                  values={['1/2', 'full']}
                   tintColor="#007AFF"
-                  selectedIndex={getSelectedIndex(attempts)} // set the initially selected index
+                  selectedIndex={completion === "1/2" ? 0 : 1} // set the initially selected index
                   style={styles.segmentedControl}
                   onChange={(event) => {
-                    setAttempts(event.nativeEvent.value);
+                    setCompletion(event.nativeEvent.value);
                   }}
                 />
               </View>
-            </View>
-            <View style={styles.group}>
-              <Text style={styles.title}>Witness 1</Text>
-              <TextInput
-                style={styles.input}
-                value={witness1}
-                onChangeText={setWitness1}
-                placeholder="Enter witness 1"
-              />
-            </View>
-            <View style={styles.group}>
-              <Text style={styles.title}>Witness 2</Text>
-              <TextInput
-                style={styles.input}
-                value={witness2}
-                onChangeText={setWitness2}
-                placeholder="Enter witness 2"
-              />
-            </View>
-            <Button
-              title="Update"
-              disabled={!witness1 || !witness2 || !completion || !attempts}
-              onPress={handleUpdate}
-            >
+              <View style={styles.group}>
+                <Text>Attempts</Text>
+                <View style={styles.segmentedControlContainer}>
+                  <SegmentedControl
+                    values={['⚡️', '2', '3', '4']}
+                    tintColor="#007AFF"
+                    selectedIndex={getSelectedIndex(attempts)} // set the initially selected index
+                    style={styles.segmentedControl}
+                    onChange={(event) => {
+                      setAttempts(event.nativeEvent.value);
+                    }}
+                  />
+                </View>
+              </View>
+              <View style={styles.group}>
+                <Text style={styles.title}>Witness 1</Text>
+                <TextInput
+                  style={styles.input}
+                  value={witness1}
+                  onChangeText={setWitness1}
+                  placeholder="Enter witness 1"
+                />
+              </View>
+              <View style={styles.group}>
+                <Text style={styles.title}>Witness 2</Text>
+                <TextInput
+                  style={styles.input}
+                  value={witness2}
+                  onChangeText={setWitness2}
+                  placeholder="Enter witness 2"
+                />
+              </View>
+              <Button
+                title="Update"
+                disabled={!witness1 || !witness2 || !completion || !attempts}
+                onPress={handleUpdate}
+              >
 
-            </Button>
-          </SafeAreaView>
+              </Button>
+            </SafeAreaView>
 
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     )
   }
   else {
     return (
-      <View style={styles.container}>
-        <View style={[styles.wrapper]} >
-          <SafeAreaView />
-          <View style={styles.top}>
-            <View style={styles.topLeft}>
-              <View style={styles.gradeCircle}>
-                <Text>{climbData.grade}</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={styles.container}>
+          <View style={[styles.wrapper]} >
+            <SafeAreaView />
+            <View style={styles.top}>
+              <View style={styles.topLeft}>
+                <View style={styles.gradeCircle}>
+                  <Text>{climbData.grade}</Text>
+                </View>
+
+                <Text style={styles.titleText}>{climbData.name}</Text>
               </View>
-
-              <Text style={styles.titleText}>{climbData.name}</Text>
+              <View style={styles.setterCircle}>
+                {setterImageUrl ? <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
+              </View>
             </View>
-            <View style={styles.setterCircle}>
-              {setterImageUrl ? <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
+            <View style={styles.line}></View>
+            <View style={styles.climbPhoto}>
+              {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
             </View>
-          </View>
-          <View style={styles.line}></View>
-          <View style={styles.climbPhoto}>
-            {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
-          </View>
 
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     )
   }
 }
