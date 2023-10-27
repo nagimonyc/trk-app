@@ -26,28 +26,33 @@ const CompRanking = () => {
                     const climbsSnapshots = await Promise.all(climbsPromises);
 
                     let totalIFSC = 0;
+                    let totalAttempts = 0;
                     climbsSnapshots.forEach((climbSnapshot, index) => {
                         if (climbSnapshot.exists) {
                             const climb = climbSnapshot.data();
                             const tap = tapsSnapshot.docs[index].data();
-                            let adjustedScore = parseInt(climb.ifsc, 10) * tap.completion;  // Adjust the score
+                            let adjustedScore = parseInt(climb.ifsc, 10) * tap.completion;
                             totalIFSC += adjustedScore;
+
+                            totalAttempts += tap.attempts;  // Add the number of attempts from the tap data
                         }
                     });
 
                     return {
                         ...userData,
                         userId,
-                        totalIFSC  // Store the adjusted total IFSC score
+                        totalIFSC,
+                        totalAttempts
                     };
                 })
             );
             const sortedUserData = allUserData.sort((a, b) => {
-                // If a's score is NaN, give it a low value; otherwise, use its score
                 const aScore = isNaN(a.totalIFSC) ? -Infinity : a.totalIFSC;
-                // If b's score is NaN, give it a low value; otherwise, use its score
                 const bScore = isNaN(b.totalIFSC) ? -Infinity : b.totalIFSC;
 
+                if (bScore === aScore) {
+                    return a.totalAttempts - b.totalAttempts;  // Fewer attempts come first
+                }
                 return bScore - aScore;
             });
 
