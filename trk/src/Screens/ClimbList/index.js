@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 // import ImagePicker from 'react-native-image-crop-picker';
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform, ScrollView } from "react-native";
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
 import writeClimb from "../../NfcUtils/writeClimb";
@@ -110,6 +110,7 @@ const ClimbInputData = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView>
       <View style={styles.content}>
         <Text style={styles.label}>Name</Text>
         <TextInput
@@ -140,6 +141,8 @@ const ClimbInputData = () => {
           <SegmentedControl
             values={['Boulder', 'Lead', 'Top Rope']}
             tintColor="#007AFF"
+            fontStyle= {{fontSize: 18, color: '#007AFF'}}
+            activeFontStyle={{fontSize: 18, color: 'black' }}
             selectedIndex={['Boulder', 'Lead', 'Top Rope'].indexOf(type)}
             style={styles.segmentedControl}
             onChange={(event) => {
@@ -154,6 +157,8 @@ const ClimbInputData = () => {
           <SegmentedControl
             values={['Competition', 'Commercial']}
             tintColor="#007AFF"
+            fontStyle= {{fontSize: 18, color: '#007AFF'}}
+            activeFontStyle={{fontSize: 18, color: 'black' }}
             style={styles.segmentedControl}
             selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
             onChange={(event) => {
@@ -195,6 +200,7 @@ const ClimbInputData = () => {
         title="Add Climb"
       >
       </Button>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -207,12 +213,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   label: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 8,
   },
   input: {
     backgroundColor: "#e0e0e0",
-    marginBottom: 16
+    marginBottom: 16, 
+    fontSize: 18,
   },
   uploadButton: {
     alignItems: 'center',
@@ -231,6 +238,7 @@ const styles = StyleSheet.create({
   },
   segmentedControlContainer: {
     marginBottom: 10, // Adjust this value to add more or less space below the segmented control
+    
   },
 
 });
