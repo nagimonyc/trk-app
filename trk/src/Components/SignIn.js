@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 const SignIn = () => {
@@ -19,22 +19,24 @@ const SignIn = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <TextInput
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                style={styles.input}
-            />
-            <TextInput
-                placeholder="Password"
-                value={password}
-                secureTextEntry
-                onChangeText={setPassword}
-                style={styles.input}
-            />
-            <Button title="Sign In" onPress={handleSignIn} />
-        </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={styles.container}>
+                <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                />
+                <TextInput
+                    placeholder="Password"
+                    value={password}
+                    secureTextEntry
+                    onChangeText={setPassword}
+                    style={styles.input}
+                />
+                <Button title="Sign In" onPress={handleSignIn} />
+            </View>
+        </TouchableWithoutFeedback>
     );
 };
 

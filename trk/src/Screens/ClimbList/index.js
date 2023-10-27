@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 // import ImagePicker from 'react-native-image-crop-picker';
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, PlatformTouchableWithoutFeedback, Keyboard } from "react-native";
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
 import writeClimb from "../../NfcUtils/writeClimb";
