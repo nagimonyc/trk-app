@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
@@ -43,22 +43,24 @@ const SignUp = ({ role, nyuComp }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <TextInput
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                style={styles.input}
-            />
-            <TextInput
-                placeholder="Password"
-                value={password}
-                secureTextEntry
-                onChangeText={setPassword}
-                style={styles.input}
-            />
-            <Button title="Sign Up" onPress={handleSignUp} />
-        </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={styles.container}>
+                <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                />
+                <TextInput
+                    placeholder="Password"
+                    value={password}
+                    secureTextEntry
+                    onChangeText={setPassword}
+                    style={styles.input}
+                />
+                <Button title="Sign Up" onPress={handleSignUp} />
+            </View>
+        </TouchableWithoutFeedback>
     );
 };
 
