@@ -23,6 +23,7 @@ const SignIn = () => {
             <View style={styles.container}>
                 <TextInput
                     placeholder="Email"
+                    placeholderTextColor= {"#b1b1b3"}
                     value={email}
                     onChangeText={setEmail}
                     style={styles.input}
@@ -31,6 +32,7 @@ const SignIn = () => {
                     placeholder="Password"
                     value={password}
                     secureTextEntry
+                    placeholderTextColor= {"#b1b1b3"}
                     onChangeText={setPassword}
                     style={styles.input}
                 />

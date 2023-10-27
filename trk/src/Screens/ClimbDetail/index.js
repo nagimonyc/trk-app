@@ -189,6 +189,7 @@ function ClimbDetail(props) {
                 <Text style={styles.title}>Witness 1</Text>
                 <TextInput
                   style={styles.input}
+                  placeholderTextColor= {"#b1b1b3"}
                   value={witness1}
                   onChangeText={setWitness1}
                   placeholder="Enter witness 1"
@@ -198,6 +199,7 @@ function ClimbDetail(props) {
                 <Text style={styles.title}>Witness 2</Text>
                 <TextInput
                   style={styles.input}
+                  placeholderTextColor= {"#b1b1b3"}
                   value={witness2}
                   onChangeText={setWitness2}
                   placeholder="Enter witness 2"

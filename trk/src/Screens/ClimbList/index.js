@@ -121,6 +121,7 @@ const ClimbInputData = () => {
             <TextInput
               style={styles.input}
               value={name}
+              placeholderTextColor= {"#b1b1b3"}
               onChangeText={setName}
               placeholder="Enter name"
 
@@ -131,6 +132,7 @@ const ClimbInputData = () => {
             <TextInput
               style={styles.input}
               value={grade}
+              placeholderTextColor= {"#b1b1b3"}
               onChangeText={setGrade}
               placeholder="Enter grade"
 
@@ -141,12 +143,14 @@ const ClimbInputData = () => {
               style={styles.input}
               value={ifsc}
               onChangeText={setIfsc}
+              placeholderTextColor= {"#b1b1b3"}
               placeholder="Enter score"
             />
 
             <Text style={styles.label}>Location</Text>
             <TextInput
               style={styles.input}
+              placeholderTextColor= {"#b1b1b3"}
               value={location}
               onChangeText={setLocation}
               placeholder="Enter location"
@@ -195,6 +199,7 @@ const ClimbInputData = () => {
             <Text style={styles.label}>Setter</Text>
             <TextInput
               style={styles.input}
+              placeholderTextColor= {"#b1b1b3"}
               value={setter.email}
             />
           </View>
