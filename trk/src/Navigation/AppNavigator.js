@@ -21,7 +21,7 @@ function HomeStack() {
   return (
     <Stack.Navigator>
       {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
-      <Stack.Screen name="Home2" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="HomePage_stack" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Detail" component={ClimbDetailScreen} />
     </Stack.Navigator>
   );
@@ -32,7 +32,7 @@ function ProfileStack() {
   return (
     <Stack.Navigator>
       {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
-      <Stack.Screen name="Profile" component={UserProfile} />
+      <Stack.Screen name="User_profile" component={UserProfile} />
       <Stack.Screen name="Detail" component={ClimbDetailScreen} />
       <Stack.Screen name="Set" component={SetDetail} />
     </Stack.Navigator>
@@ -44,8 +44,8 @@ function RankStack() {
   return (
     <Stack.Navigator>
       {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
-      <Stack.Screen name="Ranking" component={CompRanking} />
-      <Stack.Screen name="ClimberPerformance" component={ClimberPerformance} />
+      <Stack.Screen name="Comp_Ranking" component={CompRanking} />
+      <Stack.Screen name="Climber_Performance" component={ClimberPerformance} />
     </Stack.Navigator>
   );
 }
@@ -56,7 +56,7 @@ function AppTabs() {
 
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
+      <Tab.Screen name="HomePage" component={HomeStack} options={{ headerShown: false }} />
       {role === 'climber' ? null : <Tab.Screen name="Climb List" component={ClimbInputData} />}
       <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} />
       {role === 'climber' ? null : <Tab.Screen name="Ranking" component={RankStack} options={{ headerShown: false }} />}
