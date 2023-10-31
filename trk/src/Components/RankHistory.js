@@ -1,14 +1,14 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
-import RankItem from './RankItem'; // Make sure the path is correct
+import ListHistory from './ListHistory';
+import RankItem from './RankItem';
 
 const RankHistory = (props) => {
     return (
-        <ScrollView contentContainerStyle={{ padding: 10 }}>
-            {props.rankingHistory.map((user, index) => (
-                <RankItem key={index} user={user} />
-            ))}
-        </ScrollView>
+        <ListHistory
+            data={props.rankingHistory}
+            renderItem={(user) => <RankItem user={user} />}
+            keyExtractor={(user, index) => index.toString()}
+        />
     );
 }
 
