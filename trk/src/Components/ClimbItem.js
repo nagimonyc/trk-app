@@ -26,7 +26,7 @@ const ClimbItem = ({ climb, tapId }) => {
         navigation.navigate('Detail', { climbData: climb, tapId: tapId, profileCheck: 1 });
     };
     const navigateToSet = () => {
-        navigation.navigate('Set', {climbData: climb});
+        navigation.navigate('Set', { climbData: climb });
     };
 
     return (

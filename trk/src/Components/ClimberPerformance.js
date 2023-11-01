@@ -12,16 +12,11 @@ const ClimberPerformance = () => {
     const fetchData = async () => {
         const { getTapsBySomeField } = TapsApi();
         const { getClimb } = ClimbsApi();
-        console.log("userData.userId:", userData.userId);
 
         try {
             const tapsSnapshot = await getTapsBySomeField('user', userData.userId);
             const climbsPromises = tapsSnapshot.docs.map(async (tapDoc) => {
                 const climbSnapshot = await getClimb(tapDoc.data().climb);
-
-                console.log("climbSnapshot.data():", climbSnapshot.data());
-                console.log("tapDoc.data():", tapDoc.data());
-
                 return {
                     id: climbSnapshot.id,
                     ...climbSnapshot.data(),

@@ -19,11 +19,9 @@ const SetterProfile = (props) => {
         const { getClimbsBySomeField } = ClimbsApi();
         try {
             const setSnapshot = await getClimbsBySomeField('setter', currentUser.uid);
-            console.log('setSnapshot:', setSnapshot);  // Log the snapshot here
             const newSetHistory = setSnapshot.docs.map(doc => {
                 return doc.exists ? { id: doc.id, ...doc.data() } : null;
             }).filter(set => set !== null);
-            console.log('newSetHistory:', newSetHistory);  // Log the processed climbs here
             setSetHistory(newSetHistory);
         } catch (error) {
             console.error("Error fetching sets for user:", error);
