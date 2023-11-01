@@ -7,7 +7,7 @@ const RankItem = ({ user }) => {
     const navigation = useNavigation();
 
     const navigateToClimberPerformance = () => {
-        navigation.navigate('ClimberPerformance', { userData: user });
+        navigation.navigate('Climber_Performance', { userData: user });
     };
 
     return (

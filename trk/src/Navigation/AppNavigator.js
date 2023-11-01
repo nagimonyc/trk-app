@@ -21,9 +21,16 @@ function HomeStack() {
   console.log('[TEST] HomeStack called');
   return (
     <Stack.Navigator>
-      {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
-      <Stack.Screen name="Home2" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Detail" component={ClimbDetailScreen} />
+      <Stack.Screen
+        name="HomePage_stack"
+        component={HomeScreen}
+        options={{ title: 'Home', headerBackTitleVisible: null }}
+      />
+      <Stack.Screen
+        name="Detail"
+        component={ClimbDetailScreen}
+        options={{ title: 'Climb Detail', headerBackTitle: 'Home', headerTitleAlign: 'center' }}
+      />
     </Stack.Navigator>
   );
 }
@@ -33,9 +40,19 @@ function ProfileStack() {
   return (
     <Stack.Navigator>
       {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
-      <Stack.Screen name="Profile" component={UserProfile} />
-      <Stack.Screen name="Detail" component={ClimbDetailScreen} />
-      <Stack.Screen name="Set" component={SetDetail} />
+      <Stack.Screen name="User_Profile"
+        component={UserProfile}
+        options={{ title: 'Profile', headerBackTitleVisible: false }}
+      />
+      <Stack.Screen
+        name="Detail"
+        component={ClimbDetailScreen}
+        options={{ title: 'Climb Detail', headerBackTitle: 'Profile', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Set"
+        component={SetDetail}
+        options={{ title: 'Climb Performance', headerBackTitle: 'Profile', headerTitleAlign: 'center' }} />
       <Stack.Screen name="Settings" component={Settings} />
     </Stack.Navigator>
   );
@@ -45,9 +62,17 @@ function RankStack() {
   console.log('[TEST] RankStack called');
   return (
     <Stack.Navigator>
-      {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
-      <Stack.Screen name="Ranking" component={CompRanking} />
-      <Stack.Screen name="ClimberPerformance" component={ClimberPerformance} />
+      {/* Here, change the name of the screen to 'Competition_Ranking_screen' */}
+      <Stack.Screen
+        name="Competition_Ranking_screen"
+        component={CompRanking}
+        options={{ title: 'Ranking', headerBackTitleVisible: false }}
+      />
+      <Stack.Screen
+        name="Climber_Performance"
+        component={ClimberPerformance}
+        options={{ title: 'Climber Performance', headerBackTitle: 'Ranking', headerTitleAlign: 'center' }}
+      />
     </Stack.Navigator>
   );
 }
@@ -58,10 +83,28 @@ function AppTabs() {
 
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-      {role === 'climber' ? null : <Tab.Screen name="Climb List" component={ClimbInputData} />}
-      <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} />
-      {role === 'climber' ? null : <Tab.Screen name="Ranking" component={RankStack} options={{ headerShown: false }} />}
+      <Tab.Screen
+        name="Home"
+        component={HomeStack}
+        options={{ title: 'Home', headerShown: false }}
+      />
+      {role === 'climber' ? null :
+        <Tab.Screen
+          name="Climb List"
+          component={ClimbInputData}
+          options={{}}
+        />}
+      <Tab.Screen
+        name="ProfileTab"
+        component={ProfileStack}
+        options={{ title: 'Profile', headerShown: false }}
+      />
+      {role === 'climber' ? null :
+        <Tab.Screen
+          name="RankingTab"
+          component={RankStack}
+          options={{ title: 'Ranking', headerShown: false }}
+        />}
     </Tab.Navigator>
   );
 }
