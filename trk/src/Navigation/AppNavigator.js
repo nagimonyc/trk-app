@@ -11,6 +11,7 @@ import UserProfile from '../Screens/Profile';
 import { AuthContext } from '../Utils/AuthContext';
 import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/SetDetail';
+import Settings from '../Components/Settings';
 
 
 const Stack = createStackNavigator();
@@ -52,6 +53,7 @@ function ProfileStack() {
         name="Set"
         component={SetDetail}
         options={{ title: 'Climb Performance', headerBackTitle: 'Profile', headerTitleAlign: 'center' }} />
+      <Stack.Screen name="Settings" component={Settings} />
     </Stack.Navigator>
   );
 }

@@ -1,14 +1,14 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
-import ClimbItem from './ClimbItem'; // Make sure the path is correct
+import ListHistory from './ListHistory';
+import ClimbItem from './ClimbItem';
 
 const TapHistory = (props) => {
     return (
-        <ScrollView contentContainerStyle={{ padding: 10 }}>
-            {props.climbsHistory.map((climb, index) => (
-                <ClimbItem key={index} climb={climb} tapId={climb.tapId} />
-            ))}
-        </ScrollView>
+        <ListHistory
+            data={props.climbsHistory}
+            renderItem={(climb) => <ClimbItem climb={climb} tapId={climb.tapId} />}
+            keyExtractor={(climb, index) => index.toString()}
+        />
     );
 }
 

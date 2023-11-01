@@ -6,7 +6,7 @@ import { firebase } from "@react-native-firebase/auth";
 import SetterProfile from "../../Components/SetterProfile";
 import ClimberProfile from "../../Components/ClimberProfile";
 
-const UserProfile = () => {
+const UserProfile = ({navigation}) => {
     const { role } = React.useContext(AuthContext);
 
 
@@ -14,7 +14,7 @@ const UserProfile = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
 
-                {role === 'climber' ? <ClimberProfile /> : <SetterProfile />}
+                {role === 'climber' ? <ClimberProfile navigation={navigation}/> : <SetterProfile navigation={navigation}/>}
             </View>
         </SafeAreaView>
     );
