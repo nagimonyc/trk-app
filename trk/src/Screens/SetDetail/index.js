@@ -69,7 +69,7 @@ function SetDetail(props) {
         </View>
         <View style={styles.circleWrapper}>
         <View style={styles.setterCircle}>
-        <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> 
+        {setterImageUrl && <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> }
         </View>
         </View>
       </View>
@@ -77,7 +77,7 @@ function SetDetail(props) {
       <Text style={styles.count}>{tapCount}</Text>
       </View>
       <View style={styles.climbPhoto}>
-      <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />
+      {climbImageUrl && <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />}
       </View>
 
     </View>
