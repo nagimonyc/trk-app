@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import TapsApi from '../../api/TapsApi';
 
-import { View, Text, ScrollView, StyleSheet, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -14,7 +14,7 @@ function ClimbDetail(props) {
   const { climbData } = props.route.params;
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
-  const [completion, setCompletion] = useState('Zone');
+  const [completion, setCompletion] = useState('1/2');
   const [attempts, setAttempts] = useState('1');
   const [witness1, setWitness1] = useState('');
   const [witness2, setWitness2] = useState('');
@@ -29,11 +29,11 @@ function ClimbDetail(props) {
           const tap = (await getTap(tapId)).data();  // Using await here
           let stringCompletion;
           if (tap.completion === 0.5) {
-            stringCompletion = 'Zone'
+            stringCompletion = '1/2'
           } else if (tap.completion === 1) {
-            stringCompletion = 'Top'
+            stringCompletion = 'full'
           } else {
-            stringCompletion = 'Zone'
+            stringCompletion = '1/2'
           }
           setCompletion(stringCompletion);
 
@@ -70,9 +70,9 @@ function ClimbDetail(props) {
     const { tapId } = props.route.params;
 
     let numericCompletion;
-    if (completion === 'Zone') {
+    if (completion === '1/2') {
       numericCompletion = 0.5;
-    } else if (completion === 'Top') {
+    } else if (completion === 'full') {
       numericCompletion = 1;
     }
 
@@ -133,7 +133,6 @@ function ClimbDetail(props) {
   if (climbData.set === 'Competition') {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView>
         <View style={styles.container}>
           <View style={[styles.wrapper]}>
             <SafeAreaView />
@@ -163,9 +162,9 @@ function ClimbDetail(props) {
               </View>
               <View style={styles.segmentedControlContainer}>
                 <SegmentedControl
-                  values={['Zone', 'Top']}
+                  values={['1/2', 'full']}
                   tintColor="#007AFF"
-                  selectedIndex={completion === "Zone" ? 0 : 1} // set the initially selected index
+                  selectedIndex={completion === "1/2" ? 0 : 1} // set the initially selected index
                   style={styles.segmentedControl}
                   onChange={(event) => {
                     setCompletion(event.nativeEvent.value);
@@ -217,7 +216,6 @@ function ClimbDetail(props) {
 
           </View>
         </View>
-        </ScrollView>
       </TouchableWithoutFeedback>
     )
   }
