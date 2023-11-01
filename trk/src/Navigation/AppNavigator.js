@@ -57,7 +57,7 @@ function AppTabs() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-      {role === 'climber' ? null : <Tab.Screen name="Climb List" component={ClimbInputData} />}
+      {role === 'climber' ? null : <Tab.Screen name="Create" component={ClimbInputData} />}
       <Tab.Screen name="Profile" component={ProfileStack} options={{ headerShown: false }} />
       {role === 'climber' ? null : <Tab.Screen name="Ranking" component={RankStack} options={{ headerShown: false }} />}
     </Tab.Navigator>
