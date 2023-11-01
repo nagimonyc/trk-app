@@ -35,7 +35,7 @@ const ClimbItem = ({ climb, tapId }) => {
                 <Image source={{ uri: climb.image }} style={styles.climbImage} />
                 <Text style={styles.climbName}>{climb.name}</Text>
                 <View style={styles.setterDot}>
-                    <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />
+                {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
                 </View>
             </ListItemContainer>
         </TouchableOpacity>
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         borderRadius: 15,
-        backgroundColor: '#CBB092',
+        backgroundColor: 'white',
         marginRight: 5,
         marginLeft: 60,
         alignItems: 'center',
