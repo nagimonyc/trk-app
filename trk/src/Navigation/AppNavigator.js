@@ -11,6 +11,7 @@ import UserProfile from '../Screens/Profile';
 import { AuthContext } from '../Utils/AuthContext';
 import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/SetDetail';
+import Settings from '../Components/Settings';
 
 
 const Stack = createStackNavigator();
@@ -35,6 +36,7 @@ function ProfileStack() {
       <Stack.Screen name="Profile" component={UserProfile} />
       <Stack.Screen name="Detail" component={ClimbDetailScreen} />
       <Stack.Screen name="Set" component={SetDetail} />
+      <Stack.Screen name="Settings" component={Settings} />
     </Stack.Navigator>
   );
 }
