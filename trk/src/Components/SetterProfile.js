@@ -33,7 +33,7 @@ const SetterProfile = ({navigation}) => {
             <View style={styles.innerContainer}>
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Activity</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Your Settings')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                         <Icon name="settings" size={30} color="#3498db" />
                     </TouchableOpacity>
                 </View>

@@ -36,7 +36,7 @@ function ProfileStack() {
       <Stack.Screen name="Profile" component={UserProfile} />
       <Stack.Screen name="Detail" component={ClimbDetailScreen} />
       <Stack.Screen name="Set" component={SetDetail} />
-      <Stack.Screen name="Your Settings" component={Settings} />
+      <Stack.Screen name="Settings" component={Settings} />
     </Stack.Navigator>
   );
 }
