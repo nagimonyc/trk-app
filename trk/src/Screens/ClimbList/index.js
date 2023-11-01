@@ -114,8 +114,9 @@ const ClimbInputData = () => {
 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
+<ScrollView>
       <SafeAreaView style={styles.container}>
-        <ScrollView>
+       
           <View style={styles.content}>
             <Text style={styles.label}>Name</Text>
             <TextInput
@@ -215,8 +216,9 @@ const ClimbInputData = () => {
             title="Add Climb"
           >
           </Button>
-        </ScrollView>
+        
       </SafeAreaView>
+      </ScrollView>
 
     </TouchableWithoutFeedback>
 
