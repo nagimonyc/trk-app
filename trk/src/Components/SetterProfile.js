@@ -5,15 +5,13 @@ import TapHistory from "./TapHistory";
 import ClimbsApi from "../api/ClimbsApi";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const SetterProfile = (props) => {
+const SetterProfile = ({navigation}) => {
 
     const { currentUser } = React.useContext(AuthContext);
 
     const [setHistory, setSetHistory] = React.useState([]);
-
-
-
 
     const handleSetHistory = async () => {
         const { getClimbsBySomeField } = ClimbsApi();
@@ -29,42 +27,15 @@ const SetterProfile = (props) => {
             console.error("Error fetching sets for user:", error);
         }
     };
-    const handleDeleteAccount = async () => {
-        Alert.alert(
-            "Delete Account",
-            "Are you sure you want to delete all user data?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "Yes", onPress: async () => {
-                        try {
-
-                            const userUID = currentUser.uid;
-                            await firestore().collection('users').doc(userUID).delete();
-                            const user = firebase.auth().currentUser;
-                            try {
-                                await user.delete();
-                            } catch (error) {
-                                console.error("Error deleting user account:", error);
-                            }
-                        } catch (error) {
-                            console.error("Error deleting user data:", error);
-                        }
-                    }
-                }
-            ]
-        );
-    };
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Activity</Text>
-                    <Button title="Delete Account" onPress={handleDeleteAccount}></Button>
+                    <TouchableOpacity onPress={() => navigation.navigate('Your Settings')}>
+                        <Icon name="settings" size={30} color="#3498db" />
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.effortRecap}>

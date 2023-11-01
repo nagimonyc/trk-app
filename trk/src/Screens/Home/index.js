@@ -121,9 +121,6 @@ function HomeScreen(props) {
       <View style={[styles.wrapper, styles.center]}>
         <Image source={require('../../../assets/climb.png')} style={styles.banner} resizeMode="contain" />
         {renderNfcButtons()}
-        <Button mode="contained" onPress={SignOut}>
-          Sign Out
-        </Button>
       </View>
       {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
     </>
