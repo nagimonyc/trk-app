@@ -69,7 +69,7 @@ function RankStack() {
         options={{ title: 'Ranking', headerBackTitleVisible: false }}
       />
       <Stack.Screen
-        name="Climber Performance"
+        name="Climber_Performance"
         component={ClimberPerformance}
         options={{ title: 'Climber Performance', headerBackTitle: 'Ranking', headerTitleAlign: 'center' }}
       />
