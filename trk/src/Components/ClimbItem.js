@@ -32,7 +32,7 @@ const ClimbItem = ({ climb, tapId }) => {
     return (
         <TouchableOpacity onPress={role === 'climber' ? navigateToDetail : navigateToSet}>
             <ListItemContainer dotStyle={styles.climbDot}>
-                <Image source={{ uri: climb.image }} style={styles.climbImage} />
+            {climb.image && <Image source={{ uri: climb.image }} style={styles.climbImage} />}
                 <Text style={styles.climbName}>{climb.name}</Text>
                 <View style={styles.setterDot}>
                 {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         height: 30,
         borderRadius: 15,
         backgroundColor: '#C73B3B',
-        marginRight: 1,
+        marginRight: 8,
         marginLeft: 10,
     },
     climbName: {
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         borderRadius: 15,
-        marginRight: 1,
+
     },
     setterDot: {
         width: 30,
