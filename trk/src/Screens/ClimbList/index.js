@@ -114,8 +114,9 @@ const ClimbInputData = () => {
 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
+<ScrollView>
       <SafeAreaView style={styles.container}>
-        <ScrollView>
+       
           <View style={styles.content}>
             <Text style={styles.label}>Name</Text>
             <TextInput
@@ -196,12 +197,6 @@ const ClimbInputData = () => {
           <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
         </TouchableOpacity> */}
 
-            <Text style={styles.label}>Setter</Text>
-            <TextInput
-              style={styles.input}
-              placeholderTextColor= {"#b1b1b3"}
-              value={setter.email}
-            />
           </View>
 
           {/* Include AndroidPrompt only for Android platform */}
@@ -215,8 +210,9 @@ const ClimbInputData = () => {
             title="Add Climb"
           >
           </Button>
-        </ScrollView>
+        
       </SafeAreaView>
+      </ScrollView>
 
     </TouchableWithoutFeedback>
 
