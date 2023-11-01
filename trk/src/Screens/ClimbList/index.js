@@ -197,12 +197,6 @@ const ClimbInputData = () => {
           <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
         </TouchableOpacity> */}
 
-            <Text style={styles.label}>Setter</Text>
-            <TextInput
-              style={styles.input}
-              placeholderTextColor= {"#b1b1b3"}
-              value={setter.email}
-            />
           </View>
 
           {/* Include AndroidPrompt only for Android platform */}
