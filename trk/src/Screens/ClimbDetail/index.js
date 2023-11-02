@@ -224,6 +224,7 @@ function ClimbDetail(props) {
   else {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView>
         <View style={styles.container}>
           <View style={[styles.wrapper]} >
             <SafeAreaView />
@@ -246,6 +247,7 @@ function ClimbDetail(props) {
 
           </View>
         </View>
+        </ScrollView>
       </TouchableWithoutFeedback>
     )
   }
@@ -259,8 +261,8 @@ const styles = StyleSheet.create({
   },
 
   wrapper: {
-    width: 317,
-    height: 539.89,
+    width: '90%',
+    marginTop: 5,
     alignItems: 'center',
     padding: 15,
     backgroundColor: 'white',
