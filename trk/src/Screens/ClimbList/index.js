@@ -229,11 +229,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     marginBottom: 8,
+    color: 'black',
   },
   input: {
     backgroundColor: "#e0e0e0",
     marginBottom: 16,
     fontSize: 18,
+    color: 'black',
   },
   uploadButton: {
     alignItems: 'center',

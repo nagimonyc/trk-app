@@ -69,7 +69,7 @@ const CompRanking = () => {
         <View style={styles.container}>
             <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', flex: 0.5 }}>
                 <View style={{ flex: 1 }}></View>
-                <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center' }}>
+                <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black'}}>
                     List
                 </Text>
                 <TouchableOpacity style={[styles.pillButton]} onPress={handleRankingHistory}>

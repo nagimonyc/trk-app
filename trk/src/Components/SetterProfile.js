@@ -6,12 +6,17 @@ import ClimbsApi from "../api/ClimbsApi";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useEffect } from "react";
 
 const SetterProfile = ({navigation}) => {
 
     const { currentUser } = React.useContext(AuthContext);
 
     const [setHistory, setSetHistory] = React.useState([]);
+
+    useEffect(() => {
+        handleSetHistory();
+    }, []);
 
     const handleSetHistory = async () => {
         const { getClimbsBySomeField } = ClimbsApi();
@@ -40,8 +45,8 @@ const SetterProfile = ({navigation}) => {
 
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, {}]}>
-                        <Text>{setHistory.length}</Text>
-                        <Text>Total Climbs Set</Text>
+                        <Text style={styles.any_text}>{setHistory.length}</Text>
+                        <Text style={styles.any_text}> Total Climbs Set</Text>
                     </View>
                     <View style={[styles.effortRecapChild, {}]}>
 
@@ -50,7 +55,7 @@ const SetterProfile = ({navigation}) => {
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{ flex: 1 }}></View>
-                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center' }}>
+                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black'}}>
                             Recap
                         </Text>
                         <TouchableOpacity
@@ -84,9 +89,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
+    any_text: {
+        color: 'black',
+    },
     titleText: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: 'black',
     },
     effortRecap: {
         flex: 0.75,
@@ -96,7 +105,8 @@ const styles = StyleSheet.create({
     effortRecapChild: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        color: 'black',
     },
     effortRecapGraph: {
         flex: 3,
@@ -113,10 +123,12 @@ const styles = StyleSheet.create({
     effortHistory: {
         flex: 4,
         paddingHorizontal: 5,
+        color: 'black',
     },
     effortHistoryList: {
         flex: 1,
         width: '100%',
+        color: 'black',
     },
     pillButton: {
         backgroundColor: '#3498db', // or any color of your choice
@@ -128,7 +140,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
-        fontSize: 16
+        fontSize: 16,
     }
 });
 
