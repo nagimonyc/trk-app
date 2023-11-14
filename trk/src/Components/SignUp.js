@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
@@ -10,6 +10,10 @@ const SignUp = ({ role, nyuComp }) => {
 
     const handleSignUp = () => {
         console.log("[TEST] sign up call");
+        if (!email.trim() || !password.trim()) {
+            Alert.alert('Error', 'Email and password must not be empty');
+            return; // Early return to prevent Firebase call with empty fields
+        }
         auth()
             .createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {
