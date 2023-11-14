@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 const SignIn = () => {
@@ -8,6 +8,10 @@ const SignIn = () => {
     const [password, setPassword] = useState('');
 
     const handleSignIn = () => {
+        if (!email.trim() || !password.trim()) {
+            Alert.alert('Error', 'Email and password must not be empty');
+            return; // Early return to prevent Firebase call with empty fields
+        }
         auth()
             .signInWithEmailAndPassword(email, password)
             .then(() => {
@@ -23,7 +27,7 @@ const SignIn = () => {
             <View style={styles.container}>
                 <TextInput
                     placeholder="Email"
-                    placeholderTextColor= {"#b1b1b3"}
+                    placeholderTextColor={"#b1b1b3"}
                     value={email}
                     onChangeText={setEmail}
                     style={styles.input}
@@ -32,7 +36,7 @@ const SignIn = () => {
                     placeholder="Password"
                     value={password}
                     secureTextEntry
-                    placeholderTextColor= {"#b1b1b3"}
+                    placeholderTextColor={"#b1b1b3"}
                     onChangeText={setPassword}
                     style={styles.input}
                 />
