@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect} from "react";
 import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import TapHistory from "./TapHistory";
@@ -11,6 +11,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 const ClimberProfile = ({navigation}) => {
     const { tapCount, currentUser } = useContext(AuthContext);
     const [climbsHistory, setClimbsHistory] = useState([]);
+
+    useEffect(() => {
+        handleTapHistory();
+    }, []);
 
     const handleTapHistory = async () => {
         const { getTapsBySomeField } = TapsApi();
@@ -44,8 +48,8 @@ const ClimberProfile = ({navigation}) => {
                 </View>
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, {}]}>
-                        <Text>{tapCount}</Text>
-                        <Text>Total Climbs</Text>
+                        <Text style={styles.any_text}>{tapCount}</Text>
+                        <Text style={styles.any_text}>Total Climbs</Text>
                     </View>
                     <View style={[styles.effortRecapChild, {}]}>
                         {/* <Text>CLIMB</Text>
@@ -55,7 +59,7 @@ const ClimberProfile = ({navigation}) => {
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{ flex: 1 }}></View>
-                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center' }}>
+                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black'}}>
                             Recap
                         </Text>
                         <TouchableOpacity
@@ -88,10 +92,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        color: 'black',
+    },
+    any_text: {
+        color: 'black',
     },
     titleText: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: 'black',
     },
     effortRecap: {
         flex: 0.75,
@@ -101,7 +110,8 @@ const styles = StyleSheet.create({
     effortRecapChild: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        color: 'black',
     },
     effortRecapGraph: {
         flex: 3,
@@ -122,6 +132,7 @@ const styles = StyleSheet.create({
     effortHistoryList: {
         flex: 1,
         width: '100%',
+        color: 'black',
     },
     pillButton: {
         backgroundColor: '#3498db', // or any color of your choice

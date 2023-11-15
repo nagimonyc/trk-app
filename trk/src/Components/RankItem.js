@@ -13,7 +13,7 @@ const RankItem = ({ user }) => {
     return (
         <TouchableOpacity onPress={navigateToClimberPerformance}>
             <ListItemContainer>
-                <Text>{user.email} - Points: {user.totalIFSC}</Text>
+                <Text style={{color: 'black'}}>{user.email} - Points: {user.totalIFSC}</Text>
             </ListItemContainer>
         </TouchableOpacity>
     );
