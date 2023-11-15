@@ -114,15 +114,15 @@ const ClimbInputData = () => {
 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
-<ScrollView>
-      <SafeAreaView style={styles.container}>
-       
+      <ScrollView>
+        <SafeAreaView style={styles.container}>
+
           <View style={styles.content}>
             <Text style={styles.label}>Name</Text>
             <TextInput
               style={styles.input}
               value={name}
-              placeholderTextColor= {"#b1b1b3"}
+              placeholderTextColor={"#b1b1b3"}
               onChangeText={setName}
               placeholder="Enter name"
 
@@ -133,7 +133,7 @@ const ClimbInputData = () => {
             <TextInput
               style={styles.input}
               value={grade}
-              placeholderTextColor= {"#b1b1b3"}
+              placeholderTextColor={"#b1b1b3"}
               onChangeText={setGrade}
               placeholder="Enter grade"
 
@@ -144,14 +144,14 @@ const ClimbInputData = () => {
               style={styles.input}
               value={ifsc}
               onChangeText={setIfsc}
-              placeholderTextColor= {"#b1b1b3"}
+              placeholderTextColor={"#b1b1b3"}
               placeholder="Enter score"
             />
 
             <Text style={styles.label}>Location</Text>
             <TextInput
               style={styles.input}
-              placeholderTextColor= {"#b1b1b3"}
+              placeholderTextColor={"#b1b1b3"}
               value={location}
               onChangeText={setLocation}
               placeholder="Enter location"
@@ -210,8 +210,8 @@ const ClimbInputData = () => {
             title="Add Climb"
           >
           </Button>
-        
-      </SafeAreaView>
+
+        </SafeAreaView>
       </ScrollView>
 
     </TouchableWithoutFeedback>
@@ -222,6 +222,7 @@ const ClimbInputData = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginBottom: 25
   },
   content: {
     padding: 16,
