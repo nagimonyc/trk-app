@@ -12,7 +12,7 @@ const ClimbItem = ({ climb, tapId }) => {
     useEffect(() => {
         const fetchImageURL = async () => {
             try {
-                const url = await storage().ref('profile photos/marcial.png').getDownloadURL();
+                const url = await storage().ref('profile photos/epset.png').getDownloadURL();
                 setImageURL(url);
             } catch (error) {
                 console.error('Failed to fetch image URL:', error);
@@ -26,16 +26,16 @@ const ClimbItem = ({ climb, tapId }) => {
         navigation.navigate('Detail', { climbData: climb, tapId: tapId, profileCheck: 1 });
     };
     const navigateToSet = () => {
-        navigation.navigate('Set', {climbData: climb});
+        navigation.navigate('Set', { climbData: climb });
     };
 
     return (
         <TouchableOpacity onPress={role === 'climber' ? navigateToDetail : navigateToSet}>
             <ListItemContainer dotStyle={styles.climbDot}>
-            {climb.image && <Image source={{ uri: climb.image }} style={styles.climbImage} />}
+                {climb.image && <Image source={{ uri: climb.image }} style={styles.climbImage} />}
                 <Text style={styles.climbName}>{climb.name}</Text>
                 <View style={styles.setterDot}>
-                {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
+                    {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
                 </View>
             </ListItemContainer>
         </TouchableOpacity>
