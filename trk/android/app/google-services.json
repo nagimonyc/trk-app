@@ -21,6 +21,9 @@
       "api_key": [
         {
           "current_key": "AIzaSyCiqvzPx-2Rx1fosAHCY58k9VdSGWZJ8P4"
+        },
+        {
+          "current_key": "AIzaSyA7Q26D6yQW7_ZwmNqc6_l5Xw6-0ngqMTQ"
         }
       ],
       "services": {
@@ -50,14 +53,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "786555738802-5br6dclev5prrbqjln4sgalomncbu5ar.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.nagimo.trk",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
           "client_id": "786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -65,6 +60,9 @@
       "api_key": [
         {
           "current_key": "AIzaSyCiqvzPx-2Rx1fosAHCY58k9VdSGWZJ8P4"
+        },
+        {
+          "current_key": "AIzaSyA7Q26D6yQW7_ZwmNqc6_l5Xw6-0ngqMTQ"
         }
       ],
       "services": {
