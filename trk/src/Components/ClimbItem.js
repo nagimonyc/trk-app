@@ -32,7 +32,6 @@ const ClimbItem = ({ climb, tapId }) => {
     return (
         <TouchableOpacity onPress={role === 'climber' ? navigateToDetail : navigateToSet}>
             <ListItemContainer dotStyle={styles.climbDot}>
-                {climb.image && <Image source={{ uri: climb.image }} style={styles.climbImage} />}
                 <Text style={styles.climbName}>{climb.name}</Text>
                 <View style={styles.setterDot}>
                     {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
