@@ -108,18 +108,19 @@ function HomeScreen(props) {
     } else {
       return (
         <>
-          <Button mode="contained" style={styles.btn} onPress={identifyClimb}>
+          <Button mode="contained" labelStyle={{ color: 'white' }} style={[styles.btn,  { backgroundColor: '#ff8901' }]} onPress={identifyClimb}>
             Identify Climb
           </Button>
         </>
       );
-    }
+    };
+    
   }
 
   return (
     <>
       <View style={[styles.wrapper, styles.center]}>
-        <Image source={require('../../../assets/climb.png')} style={styles.banner} resizeMode="contain" />
+        <Image source={require('../../../assets/nagimo-logo.png')} style={styles.banner} resizeMode="contain" />
         {renderNfcButtons()}
       </View>
       {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
