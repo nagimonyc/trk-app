@@ -63,7 +63,25 @@ function ClimbDetail(props) {
   }, [props.route.params.profileCheck, props.route.params.tapId]);  // dependencies array
 
 
+  useEffect(() => {
+    const climbReference = climbData.photo ? storage().ref(`${climbData.photo}`) : storage().ref('climb photos/the_crag.png');
+    climbReference.getDownloadURL()
+      .then((url) => {
+        setClimbImageUrl(url);
+      })
+      .catch((error) => {
+        console.error("Error getting climb image URL: ", error);
+      });
 
+    const setterReference = storage().ref('profile photos/marcial.png');
+    setterReference.getDownloadURL()
+      .then((url) => {
+        setSetterImageUrl(url);
+      })
+      .catch((error) => {
+        console.error("Error getting setter image URL: ", error);
+      });
+  }, []);
 
 
   const handleUpdate = async () => {
@@ -105,30 +123,6 @@ function ClimbDetail(props) {
       return parseInt(value, 10) - 1;
     }
   };
-
-
-
-  // useEffect(() => {
-  //   const climbReference = storage().ref('climb photos/the_crag.png');
-  //   climbReference.getDownloadURL()
-  //     .then((url) => {
-  //       setClimbImageUrl(url);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error getting climb image URL: ", error);
-  //     });
-
-  //   const setterReference = storage().ref('profile photos/epset.png');
-  //   setterReference.getDownloadURL()
-  //     .then((url) => {
-  //       setSetterImageUrl(url);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error getting setter image URL: ", error);
-  //     });
-  // }, []);
-
-
 
   if (climbData.set === 'Competition') {
     return (
@@ -301,7 +295,7 @@ const styles = StyleSheet.create({
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: '#CDB58F',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 50,
@@ -319,7 +313,7 @@ const styles = StyleSheet.create({
     width: 197,
     height: 287,
     marginTop: 42,
-    backgroundColor: '#ff9a00',
+    backgroundColor: 'white',
     borderRadius: 3.88,
   },
   contentArea: {
