@@ -16,7 +16,7 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 
 
 const ClimbInputData = () => {
-  console.log('[TEST] ClimbList called');
+  console.log('[TEST] ClimbCreate called');
   const { currentUser } = useContext(AuthContext);
   const setter = currentUser;
 
