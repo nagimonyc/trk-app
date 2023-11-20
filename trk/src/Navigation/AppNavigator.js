@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import CompRanking from '../Screens/CompRanking';
 import HomeScreen from '../Screens/Home';
-import ClimbInputData from '../Screens/ClimbList';
+import ClimbInputData from '../Screens/ClimbCreate';
 import ClimbDetailScreen from '../Screens/ClimbDetail';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import UserProfile from '../Screens/Profile';
@@ -90,7 +90,7 @@ function AppTabs() {
       />
       {role === 'climber' ? null :
         <Tab.Screen
-          name="Climb List"
+          name="Create Climb"
           component={ClimbInputData}
           options={{}}
         />}
