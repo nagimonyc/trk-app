@@ -6,7 +6,6 @@ import readClimb from '../../NfcUtils/readClimb';
 import ClimbsApi from '../../api/ClimbsApi';
 import Image from '../../Components/Image';
 import AndroidPrompt from '../../Components/AndroidPrompt';
-import SignOut from '../../Components/SignOut';
 import { AuthContext } from '../../Utils/AuthContext';
 import TapsApi from '../../api/TapsApi';
 
@@ -18,6 +17,8 @@ function HomeScreen(props) {
 
   // Navigation
   const { navigation } = props;
+
+  const logo = require('../../../assets/nagimo-logo.png');
 
   // API Call to database
 
@@ -92,11 +93,18 @@ function HomeScreen(props) {
     if (hasNfc === null) {
       return null;
     } else if (!hasNfc) {
-      return <Text>Your device doesn't support NFC</Text>;
+
+      return (
+        <>
+          <Text style={styles.tapText}>Your device doesn't support NFC</Text>
+          <Image source={logo} style={styles.image} resizeMode="contain" />
+        </>
+      );
     } else if (!enabled) {
       return (
         <>
-          <Text>Your NFC is not enabled!</Text>
+          <Text style={styles.tapText}>Your NFC is not enabled!</Text>
+          <Image source={logo} style={styles.image} resizeMode="contain" />
           <TouchableOpacity onPress={() => { NfcManager.goToNfcSetting(); }}>
             <Text>GO TO NFC SETTINGS</Text>
           </TouchableOpacity>
@@ -108,19 +116,20 @@ function HomeScreen(props) {
     } else {
       return (
         <>
-          <Button mode="contained" labelStyle={{ color: 'white' }} style={[styles.btn,  { backgroundColor: '#ff8901' }]} onPress={identifyClimb}>
-            Identify Climb
-          </Button>
+          <Text style={styles.tapText}>Tap to Track</Text>
+          <TouchableOpacity style={styles.button} onPress={identifyClimb}>
+            <Image source={logo} style={styles.image} resizeMode="contain"/>
+          </TouchableOpacity>
         </>
       );
     };
-    
+
   }
 
   return (
     <>
       <View style={[styles.wrapper, styles.center]}>
-        <Image source={require('../../../assets/nagimo-logo.png')} style={styles.banner} resizeMode="contain" />
+
         {renderNfcButtons()}
       </View>
       {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
@@ -136,15 +145,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  btn: {
-    width: 240,
-    marginBottom: 20,
-  },
-  banner: {
-    width: 240,
-    height: 240,
+  image: {
+    width: 180,
+    height: 180,
     marginBottom: 60,
+    marginTop: 15,
   },
+  tapText: {
+    color: 'grey',
+    fontSize: 25,
+    marginBottom: 25,
+    fontWeight: '600'
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 5,
+  },
+
 });
 
 export default HomeScreen;
