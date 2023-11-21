@@ -26,7 +26,7 @@ const ClimbInputData = () => {
 
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
-  const [location, setLocation] = useState("Gowanus");
+  const [gym, setGym] = useState("Gowanus");
   // const [image, setImage] = useState("");
   const [type, setType] = useState("Boulder");
   const [set, setSet] = useState("Competition");
@@ -53,7 +53,7 @@ const ClimbInputData = () => {
     const climb = {
       name,
       grade,
-      location,
+      gym,
       type,
       set,
       ifsc,
@@ -97,7 +97,7 @@ const ClimbInputData = () => {
         // Reset form
         setName("");
         setGrade("");
-        setLocation("Gowanus");
+        setGym("Gowanus");
         // setImage("");
         setType("Boulder");
         setSet("Competition");
@@ -148,13 +148,13 @@ const ClimbInputData = () => {
               placeholder="Enter score"
             />
 
-            <Text style={styles.label}>Location</Text>
+            <Text style={styles.label}>Gym</Text>
             <TextInput
               style={styles.input}
               placeholderTextColor={"#b1b1b3"}
-              value={location}
-              onChangeText={setLocation}
-              placeholder="Enter location"
+              value={gym}
+              onChangeText={setGym}
+              placeholder="Enter gym"
             />
 
             <Text style={styles.label}>Type</Text>
