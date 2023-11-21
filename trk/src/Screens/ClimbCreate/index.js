@@ -30,7 +30,7 @@ const ClimbInputData = () => {
   const [gym, setGym] = useState(null);
   // const [image, setImage] = useState("");
   const [type, setType] = useState("Boulder");
-  const [set, setSet] = useState("Competition");
+  const [set, setSet] = useState("Commercial");
   const [ifsc, setIfsc] = useState("");
 
   const [open, setOpen] = useState(false);
