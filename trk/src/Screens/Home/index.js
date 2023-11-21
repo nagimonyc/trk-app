@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   tapText: {
-    color: 'grey',
+    color: 'black',
     fontSize: 25,
     marginBottom: 25,
     fontWeight: '600'
