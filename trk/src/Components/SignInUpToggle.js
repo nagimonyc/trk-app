@@ -16,7 +16,7 @@ const SignInUpToggle = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.switchContainer}>
                 <View style={[styles.toggleSwitchView, { paddingLeft: 25, opacity: nyuCompIsEnabled ? 0 : 1 }]}>
-                    <Text style={{ marginRight: 10, fontWeight: 'bold', color: 'black'}}>Setter?</Text>
+                    <Text style={{ marginRight: 10, fontWeight: 'bold', color: 'black' }}>Setter?</Text>
                     <Switch
                         ios_backgroundColor="#3e3e3e"
                         onValueChange={toggleSwitchSetter}
@@ -25,8 +25,8 @@ const SignInUpToggle = () => {
                     />
                 </View>
 
-                <View style={styles.toggleSwitchView}>
-                    <Text style={{ marginRight: 10, fontWeight: 'bold', color: 'black'}}>NYU Comp</Text>
+                <View style={[styles.toggleSwitchView, { opacity: 0 }]}>
+                    <Text style={{ marginRight: 10, fontWeight: 'bold', color: 'black' }}>NYU Comp</Text>
                     <Switch
                         ios_backgroundColor="#3e3e3e"
                         onValueChange={toggleSwitchNyu}
