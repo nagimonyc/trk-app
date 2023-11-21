@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import DropDownPicker from 'react-native-dropdown-picker';
 // import ImagePicker from 'react-native-image-crop-picker';
 
 import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from "react-native";
@@ -26,15 +27,25 @@ const ClimbInputData = () => {
 
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
-  const [gym, setGym] = useState("Gowanus");
+  const [gym, setGym] = useState(null);
   // const [image, setImage] = useState("");
   const [type, setType] = useState("Boulder");
   const [set, setSet] = useState("Competition");
   const [ifsc, setIfsc] = useState("");
 
+  const [open, setOpen] = useState(false);
+
   const yourCancelFunction = () => {
     console.log('Cancel button was pressed in AndroidPrompt');
   };
+
+//this will later be populated by the gym documents in gym collection
+  const [gymItems, setGymItems] = useState([
+    { label: 'Palladium', value: 'Palladium' },
+    { label: 'The Cliffs LIC', value: 'The Cliffs LIC' },
+    { label: 'VITAL', value: 'VITAL' },
+    { label: 'The Gravity Vault Hoboken', value: 'The Gravity Vault Hoboken' }]);
+
 
   // async function handleImagePick() {
   //   try {
@@ -97,7 +108,7 @@ const ClimbInputData = () => {
         // Reset form
         setName("");
         setGrade("");
-        setGym("Gowanus");
+        setGym(null);
         // setImage("");
         setType("Boulder");
         setSet("Competition");
@@ -149,12 +160,25 @@ const ClimbInputData = () => {
             />
 
             <Text style={styles.label}>Gym</Text>
-            <TextInput
-              style={styles.input}
-              placeholderTextColor={"#b1b1b3"}
+
+            <DropDownPicker
+            listMode="SCROLLVIEW"
+              open={open}
+              setOpen={setOpen}
               value={gym}
-              onChangeText={setGym}
-              placeholder="Enter gym"
+              setValue={setGym}
+              items={gymItems}
+              containerStyle={{ height: 60, zIndex: 5000}}
+              style={styles.dropdown}
+              dropDownContainerStyle={{
+                backgroundColor: '#e0e0e0', 
+                borderColor: '#e0e0e0', 
+                borderWidth: 1, 
+              }}
+              setItems={setGymItems}
+              placeholder="Select an item"
+              placeholderStyle={{ color: 'grey', fontSize: 18 }}
+              textStyle={{fontSize: 18}}
             />
 
             <Text style={styles.label}>Type</Text>
@@ -206,7 +230,7 @@ const ClimbInputData = () => {
           <Button
             onPress={handleAddClimb}
             mode="contained"
-            disabled={!name || !grade || !ifsc}
+            disabled={!name || !grade || !ifsc || !gym}
             title="Add Climb"
           >
           </Button>
@@ -255,9 +279,12 @@ const styles = StyleSheet.create({
   },
   segmentedControlContainer: {
     marginBottom: 10, // Adjust this value to add more or less space below the segmented control
-
   },
-
+  dropdown: {
+    backgroundColor: '#e0e0e0',
+    borderColor: '#e0e0e0',
+  },
 });
+
 
 export default ClimbInputData;
