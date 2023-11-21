@@ -66,7 +66,7 @@ function RankStack() {
       <Stack.Screen
         name="Competition_Ranking_screen"
         component={CompRanking}
-        options={{ title: 'Ranking', headerBackTitleVisible: false }}
+        options={{ title: 'Analytics', headerBackTitleVisible: false }}
       />
       <Stack.Screen
         name="Climber_Performance"
@@ -103,7 +103,7 @@ function AppTabs() {
         <Tab.Screen
           name="RankingTab"
           component={RankStack}
-          options={{ title: 'Ranking', headerShown: false }}
+          options={{ title: 'Analytics', headerShown: false }}
         />}
     </Tab.Navigator>
   );
