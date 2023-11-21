@@ -29,7 +29,7 @@ const ClimbInputData = () => {
   const [location, setLocation] = useState("Gowanus");
   // const [image, setImage] = useState("");
   const [type, setType] = useState("Boulder");
-  const [set, setSet] = useState("Competition");
+  const [set, setSet] = useState("Commercial");
   const [ifsc, setIfsc] = useState("");
 
   const yourCancelFunction = () => {
