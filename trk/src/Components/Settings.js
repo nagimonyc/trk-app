@@ -1,9 +1,10 @@
 import React, { useState, useContext } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import SignOut from "./SignOut";
+import FeedbackChat from "./FeedbackChat";
 
 const Settings = () => {
     const { currentUser } = useContext(AuthContext);
@@ -19,7 +20,7 @@ const Settings = () => {
                 {
                     text: "Yes", onPress: async () => {
                         try {
-    
+
                             const userUID = currentUser.uid;
                             await firestore().collection('users').doc(userUID).delete();
                             const user = firebase.auth().currentUser;
@@ -38,21 +39,24 @@ const Settings = () => {
     };
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.innerContainer}>
-            <TouchableOpacity 
-                style={[styles.button, { backgroundColor: 'black' }]} 
-                onPress={handleDeleteAccount}
-            >
-                <Text style={styles.buttonText}>Delete Account</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style={[styles.button, { backgroundColor: '#3498db' }]} 
-                onPress={SignOut}
-            >
-                <Text style={styles.buttonText}>Sign Out</Text>
-            </TouchableOpacity>
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+                <FeedbackChat />
             </View>
-        </SafeAreaView>
+            <View style={styles.innerContainer}>
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: 'black' }]}
+                    onPress={handleDeleteAccount}
+                >
+                    <Text style={styles.buttonText}>Delete Account</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: '#3498db' }]}
+                    onPress={SignOut}
+                >
+                    <Text style={styles.buttonText}>Sign Out</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView >
     );
 }
 
@@ -60,27 +64,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 20,
-        justifyContent: 'flex-end', 
+        justifyContent: 'flex-end',
     },
     innerContainer: {
-        flexDirection: 'row',      
-        justifyContent: 'space-between', 
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'flex-end',
-        marginBottom: 20,          
+        marginBottom: 20,
     },
     button: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        borderRadius: 5,  
-        alignItems: 'center', 
+        borderRadius: 5,
+        alignItems: 'center',
         justifyContent: 'center',
-        width: '45%',  
+        width: '45%',
     },
     buttonText: {
-        color: 'white',  
+        color: 'white',
         fontSize: 16
     }
-    
+
 });
 
 export default Settings;
