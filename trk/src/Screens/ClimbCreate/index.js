@@ -35,11 +35,13 @@ const ClimbInputData = () => {
 
   const [open, setOpen] = useState(false);
 
+  // modularity
+
   const yourCancelFunction = () => {
     console.log('Cancel button was pressed in AndroidPrompt');
   };
 
-//this will later be populated by the gym documents in gym collection
+  //this will later be populated by the gym documents in gym collection
   const [gymItems, setGymItems] = useState([
     { label: 'Palladium', value: 'Palladium' },
     { label: 'The Cliffs LIC', value: 'The Cliffs LIC' },
@@ -162,23 +164,23 @@ const ClimbInputData = () => {
             <Text style={styles.label}>Gym</Text>
 
             <DropDownPicker
-            listMode="SCROLLVIEW"
+              listMode="SCROLLVIEW"
               open={open}
               setOpen={setOpen}
               value={gym}
               setValue={setGym}
               items={gymItems}
-              containerStyle={{ height: 60, zIndex: 5000}}
+              containerStyle={{ height: 60, zIndex: 5000 }}
               style={styles.dropdown}
               dropDownContainerStyle={{
-                backgroundColor: '#e0e0e0', 
-                borderColor: '#e0e0e0', 
-                borderWidth: 1, 
+                backgroundColor: '#e0e0e0',
+                borderColor: '#e0e0e0',
+                borderWidth: 1,
               }}
               setItems={setGymItems}
               placeholder="Select an item"
               placeholderStyle={{ color: 'grey', fontSize: 18 }}
-              textStyle={{fontSize: 18}}
+              textStyle={{ fontSize: 18 }}
             />
 
             <Text style={styles.label}>Type</Text>
