@@ -12,6 +12,7 @@ import { AuthContext } from '../Utils/AuthContext';
 import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/SetDetail';
 import Settings from '../Components/Settings';
+import WriteConfig from '../Components/WriteConfig';
 
 
 const Stack = createStackNavigator();
@@ -77,6 +78,24 @@ function RankStack() {
   );
 }
 
+function ClimbStack() {
+  console.log('[TEST] ClimbStack called');
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Climb"
+        component={ClimbInputData}
+        options={{ title: 'Create Climb', headerBackTitleVisible: false }}
+      />
+      <Stack.Screen
+        name="Write Config"
+        component={WriteConfig}
+        options={{ title: 'Write Config', headerBackTitleVisible: false }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function AppTabs() {
   console.log('[TEST] AppTabs called');
   const { role } = useContext(AuthContext);
@@ -91,8 +110,8 @@ function AppTabs() {
       {role === 'climber' ? null :
         <Tab.Screen
           name="Create Climb"
-          component={ClimbInputData}
-          options={{}}
+          component={ClimbStack}
+          options={{ title: 'Create', headerShown: false }}
         />}
       <Tab.Screen
         name="ProfileTab"

@@ -12,11 +12,12 @@ import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
 import AndroidPrompt from '../../Components/AndroidPrompt';
 import ClimbsApi from "../../api/ClimbsApi";
 import { AuthContext } from '../../Utils/AuthContext';
+import WriteConfig from "../../Components/WriteConfig";
 // import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 
-const ClimbInputData = () => {
+const ClimbInputData = ({ navigation }) => {
   console.log('[TEST] ClimbCreate called');
   const { currentUser } = useContext(AuthContext);
   const setter = currentUser;
@@ -61,6 +62,10 @@ const ClimbInputData = () => {
   //     console.log(err);
   //   }
   // }
+
+  const navigateToWriteConfig = () => {
+    navigation.navigate('Write Config');
+  };
 
   async function handleAddClimb() {
     const climb = {
@@ -126,10 +131,11 @@ const ClimbInputData = () => {
   return (
 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-
       <ScrollView>
         <SafeAreaView style={styles.container}>
-
+          <View>
+            <Button title="settings" onPress={navigateToWriteConfig}></Button>
+          </View>
           <View style={styles.content}>
             <Text style={styles.label}>Name</Text>
             <TextInput
