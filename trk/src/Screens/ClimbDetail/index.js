@@ -7,6 +7,7 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, But
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
+
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
 
@@ -19,6 +20,7 @@ function ClimbDetail(props) {
   const [witness1, setWitness1] = useState('');
   const [witness2, setWitness2] = useState('');
 
+  const { navigation } = props;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -148,6 +150,10 @@ function ClimbDetail(props) {
     }
   };
 
+  const onFeedback = async () => {
+    navigation.navigate('Feedback')
+  };
+
   const getSelectedIndex = (value) => {
     if (value === '⚡️') {
       return 0;  // '⚡️' represents a '1', so return 0 for the index
@@ -271,6 +277,7 @@ function ClimbDetail(props) {
                 {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
               </View>
               <View style={{ marginTop: 20 }}>
+                <Button title='Review this climb' onPress={onFeedback} />
                 <Button title='Share' onPress={onShare} />
               </View>
             </View>

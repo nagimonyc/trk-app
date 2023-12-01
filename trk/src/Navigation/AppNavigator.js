@@ -12,6 +12,7 @@ import { AuthContext } from '../Utils/AuthContext';
 import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/SetDetail';
 import Settings from '../Components/Settings';
+import FeedbackForm from '../Screens/FeedbackForm';
 
 
 const Stack = createStackNavigator();
@@ -30,6 +31,11 @@ function HomeStack() {
         name="Detail"
         component={ClimbDetailScreen}
         options={{ title: 'Climb Detail', headerBackTitle: 'Home', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Feedback"
+        component={FeedbackForm}
+        options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
       />
     </Stack.Navigator>
   );
@@ -54,6 +60,11 @@ function ProfileStack() {
         component={SetDetail}
         options={{ title: 'Climb Performance', headerBackTitle: 'Profile', headerTitleAlign: 'center' }} />
       <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen
+        name="Feedback"
+        component={FeedbackForm}
+        options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
+      />
     </Stack.Navigator>
   );
 }
