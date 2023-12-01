@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 const FeedbackForm = ({ route }) => {
   const { climbName } = route.params;
   const { climbGrade } = route.params;
+  const { climbId } = route.params;
 
   const {  currentUser } = useContext(AuthContext);
   const userId = currentUser.uid;
@@ -27,6 +28,7 @@ const FeedbackForm = ({ route }) => {
           rating: rating,
           user: userId,
           explanation: explanation,
+          climb: climbId,
     
         });
       console.log('Feedback submitted!');

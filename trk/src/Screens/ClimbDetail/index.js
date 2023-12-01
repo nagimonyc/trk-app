@@ -13,6 +13,7 @@ function ClimbDetail(props) {
 
 
   const { climbData } = props.route.params;
+  const { climbId } = props.route.params;
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
   const [completion, setCompletion] = useState('Zone');
@@ -151,7 +152,7 @@ function ClimbDetail(props) {
   };
 
   const onFeedback = async () => {
-    navigation.navigate('Feedback', {climbName: climbData.name, climbGrade: climbData.grade})
+    navigation.navigate('Feedback', {climbName: climbData.name, climbGrade: climbData.grade, climbId: climbId})
   };
 
   const getSelectedIndex = (value) => {

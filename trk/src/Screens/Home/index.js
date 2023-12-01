@@ -70,7 +70,7 @@ function HomeScreen(props) {
           const documentReference = await addTap(tap);
           const newTapId = documentReference.id;
           console.log("New Tap ID is:", newTapId);
-          navigation.navigate('Detail', { climbData: climbData.data(), tapId: newTapId });
+          navigation.navigate('Detail', { climbData: climbData.data(), tapId: newTapId, climbId: climbId[0] });
         } else {
           navigation.navigate('Detail', { climbData: climbData.data() })
         }
