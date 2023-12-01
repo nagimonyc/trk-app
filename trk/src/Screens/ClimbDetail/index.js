@@ -151,7 +151,7 @@ function ClimbDetail(props) {
   };
 
   const onFeedback = async () => {
-    navigation.navigate('Feedback')
+    navigation.navigate('Feedback', {climbName: climbData.name, climbGrade: climbData.grade})
   };
 
   const getSelectedIndex = (value) => {

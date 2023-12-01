@@ -63,7 +63,7 @@ function ProfileStack() {
       <Stack.Screen
         name="Feedback"
         component={FeedbackForm}
-        options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
+        options={{ title: 'Feedback Form', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
       />
     </Stack.Navigator>
   );
