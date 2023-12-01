@@ -4,6 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../Utils/AuthContext';
 import storage from '@react-native-firebase/storage';
 import ListItemContainer from './ListItemContainer';
+import TapsApi from '../api/TapsApi';
+
 const ClimbItem = ({ climb, tapId }) => {
     const [imageURL, setImageURL] = useState(null);
     const navigation = useNavigation();
@@ -22,8 +24,19 @@ const ClimbItem = ({ climb, tapId }) => {
         fetchImageURL();
     }, []);
 
-    const navigateToDetail = () => {
-        navigation.navigate('Detail', { climbData: climb, tapId: tapId, profileCheck: 1 });
+    const navigateToDetail = async() => {
+        try {
+        const tapDocument = await TapsApi().getTap(tapId);
+        const tapData = tapDocument.data();
+
+        const climbId = tapData.climb;
+        console.log(`This is: ${climbId}`);
+    
+        navigation.navigate('Detail', { climbData: climb, tapId: tapId, climbId: climbId, profileCheck: 1 });
+        } 
+        catch (error) {
+            console.error('Error fetching tap data:', error);
+        }
     };
     const navigateToSet = () => {
         navigation.navigate('Set', { climbData: climb });
