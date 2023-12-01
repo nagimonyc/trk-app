@@ -1,12 +1,45 @@
-import React, {useState} from "react";
-import { Text, View, ScrollView, Keyboard, TouchableWithoutFeedback, TouchableOpacity, SafeAreaView, StyleSheet, TextInput } from "react-native";
+import React, { useState, useContext } from "react";
+import { Text, Button, View, ScrollView, Keyboard, TouchableWithoutFeedback, TouchableOpacity, SafeAreaView, StyleSheet, TextInput } from "react-native";
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import firestore from '@react-native-firebase/firestore';
+import { AuthContext } from "../../Utils/AuthContext";
+import { useNavigation } from '@react-navigation/native'; 
 
 const FeedbackForm = ({ route }) => {
   const { climbName } = route.params;
   const { climbGrade } = route.params;
 
+  const {  currentUser } = useContext(AuthContext);
+  const userId = currentUser.uid;
+  
+  const navigation = useNavigation();
+
   const [rating, setRating] = useState(null);
   const [explanation, setExplanation] = useState(null);
+
+  const handleFeedback = async() => {
+
+ 
+    try {
+      await firestore()
+        .collection('comments')
+        .add({
+          rating: rating,
+          user: userId,
+          explanation: explanation,
+    
+        });
+      console.log('Feedback submitted!');
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error writing document: ", error);
+    }
+
+
+  }; 
+
+
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -25,8 +58,29 @@ const FeedbackForm = ({ route }) => {
                 </View>
               </View>
               <View style={styles.feedback}>
-                <Text>Rate this climb</Text>
-                <TextInput></TextInput>
+                <Text style={styles.subtitle}>Rating</Text>
+                <SegmentedControl
+                  values={['1', '2', '3', '4', '5']}
+                  tintColor="#007AFF"
+                  style={styles.segmentedControl}
+                  onChange={(event) => {
+                    setRating(event.nativeEvent.value);
+                  }}
+                />
+                <Text style={styles.subtitle}>Reason for your rating</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholderTextColor={"#b1b1b3"}
+                  value={explanation}
+                  onChangeText={setExplanation}
+                  placeholder="Enter reason"
+                ></TextInput>
+
+                <Button
+                  title="Submit review"
+                  disabled={!rating}
+                  onPress={handleFeedback}
+                />
               </View>
 
             </View>
@@ -85,8 +139,24 @@ const styles = StyleSheet.create({
     marginRight: 35,
   },
   feedback: {
-    marginTop: 40,
-  }
+    marginTop: 20,
+    padding: 15,  
+    width: '100%',
+  },
+  input: {
+    backgroundColor: '#dedee0',
+    height: 150, 
+    marginBottom: 10,
+    borderRadius: 8,
+    paddingBottom: 120, // Add some padding for iOS
+    paddingLeft: 10,
+    textAlignVertical: 'top',
+  },
+  subtitle: {
+    fontSize: 17,
+    marginTop: 23, 
+    marginBottom: 6
+  },
 });
 
 
