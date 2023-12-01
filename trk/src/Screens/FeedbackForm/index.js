@@ -4,6 +4,7 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from "../../Utils/AuthContext";
 import { useNavigation } from '@react-navigation/native'; 
+import ClimberPerformance from "../../Components/ClimberPerformance";
 
 const FeedbackForm = ({ route }) => {
   const { climbName } = route.params;
@@ -17,6 +18,7 @@ const FeedbackForm = ({ route }) => {
 
   const [rating, setRating] = useState(null);
   const [explanation, setExplanation] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleFeedback = async() => {
 
@@ -25,6 +27,7 @@ const FeedbackForm = ({ route }) => {
       await firestore()
         .collection('comments')
         .add({
+          type: 'Feedback',
           rating: rating,
           user: userId,
           explanation: explanation,
@@ -63,10 +66,12 @@ const FeedbackForm = ({ route }) => {
                 <Text style={styles.subtitle}>Rating</Text>
                 <SegmentedControl
                   values={['1', '2', '3', '4', '5']}
+                  selectedIndex={selectedIndex}
                   tintColor="#007AFF"
-                  style={styles.segmentedControl}
+                  appearance='light'
                   onChange={(event) => {
                     setRating(event.nativeEvent.value);
+                    setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
                   }}
                 />
                 <Text style={styles.subtitle}>Reason for your rating</Text>

@@ -278,8 +278,12 @@ function ClimbDetail(props) {
                 {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
               </View>
               <View style={{ marginTop: 20 }}>
+                <View style={styles.button}>
                 <Button title='Review this climb' onPress={onFeedback} />
+                </View>
+                <View style={styles.button}>
                 <Button title='Share' onPress={onShare} />
+                </View>
               </View>
             </View>
           </View>
@@ -368,6 +372,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
+  },
+  button: {
+    marginTop: 10
   },
 })
 
