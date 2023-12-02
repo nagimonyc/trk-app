@@ -7,11 +7,12 @@ const SignUp = ({ role, nyuComp }) => {
     console.log("[TEST] sign up call");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
 
     const handleSignUp = () => {
         console.log("[TEST] sign up call");
-        if (!email.trim() || !password.trim()) {
-            Alert.alert('Error', 'Email and password must not be empty');
+        if (!email.trim() || !password.trim() || !username.trim()) {
+            Alert.alert('Error', 'Username, email and password must not be empty');
             return; // Early return to prevent Firebase call with empty fields
         }
         auth()
@@ -32,6 +33,7 @@ const SignUp = ({ role, nyuComp }) => {
                         taps: 0, // number of taps
                         nyuComp: nyuComp, // whether the user is a part of the NYU climbing competition
                         timestamp: new Date(),
+                        username: username,
                     })
                     .then(() => {
                         console.log('User added to Firestore');
@@ -50,6 +52,12 @@ const SignUp = ({ role, nyuComp }) => {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.container}>
+                <TextInput
+                    placeholder="Username"
+                    value={username}
+                    onChangeText={setUsername}
+                    style={styles.input}
+                />
                 <TextInput
                     placeholder="Email"
                     value={email}
