@@ -69,7 +69,8 @@ const ClimbInputData = () => {
       set,
       ifsc,
       // image, 
-      setter: setter.uid
+      setter: setter.uid, 
+      timestamp: new Date(),
     };
 
 
