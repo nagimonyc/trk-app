@@ -31,6 +31,7 @@ const SignUp = ({ role, nyuComp }) => {
                         role: role ? 'setter' : 'climber', // user's role
                         taps: 0, // number of taps
                         nyuComp: nyuComp, // whether the user is a part of the NYU climbing competition
+                        timestamp: new Date(),
                     })
                     .then(() => {
                         console.log('User added to Firestore');

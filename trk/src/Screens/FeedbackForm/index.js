@@ -32,7 +32,7 @@ const FeedbackForm = ({ route }) => {
           user: userId,
           explanation: explanation,
           climb: climbId,
-    
+          timestamp: new Date(),
         });
       console.log('Feedback submitted!');
       navigation.goBack();
