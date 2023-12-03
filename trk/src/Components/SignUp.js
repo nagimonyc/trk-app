@@ -51,7 +51,7 @@ const SignUp = ({ role, nyuComp }) => {
                     Alert.alert('Muse use a valid email')
                 }
                 else {
-                    Alert.alert('Please use valid email. Password must contain at least 6 characters')
+                    Alert.alert('Something went wrong with signup')
                 }
             });
     };
