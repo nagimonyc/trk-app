@@ -18,7 +18,7 @@ const SignIn = () => {
                 console.log('User signed in!');
             })
             .catch(error => {
-                console.error('Something went wrong with sign-in: ', error);
+                Alert.alert('Invalid email or password. Passwords are case sensitive')
             });
     };
 
@@ -40,7 +40,11 @@ const SignIn = () => {
                     onChangeText={setPassword}
                     style={styles.input}
                 />
-                <Button title="Sign In" onPress={handleSignIn} />
+                <Button title="Login" onPress={handleSignIn} />
+                <View style={styles.prompt}>
+                    <Text style={styles.promptText}>Don't have an account?</Text>
+
+                </View>
             </View>
         </TouchableWithoutFeedback>
     );
@@ -62,6 +66,16 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         color: 'black',
     },
+    prompt: {
+        position: 'absolute',
+        bottom: -20,
+        flexDirection: 'row', 
+        alignItems: 'center',
+    },
+    promptText: {
+        fontSize: 13,
+    },
+
 });
 
 export default SignIn;
