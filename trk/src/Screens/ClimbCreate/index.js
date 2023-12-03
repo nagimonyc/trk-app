@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import DropDownPicker from 'react-native-dropdown-picker';
 // import ImagePicker from 'react-native-image-crop-picker';
 
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView } from "react-native";
 
 import { NfcTech } from "react-native-nfc-manager";
 import NfcManager from "react-native-nfc-manager";
@@ -32,6 +32,7 @@ const ClimbInputData = () => {
   const [type, setType] = useState("Boulder");
   const [set, setSet] = useState("Commercial");
   const [ifsc, setIfsc] = useState("");
+  const [info, setInfo] = useState("");
 
   const [open, setOpen] = useState(false);
 
@@ -68,6 +69,7 @@ const ClimbInputData = () => {
       type,
       set,
       ifsc,
+      info,
       // image, 
       setter: setter.uid, 
       timestamp: new Date(),
@@ -112,7 +114,8 @@ const ClimbInputData = () => {
         setGym(null);
         // setImage("");
         setType("Boulder");
-        setSet("Competition");
+        setInfo('');
+        setSet("Commercial");
         setIfsc("");
       })
       .catch((err) => {
@@ -124,6 +127,11 @@ const ClimbInputData = () => {
 
   return (
 
+    <KeyboardAvoidingView 
+    behavior={Platform.OS === "ios" ? "padding" : "height"} 
+    style={{ flex: 1 }}
+    keyboardVerticalOffset={120}
+  >
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
       <ScrollView>
@@ -151,14 +159,14 @@ const ClimbInputData = () => {
 
             />
 
-            <Text style={styles.label}>IFSC Score</Text>
+            {/* <Text style={styles.label}>IFSC Score</Text>
             <TextInput
               style={styles.input}
               value={ifsc}
               onChangeText={setIfsc}
               placeholderTextColor={"#b1b1b3"}
               placeholder="Enter score"
-            />
+            /> */}
 
             <Text style={styles.label}>Gym</Text>
 
@@ -197,7 +205,17 @@ const ClimbInputData = () => {
               />
             </View>
 
-            <Text style={styles.label}>Set</Text>
+            <Text style={styles.label}>More Info</Text>
+            <TextInput
+              style={styles.largeInput}
+              value={info}
+              placeholderTextColor={"#b1b1b3"}
+              onChangeText={setInfo}
+              placeholder="Enter more info"
+
+            />
+
+            {/* <Text style={styles.label}>Set</Text>
             <View style={styles.segmentedControlContainer}>
               <SegmentedControl
                 values={['Competition', 'Commercial']}
@@ -210,7 +228,7 @@ const ClimbInputData = () => {
                   setSet(event.nativeEvent.value);
                 }}
               />
-            </View>
+            </View> */}
 
 
 
@@ -231,7 +249,7 @@ const ClimbInputData = () => {
           <Button
             onPress={handleAddClimb}
             mode="contained"
-            disabled={!name || !grade || !ifsc || !gym}
+            disabled={!name || !grade || !gym}
             title="Add Climb"
           >
           </Button>
@@ -240,6 +258,7 @@ const ClimbInputData = () => {
       </ScrollView>
 
     </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
 
   );
 };
@@ -262,6 +281,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 18,
     color: 'black',
+  },
+  largeInput: {
+    backgroundColor: "#e0e0e0",
+    marginBottom: 16,
+    height: 150,
+    fontSize: 18,
+    color: 'black',
+    borderRadius: 8,
+    paddingBottom: 120, 
+    paddingLeft: 10,
+    textAlignVertical: 'top',
   },
   uploadButton: {
     alignItems: 'center',
