@@ -29,12 +29,16 @@ end
 
 target 'trk' do
   config = use_native_modules!
-
+  
   # Flags change depending on the env values.
   flags = get_default_flags()
 
   use_frameworks! :linkage => :static
   $RNFirebaseAsStaticFramework = true
+
+  pod 'Firebase/Analytics'
+  # or pod 'Firebase/AnalyticsWithoutAdIdSupport'
+  # for Analytics without IDFA collection capability
 
   use_react_native!(
     :path => config[:reactNativePath],
