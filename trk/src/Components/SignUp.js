@@ -43,7 +43,16 @@ const SignUp = ({ role, nyuComp }) => {
                 console.log('User account created & signed in!');
             })
             .catch(error => {
-                console.error('Something went wrong with sign-up: ', error);
+                if (error.code === 'auth/email-already-in-use') {
+                    Alert.alert('Email already in use')
+                } else if (password.length < 6) {
+                    Alert.alert('Password must be at least 6 characters')
+                } else if (error.code === 'auth/invalid-email') {
+                    Alert.alert('Must use a valid email')
+                }
+                else {
+                    Alert.alert('Something went wrong with signup')
+                }
             });
     };
 

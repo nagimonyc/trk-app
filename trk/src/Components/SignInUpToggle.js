@@ -41,7 +41,7 @@ const SignInUpToggle = () => {
 
             <View style={styles.buttonContainer}>
                 <Button
-                    title={isSignIn ? 'Go to Sign Up' : 'Go to Sign In'}
+                    title={isSignIn ? 'Go to Sign Up' : 'Go to Login'}
                     onPress={() => setIsSignIn(!isSignIn)}
                 />
             </View>
