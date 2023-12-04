@@ -159,14 +159,14 @@ const ClimbInputData = () => {
 
             />
 
-            {/* <Text style={styles.label}>IFSC Score</Text>
+            <Text style={styles.label}>IFSC Score</Text>
             <TextInput
               style={styles.input}
               value={ifsc}
               onChangeText={setIfsc}
               placeholderTextColor={"#b1b1b3"}
               placeholder="Enter score"
-            /> */}
+            />
 
             <Text style={styles.label}>Gym</Text>
 
@@ -215,7 +215,7 @@ const ClimbInputData = () => {
 
             />
 
-            {/* <Text style={styles.label}>Set</Text>
+            <Text style={styles.label}>Set</Text>
             <View style={styles.segmentedControlContainer}>
               <SegmentedControl
                 values={['Competition', 'Commercial']}
@@ -228,7 +228,7 @@ const ClimbInputData = () => {
                   setSet(event.nativeEvent.value);
                 }}
               />
-            </View> */}
+            </View>
 
 
 
