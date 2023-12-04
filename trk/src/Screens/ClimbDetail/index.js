@@ -152,7 +152,7 @@ function ClimbDetail(props) {
   };
 
   const onFeedback = async () => {
-    navigation.navigate('Feedback', {climbName: climbData.name, climbGrade: climbData.grade, climbId: climbId})
+    navigation.navigate('Feedback', { climbName: climbData.name, climbGrade: climbData.grade, climbId: climbId })
   };
 
   const getSelectedIndex = (value) => {
@@ -277,14 +277,21 @@ function ClimbDetail(props) {
               <View style={styles.climbPhoto}>
                 {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
               </View>
+             
               <View style={{ marginTop: 20 }}>
                 <View style={styles.button}>
-                <Button title='Review this climb' onPress={onFeedback} />
+                  <Button title='Review this climb' onPress={onFeedback} />
                 </View>
                 <View style={styles.button}>
-                <Button title='Share' onPress={onShare} />
+                  <Button title='Share' onPress={onShare} />
                 </View>
               </View>
+              {climbData.info && (
+                <View style={styles.infoBox}>
+                  <Text style={styles.subheading}>Climb Info</Text>
+                  <Text style= {styles.info}>{climbData.info}</Text>
+                  </View>
+              )}
             </View>
           </View>
         </ScrollView>
@@ -322,6 +329,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 15,
     fontSize: 17.57,
+    flexWrap: 'wrap',
+    maxWidth: '60%',
   },
 
   topLeft: {
@@ -352,7 +361,7 @@ const styles = StyleSheet.create({
     height: 1,
     borderTopWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.26)',
-    marginTop: 55,
+    marginTop: 30,
   },
 
   climbPhoto: {
@@ -376,6 +385,23 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 10
   },
+  infoBox: {
+    marginTop: 15,
+    alignSelf: 'flex-start',
+    marginLeft: 30,
+  
+  },
+  subheading: {
+    fontWeight: '700',
+    fontSize: 20,
+    textAlign: 'left', 
+  },
+  info: {
+    marginTop: 5,
+    fontSize: 16,
+    textAlign: 'left', 
+    marginBottom: 10,
+  }, 
 })
 
 export default ClimbDetail;
