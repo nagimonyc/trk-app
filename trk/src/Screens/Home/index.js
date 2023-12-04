@@ -7,6 +7,7 @@ import ClimbsApi from '../../api/ClimbsApi';
 import Image from '../../Components/Image';
 import AndroidPrompt from '../../Components/AndroidPrompt';
 import { AuthContext } from '../../Utils/AuthContext';
+import analytics from '@react-native-firebase/analytics';
 import TapsApi from '../../api/TapsApi';
 
 function HomeScreen(props) {
@@ -87,6 +88,11 @@ function HomeScreen(props) {
     if (Platform.OS === 'android') {
       androidPromptRef.current.setVisible(false);
     }
+
+    analytics().logEvent('Tap to Track pressed', {
+      user_id: currentUser.uid,
+      timestamp: new Date().toISOString()
+    });
   }
 
   function renderNfcButtons() {
@@ -118,7 +124,7 @@ function HomeScreen(props) {
         <>
           <Text style={styles.tapText}>Tap to Track</Text>
           <TouchableOpacity style={styles.button} onPress={identifyClimb}>
-            <Image source={logo} style={styles.image} resizeMode="contain"/>
+            <Image source={logo} style={styles.image} resizeMode="contain" />
           </TouchableOpacity>
         </>
       );
