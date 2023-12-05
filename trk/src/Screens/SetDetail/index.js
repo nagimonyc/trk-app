@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
-import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image, ScrollView } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import CommentsApi from '../../api/CommentsApi';
 
 
 function SetDetail(props) {
@@ -14,6 +15,9 @@ function SetDetail(props) {
   const [tapCount, setTapCount] = useState(0);
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
+  const [feedbackList, setFeedbackList] = useState([]);
+
+  const { getCommentsBySomeField } = CommentsApi();
 
 
   useEffect(() => {
@@ -23,7 +27,7 @@ function SetDetail(props) {
           .collection('taps')
           .where('climb', '==', climbData.id)
           .get();
-          
+
         setTapCount(tapQuerySnapshot.size);
       } catch (error) {
         console.error('Error fetching tap count:', error);
@@ -55,33 +59,79 @@ function SetDetail(props) {
       });
   }, []);
 
+
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const querySnapshot = await getCommentsBySomeField('climb', climbData.id);
+        const comments = [];
+        querySnapshot.forEach(doc => {
+          const commentData = doc.data();
+          comments.push({
+            id: doc.id,
+            explanation: commentData.explanation,
+            rating: commentData.rating  // Extracting the rating field
+          });
+        });
+        setFeedbackList(comments);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    };
+    fetchComments();
+  }, [climbData.id]);
+
+  renderRating = (rating) => {
+    return '⭐️'.repeat(rating);
+  }
+
+
   return (
-    <View style={styles.container}>
-    <View style={[styles.wrapper]} >
-      <SafeAreaView />
-      <View style={styles.top}>
-        <View style={styles.topLeft}>
-          <View style={styles.gradeCircle}>
-            <Text style={styles.grade}>{climbData.grade}</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={[styles.wrapper]} >
+          <SafeAreaView />
+          <View style={styles.top}>
+            <View style={styles.topLeft}>
+              <View style={styles.gradeCircle}>
+                <Text style={styles.grade}>{climbData.grade}</Text>
+              </View>
+
+              <Text style={styles.titleText}>{climbData.name}</Text>
+            </View>
+            <View style={styles.circleWrapper}>
+              <View style={styles.setterCircle}>
+                {setterImageUrl && <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} />}
+              </View>
+            </View>
+          </View>
+          <View style={styles.countBox}>
+            <Text style={styles.count}>{tapCount}</Text>
+          </View>
+          <View style={styles.climbPhoto}>
+            {climbImageUrl && <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />}
           </View>
 
-          <Text style={styles.titleText}>{climbData.name}</Text>
-        </View>
-        <View style={styles.circleWrapper}>
-        <View style={styles.setterCircle}>
-        {setterImageUrl && <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> }
-        </View>
-        </View>
-      </View>
-      <View style={styles.countBox}>
-      <Text style={styles.count}>{tapCount}</Text>
-      </View>
-      <View style={styles.climbPhoto}>
-      {climbImageUrl && <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />}
-      </View>
+          <View style={styles.contentArea}>
+            {feedbackList.length > 0 && (
+              <Text style={styles.feedbackTitle}>Feedback</Text>
+            )}
+            {feedbackList.length > 0 ? (
+              feedbackList.map((comment, index) => (
+                <View key={index} style={styles.commentContainer}>
+                  <Text style={styles.commentText}>{comment.explanation}</Text>
+                  <Text style={styles.commentRating}>{renderRating(comment.rating)}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noFeedback}>No feedback yet.</Text>
+            )}
+          </View>
 
-    </View>
-  </View>
+        </View>
+      </View>
+    </ScrollView>
   )
 }
 
@@ -93,8 +143,7 @@ const styles = StyleSheet.create({
   },
 
   wrapper: {
-    width: 317,
-    height: 539.89,
+    width: '90%',
     alignItems: 'center',
     padding: 15,
     backgroundColor: 'white',
@@ -181,6 +230,37 @@ const styles = StyleSheet.create({
   },
   grade: {
     color: 'white',
+  },
+  commentText: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    flex: 1,
+  },
+  feedbackTitle: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 5,
+    marginTop: 15,
+  },
+  noFeedback: {
+    marginTop: 15,
+  },
+  commentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 5,
+    marginVertical: 5,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+  },
+  commentRating: {
+    fontWeight: 'bold',
+    marginLeft: 10,
+    marginRight: 7,
+
   },
 })
 
