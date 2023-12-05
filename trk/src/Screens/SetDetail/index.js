@@ -71,9 +71,12 @@ function SetDetail(props) {
           comments.push({
             id: doc.id,
             explanation: commentData.explanation,
-            rating: commentData.rating  // Extracting the rating field
+            rating: commentData.rating,
+            timestamp: commentData.timestamp  // Assuming this is a Firestore timestamp
           });
         });
+        // Sort comments by timestamp in descending order
+        comments.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
         setFeedbackList(comments);
       } catch (error) {
         console.error('Error fetching comments:', error);
