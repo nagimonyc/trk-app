@@ -13,6 +13,7 @@ import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/SetDetail';
 import Settings from '../Components/Settings';
 import FeedbackForm from '../Screens/FeedbackForm';
+import GlossaryDefinition from '../Screens/GlossaryDefinition';
 
 
 const Stack = createStackNavigator();
@@ -36,6 +37,11 @@ function HomeStack() {
         name="Feedback"
         component={FeedbackForm}
         options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Definition"
+        component={GlossaryDefinition}
+        options={{ title: 'Definition', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
       />
     </Stack.Navigator>
   );
@@ -64,6 +70,11 @@ function ProfileStack() {
         name="Feedback"
         component={FeedbackForm}
         options={{ title: 'Feedback Form', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
+      />
+        <Stack.Screen
+        name="Definition"
+        component={GlossaryDefinition}
+        options={{ title: 'Definition', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
       />
     </Stack.Navigator>
   );

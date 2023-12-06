@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import TapsApi from '../../api/TapsApi';
 
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share, TouchableOpacity } from 'react-native';
 
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -155,6 +155,11 @@ function ClimbDetail(props) {
     navigation.navigate('Feedback', { climbName: climbData.name, climbGrade: climbData.grade, climbId: climbId })
   };
 
+  const onDefinition = (descriptor) => {
+    navigation.navigate('Definition', { descriptor: descriptor });
+  };
+  
+
   const getSelectedIndex = (value) => {
     if (value === '⚡️') {
       return 0;  // '⚡️' represents a '1', so return 0 for the index
@@ -274,10 +279,22 @@ function ClimbDetail(props) {
                 </View>
               </View>
               <View style={styles.line}></View>
+              <View style={styles.descriptorsContainer}>
+                {climbData.descriptors && climbData.descriptors.map((descriptor, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.descriptorButton}
+                    onPress={() => onDefinition(descriptor)}
+                    activeOpacity={0.6} 
+                  >
+                    <Text style={styles.descriptorText}>{descriptor}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
               <View style={styles.climbPhoto}>
                 {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
               </View>
-             
               <View style={{ marginTop: 20 }}>
                 <View style={styles.button}>
                   <Button title='Review this climb' onPress={onFeedback} />
@@ -290,7 +307,7 @@ function ClimbDetail(props) {
                 <View style={styles.infoBox}>
                   <Text style={styles.subheading}>Climb Info</Text>
                   <Text style= {styles.info}>{climbData.info}</Text>
-                  </View>
+                </View>
               )}
             </View>
           </View>
@@ -367,7 +384,7 @@ const styles = StyleSheet.create({
   climbPhoto: {
     width: 197,
     height: 287,
-    marginTop: 42,
+    marginTop: 22,
     backgroundColor: 'white',
     borderRadius: 3.88,
   },
@@ -389,19 +406,43 @@ const styles = StyleSheet.create({
     marginTop: 15,
     alignSelf: 'flex-start',
     marginLeft: 30,
-  
+
   },
   subheading: {
     fontWeight: '700',
     fontSize: 20,
-    textAlign: 'left', 
+    textAlign: 'left',
   },
   info: {
     marginTop: 5,
     fontSize: 16,
-    textAlign: 'left', 
+    textAlign: 'left',
     marginBottom: 10,
-  }, 
+  },
+  descriptorsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,  // Add vertical margin for spacing
+  },
+  descriptorButton: {
+    marginHorizontal: 5,
+    marginTop: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    backgroundColor: '#e7e7e7', // Slightly different background color
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#e7e7e7', // Add border
+  },
+  
+  descriptorText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#007AFF', // Color indicating it's clickable (like a link)
+  },
+  
 })
 
 export default ClimbDetail;
