@@ -8,7 +8,7 @@ import { firebase } from "@react-native-firebase/auth";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useEffect } from "react";
 
-const SetterProfile = ({navigation}) => {
+const SetterProfile = ({ navigation }) => {
 
     const { currentUser } = React.useContext(AuthContext);
 
@@ -25,7 +25,7 @@ const SetterProfile = ({navigation}) => {
             console.log('setSnapshot:', setSnapshot);  // Log the snapshot here
             const newSetHistory = setSnapshot.docs.map(doc => {
                 return doc.exists ? { id: doc.id, ...doc.data() } : null;
-            }).filter(set => set !== null);
+            }).filter(set => set !== null && set.archived !== true);
             console.log('newSetHistory:', newSetHistory);  // Log the processed climbs here
             setSetHistory(newSetHistory);
         } catch (error) {
@@ -55,7 +55,7 @@ const SetterProfile = ({navigation}) => {
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{ flex: 1 }}></View>
-                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black'}}>
+                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black' }}>
                             Recap
                         </Text>
                         <TouchableOpacity

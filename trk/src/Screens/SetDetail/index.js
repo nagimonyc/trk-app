@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
 import { View, Text, StyleSheet, SafeAreaView, Image, ScrollView } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import { AuthContext } from '../../Utils/AuthContext';
 import CommentsApi from '../../api/CommentsApi';
 
 
 function SetDetail(props) {
   console.log('[TEST] SetDetail called')
 
+  const { role } = useContext(AuthContext);
+
   const { climbData } = props.route.params;
+  const { navigation } = props;
   console.log(`Climb id is ${climbData.id}`)
 
   const [tapCount, setTapCount] = useState(0);
@@ -59,6 +63,11 @@ function SetDetail(props) {
       });
   }, []);
 
+  const navigateToSetConfig = () => {
+    navigation.navigate('ClimbInputData', { climbData, editMode: true });
+  };
+
+
 
 
   useEffect(() => {
@@ -95,6 +104,12 @@ function SetDetail(props) {
       <View style={styles.container}>
         <View style={[styles.wrapper]} >
           <SafeAreaView />
+          {(role === 'setter' ?
+            <View style={styles.buttonContainer}>
+              <Button style={{}} title='edit' onPress={navigateToSetConfig}></Button>
+            </View>
+            : null
+          )}
           <View style={styles.top}>
             <View style={styles.topLeft}>
               <View style={styles.gradeCircle}>
@@ -131,6 +146,18 @@ function SetDetail(props) {
               <Text style={styles.noFeedback}>No feedback yet.</Text>
             )}
           </View>
+          <View style={styles.countBox}>
+            <Text style={styles.count}>{tapCount}</Text>
+          </View>
+          <View style={styles.climbPhoto}>
+            {climbImageUrl && <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />}
+          </View>
+          {climbData.info && (
+            <View style={styles.infoBox}>
+              <Text style={styles.subheading}>Climb Info</Text>
+              <Text style={styles.info}>{climbData.info}</Text>
+            </View>
+          )}
 
         </View>
       </View>
@@ -143,6 +170,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    PaddingTop: 10,
+    PaddingBottom: 20
   },
 
   wrapper: {
@@ -233,6 +262,28 @@ const styles = StyleSheet.create({
   },
   grade: {
     color: 'white',
+  },
+  infoBox: {
+    marginTop: 15,
+    alignSelf: 'flex-start',
+    marginLeft: 30,
+
+  },
+  subheading: {
+    fontWeight: '700',
+    fontSize: 20,
+    textAlign: 'left',
+  },
+  info: {
+    marginTop: 5,
+    fontSize: 16,
+    textAlign: 'left',
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    width: '100%', // take full width
+    justifyContent: 'flex-end', // align button to the right
+    flexDirection: 'row',
   },
   commentText: {
     padding: 10,

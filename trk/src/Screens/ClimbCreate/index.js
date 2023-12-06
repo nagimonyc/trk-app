@@ -16,7 +16,30 @@ import { AuthContext } from '../../Utils/AuthContext';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 
-const ClimbInputData = () => {
+const ClimbInputData = (props) => {
+
+
+
+  const { route } = props;
+  const climbData = route.params?.climbData;
+  const isEditMode = route.params?.editMode;
+
+  useEffect(() => {
+    if (isEditMode && climbData) {
+      // Set your state here based on climbData
+      setName(climbData.name);
+      setGrade(climbData.grade);
+      setGym(climbData.gym);
+      setType(climbData.type);
+      setSet(climbData.set);
+      setIfsc(climbData.ifsc);
+      setInfo(climbData.info);
+    }
+  }, [isEditMode, climbData]);
+
+
+
+
   console.log('[TEST] ClimbCreate called');
   const { currentUser } = useContext(AuthContext);
   const setter = currentUser;
@@ -40,7 +63,7 @@ const ClimbInputData = () => {
     console.log('Cancel button was pressed in AndroidPrompt');
   };
 
-//this will later be populated by the gym documents in gym collection
+  //this will later be populated by the gym documents in gym collection
   const [gymItems, setGymItems] = useState([
     { label: 'Palladium', value: 'Palladium' },
     { label: 'The Cliffs LIC', value: 'The Cliffs LIC' },
@@ -61,6 +84,43 @@ const ClimbInputData = () => {
   //   }
   // }
 
+  async function handleUpdateClimb() {
+    try {
+      const climb = {
+        name,
+        grade,
+        gym,
+        type,
+        set,
+        ifsc,
+        info,
+        // image,
+        setter: setter.uid,
+        timestamp: new Date(),
+      };
+
+      const { updateClimb } = ClimbsApi();
+      updateClimb(climbData.id, climb)
+        .then(async (newClimbId) => {
+          setName("");
+          setGrade("");
+          setGym(null);
+          // setImage("");
+          setType("Boulder");
+          setInfo('');
+          setSet("Commercial");
+          setIfsc("");
+        })
+      Alert.alert("Success", "Climb updated successfully");
+    } catch (err) {
+      Alert.alert("Error updating climb");
+      console.error(err);
+    }
+  }
+
+
+
+
   async function handleAddClimb() {
     const climb = {
       name,
@@ -71,9 +131,11 @@ const ClimbInputData = () => {
       ifsc,
       info,
       // image, 
-      setter: setter.uid, 
+      setter: setter.uid,
       timestamp: new Date(),
     };
+
+
 
 
     const { addClimb } = ClimbsApi();
@@ -125,139 +187,169 @@ const ClimbInputData = () => {
   }
 
 
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Delete Climb",
+      "Are you sure you want to delete this climb?",
+      [
+        {
+          text: "No",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        {
+          text: "Yes", onPress: () => handleDeleteClimb()
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
+  async function handleDeleteClimb() {
+    const { updateClimb } = ClimbsApi();
+    updateClimb(climbData.id, { archived: true })
+    props.navigation.navigate('User_Profile');
+  }
+
+
   return (
 
-    <KeyboardAvoidingView 
-    behavior={Platform.OS === "ios" ? "padding" : "height"} 
-    style={{ flex: 1 }}
-    keyboardVerticalOffset={120}
-  >
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={120}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 
-      <ScrollView>
-        <SafeAreaView style={styles.container}>
+        <ScrollView>
+          <SafeAreaView style={styles.container}>
+            {isEditMode ?
+              <View style={styles.buttonContainer}>
+                <Button color='red' title="Delete Climb" onPress={confirmDelete} />
+              </View> : null
+            }
 
-          <View style={styles.content}>
-            <Text style={styles.label}>Name</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              placeholderTextColor={"#b1b1b3"}
-              onChangeText={setName}
-              placeholder="Enter name"
+            <View style={styles.content}>
+              <Text style={styles.label}>Name</Text>
+              <TextInput
+                style={styles.input}
+                value={name}
+                placeholderTextColor={"#b1b1b3"}
+                onChangeText={setName}
+                placeholder="Enter name"
 
-            />
-
-
-            <Text style={styles.label}>Grade</Text>
-            <TextInput
-              style={styles.input}
-              value={grade}
-              placeholderTextColor={"#b1b1b3"}
-              onChangeText={setGrade}
-              placeholder="Enter grade"
-
-            />
-
-            <Text style={styles.label}>IFSC Score</Text>
-            <TextInput
-              style={styles.input}
-              value={ifsc}
-              onChangeText={setIfsc}
-              placeholderTextColor={"#b1b1b3"}
-              placeholder="Enter score"
-            />
-
-            <Text style={styles.label}>Gym</Text>
-
-            <DropDownPicker
-            listMode="SCROLLVIEW"
-              open={open}
-              setOpen={setOpen}
-              value={gym}
-              setValue={setGym}
-              items={gymItems}
-              containerStyle={{ height: 60, zIndex: 5000}}
-              style={styles.dropdown}
-              dropDownContainerStyle={{
-                backgroundColor: '#e0e0e0', 
-                borderColor: '#e0e0e0', 
-                borderWidth: 1, 
-              }}
-              setItems={setGymItems}
-              placeholder="Select an item"
-              placeholderStyle={{ color: 'grey', fontSize: 18 }}
-              textStyle={{fontSize: 18}}
-            />
-
-            <Text style={styles.label}>Type</Text>
-            <View style={styles.segmentedControlContainer}>
-              <SegmentedControl
-                values={['Boulder', 'Lead', 'Top Rope']}
-                tintColor="#007AFF"
-                fontStyle={{ fontSize: 18, color: '#007AFF' }}
-                activeFontStyle={{ fontSize: 18, color: 'black' }}
-                selectedIndex={['Boulder', 'Lead', 'Top Rope'].indexOf(type)}
-                style={styles.segmentedControl}
-                onChange={(event) => {
-                  setType(event.nativeEvent.value);
-                }}
               />
-            </View>
 
-            <Text style={styles.label}>More Info</Text>
-            <TextInput
-              style={styles.largeInput}
-              value={info}
-              placeholderTextColor={"#b1b1b3"}
-              onChangeText={setInfo}
-              placeholder="Enter more info"
 
-            />
+              <Text style={styles.label}>Grade</Text>
+              <TextInput
+                style={styles.input}
+                value={grade}
+                placeholderTextColor={"#b1b1b3"}
+                onChangeText={setGrade}
+                placeholder="Enter grade"
 
-            <Text style={styles.label}>Set</Text>
-            <View style={styles.segmentedControlContainer}>
-              <SegmentedControl
-                values={['Competition', 'Commercial']}
-                tintColor="#007AFF"
-                fontStyle={{ fontSize: 18, color: '#007AFF' }}
-                activeFontStyle={{ fontSize: 18, color: 'black' }}
-                style={styles.segmentedControl}
-                selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
-                onChange={(event) => {
-                  setSet(event.nativeEvent.value);
-                }}
               />
-            </View>
+
+              <Text style={styles.label}>IFSC Score</Text>
+              <TextInput
+                style={styles.input}
+                value={ifsc}
+                onChangeText={setIfsc}
+                placeholderTextColor={"#b1b1b3"}
+                placeholder="Enter score"
+              />
+
+              <Text style={styles.label}>Gym</Text>
+
+              <DropDownPicker
+                listMode="SCROLLVIEW"
+                open={open}
+                setOpen={setOpen}
+                value={gym}
+                setValue={setGym}
+                items={gymItems}
+                containerStyle={{ height: 60, zIndex: 5000 }}
+                style={styles.dropdown}
+                dropDownContainerStyle={{
+                  backgroundColor: '#e0e0e0',
+                  borderColor: '#e0e0e0',
+                  borderWidth: 1,
+                }}
+                setItems={setGymItems}
+                placeholder="Select an item"
+                placeholderStyle={{ color: 'grey', fontSize: 18 }}
+                textStyle={{ fontSize: 18 }}
+              />
+
+              <Text style={styles.label}>Type</Text>
+              <View style={styles.segmentedControlContainer}>
+                <SegmentedControl
+                  values={['Boulder', 'Lead', 'Top Rope']}
+                  tintColor="#007AFF"
+                  fontStyle={{ fontSize: 18, color: '#007AFF' }}
+                  activeFontStyle={{ fontSize: 18, color: 'black' }}
+                  selectedIndex={['Boulder', 'Lead', 'Top Rope'].indexOf(type)}
+                  style={styles.segmentedControl}
+                  onChange={(event) => {
+                    setType(event.nativeEvent.value);
+                  }}
+                />
+              </View>
+
+              <Text style={styles.label}>More Info</Text>
+              <TextInput
+                style={styles.largeInput}
+                value={info}
+                placeholderTextColor={"#b1b1b3"}
+                onChangeText={setInfo}
+                placeholder="Enter more info"
+
+              />
+
+              <Text style={styles.label}>Set</Text>
+              <View style={styles.segmentedControlContainer}>
+                <SegmentedControl
+                  values={['Competition', 'Commercial']}
+                  tintColor="#007AFF"
+                  fontStyle={{ fontSize: 18, color: '#007AFF' }}
+                  activeFontStyle={{ fontSize: 18, color: 'black' }}
+                  style={styles.segmentedControl}
+                  selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
+                  onChange={(event) => {
+                    setSet(event.nativeEvent.value);
+                  }}
+                />
+              </View>
 
 
 
 
 
-            {/* <Text style={styles.label}>Image</Text>
+              {/* <Text style={styles.label}>Image</Text>
         <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
           <Text style={styles.uploadText}>Insert climb image</Text>
           <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
         </TouchableOpacity> */}
 
-          </View>
-
-          {/* Include AndroidPrompt only for Android platform */}
-          {Platform.OS === 'android' && <AndroidPrompt ref={androidPromptRef} onCancelPress={yourCancelFunction} />}
+            </View>
 
 
-          <Button
-            onPress={handleAddClimb}
-            mode="contained"
-            disabled={!name || !grade || !gym}
-            title="Add Climb"
-          >
-          </Button>
+            {Platform.OS === 'android' && <AndroidPrompt ref={androidPromptRef} onCancelPress={yourCancelFunction} />}
 
-        </SafeAreaView>
-      </ScrollView>
 
-    </TouchableWithoutFeedback>
+            {
+              isEditMode ?
+                (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                  <Button title="Update Climb" onPress={handleUpdateClimb} />
+                </View>) :
+                <Button title="Add Climb" onPress={handleAddClimb} disabled={!name || !grade || !gym} />
+            }
+          </SafeAreaView>
+        </ScrollView>
+
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
 
   );
@@ -289,7 +381,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'black',
     borderRadius: 8,
-    paddingBottom: 120, 
+    paddingBottom: 120,
     paddingLeft: 10,
     textAlignVertical: 'top',
   },
@@ -315,6 +407,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
     borderColor: '#e0e0e0',
   },
+  buttonContainer: {
+    width: '100%', // take full width
+    justifyContent: 'flex-end', // align button to the right
+    flexDirection: 'row',
+    paddingTop: 10,
+    paddingRight: 10,
+
+  }
 });
 
 
