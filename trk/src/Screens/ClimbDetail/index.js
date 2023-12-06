@@ -11,7 +11,6 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
 
-
   const { climbData } = props.route.params;
   const { climbId } = props.route.params;
   const [climbImageUrl, setClimbImageUrl] = useState(null);
@@ -277,7 +276,7 @@ function ClimbDetail(props) {
               <View style={styles.climbPhoto}>
                 {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
               </View>
-             
+
               <View style={{ marginTop: 20 }}>
                 <View style={styles.button}>
                   <Button title='Review this climb' onPress={onFeedback} />
@@ -289,8 +288,8 @@ function ClimbDetail(props) {
               {climbData.info && (
                 <View style={styles.infoBox}>
                   <Text style={styles.subheading}>Climb Info</Text>
-                  <Text style= {styles.info}>{climbData.info}</Text>
-                  </View>
+                  <Text style={styles.info}>{climbData.info}</Text>
+                </View>
               )}
             </View>
           </View>
@@ -389,19 +388,19 @@ const styles = StyleSheet.create({
     marginTop: 15,
     alignSelf: 'flex-start',
     marginLeft: 30,
-  
+
   },
   subheading: {
     fontWeight: '700',
     fontSize: 20,
-    textAlign: 'left', 
+    textAlign: 'left',
   },
   info: {
     marginTop: 5,
     fontSize: 16,
-    textAlign: 'left', 
+    textAlign: 'left',
     marginBottom: 10,
-  }, 
+  },
 })
 
 export default ClimbDetail;

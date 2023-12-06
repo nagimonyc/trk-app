@@ -59,6 +59,13 @@ function ProfileStack() {
         name="Set"
         component={SetDetail}
         options={{ title: 'Climb Performance', headerBackTitle: 'Profile', headerTitleAlign: 'center' }} />
+
+      <Stack.Screen
+        name="ClimbInputData"
+        component={ClimbInputData}
+        options={{ title: 'Climb Data', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
+      />
+
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen
         name="Feedback"

@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
 import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import { AuthContext } from '../../Utils/AuthContext';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 function SetDetail(props) {
   console.log('[TEST] SetDetail called')
 
+  const { role } = useContext(AuthContext);
+
   const { climbData } = props.route.params;
+  const { navigation } = props;
   console.log(`Climb id is ${climbData.id}`)
 
   const [tapCount, setTapCount] = useState(0);
@@ -23,7 +28,7 @@ function SetDetail(props) {
           .collection('taps')
           .where('climb', '==', climbData.id)
           .get();
-          
+
         setTapCount(tapQuerySnapshot.size);
       } catch (error) {
         console.error('Error fetching tap count:', error);
@@ -55,33 +60,53 @@ function SetDetail(props) {
       });
   }, []);
 
+  const navigateToSetConfig = () => {
+    navigation.navigate('ClimbInputData', { climbData, editMode: true });
+  };
+
+
+
   return (
-    <View style={styles.container}>
-    <View style={[styles.wrapper]} >
-      <SafeAreaView />
-      <View style={styles.top}>
-        <View style={styles.topLeft}>
-          <View style={styles.gradeCircle}>
-            <Text style={styles.grade}>{climbData.grade}</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={[styles.wrapper]} >
+          <SafeAreaView />
+          {(role === 'setter' ?
+            <View style={styles.buttonContainer}>
+              <Button style={{}} title='edit' onPress={navigateToSetConfig}></Button>
+            </View>
+            : null
+          )}
+          <View style={styles.top}>
+            <View style={styles.topLeft}>
+              <View style={styles.gradeCircle}>
+                <Text style={styles.grade}>{climbData.grade}</Text>
+              </View>
+
+              <Text style={styles.titleText}>{climbData.name}</Text>
+            </View>
+            <View style={styles.circleWrapper}>
+              <View style={styles.setterCircle}>
+                {setterImageUrl && <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} />}
+              </View>
+            </View>
           </View>
+          <View style={styles.countBox}>
+            <Text style={styles.count}>{tapCount}</Text>
+          </View>
+          <View style={styles.climbPhoto}>
+            {climbImageUrl && <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />}
+          </View>
+          {climbData.info && (
+            <View style={styles.infoBox}>
+              <Text style={styles.subheading}>Climb Info</Text>
+              <Text style={styles.info}>{climbData.info}</Text>
+            </View>
+          )}
 
-          <Text style={styles.titleText}>{climbData.name}</Text>
-        </View>
-        <View style={styles.circleWrapper}>
-        <View style={styles.setterCircle}>
-        {setterImageUrl && <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> }
-        </View>
         </View>
       </View>
-      <View style={styles.countBox}>
-      <Text style={styles.count}>{tapCount}</Text>
-      </View>
-      <View style={styles.climbPhoto}>
-      {climbImageUrl && <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />}
-      </View>
-
-    </View>
-  </View>
+    </ScrollView>
   )
 }
 
@@ -90,11 +115,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    PaddingTop: 10,
+    PaddingBottom: 20
   },
 
   wrapper: {
-    width: 317,
-    height: 539.89,
+    width: '90%',
     alignItems: 'center',
     padding: 15,
     backgroundColor: 'white',
@@ -182,6 +208,28 @@ const styles = StyleSheet.create({
   grade: {
     color: 'white',
   },
+  infoBox: {
+    marginTop: 15,
+    alignSelf: 'flex-start',
+    marginLeft: 30,
+
+  },
+  subheading: {
+    fontWeight: '700',
+    fontSize: 20,
+    textAlign: 'left',
+  },
+  info: {
+    marginTop: 5,
+    fontSize: 16,
+    textAlign: 'left',
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    width: '100%', // take full width
+    justifyContent: 'flex-end', // align button to the right
+    flexDirection: 'row',
+  }
 })
 
 export default SetDetail;

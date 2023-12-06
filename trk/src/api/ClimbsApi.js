@@ -19,10 +19,15 @@ function ClimbsApi() {
         return ref.where(field, '==', value).get();
     }
 
+    function updateClimb(climbId, updatedClimb) {
+        return ref.doc(climbId).update(updatedClimb);
+    }
+
     return {
         addClimb,
         getClimb,
-        getClimbsBySomeField
+        getClimbsBySomeField,
+        updateClimb
     };
 }
 
