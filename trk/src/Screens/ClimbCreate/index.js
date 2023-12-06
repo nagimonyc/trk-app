@@ -209,6 +209,7 @@ const ClimbInputData = (props) => {
   async function handleDeleteClimb() {
     const { updateClimb } = ClimbsApi();
     updateClimb(climbData.id, { archived: true })
+    props.navigation.navigate('User_Profile');
   }
 
 
