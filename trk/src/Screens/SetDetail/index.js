@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, SafeAreaView, Image, ScrollView } from 'react-n
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from '../../Utils/AuthContext';
-import { ScrollView } from 'react-native-gesture-handler';
 import CommentsApi from '../../api/CommentsApi';
 
 
@@ -285,7 +284,7 @@ const styles = StyleSheet.create({
     width: '100%', // take full width
     justifyContent: 'flex-end', // align button to the right
     flexDirection: 'row',
-  }
+  },
   commentText: {
     padding: 10,
     marginVertical: 5,
