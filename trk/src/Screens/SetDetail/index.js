@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
-import { View, Text, StyleSheet, SafeAreaView, Image, TextInput, Button } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image, ScrollView } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from '../../Utils/AuthContext';
 import { ScrollView } from 'react-native-gesture-handler';
+import CommentsApi from '../../api/CommentsApi';
 
 
 function SetDetail(props) {
@@ -19,6 +20,9 @@ function SetDetail(props) {
   const [tapCount, setTapCount] = useState(0);
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
+  const [feedbackList, setFeedbackList] = useState([]);
+
+  const { getCommentsBySomeField } = CommentsApi();
 
 
   useEffect(() => {
@@ -66,6 +70,36 @@ function SetDetail(props) {
 
 
 
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const querySnapshot = await getCommentsBySomeField('climb', climbData.id);
+        const comments = [];
+        querySnapshot.forEach(doc => {
+          const commentData = doc.data();
+          comments.push({
+            id: doc.id,
+            explanation: commentData.explanation,
+            rating: commentData.rating,
+            timestamp: commentData.timestamp  // Assuming this is a Firestore timestamp
+          });
+        });
+        // Sort comments by timestamp in descending order
+        comments.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+        setFeedbackList(comments);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    };
+    fetchComments();
+  }, [climbData.id]);
+
+  renderRating = (rating) => {
+    return '⭐️'.repeat(rating);
+  }
+
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -90,6 +124,28 @@ function SetDetail(props) {
                 {setterImageUrl && <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} />}
               </View>
             </View>
+          </View>
+          <View style={styles.countBox}>
+            <Text style={styles.count}>{tapCount}</Text>
+          </View>
+          <View style={styles.climbPhoto}>
+            {climbImageUrl && <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />}
+          </View>
+
+          <View style={styles.contentArea}>
+            {feedbackList.length > 0 && (
+              <Text style={styles.feedbackTitle}>Feedback</Text>
+            )}
+            {feedbackList.length > 0 ? (
+              feedbackList.map((comment, index) => (
+                <View key={index} style={styles.commentContainer}>
+                  <Text style={styles.commentText}>{comment.explanation}</Text>
+                  <Text style={styles.commentRating}>{renderRating(comment.rating)}</Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noFeedback}>No feedback yet.</Text>
+            )}
           </View>
           <View style={styles.countBox}>
             <Text style={styles.count}>{tapCount}</Text>
@@ -230,6 +286,37 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end', // align button to the right
     flexDirection: 'row',
   }
+  commentText: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    flex: 1,
+  },
+  feedbackTitle: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 5,
+    marginTop: 15,
+  },
+  noFeedback: {
+    marginTop: 15,
+  },
+  commentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 5,
+    marginVertical: 5,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+  },
+  commentRating: {
+    fontWeight: 'bold',
+    marginLeft: 10,
+    marginRight: 7,
+
+  },
 })
 
 export default SetDetail;
