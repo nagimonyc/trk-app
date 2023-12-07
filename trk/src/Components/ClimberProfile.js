@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect} from "react";
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert } from "react-native";
+import { Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import TapHistory from "./TapHistory";
 import TapsApi from "../api/TapsApi";
@@ -43,7 +43,11 @@ const ClimberProfile = ({navigation}) => {
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Activity</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-                        <Icon name="settings" size={30} color="#3498db" />
+                    {
+                            Platform.OS === 'android' ?
+                                <Icon name="settings" size={30} color="#3498db" /> :
+                                <Image source={require('../../assets/settings.png')} style={{ width: 30, height: 30 }} />
+                        }
                     </TouchableOpacity>
                 </View>
                 <View style={styles.effortRecap}>
