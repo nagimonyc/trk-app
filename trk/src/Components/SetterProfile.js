@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, Text, StyleSheet, View, Image, Button, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { Platform, SafeAreaView, Text, StyleSheet, View, Image, Button, TouchableOpacity, Alert, ScrollView } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import TapHistory from "./TapHistory";
 import ClimbsApi from "../api/ClimbsApi";
@@ -39,7 +39,11 @@ const SetterProfile = ({ navigation }) => {
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Activity</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-                        <Icon name="settings" size={30} color="#3498db" />
+                        {
+                            Platform.OS === 'android' ?
+                                <Icon name="settings" size={30} color="#3498db" /> :
+                                <Image source={require('../../assets/settings.png')} style={{ width: 30, height: 30 }} />
+                        }
                     </TouchableOpacity>
                 </View>
 
