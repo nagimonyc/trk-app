@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import TapsApi from '../../api/TapsApi';
 
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share } from 'react-native';
 
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -66,7 +66,7 @@ function ClimbDetail(props) {
 
 
   useEffect(() => {
-    const climbReference = climbData.photo ? storage().ref(`${climbData.photo}`) : storage().ref('climb photos/the_crag.png');
+    const climbReference = climbData.image ? storage().ref(`climb_image/${climbId}`) : storage().ref('climb photos/the_crag.png');
     climbReference.getDownloadURL()
       .then((url) => {
         setClimbImageUrl(url);
@@ -153,11 +153,6 @@ function ClimbDetail(props) {
   const onFeedback = async () => {
     navigation.navigate('Feedback', { climbName: climbData.name, climbGrade: climbData.grade, climbId: climbId })
   };
-
-  const onDefinition = (descriptor) => {
-    navigation.navigate('Definition', { descriptor: descriptor });
-  };
-  
 
   const getSelectedIndex = (value) => {
     if (value === '⚡️') {
@@ -278,19 +273,6 @@ function ClimbDetail(props) {
                 </View>
               </View>
               <View style={styles.line}></View>
-              <View style={styles.descriptorsContainer}>
-                {climbData.descriptors && climbData.descriptors.map((descriptor, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.descriptorButton}
-                    onPress={() => onDefinition(descriptor)}
-                    activeOpacity={0.6} 
-                  >
-                    <Text style={styles.descriptorText}>{descriptor}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
               <View style={styles.climbPhoto}>
                 {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
               </View>
@@ -384,7 +366,7 @@ const styles = StyleSheet.create({
   climbPhoto: {
     width: 197,
     height: 287,
-    marginTop: 22,
+    marginTop: 42,
     backgroundColor: 'white',
     borderRadius: 3.88,
   },
@@ -419,30 +401,6 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginBottom: 10,
   },
-  descriptorsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10,  // Add vertical margin for spacing
-  },
-  descriptorButton: {
-    marginHorizontal: 5,
-    marginTop: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    backgroundColor: '#e7e7e7', // Slightly different background color
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#e7e7e7', // Add border
-  },
-  
-  descriptorText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#007AFF', // Color indicating it's clickable (like a link)
-  },
-  
 })
 
 export default ClimbDetail;

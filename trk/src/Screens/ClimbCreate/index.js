@@ -45,8 +45,6 @@ const ClimbInputData = (props) => {
   const setter = currentUser;
 
   const androidPromptRef = Platform.OS === 'android' ? React.useRef() : null;
-  console.log('platform: ', Platform.OS)
-  console.log('androidPromptRef:', androidPromptRef);
 
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
@@ -148,16 +146,8 @@ const ClimbInputData = (props) => {
 
         try {
           await NfcManager.requestTechnology(NfcTech.NfcA);
-          console.log(1);
           await ensurePasswordProtection();
-          console.log("newClimbId._documentPath._parts[1] is ", newClimbId._documentPath._parts[1]);
           const climbBytes = await writeClimb(newClimbId._documentPath._parts[1]);
-          console.log("climbBytes is ", climbBytes);
-          await writeSignature(climbBytes);
-          console.log(4);
-
-          console.log("image is: ", image);
-
           if (image) {
             const climbId = newClimbId._documentPath._parts[1];
             const reference = storage().ref(`climb_image/${climbId}`);
@@ -166,6 +156,7 @@ const ClimbInputData = (props) => {
           else {
             console.log("no image");
           }
+          await writeSignature(climbBytes);
         }
         catch (ex) {
           // console.warn("error is hello world");
@@ -181,7 +172,7 @@ const ClimbInputData = (props) => {
         setName("");
         setGrade("");
         setGym(null);
-        // setImage("");
+        setImage("");
         setType("Boulder");
         setInfo('');
         setSet("Commercial");

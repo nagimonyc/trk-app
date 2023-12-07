@@ -42,8 +42,7 @@ function SetDetail(props) {
 
 
   useEffect(() => {
-    console.log(`photo is : ${climbData.photo}`)
-    const climbReference = climbData.photo ? storage().ref(`${climbData.photo}`) : storage().ref('climb photos/the_crag.png');
+    const climbReference = climbData.image ? storage().ref(`climb_image/${climbData.id}`) : storage().ref('climb photos/the_crag.png');
     climbReference.getDownloadURL()
       .then((url) => {
         setClimbImageUrl(url);
