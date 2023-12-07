@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
-import { View, Text, StyleSheet, SafeAreaView, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image, ScrollView, Button } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from '../../Utils/AuthContext';
@@ -14,7 +14,6 @@ function SetDetail(props) {
 
   const { climbData } = props.route.params;
   const { navigation } = props;
-  console.log(`Climb id is ${climbData.id}`)
 
   const [tapCount, setTapCount] = useState(0);
   const [climbImageUrl, setClimbImageUrl] = useState(null);
@@ -146,19 +145,6 @@ function SetDetail(props) {
               <Text style={styles.noFeedback}>No feedback yet.</Text>
             )}
           </View>
-          <View style={styles.countBox}>
-            <Text style={styles.count}>{tapCount}</Text>
-          </View>
-          <View style={styles.climbPhoto}>
-            {climbImageUrl && <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />}
-          </View>
-          {climbData.info && (
-            <View style={styles.infoBox}>
-              <Text style={styles.subheading}>Climb Info</Text>
-              <Text style={styles.info}>{climbData.info}</Text>
-            </View>
-          )}
-
         </View>
       </View>
     </ScrollView>
