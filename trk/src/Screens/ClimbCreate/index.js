@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import DropDownPicker from 'react-native-dropdown-picker';
-// import ImagePicker from 'react-native-image-crop-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 
 import { SafeAreaView, View, Text, StyleSheet, TextInput, Image, Button, Alert, TouchableOpacity, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView } from "react-native";
 
@@ -12,7 +12,7 @@ import ensurePasswordProtection from "../../NfcUtils/ensurePasswordProtection";
 import AndroidPrompt from '../../Components/AndroidPrompt';
 import ClimbsApi from "../../api/ClimbsApi";
 import { AuthContext } from '../../Utils/AuthContext';
-// import storage from '@react-native-firebase/storage';
+import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 
@@ -45,13 +45,11 @@ const ClimbInputData = (props) => {
   const setter = currentUser;
 
   const androidPromptRef = Platform.OS === 'android' ? React.useRef() : null;
-  console.log('platform: ', Platform.OS)
-  console.log('androidPromptRef:', androidPromptRef);
 
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
   const [gym, setGym] = useState(null);
-  // const [image, setImage] = useState("");
+  const [image, setImage] = useState("");
   const [type, setType] = useState("Boulder");
   const [set, setSet] = useState("Commercial");
   const [ifsc, setIfsc] = useState("");
@@ -71,18 +69,20 @@ const ClimbInputData = (props) => {
     { label: 'The Gravity Vault Hoboken', value: 'The Gravity Vault Hoboken' }]);
 
 
-  // async function handleImagePick() {
-  //   try {
-  //     const pickedImage = await ImagePicker.openPicker({
-  //       width: 300,
-  //       height: 400,
-  //       cropping: true,
-  //     });
-  //     setImage(pickedImage.path);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
+  const handleImagePick = async () => {
+    console.log("handleImagePick called");
+    try {
+      const pickedImage = await ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: true,
+      });
+      setImage(pickedImage.path);
+    } catch (err) {
+      console.error("Error picking image:", err);
+    }
+  };
+
 
   async function handleUpdateClimb() {
     try {
@@ -94,7 +94,7 @@ const ClimbInputData = (props) => {
         set,
         ifsc,
         info,
-        // image,
+        image,
         setter: setter.uid,
         timestamp: new Date(),
       };
@@ -105,7 +105,7 @@ const ClimbInputData = (props) => {
           setName("");
           setGrade("");
           setGym(null);
-          // setImage("");
+          setImage("");
           setType("Boulder");
           setInfo('');
           setSet("Commercial");
@@ -130,7 +130,7 @@ const ClimbInputData = (props) => {
       set,
       ifsc,
       info,
-      // image, 
+      image,
       setter: setter.uid,
       timestamp: new Date(),
     };
@@ -143,22 +143,20 @@ const ClimbInputData = (props) => {
       .then(async (newClimbId) => {
 
         androidPromptRef ? androidPromptRef.current.setVisible(true) : null;
-        // if (Platform.OS === 'android') {
-        //   androidPromptRef.current.setVisible(true);
-        // }
 
         try {
           await NfcManager.requestTechnology(NfcTech.NfcA);
           await ensurePasswordProtection();
           const climbBytes = await writeClimb(newClimbId._documentPath._parts[1]);
+          if (image) {
+            const climbId = newClimbId._documentPath._parts[1];
+            const reference = storage().ref(`climb_image/${climbId}`);
+            await reference.putFile(image);
+          }
+          else {
+            console.log("no image");
+          }
           await writeSignature(climbBytes);
-
-          // Image upload to Firebase here
-          // if (image) {
-          //   const climbId = newClimbId._documentPath._parts[1];
-          //   const reference = storage().ref(`climb_image/${climbId}`);
-          //   await reference.putFile(image);
-          // }
         }
         catch (ex) {
           // console.warn("error is hello world");
@@ -174,7 +172,7 @@ const ClimbInputData = (props) => {
         setName("");
         setGrade("");
         setGym(null);
-        // setImage("");
+        setImage("");
         setType("Boulder");
         setInfo('');
         setSet("Commercial");
@@ -327,13 +325,15 @@ const ClimbInputData = (props) => {
 
 
 
-              {/* <Text style={styles.label}>Image</Text>
-        <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
-          <Text style={styles.uploadText}>Insert climb image</Text>
-          <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
-        </TouchableOpacity> */}
-
+              <Text style={styles.label}>Image</Text>
+              <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
+                <Text style={styles.uploadText}>Insert climb image</Text>
+                <Image source={require('../../../assets/image-icon.png')} style={styles.imageIcon} resizeMode="contain"></Image>
+              </TouchableOpacity>
             </View>
+
+            {/* Image Preview */}
+            {image && <Image source={{ uri: image }} style={styles.previewImage} />}
 
 
             {Platform.OS === 'android' && <AndroidPrompt ref={androidPromptRef} onCancelPress={yourCancelFunction} />}
@@ -399,6 +399,12 @@ const styles = StyleSheet.create({
   imageIcon: {
     width: 40,
     height: 40,
+  },
+  previewImage: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain', // Or 'cover', depending on what you prefer
+    marginVertical: 10,
   },
   segmentedControlContainer: {
     marginBottom: 10, // Adjust this value to add more or less space below the segmented control

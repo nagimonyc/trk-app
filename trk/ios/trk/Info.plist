@@ -60,6 +60,10 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Using photo library capabilities to add user photos to climbs</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Using camera capabilities to capture image of climb to add to climb tag</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

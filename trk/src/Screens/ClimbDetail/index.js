@@ -66,7 +66,7 @@ function ClimbDetail(props) {
 
 
   useEffect(() => {
-    const climbReference = climbData.photo ? storage().ref(`${climbData.photo}`) : storage().ref('climb photos/the_crag.png');
+    const climbReference = climbData.image ? storage().ref(`climb_image/${climbId}`) : storage().ref('climb photos/the_crag.png');
     climbReference.getDownloadURL()
       .then((url) => {
         setClimbImageUrl(url);
@@ -157,7 +157,6 @@ function ClimbDetail(props) {
   const onDefinition = (descriptor) => {
     navigation.navigate('Definition', { descriptor: descriptor });
   };
-  
 
   const getSelectedIndex = (value) => {
     if (value === '⚡️') {
@@ -284,13 +283,12 @@ function ClimbDetail(props) {
                     key={index}
                     style={styles.descriptorButton}
                     onPress={() => onDefinition(descriptor)}
-                    activeOpacity={0.6} 
+                    activeOpacity={0.6}
                   >
                     <Text style={styles.descriptorText}>{descriptor}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
-
               <View style={styles.climbPhoto}>
                 {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
               </View>
@@ -436,13 +434,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e7e7e7', // Add border
   },
-  
+
   descriptorText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#007AFF', // Color indicating it's clickable (like a link)
   },
-  
 })
 
 export default ClimbDetail;

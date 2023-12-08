@@ -55,8 +55,6 @@ function HomeScreen(props) {
       const climbId = await readClimb();
       const climbData = await getClimb(climbId[0]); // Fetch climb data using ID
       if (climbData.exists) { //check if climb exists and if the user is the setter, if not, allow them to read the climb
-        console.log('Climb found:', climbData.data());
-
         if (currentUser.uid !== climbData.data().setter) {
           const { addTap } = TapsApi();
           const tap = {
@@ -70,10 +68,9 @@ function HomeScreen(props) {
           }
           const documentReference = await addTap(tap);
           const newTapId = documentReference.id;
-          console.log("New Tap ID is:", newTapId);
           navigation.navigate('Detail', { climbData: climbData.data(), tapId: newTapId, climbId: climbId[0] });
         } else {
-          navigation.navigate('Detail', { climbData: climbData.data() })
+          navigation.navigate('Detail', { climbData: climbData.data(), climbId: climbId[0] })
         }
 
       } else {
