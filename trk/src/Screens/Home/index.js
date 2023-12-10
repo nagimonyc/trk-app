@@ -77,7 +77,7 @@ function HomeScreen(props) {
         Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
       }
     } catch (ex) {
-      // console.warn(ex);
+      console.warn(ex);
     } finally {
       NfcManager.cancelTechnologyRequest();
     }
