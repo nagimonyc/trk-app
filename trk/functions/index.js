@@ -65,3 +65,4 @@ exports.decrementUserTapCounter = functions.firestore
             }
         });
     });
+    
