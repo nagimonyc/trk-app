@@ -14,7 +14,6 @@ import TapHistory from '../../Components/TapHistory';
 function HomeScreen(props) {
   console.log('[TEST] HomeScreen called');
   const [climbsHistory, setClimbsHistory] = useState([]);
-  const [latestTapId, setLatestTapId] = useState(null); // New state for tracking the latest tap
 
 
   // Initialize androidPromptRef conditionally based on the platform
@@ -26,10 +25,10 @@ function HomeScreen(props) {
   const logo = require('../../../assets/nagimo-logo.png');
 
   useEffect(() => {
-    const { onLatestThreeTapsUpdate } = TapsApi(); // Assuming this is the method for subscribing to changes
+    const { onLatestFourTapsUpdate } = TapsApi(); // Assuming this is the method for subscribing to changes
     const { getClimb } = ClimbsApi();
 
-    const unsubscribe = onLatestThreeTapsUpdate(async (querySnapshot) => {
+    const unsubscribe = onLatestFourTapsUpdate(async (querySnapshot) => {
       // Handle the real-time updates here
       const climbDetailsPromises = querySnapshot.docs.map(async (doc) => {
         const tapData = doc.data();
@@ -45,9 +44,6 @@ function HomeScreen(props) {
         .filter(tap => tap !== null);
 
       setClimbsHistory(newClimbsHistory);
-      if (newClimbsHistory.length > 0) {
-        setLatestTapId(newClimbsHistory[0].tapId); // Update the latest tap ID
-      }
     });
 
     // Make sure to unsubscribe from the listener when the component unmounts
@@ -152,7 +148,7 @@ function HomeScreen(props) {
       );
     } else {
       return (
-        <View style={{ flex: 1, backgroundColor: 'blue' }}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.tapText}>Tap to Track</Text>
           <TouchableOpacity style={styles.button} onPress={identifyClimb}>
             <Image source={logo} style={styles.image} resizeMode="contain" />
@@ -168,8 +164,9 @@ function HomeScreen(props) {
       <View style={[styles.wrapper, styles.center]}>
 
         {renderNfcButtons()}
-        <View style={[styles.effortHistoryList, { backgroundColor: '#F2E5D6' }]}>
-          <TapHistory climbsHistory={climbsHistory} latestTapId={latestTapId} />
+        <View style={[styles.effortHistoryList, {}]}>
+          <Text style={{ fontSize: 25, fontWeight: '600', textAlign: 'left', marginLeft: 20, marginTop: 20 }}>Latest Taps</Text>
+          <TapHistory climbsHistory={climbsHistory} fromHome={true} />
         </View>
       </View>
       {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
@@ -198,7 +195,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginBottom: 25,
     fontWeight: '600',
-    backgroundColor: 'green'
   },
   button: {
     alignItems: 'center',

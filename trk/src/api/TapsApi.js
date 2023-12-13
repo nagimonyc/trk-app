@@ -37,8 +37,8 @@ function TapsApi() {
     }
 
 
-    function onLatestThreeTapsUpdate(callback) {
-        return ref.orderBy('timestamp', 'desc').limit(3).onSnapshot(callback);
+    function onLatestFourTapsUpdate(callback) {
+        return ref.orderBy('timestamp', 'desc').limit(4).onSnapshot(callback);
     }
 
     async function updateTap(tapId, updatedTap) {
@@ -55,7 +55,7 @@ function TapsApi() {
         getTapsBySomeField,
         getTopTenTaps,
         updateTap,
-        onLatestThreeTapsUpdate
+        onLatestFourTapsUpdate
     };
 }
 
