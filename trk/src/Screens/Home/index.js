@@ -88,38 +88,22 @@ function HomeScreen(props) {
     if (Platform.OS === 'android') {
       androidPromptRef.current.setVisible(true);
     }
-
+  
     try {
       await NfcManager.requestTechnology(NfcTech.NfcA);
-      const { getClimb } = ClimbsApi();
-      const climbId = await readClimb();
-      const climbData = await getClimb(climbId[0]); // Fetch climb data using ID
-      if (climbData.exists) { //check if climb exists and if the user is the setter, if not, allow them to read the climb
-        if (currentUser.uid !== climbData.data().setter) {
-          const { addTap } = TapsApi();
-          const tap = {
-            climb: climbId[0],
-            user: currentUser.uid,
-            timestamp: new Date(),
-            completion: 0,
-            attempts: '',
-            witness1: '',
-            witness2: '',
-          }
-          const documentReference = await addTap(tap);
-          const newTapId = documentReference.id;
-          navigation.navigate('Detail', { climbData: climbData.data(), tapId: newTapId, climbId: climbId[0] });
-        } else {
-          navigation.navigate('Detail', { climbData: climbData.data(), climbId: climbId[0] })
-        }
-
+      const climbId = await readClimb(); // Read climb ID from NFC tag
+      if (climbId && climbId[0]) {
+        navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true }); // Navigate with climbId
       } else {
-        Alert.alert('Error', 'Climb not found!', [{ text: 'OK' }]);
+        throw new Error('Invalid climb ID'); // Handle invalid climb ID
       }
     } catch (ex) {
-      console.warn(ex);
+      Alert.alert('Error', ex.message || 'Climb not found!', [{ text: 'OK' }]);
     } finally {
       NfcManager.cancelTechnologyRequest();
+      if (Platform.OS === 'android') {
+        androidPromptRef.current.setVisible(false);
+      }
     }
 
     if (Platform.OS === 'android') {
