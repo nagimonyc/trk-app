@@ -40,10 +40,9 @@ function HomeScreen(props) {
             hour: '2-digit',
             minute: '2-digit',
             hour12: true,
-            timeZone: 'America/New_York'
-          });;
+            timeZone: 'America/New_York' // NEW YORK TIME
+          });
         }
-        // console.log('Timestamp:', timestamp);
         return climbSnapshot.exists ? {
           ...tapData,
           tapTimestamp: timestamp,
