@@ -6,7 +6,7 @@ function GymsApi() {
   async function fetchGyms() {
     try {
       const snapshot = await firestore().collection('gyms').get();
-      return snapshot.docs.map(doc => ({ label: doc.data().Name, value: doc.id }));
+      return snapshot.docs;
     } catch (error) {
       console.error("Error fetching gyms: ", error);
       return [];

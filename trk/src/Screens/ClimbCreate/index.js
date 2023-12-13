@@ -62,13 +62,12 @@ const ClimbInputData = (props) => {
     console.log('Cancel button was pressed in AndroidPrompt');
   };
 
-  //this will later be populated by the gym documents in gym collection
   const [gymItems, setGymItems] = useState([]);
 
   useEffect(() => {
-    // Fetch gyms when component mounts
     GymsApi().fetchGyms().then(gyms => {
-      setGymItems(gyms);
+      const formattedGyms = gyms.map(doc => ({ label: doc.data().Name, value: doc.id }));
+      setGymItems(formattedGyms);
     });
   }, []);
 
