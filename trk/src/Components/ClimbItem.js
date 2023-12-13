@@ -51,7 +51,7 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
             <View>
                 <ListItemContainer dotStyle={styles.climbDot}>
                     <Text style={styles.climbName}>{climb.name}</Text>
-                    <View style={styles.setterDot}>
+                    <View style={styles.timerInfo}>
                         <Text>{tapTimestamp}</Text>
                     </View>
                 </ListItemContainer>
@@ -64,7 +64,7 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
                 <ListItemContainer dotStyle={styles.climbDot}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.setterDot}>
-                        {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%' }} />}
+                        {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
                     </View>
                 </ListItemContainer>
             </TouchableOpacity>
@@ -92,6 +92,8 @@ const styles = StyleSheet.create({
 
     },
     setterDot: {
+        width: 30,
+        height: 30,
         borderRadius: 15,
         backgroundColor: 'white',
         marginRight: 5,
@@ -99,6 +101,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    timerInfo: {
+        borderRadius: 15,
+        backgroundColor: 'white',
+        marginRight: 5,
+        marginLeft: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 });
 
 export default ClimbItem;
