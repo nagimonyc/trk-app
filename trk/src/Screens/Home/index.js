@@ -39,12 +39,14 @@ function HomeScreen(props) {
           timestamp = timestamp.toDate().toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
-            hour12: true
+            hour12: true,
+            timeZone: 'America/New_York'
           });;
         }
-        console.log('Timestamp:', timestamp);
+        // console.log('Timestamp:', timestamp);
         return climbSnapshot.exists ? {
           ...tapData,
+          tapTimestamp: timestamp,
           tapId: doc.id,
           ...climbSnapshot.data(),
         } : null;
@@ -174,7 +176,7 @@ function HomeScreen(props) {
 
         {renderNfcButtons()}
         <View style={[styles.effortHistoryList, {}]}>
-          <Text style={{ fontSize: 25, fontWeight: '600', textAlign: 'left', marginLeft: 20, marginTop: 20 }}>Latest Taps</Text>
+          <Text style={{ fontSize: 25, fontWeight: '600', textAlign: 'left', marginLeft: 20, marginTop: 20 }}>Latest Gym Taps</Text>
           <TapHistory climbsHistory={climbsHistory} fromHome={true} />
         </View>
       </View>
@@ -202,7 +204,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
     fontSize: 25,
-    marginBottom: 25,
+    marginBottom: 10,
     fontWeight: '600',
   },
   button: {

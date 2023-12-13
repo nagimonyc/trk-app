@@ -11,12 +11,6 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
     const [imageURL, setImageURL] = useState(null);
     const navigation = useNavigation();
     const { role } = React.useContext(AuthContext);
-    // console.log(`timestamp: ${tapTimestamp.toDate()}`);
-    const date = climb.timestamp.toDate().toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-    });
 
     useEffect(() => {
         const fetchImageURL = async () => {
@@ -58,8 +52,7 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
                 <ListItemContainer dotStyle={styles.climbDot}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.setterDot}>
-                        <Text>{date}</Text>
-                        {/* {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />} */}
+                        <Text>{tapTimestamp}</Text>
                     </View>
                 </ListItemContainer>
             </View>
