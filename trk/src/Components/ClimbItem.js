@@ -64,7 +64,7 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
                 <ListItemContainer dotStyle={styles.climbDot}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.setterDot}>
-                        {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
+                        {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%' }} />}
                     </View>
                 </ListItemContainer>
             </TouchableOpacity>
