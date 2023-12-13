@@ -33,12 +33,24 @@ function HomeScreen(props) {
       const climbDetailsPromises = querySnapshot.docs.map(async (doc) => {
         const tapData = doc.data();
         const climbSnapshot = await getClimb(tapData.climb);
+        // Extract and format the timestamp
+        let timestamp = tapData.timestamp;
+        if (timestamp.toDate) { // Convert Firebase Timestamp to JavaScript Date
+          timestamp = timestamp.toDate().toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          });;
+        }
+        console.log('Timestamp:', timestamp);
         return climbSnapshot.exists ? {
           ...tapData,
           tapId: doc.id,
           ...climbSnapshot.data(),
         } : null;
       });
+
+
 
       const newClimbsHistory = (await Promise.all(climbDetailsPromises))
         .filter(tap => tap !== null);
@@ -49,9 +61,6 @@ function HomeScreen(props) {
     // Make sure to unsubscribe from the listener when the component unmounts
     return () => unsubscribe();
   }, []);
-
-
-
 
 
   // States

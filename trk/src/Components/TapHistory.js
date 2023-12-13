@@ -7,7 +7,7 @@ const TapHistory = (props) => {
     return (
         <ListHistory
             data={props.climbsHistory}
-            renderItem={(climb) => <ClimbItem climb={climb} tapId={climb.tapId} fromHome={props.fromHome} />}
+            renderItem={(climb) => <ClimbItem climb={climb} tapId={climb.tapId} tapTimestamp={climb.timestamp} fromHome={props.fromHome} />}
             keyExtractor={(climb, index) => index.toString()}
         />
     );

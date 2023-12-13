@@ -6,12 +6,17 @@ import storage from '@react-native-firebase/storage';
 import ListItemContainer from './ListItemContainer';
 import TapsApi from '../api/TapsApi';
 
-const ClimbItem = ({ climb, tapId, fromHome = false }) => {
+const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
     console.log('[TEST] ClimbItem called');
-    console.log(`This is: ${fromHome}`);
     const [imageURL, setImageURL] = useState(null);
     const navigation = useNavigation();
     const { role } = React.useContext(AuthContext);
+    // console.log(`timestamp: ${tapTimestamp.toDate()}`);
+    const date = climb.timestamp.toDate().toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
 
     useEffect(() => {
         const fetchImageURL = async () => {
@@ -53,7 +58,8 @@ const ClimbItem = ({ climb, tapId, fromHome = false }) => {
                 <ListItemContainer dotStyle={styles.climbDot}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.setterDot}>
-                        {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
+                        <Text>{date}</Text>
+                        {/* {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />} */}
                     </View>
                 </ListItemContainer>
             </View>
@@ -93,8 +99,6 @@ const styles = StyleSheet.create({
 
     },
     setterDot: {
-        width: 30,
-        height: 30,
         borderRadius: 15,
         backgroundColor: 'white',
         marginRight: 5,
