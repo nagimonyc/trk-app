@@ -1,32 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
 import TapsApi from '../../api/TapsApi';
+import ClimbsApi from '../../api/ClimbsApi';
 
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share, TouchableOpacity } from 'react-native';
 
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { AuthContext } from '../../Utils/AuthContext';
 
 
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
 
-  const { climbData } = props.route.params;
-  const { climbId } = props.route.params;
+  const { climbId, isFromHome } = props.route.params;
+  const [climbData, setClimbData] = useState(props.route.params.climbData || null);
+  const [isLoading, setIsLoading] = useState(isFromHome);
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [setterImageUrl, setSetterImageUrl] = useState(null);
   const [completion, setCompletion] = useState('Zone');
   const [attempts, setAttempts] = useState('1');
   const [witness1, setWitness1] = useState('');
   const [witness2, setWitness2] = useState('');
+  const { currentUser } = useContext(AuthContext);
+  const [tapId, setTapId] = useState(props.route.params.tapId || null);
+
 
   const { navigation } = props;
 
   useEffect(() => {
+    if (isFromHome && climbId) {
+      async function fetchData() {
+        try {
+          const climbDataResult = await ClimbsApi().getClimb(climbId);
+          if (climbDataResult && climbDataResult._data) {
+            setClimbData(climbDataResult._data);
+            console.log("Fetched climb data:", climbDataResult._data);
+  
+            if (currentUser.uid !== climbDataResult._data.setter) {
+              const { addTap } = TapsApi();
+              const tap = {
+                climb: climbId,
+                user: currentUser.uid,
+                timestamp: new Date(),
+                completion: 0,
+                attempts: '',
+                witness1: '',
+                witness2: '',
+              };
+              const documentReference = await addTap(tap);
+              setTapId(documentReference.id); // Set tapId only when navigating from home
+            } 
+          } else {
+            console.error('Climb data not found or is null');
+          }
+        } catch (error) {
+          console.error('Error fetching climb data:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+      fetchData();
+    }
+  }, [climbId, isFromHome, currentUser.uid]);
+  
+
+  useEffect(() => {
     const fetchData = async () => {
-      if (props.route.params.profileCheck) {
+      if (props.route.params.profileCheck && tapId) {
         const { getTap } = TapsApi();
-        const { tapId } = props.route.params;
         try {
           const tap = (await getTap(tapId)).data();  // Using await here
           let stringCompletion;
@@ -66,6 +108,7 @@ function ClimbDetail(props) {
 
 
   useEffect(() => {
+    if (climbData) {
     const climbReference = climbData.image ? storage().ref(`climb_image/${climbId}`) : storage().ref('climb photos/the_crag.png');
     climbReference.getDownloadURL()
       .then((url) => {
@@ -83,11 +126,11 @@ function ClimbDetail(props) {
       .catch((error) => {
         console.error("Error getting setter image URL: ", error);
       });
-  }, []);
+    }
+  }, [climbData]);
 
 
   const handleUpdate = async () => {
-    const { tapId } = props.route.params;
 
     let numericCompletion;
     if (completion === 'Zone') {
@@ -166,7 +209,15 @@ function ClimbDetail(props) {
     }
   };
 
-  if (climbData.set === 'Competition') {
+  if (isLoading) {
+    return (
+      <View style={styles.center}>
+        <Text>Fetching climb information...</Text>
+      </View>
+    );
+  //  the reason i put this here is because we will eventually display name and grade here when we encode it onto the nfc tags 
+  //  right now it means that if there is no wifi, something is shown on screen
+  } else if (climbData.set === 'Competition') {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView>
