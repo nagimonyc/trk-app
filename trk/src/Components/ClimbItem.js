@@ -6,7 +6,8 @@ import storage from '@react-native-firebase/storage';
 import ListItemContainer from './ListItemContainer';
 import TapsApi from '../api/TapsApi';
 
-const ClimbItem = ({ climb, tapId }) => {
+const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
+    console.log('[TEST] ClimbItem called');
     const [imageURL, setImageURL] = useState(null);
     const navigation = useNavigation();
     const { role } = React.useContext(AuthContext);
@@ -24,16 +25,18 @@ const ClimbItem = ({ climb, tapId }) => {
         fetchImageURL();
     }, []);
 
-    const navigateToDetail = async() => {
-        try {
-        const tapDocument = await TapsApi().getTap(tapId);
-        const tapData = tapDocument.data();
 
-        const climbId = tapData.climb;
-        console.log(`This is: ${climbId}`);
-    
-        navigation.navigate('Detail', { climbData: climb, tapId: tapId, climbId: climbId, profileCheck: 1 });
-        } 
+
+    const navigateToDetail = async () => {
+        try {
+            const tapDocument = await TapsApi().getTap(tapId);
+            const tapData = tapDocument.data();
+
+            const climbId = tapData.climb;
+            console.log(`This is: ${climbId}`);
+
+            navigation.navigate('Detail', { climbData: climb, tapId: tapId, climbId: climbId, profileCheck: 1 });
+        }
         catch (error) {
             console.error('Error fetching tap data:', error);
         }
@@ -42,16 +45,31 @@ const ClimbItem = ({ climb, tapId }) => {
         navigation.navigate('Set', { climbData: climb });
     };
 
-    return (
-        <TouchableOpacity onPress={role === 'climber' ? navigateToDetail : navigateToSet}>
-            <ListItemContainer dotStyle={styles.climbDot}>
-                <Text style={styles.climbName}>{climb.name}</Text>
-                <View style={styles.setterDot}>
-                    {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
-                </View>
-            </ListItemContainer>
-        </TouchableOpacity>
-    );
+
+    if (fromHome) {
+        return (
+            <View>
+                <ListItemContainer dotStyle={styles.climbDot}>
+                    <Text style={styles.climbName}>{climb.name}</Text>
+                    <View style={styles.timerInfo}>
+                        <Text>{tapTimestamp}</Text>
+                    </View>
+                </ListItemContainer>
+            </View>
+        );
+    }
+    else {
+        return (
+            <TouchableOpacity onPress={role === 'climber' ? navigateToDetail : navigateToSet}>
+                <ListItemContainer dotStyle={styles.climbDot}>
+                    <Text style={styles.climbName}>{climb.name}</Text>
+                    <View style={styles.setterDot}>
+                        {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
+                    </View>
+                </ListItemContainer>
+            </TouchableOpacity>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
@@ -83,6 +101,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    timerInfo: {
+        borderRadius: 15,
+        backgroundColor: 'white',
+        marginRight: 5,
+        marginLeft: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 });
 
 export default ClimbItem;

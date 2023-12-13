@@ -33,7 +33,12 @@ function TapsApi() {
 
     // Get top 10 most recent taps
     function getTopTenTaps() {
-        return ref.orderBy('createdAt', 'desc').limit(10).get();
+        return ref.orderBy('timestamp', 'desc').limit(10).get();
+    }
+
+
+    function onLatestFourTapsUpdate(callback) {
+        return ref.orderBy('timestamp', 'desc').limit(4).onSnapshot(callback);
     }
 
     async function updateTap(tapId, updatedTap) {
@@ -50,6 +55,7 @@ function TapsApi() {
         getTapsBySomeField,
         getTopTenTaps,
         updateTap,
+        onLatestFourTapsUpdate
     };
 }
 

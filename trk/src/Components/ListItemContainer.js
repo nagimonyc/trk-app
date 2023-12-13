@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10, 
+        marginBottom: 10,
         backgroundColor: 'white',
         padding: 10,
         borderRadius: 5,
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         width: 10,
         height: 10,
         borderRadius: 5,
-        backgroundColor: 'grey', 
+        backgroundColor: 'grey',
         marginRight: 10,
     }
 });
