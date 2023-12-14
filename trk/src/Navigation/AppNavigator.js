@@ -1,6 +1,8 @@
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
 
 import CompRanking from '../Screens/CompRanking';
 import HomeScreen from '../Screens/Home';
@@ -14,10 +16,35 @@ import SetDetail from '../Screens/SetDetail';
 import Settings from '../Components/Settings';
 import FeedbackForm from '../Screens/FeedbackForm';
 import GlossaryDefinition from '../Screens/GlossaryDefinition';
+import GymDaily from '../Screens/GymDaily';
 
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const GymTopTab = createMaterialTopTabNavigator();
+
+function GymTabs() {
+  return (
+    <GymTopTab.Navigator
+      screenOptions={{
+        activeTintColor: '#3498db',
+        inactiveTintColor: 'gray',
+        swipeEnabled: true,
+      }}
+    >
+      <GymTopTab.Screen 
+        name="DailySummary"
+        component={GymDaily} 
+        options={{ title: 'Daily Summary' }}
+      />
+      <GymTopTab.Screen 
+        name="CompRanking"
+        component={CompRanking} 
+        options={{ title: 'Competition' }}
+      />
+    </GymTopTab.Navigator>
+  );
+}
 
 function HomeStack() {
   console.log('[TEST] HomeStack called');
@@ -87,21 +114,22 @@ function ProfileStack() {
   );
 }
 
-function RankStack() {
-  console.log('[TEST] RankStack called');
+function AnalyticsStack() {
+  console.log('[TEST] AnalyticsStack called');
   return (
     <Stack.Navigator>
       {/* Here, change the name of the screen to 'Competition_Ranking_screen' */}
       <Stack.Screen
-        name="Competition_Ranking_screen"
-        component={CompRanking}
-        options={{ title: 'Analytics', headerBackTitleVisible: false }}
+        name="MyGym"
+        component={GymTabs}
+        options={{ title: 'My Gym', headerBackTitleVisible: false }}
       />
       <Stack.Screen
         name="Climber_Performance"
         component={ClimberPerformance}
         options={{ title: 'Climber Performance', headerBackTitle: 'Ranking', headerTitleAlign: 'center' }}
       />
+    
     </Stack.Navigator>
   );
 }
@@ -130,9 +158,9 @@ function AppTabs() {
       />
       {role === 'climber' ? null :
         <Tab.Screen
-          name="RankingTab"
-          component={RankStack}
-          options={{ title: 'Analytics', headerShown: false }}
+          name="AnalyticsTab"
+          component={AnalyticsStack}
+          options={{ title: 'My Gym', headerShown: false }}
         />}
     </Tab.Navigator>
   );
