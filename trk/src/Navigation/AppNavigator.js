@@ -132,7 +132,7 @@ function AppTabs() {
         <Tab.Screen
           name="RankingTab"
           component={RankStack}
-          options={{ title: 'Analytics', headerShown: false }}
+          options={{ title: 'My Gym', headerShown: false }}
         />}
     </Tab.Navigator>
   );
