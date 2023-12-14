@@ -9,14 +9,13 @@ function GymsApi() {
   console.log('[DATABASE] TApsApi called');
 
   function fetchGyms() {
-    try {
-      const snapshot = ref.get();
+    return ref.get().then(snapshot => {
       return snapshot.docs;
-    } catch (error) {
+    }).catch(error => {
       console.error("Error fetching gyms: ", error);
       return [];
-    }
-  }
+    });
+}
 
   return {
     fetchGyms,
