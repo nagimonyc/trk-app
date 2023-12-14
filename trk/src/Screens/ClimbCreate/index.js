@@ -14,6 +14,7 @@ import ClimbsApi from "../../api/ClimbsApi";
 import { AuthContext } from '../../Utils/AuthContext';
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import GymsApi from "../../api/GymsApi";
 
 
 const ClimbInputData = (props) => {
@@ -61,12 +62,14 @@ const ClimbInputData = (props) => {
     console.log('Cancel button was pressed in AndroidPrompt');
   };
 
-  //this will later be populated by the gym documents in gym collection
-  const [gymItems, setGymItems] = useState([
-    { label: 'Palladium', value: 'Palladium' },
-    { label: 'The Cliffs LIC', value: 'The Cliffs LIC' },
-    { label: 'VITAL', value: 'VITAL' },
-    { label: 'The Gravity Vault Hoboken', value: 'The Gravity Vault Hoboken' }]);
+  const [gymItems, setGymItems] = useState([]);
+
+  useEffect(() => {
+    GymsApi().fetchGyms().then(gyms => {
+      const formattedGyms = gyms.map(doc => ({ label: doc.data().Name, value: doc.id }));
+      setGymItems(formattedGyms);
+    });
+  }, []);
 
 
   const handleImagePick = async () => {
@@ -264,11 +267,14 @@ const ClimbInputData = (props) => {
               <DropDownPicker
                 listMode="SCROLLVIEW"
                 open={open}
+                maxHeight={2000}
+                dropDownDirection="BOTTOM" 
+                nestedScrollEnabled={true}
                 setOpen={setOpen}
                 value={gym}
                 setValue={setGym}
                 items={gymItems}
-                containerStyle={{ height: 60, zIndex: 5000 }}
+                containerStyle={{ height: 60, zIndex: 1000 }}
                 style={styles.dropdown}
                 dropDownContainerStyle={{
                   backgroundColor: '#e0e0e0',
@@ -303,6 +309,7 @@ const ClimbInputData = (props) => {
                 placeholderTextColor={"#b1b1b3"}
                 onChangeText={setInfo}
                 placeholder="Enter more info"
+                multiline={true}
 
               />
 
@@ -381,7 +388,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: 'black',
     borderRadius: 8,
-    paddingBottom: 120,
+    paddingBottom: 20,
     paddingLeft: 10,
     textAlignVertical: 'top',
   },
