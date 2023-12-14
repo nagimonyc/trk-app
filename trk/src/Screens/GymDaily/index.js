@@ -1,26 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Animated } from 'react-native';
 import { Text, View, ScrollView, SafeAreaView, StyleSheet } from "react-native";
 
 const GymDaily = () => {
-  const [fadeAnim] = useState(new Animated.Value(1));
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(fadeAnim, {
-          toValue: 0.4,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [fadeAnim]);
 
   return (
     <ScrollView>
@@ -33,7 +14,7 @@ const GymDaily = () => {
 
             <View style={styles.row}>
               <View style={styles.box}>
-                <Animated.Text style={[styles.activeBigNumber, { opacity: fadeAnim }]}>18</Animated.Text>
+                <Text style={styles.activeBigNumber}>18</Text>
                 <Text>Active Climbs</Text>
               </View>
               <View style={styles.box}>
