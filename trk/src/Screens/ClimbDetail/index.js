@@ -36,7 +36,7 @@ function ClimbDetail(props) {
           if (climbDataResult && climbDataResult._data) {
             setClimbData(climbDataResult._data);
             console.log("Fetched climb data:", climbDataResult._data);
-  
+
             if (currentUser.uid !== climbDataResult._data.setter) {
               const { addTap } = TapsApi();
               const tap = {
@@ -50,7 +50,7 @@ function ClimbDetail(props) {
               };
               const documentReference = await addTap(tap);
               setTapId(documentReference.id); // Set tapId only when navigating from home
-            } 
+            }
           } else {
             console.error('Climb data not found or is null');
           }
@@ -63,7 +63,7 @@ function ClimbDetail(props) {
       fetchData();
     }
   }, [climbId, isFromHome, currentUser.uid]);
-  
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,16 +108,27 @@ function ClimbDetail(props) {
 
 
   useEffect(() => {
-    if (climbData) {
-    const climbReference = climbData.image ? storage().ref(`climb_image/${climbId}`) : storage().ref('climb photos/the_crag.png');
-    climbReference.getDownloadURL()
-      .then((url) => {
-        setClimbImageUrl(url);
-      })
-      .catch((error) => {
-        console.error("Error getting climb image URL: ", error);
-      });
+    // Function to load the image URL from Firebase Storage
+    const loadImage = (imagePath) => {
+      storage().ref(imagePath).getDownloadURL()
+        .then((url) => {
+          setClimbImageUrl(url);
+        })
+        .catch((error) => {
+          console.error("Error getting image URL: ", error);
+        });
+    };
 
+    if (climbData && climbData.images && climbData.images.length > 0) {
+      // Load the latest climb image
+      const latestImageRef = climbData.images[climbData.images.length - 1];
+      loadImage(latestImageRef.path);
+    } else {
+      // Load the default image from Firebase Storage
+      loadImage('climb photos/the_crag.png');
+    }
+
+    // Load the setter image (same logic as before)
     const setterReference = storage().ref('profile photos/marcial.png');
     setterReference.getDownloadURL()
       .then((url) => {
@@ -126,7 +137,6 @@ function ClimbDetail(props) {
       .catch((error) => {
         console.error("Error getting setter image URL: ", error);
       });
-    }
   }, [climbData]);
 
 
@@ -215,8 +225,8 @@ function ClimbDetail(props) {
         <Text>Fetching climb information...</Text>
       </View>
     );
-  //  the reason i put this here is because we will eventually display name and grade here when we encode it onto the nfc tags 
-  //  right now it means that if there is no wifi, something is shown on screen
+    //  the reason i put this here is because we will eventually display name and grade here when we encode it onto the nfc tags 
+    //  right now it means that if there is no wifi, something is shown on screen
   } else if (climbData.set === 'Competition') {
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
