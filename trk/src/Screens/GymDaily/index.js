@@ -27,7 +27,8 @@ const GymDaily = () => {
   const [latestFeedback, setLatestFeedback] = useState({
     explanation: '',
     climb: '',
-    rating: ''
+    rating: '',
+    climbName: '',
   });
 
   const { currentUser } = useContext(AuthContext);
@@ -103,7 +104,7 @@ const GymDaily = () => {
 
       for (const tap of allTaps) {
         if (tap.timestamp) {
-          const hour = tap.timestamp.getHours(); // Get the hour of the tap
+          const hour = tap.timestamp.getHours(); 
           timeFrequencyMap[hour] = (timeFrequencyMap[hour] || 0) + 1;
         }
       }
@@ -153,27 +154,24 @@ const GymDaily = () => {
           snapshot.docs.forEach(doc => comments.push({ ...doc.data(), timestamp: doc.data().timestamp.toDate() }));
         });
 
-        // Set your comments state
         setYourComments(comments);
-
-        // Latest feedback calculation
-        // Latest feedback calculation
-        // Inside fetchCommentsAndCalculateFeedback
+ 
         if (comments.length > 0) {
           const latestComment = comments.reduce((latest, current) =>
             latest.timestamp > current.timestamp ? latest : current
           );
+
+          const climbDetails = await getClimb(latestComment.climb);
+          const climbData = climbDetails.data();
           setLatestFeedback({
             explanation: latestComment.explanation,
             climb: latestComment.climb,
-            rating: latestComment.rating
+            rating: latestComment.rating,
+            climbName: climbData.name,
+            climbGrade: climbData.grade,
           });
         }
 
-
-
-        // Highest rated climb calculation
-        // Highest rated climb calculation
         let climbRatings = {};
         comments.forEach(comment => {
           if (!climbRatings[comment.climb]) {
@@ -227,50 +225,67 @@ const GymDaily = () => {
 
             <View style={styles.row}>
               <View style={styles.box}>
+              <View style={styles.centeredContent}>
                 <Text style={styles.activeBigNumber}>{totalClimbs}</Text>
                 <Text>Active Climbs</Text>
+                </View>
               </View>
               <View style={styles.box}>
+              <View style={styles.centeredContent}>
                 <Text style={styles.bigNumber}>{totalAscents}</Text>
                 <Text>Total ascents</Text>
+                </View>
               </View>
             </View>
 
             <View style={styles.row}>
               <View style={styles.box}>
+              <View style={styles.centeredContent}>
                 <Text style={styles.routeTitle}>{mostCompleted.name}</Text>
                 <Text style={styles.routeGrade}>{mostCompleted.grade}</Text>
-                <Text>Most completed route</Text>
+                </View>
+                <Text style={styles.textBottom}>Most completed route</Text>
               </View>
               <View style={styles.box}>
+              <View style={styles.centeredContent}>
                 <Text style={styles.routeTitle}>{highestRated.name}</Text>
                 <Text style={styles.routeGrade}>{highestRated.grade}</Text>
-                <Text>Highest rated climb</Text>
+                </View>
+                <Text style={styles.textBottom}>Highest rated climb</Text>
               </View>
             </View>
 
             <View style={styles.row}>
               <View style={styles.box}>
+              <View style={styles.centeredContent}>
                 <Text style={styles.routeTitle}>{leastCompleted.name}</Text>
                 <Text style={styles.routeGrade}>{leastCompleted.grade}</Text>
-                <Text>Least completed route</Text>
+                </View>
+                <Text style={styles.textBottom}>Least completed route</Text>
               </View>
               <View style={styles.box}>
+              <View style={styles.centeredContent}>
                 <Text style={styles.feedback}>{latestFeedback.explanation}</Text>
                 <Text style={styles.rating}>{getStars(latestFeedback.rating)}</Text>
-                <Text>Latest feedback</Text>
+                <Text style={styles.climbName}>{latestFeedback.climbName} - {latestFeedback.climbGrade}</Text>
+                </View>
+                <Text style={styles.textBottom}>Latest feedback</Text>
 
               </View>
             </View>
 
             <View style={styles.row}>
               <View style={styles.box}>
+              <View style={styles.centeredContent}>
                 <Text style={styles.time}>{peakTime}</Text>
                 <Text>Most active time</Text>
+                </View>
               </View>
               <View style={styles.box}>
+              <View style={styles.centeredContent}>
                 <Text style={styles.bigNumber}>{latestAscents}</Text>
                 <Text>Ascents since yesterday</Text>
+                </View>
               </View>
             </View>
 
@@ -302,39 +317,43 @@ const styles = StyleSheet.create({
   box: {
     width: '45%',
     aspectRatio: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#E6E6E6',
     margin: 5,
     borderRadius: 12,
     backgroundColor: '#E6E6E6'
+    
   },
   time: {
     fontWeight: 'bold',
     fontSize: 25,
     marginBottom: 20,
-    color: '#3498db',
+    // color: '#3498db',
+    color: 'black',
   },
   activeBigNumber: {
     fontWeight: 'bold',
     fontSize: 35,
     marginBottom: 13,
-    color: 'green',
+    // color: 'green',
+    color: 'black',
   },
   bigNumber: {
     fontWeight: 'bold',
     fontSize: 35,
     marginBottom: 13,
-    color: '#ff8100',
+    color: 'black',
+    // color: '#ff8100',
   },
   routeTitle: {
     fontSize: 20,
-    color: '#ff8100',
+    color: 'black',
   },
   routeGrade: {
     fontSize: 16,
-    color: '#ff8100',
+    color: 'black',
     marginBottom: 20,
   },
   feedback: {
@@ -345,8 +364,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   rating: {
-    marginBottom: 15,
+    marginBottom: 4,
   },
+  climbName: {
+    marginBottom: 10,
+  },
+  centeredContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1, // This will make the content use the available space
+  },
+  textBottom: {
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  
 });
 
 export default GymDaily;
