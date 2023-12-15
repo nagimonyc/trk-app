@@ -1,7 +1,220 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Text, View, ScrollView, SafeAreaView, StyleSheet } from "react-native";
+import { AuthContext } from '../../Utils/AuthContext';
+import ClimbsApi from '../../api/ClimbsApi';
+import TapsApi from '../../api/TapsApi';
+import CommentsApi from '../../api/CommentsApi';
+
 
 const GymDaily = () => {
+
+  const [yourClimbs, setYourClimbs] = useState([]);
+  const [yourComments, setYourComments] = useState([]);
+  const [totalClimbs, setTotalClimbs] = useState('');
+  const [asents, setAscents] = useState([]);
+
+  const [totalAscents, setTotalAscents] = useState('');
+  const [latestAscents, setLatestAscents] = useState('');
+  const [mostCompleted, setMostCompleted] = useState('');
+  const [leastCompleted, setLeastCompleted] = useState('');
+  const [peakTime, setPeakTime] = useState('');
+  const [highestRated, setHighestRated] = useState({
+    name: '',
+    grade: '',
+    type: '',
+    climb: '',
+  });
+  const [latestFeedback, setLatestFeedback] = useState({
+    explanation: '',
+    climb: '',
+    rating: ''
+  });
+
+  const { currentUser } = useContext(AuthContext);
+  const { getClimbsBySomeField } = ClimbsApi();
+  const { getTapsBySomeField } = TapsApi();
+  const { getCommentsBySomeField } = CommentsApi();
+  const { getClimb } = ClimbsApi();
+
+  const userId = currentUser.uid;
+
+
+  useEffect(() => {
+    const fetchClimbs = async () => {
+      try {
+        const querySnapshot = await getClimbsBySomeField('setter', userId);
+        if (querySnapshot && querySnapshot.docs) {
+          const climbs = querySnapshot.docs.map(doc => {
+            return {
+              id: doc.id,
+              ...doc.data()
+            };
+          }).filter(climb => !climb.archived); // Filter out archived climbs
+
+          setYourClimbs(climbs);
+          setTotalClimbs(climbs.length.toString()); // Now reflects the count of non-archived climbs
+        } else {
+          console.error("No data found in Firestore query");
+        }
+      } catch (error) {
+        console.error("Error fetching climbs:", error);
+      }
+    };
+
+    fetchClimbs();
+    console.log(`Your climbs are: ${JSON.stringify(yourClimbs, null, 2)}`);
+
+  }, [userId]);
+
+
+  useEffect(() => {
+    const fetchTapsAndCalculateAscents = async () => {
+      let totalTaps = 0;
+      let allTaps = [];
+      let latestAscentsCount = 0;
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      let climbFrequencyMap = {};
+      let timeFrequencyMap = {};
+
+
+
+      for (const climb of yourClimbs) {
+        const tapsSnapshot = await getTapsBySomeField('climb', climb.id);
+        if (tapsSnapshot && tapsSnapshot.docs) {
+          const taps = tapsSnapshot.docs.map(doc => {
+            const tap = doc.data();
+            tap.timestamp = tap.timestamp.toDate();
+            console.log(`Tap Timestamp: ${tap.timestamp}`);
+            return tap;
+          });
+          totalTaps += taps.length;
+          allTaps = [...allTaps, ...taps];
+
+          latestAscentsCount += taps.filter(tap => tap.timestamp > oneDayAgo).length;
+
+          taps.forEach(tap => {
+            if (!climbFrequencyMap[tap.climb]) {
+              climbFrequencyMap[tap.climb] = { count: 0, name: climb.name, id: climb.id, grade: climb.grade };
+            }
+            climbFrequencyMap[tap.climb].count++;
+          });
+        }
+      }
+
+      for (const tap of allTaps) {
+        if (tap.timestamp) {
+          const hour = tap.timestamp.getHours(); // Get the hour of the tap
+          timeFrequencyMap[hour] = (timeFrequencyMap[hour] || 0) + 1;
+        }
+      }
+
+
+      let peakHour = Object.keys(timeFrequencyMap).reduce((a, b) => timeFrequencyMap[a] > timeFrequencyMap[b] ? a : b, null);
+      setPeakTime(peakHour ? `${peakHour}:00 - ${parseInt(peakHour) + 1}:00` : '');
+      console.log(`peakHour is: ${peakHour}`)
+
+      setAscents(allTaps);
+      setTotalAscents(totalTaps.toString());
+      setLatestAscents(latestAscentsCount.toString());
+
+      let mostCompletedClimb = Object.values(climbFrequencyMap).reduce((a, b) => (a && b && a.count > b.count) ? a : b, null);
+      let leastCompletedClimb = Object.values(climbFrequencyMap).reduce((a, b) => (a && b && a.count < b.count) ? a : b, null);
+
+      if (mostCompletedClimb) {
+        setMostCompleted({ name: mostCompletedClimb.name, id: mostCompletedClimb.id, grade: mostCompletedClimb.grade });
+      } else {
+        setMostCompleted({ name: '', id: '', grade: '' });
+      }
+
+      if (leastCompletedClimb) {
+        setLeastCompleted({ name: leastCompletedClimb.name, id: leastCompletedClimb.id, grade: leastCompletedClimb.grade });
+      } else {
+        setLeastCompleted({ name: '', id: '', grade: '' });
+      }
+
+    };
+
+
+    if (yourClimbs.length > 0) {
+      fetchTapsAndCalculateAscents();
+    }
+  }, [yourClimbs]);
+
+
+  useEffect(() => {
+    const fetchCommentsAndCalculateFeedback = async () => {
+      try {
+        const commentsPromises = yourClimbs.map(climb =>
+          getCommentsBySomeField('climb', climb.id)
+        );
+        const commentsSnapshots = await Promise.all(commentsPromises);
+        let comments = [];
+        commentsSnapshots.forEach(snapshot => {
+          snapshot.docs.forEach(doc => comments.push({ ...doc.data(), timestamp: doc.data().timestamp.toDate() }));
+        });
+
+        // Set your comments state
+        setYourComments(comments);
+
+        // Latest feedback calculation
+        // Latest feedback calculation
+        // Inside fetchCommentsAndCalculateFeedback
+        if (comments.length > 0) {
+          const latestComment = comments.reduce((latest, current) =>
+            latest.timestamp > current.timestamp ? latest : current
+          );
+          setLatestFeedback({
+            explanation: latestComment.explanation,
+            climb: latestComment.climb,
+            rating: latestComment.rating
+          });
+        }
+
+
+
+        // Highest rated climb calculation
+        // Highest rated climb calculation
+        let climbRatings = {};
+        comments.forEach(comment => {
+          if (!climbRatings[comment.climb]) {
+            climbRatings[comment.climb] = { totalRating: 0, count: 0 };
+          }
+          climbRatings[comment.climb].totalRating += comment.rating;
+          climbRatings[comment.climb].count++;
+        });
+
+        let highestRatedClimbId = Object.keys(climbRatings).reduce((a, b) =>
+          (climbRatings[a].totalRating / climbRatings[a].count) > (climbRatings[b].totalRating / climbRatings[b].count) ? a : b
+        );
+
+        const highestRatedClimbDetails = await getClimb(highestRatedClimbId);
+        const climbData = highestRatedClimbDetails.data();
+        setHighestRated({
+          name: climbData.name,
+          grade: climbData.grade,
+          type: climbData.type,
+          climb: highestRatedClimbId,
+        });
+
+
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    if (yourClimbs.length > 0) {
+      fetchCommentsAndCalculateFeedback();
+    }
+  }, [yourClimbs]);
+
+  const getStars = (rating) => {
+    let starRating = '';
+    for (let i = 0; i < rating; i++) {
+      starRating += '⭐️';
+    }
+    return starRating;
+  };
+
 
   return (
     <ScrollView>
@@ -14,33 +227,37 @@ const GymDaily = () => {
 
             <View style={styles.row}>
               <View style={styles.box}>
-                <Text style={styles.activeBigNumber}>18</Text>
+                <Text style={styles.activeBigNumber}>{totalClimbs}</Text>
                 <Text>Active Climbs</Text>
               </View>
               <View style={styles.box}>
-                <Text style={styles.bigNumber}>43</Text>
+                <Text style={styles.bigNumber}>{totalAscents}</Text>
                 <Text>Total ascents</Text>
               </View>
             </View>
 
             <View style={styles.row}>
               <View style={styles.box}>
-                <Text style={styles.routeTitle}>Slime - 5.11c</Text>
+                <Text style={styles.routeTitle}>{mostCompleted.name}</Text>
+                <Text style={styles.routeGrade}>{mostCompleted.grade}</Text>
                 <Text>Most completed route</Text>
               </View>
               <View style={styles.box}>
-                <Text style={styles.routeTitle}>Slime - 5.11c</Text>
+                <Text style={styles.routeTitle}>{highestRated.name}</Text>
+                <Text style={styles.routeGrade}>{highestRated.grade}</Text>
                 <Text>Highest rated climb</Text>
               </View>
             </View>
 
             <View style={styles.row}>
               <View style={styles.box}>
-                <Text style={styles.routeTitle}>Blue - 5.11d</Text>
+                <Text style={styles.routeTitle}>{leastCompleted.name}</Text>
+                <Text style={styles.routeGrade}>{leastCompleted.grade}</Text>
                 <Text>Least completed route</Text>
               </View>
               <View style={styles.box}>
-                <Text style={styles.feedback}>'I loved this climb! It really challenged my core' - Yellow 5.10d</Text>
+                <Text style={styles.feedback}>{latestFeedback.explanation}</Text>
+                <Text style={styles.rating}>{getStars(latestFeedback.rating)}</Text>
                 <Text>Latest feedback</Text>
 
               </View>
@@ -48,11 +265,11 @@ const GymDaily = () => {
 
             <View style={styles.row}>
               <View style={styles.box}>
-                <Text style={styles.time}>6:50pm</Text>
+                <Text style={styles.time}>{peakTime}</Text>
                 <Text>Most active time</Text>
               </View>
               <View style={styles.box}>
-                <Text style={styles.bigNumber}>20</Text>
+                <Text style={styles.bigNumber}>{latestAscents}</Text>
                 <Text>Ascents since yesterday</Text>
               </View>
             </View>
@@ -113,15 +330,23 @@ const styles = StyleSheet.create({
   },
   routeTitle: {
     fontSize: 20,
-    marginBottom: 20,
     color: '#ff8100',
-    
+  },
+  routeGrade: {
+    fontSize: 16,
+    color: '#ff8100',
+    marginBottom: 20,
   },
   feedback: {
     fontStyle: 'italic',
-    padding: 10,
+    paddingRight: 10,
+    paddingLeft: 10,
     color: 'black',
-  }
+    fontSize: 18,
+  },
+  rating: {
+    marginBottom: 15,
+  },
 });
 
 export default GymDaily;
