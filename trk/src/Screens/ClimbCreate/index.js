@@ -80,51 +80,81 @@ const ClimbInputData = (props) => {
         height: 400,
         cropping: true,
       });
-      setImage(pickedImage.path);
+
+      // Save the full image path for later uploading
+      const imagePath = pickedImage.path;
+
+      // Set the image state to include the full path
+      setImage({ path: imagePath });
+
     } catch (err) {
       console.error("Error picking image:", err);
     }
   };
 
 
-  async function handleUpdateClimb() {
-    try {
-      const climb = {
-        name,
-        grade,
-        gym,
-        type,
-        set,
-        ifsc,
-        info,
-        image,
-        setter: setter.uid,
-        timestamp: new Date(),
-      };
+  const uploadImage = async (imagePath) => {
+    const filename = imagePath.split('/').pop().replace(/\.jpg/gi, "").replace(/-/g, "");
+    const storageRef = storage().ref(`climb_images/${filename}`);
+    await storageRef.putFile(imagePath);
+    return { id: filename, path: storageRef.fullPath, timestamp: new Date().toISOString() };
+  };
 
-      const { updateClimb } = ClimbsApi();
-      updateClimb(climbData.id, climb)
-        .then(async (newClimbId) => {
-          setName("");
-          setGrade("");
-          setGym(null);
-          setImage("");
-          setType("Boulder");
-          setInfo('');
-          setSet("Commercial");
-          setIfsc("");
-        })
-      Alert.alert("Success", "Climb updated successfully");
-    } catch (err) {
-      Alert.alert("Error updating climb");
-      console.error(err);
+
+  async function handleUpdateClimb() {
+
+    const currentClimbData = await ClimbsApi().getClimb(climbData.id);
+    let imagesArray = currentClimbData.images || [];
+
+    if (image && image.path) {
+      const newImageRef = await uploadImage(image.path);
+      imagesArray.push(newImageRef); // Add new image reference to the array
     }
+
+    const updatedClimb = {
+      name,
+      grade,
+      gym,
+      type,
+      set,
+      ifsc,
+      info,
+      images: imagesArray,
+      setter: setter.uid,
+      timestamp: new Date(),
+    };
+
+
+    const { updateClimb } = ClimbsApi();
+    await updateClimb(climbData.id, updatedClimb)
+      .then(async (newClimbId) => {
+        setName("");
+        setGrade("");
+        setGym(null);
+        setImage("");
+        setType("Boulder");
+        setInfo('');
+        setSet("Commercial");
+        setIfsc("");
+
+        Alert.alert("Success", "Climb updated successfully");
+      }).catch((err) => {
+        Alert.alert("Error updating climb");
+        console.error(err);
+      }
+      );
   }
 
 
 
 
   async function handleAddClimb() {
+    let imagesArray = [];
+    if (image && image.path) {
+      const newImageRef = await uploadImage(image.path);
+      imagesArray.push(newImageRef);
+    }
+
     const climb = {
       name,
       grade,
@@ -133,7 +163,7 @@ const ClimbInputData = (props) => {
       set,
       ifsc,
       info,
-      image,
+      images: imagesArray, // include the images array
       setter: setter.uid,
       timestamp: new Date(),
     };
@@ -151,10 +181,10 @@ const ClimbInputData = (props) => {
           await NfcManager.requestTechnology(NfcTech.NfcA);
           await ensurePasswordProtection();
           const climbBytes = await writeClimb(newClimbId._documentPath._parts[1]);
+          let imagesArray = [];
           if (image) {
-            const climbId = newClimbId._documentPath._parts[1];
-            const reference = storage().ref(`climb_image/${climbId}`);
-            await reference.putFile(image);
+            const newImageRef = await uploadImage(image.path);
+            imagesArray.push(newImageRef);
           }
           else {
             console.log("no image");
@@ -268,7 +298,7 @@ const ClimbInputData = (props) => {
                 listMode="SCROLLVIEW"
                 open={open}
                 maxHeight={2000}
-                dropDownDirection="BOTTOM" 
+                dropDownDirection="BOTTOM"
                 nestedScrollEnabled={true}
                 setOpen={setOpen}
                 value={gym}
@@ -340,7 +370,8 @@ const ClimbInputData = (props) => {
             </View>
 
             {/* Image Preview */}
-            {image && <Image source={{ uri: image }} style={styles.previewImage} />}
+            {image && image.path && <Image source={{ uri: image.path }} style={styles.previewImage} />}
+
 
 
             {Platform.OS === 'android' && <AndroidPrompt ref={androidPromptRef} onCancelPress={yourCancelFunction} />}

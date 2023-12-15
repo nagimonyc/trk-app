@@ -24,32 +24,18 @@ function SetDetail(props) {
 
 
   useEffect(() => {
-    const fetchTapCount = async () => {
-      try {
-        const tapQuerySnapshot = await firestore()
-          .collection('taps')
-          .where('climb', '==', climbData.id)
-          .get();
-
-        setTapCount(tapQuerySnapshot.size);
-      } catch (error) {
-        console.error('Error fetching tap count:', error);
-      }
-    };
-
-    fetchTapCount();
-  }, [climbData.id]);
-
-
-  useEffect(() => {
-    const climbReference = climbData.image ? storage().ref(`climb_image/${climbData.id}`) : storage().ref('climb photos/the_crag.png');
-    climbReference.getDownloadURL()
-      .then((url) => {
-        setClimbImageUrl(url);
-      })
-      .catch((error) => {
-        console.error("Error getting climb image URL: ", error);
-      });
+    if (climbData.images && climbData.images.length > 0) {
+      const latestImageRef = climbData.images[climbData.images.length - 1];
+      storage().ref(latestImageRef.path).getDownloadURL()
+        .then((url) => {
+          setClimbImageUrl(url);
+        })
+        .catch((error) => {
+          console.error("Error getting latest climb image URL: ", error);
+        });
+    } else {
+      setClimbImageUrl('climb photos/the_crag.png'); // Set a default image or handle as needed
+    }
 
     const setterReference = storage().ref('profile photos/marcial.png');
     setterReference.getDownloadURL()
@@ -59,14 +45,22 @@ function SetDetail(props) {
       .catch((error) => {
         console.error("Error getting setter image URL: ", error);
       });
-  }, []);
+  }, [climbData.images]);
 
-  const navigateToSetConfig = () => {
-    navigation.navigate('ClimbInputData', { climbData, editMode: true });
-  };
-
-
-
+  useEffect(() => {
+    const fetchTapCount = async () => {
+      try {
+        const tapQuerySnapshot = await firestore()
+          .collection('taps')
+          .where('climb', '==', climbData.id)
+          .get();
+        setTapCount(tapQuerySnapshot.size);
+      } catch (error) {
+        console.error('Error fetching tap count:', error);
+      }
+    };
+    fetchTapCount();
+  }, [climbData.id]);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -79,10 +73,9 @@ function SetDetail(props) {
             id: doc.id,
             explanation: commentData.explanation,
             rating: commentData.rating,
-            timestamp: commentData.timestamp  // Assuming this is a Firestore timestamp
+            timestamp: commentData.timestamp
           });
         });
-        // Sort comments by timestamp in descending order
         comments.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
         setFeedbackList(comments);
       } catch (error) {
@@ -92,9 +85,13 @@ function SetDetail(props) {
     fetchComments();
   }, [climbData.id]);
 
-  renderRating = (rating) => {
+  const renderRating = (rating) => {
     return '⭐️'.repeat(rating);
-  }
+  };
+
+  const navigateToSetConfig = () => {
+    navigation.navigate('ClimbInputData', { climbData, editMode: true });
+  };
 
 
   return (
