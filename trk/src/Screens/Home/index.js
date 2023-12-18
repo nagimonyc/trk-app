@@ -159,7 +159,7 @@ function HomeScreen(props) {
 
         {renderNfcButtons()}
         <View style={[styles.effortHistoryList, {}]}>
-          <Text style={{ fontSize: 25, fontWeight: '600', textAlign: 'left', marginLeft: 20, marginTop: 20 }}>Latest Gym Taps</Text>
+          <Text style={{ fontSize: 25, fontWeight: '600', textAlign: 'left', marginLeft: 20, marginTop: 20, color: 'black'}}>Latest Gym Taps</Text>
           <TapHistory climbsHistory={climbsHistory} fromHome={true} />
         </View>
       </View>
