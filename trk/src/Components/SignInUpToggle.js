@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Button, StyleSheet, Text, Switch, SafeAreaView } from 'react-native';
+import { View, Button, StyleSheet, Text, Switch, SafeAreaView, Alert } from 'react-native';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
+import auth from '@react-native-firebase/auth';
 
 const SignInUpToggle = () => {
     console.log("[TEST] sign in up toggle call");
@@ -11,6 +12,17 @@ const SignInUpToggle = () => {
 
     const toggleSwitchSetter = () => setSetterIsEnabled(previousState => !previousState);
     const toggleSwitchNyu = () => setNyuCompIsEnabled(previousState => !previousState);
+
+    const handleForgotPassword = (email) => {
+        auth()
+            .sendPasswordResetEmail(email)
+            .then(() => {
+                Alert.alert("Check your email", "A link to reset your password has been sent to your email.");
+            })
+            .catch(error => {
+                Alert.alert("Error", error.message);
+            });
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -36,7 +48,7 @@ const SignInUpToggle = () => {
                 </View>
             </View>
             <View style={styles.formContainer}>
-                {isSignIn ? <SignIn /> : <SignUp role={setterIsEnabled} nyuComp={nyuCompIsEnabled} />}
+                {isSignIn ? <SignIn onForgotPassword={handleForgotPassword} /> : <SignUp role={setterIsEnabled} nyuComp={nyuCompIsEnabled} />}
             </View>
 
             <View style={styles.buttonContainer}>
@@ -58,12 +70,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         flex: 1,
-        alignItems: 'center', // Added this line
+        alignItems: 'center',
     },
     toggleSwitchView: {
         flexDirection: 'row',
         flex: 1,
-        alignItems: 'center', // Added this line
+        alignItems: 'center',
     },
     formContainer: {
         flex: 5,
@@ -75,7 +87,9 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 20,
         justifyContent: 'center',
+        padding: 5,
     }
 });
 
 export default SignInUpToggle;
+
