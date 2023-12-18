@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     },
     promptText: {
         fontSize: 13,
+        color: 'black',
     },
 
 });

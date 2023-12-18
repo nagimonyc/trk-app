@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
+import { Image } from 'react-native';
 
 import CompRanking from '../Screens/CompRanking';
 import HomeScreen from '../Screens/Home';
@@ -143,24 +143,60 @@ function AppTabs() {
       <Tab.Screen
         name="Home"
         component={HomeStack}
-        options={{ title: 'Home', headerShown: false }}
+        options={{ title: 'Home', 
+        headerShown: false,
+        tabBarIcon: ({size,focused,color}) => {
+          return (
+            <Image
+              style={{ width: size, height: size }}
+              source={require('../../assets/home.png')}
+            />
+          );
+        },      
+      }}
+        
       />
       {role === 'climber' ? null :
         <Tab.Screen
           name="Create Climb"
           component={ClimbInputData}
-          options={{}}
+          options={{
+            tabBarIcon: ({size,focused,color}) => {
+              return (
+                <Image
+                  style={{ width: size, height: size }}
+                  source={require('../../assets/tools.png')}
+                />
+              );
+            },
+          }}
         />}
       <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
-        options={{ title: 'Profile', headerShown: false }}
+        options={{ title: 'Profile', headerShown: false,
+        tabBarIcon: ({size,focused,color}) => {
+          return (
+            <Image
+              style={{ width: size, height: size }}
+              source={require('../../assets/profile.png')}
+            />
+          );
+        }, }}
       />
       {role === 'climber' ? null :
         <Tab.Screen
           name="AnalyticsTab"
           component={AnalyticsStack}
-          options={{ title: 'My Gym', headerShown: false }}
+          options={{ title: 'My Gym', headerShown: false,
+          tabBarIcon: ({size,focused,color}) => {
+            return (
+              <Image
+                style={{ width: size, height: size }}
+                source={require('../../assets/analytics.png')}
+              />
+            );
+          },}}
         />}
     </Tab.Navigator>
   );

@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     climbName: {
         fontWeight: '700',
         flex: 1,
+        color: 'black'
     },
     climbImage: {
         width: 30,
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
         marginLeft: 60,
         alignItems: 'center',
         justifyContent: 'center',
+        color: 'black'
     }
 });
 

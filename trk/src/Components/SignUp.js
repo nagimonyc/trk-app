@@ -61,12 +61,14 @@ const SignUp = ({ role, nyuComp }) => {
             <View style={styles.container}>
                 <TextInput
                     placeholder="Email"
+                    placeholderTextColor={"#b1b1b3"}
                     value={email}
                     onChangeText={setEmail}
                     style={styles.input}
                 />
                 <TextInput
                     placeholder="Password"
+                    placeholderTextColor={"#b1b1b3"}
                     value={password}
                     secureTextEntry
                     onChangeText={setPassword}
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         marginBottom: 10,
         color: 'black',
-    },
+    }
 });
 
 export default SignUp;
