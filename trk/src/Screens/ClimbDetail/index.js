@@ -390,11 +390,6 @@ function ClimbDetail(props) {
                 <View style={styles.button}>
                   <Button title='Share' onPress={onShare} />
                 </View>
-                {role == 'climber' && <>
-                <View style={styles.button}>
-                <Button title='Delete Tap' onPress={archiveTap} color="black" />
-                </View>
-                </>}
               </View>
               {climbData.info && (
                 <View style={styles.infoBox}>
@@ -402,6 +397,11 @@ function ClimbDetail(props) {
                   <Text style={styles.info}>{climbData.info}</Text>
                 </View>
               )}
+              {role == 'climber' && <>
+                <View style={styles.button}>
+                <Button title='Delete Tap' onPress={archiveTap} color="black" />
+                </View>
+                </>}
             </View>
           </View>
         </ScrollView>
