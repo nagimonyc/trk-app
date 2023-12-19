@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Text, View, ScrollView, SafeAreaView, StyleSheet } from "react-native";
 import { AuthContext } from '../../Utils/AuthContext';
-import ClimbsApi from '../../api/ClimbsApi';
-import TapsApi from '../../api/TapsApi';
-import CommentsApi from '../../api/CommentsApi';
 import {fetchSetClimbs} from '../../Backend/analyticsCalculations';
 import { fetchTapsAndCalculateAscents } from '../../Backend/analyticsCalculations';
+import { fetchCommentsAndCalculateFeedback } from '../../Backend/analyticsCalculations';
 
 
 const GymDaily = () => {
@@ -72,67 +70,38 @@ const GymDaily = () => {
 
 
   useEffect(() => {
-    const { getClimb } = ClimbsApi();
-    const { getCommentsBySomeField } = CommentsApi();
-    const fetchCommentsAndCalculateFeedback = async () => {
-      try {
-        const commentsPromises = yourClimbs.map(climb =>
-          getCommentsBySomeField('climb', climb.id)
-        );
-        const commentsSnapshots = await Promise.all(commentsPromises);
-        let comments = [];
-        commentsSnapshots.forEach(snapshot => {
-          snapshot.docs.forEach(doc => comments.push({ ...doc.data(), timestamp: doc.data().timestamp.toDate() }));
-        });
-
+    
+    if (yourClimbs.length > 0) {
+      const processCommentsAndFeedback = async () => {
+        const {
+          comments,
+          highestRatedClimbDetails,
+          latestFeedbackDetails
+        } = await fetchCommentsAndCalculateFeedback(yourClimbs);
+  
         setYourComments(comments);
- 
-        if (comments.length > 0) {
-          const latestComment = comments.reduce((latest, current) =>
-            latest.timestamp > current.timestamp ? latest : current
-          );
-
-          const climbDetails = await getClimb(latestComment.climb);
-          const climbData = climbDetails.data();
-          setLatestFeedback({
-            explanation: latestComment.explanation,
-            climb: latestComment.climb,
-            rating: latestComment.rating,
-            climbName: climbData.name,
-            climbGrade: climbData.grade,
+        if (highestRatedClimbDetails) {
+          // Assuming highestRatedClimbDetails contains the data you need
+          setHighestRated({
+            name: highestRatedClimbDetails.name,
+            grade: highestRatedClimbDetails.grade,
+            type: highestRatedClimbDetails.type,
+            climb: highestRatedClimbDetails.id
           });
         }
-
-        let climbRatings = {};
-        comments.forEach(comment => {
-          if (!climbRatings[comment.climb]) {
-            climbRatings[comment.climb] = { totalRating: 0, count: 0 };
-          }
-          climbRatings[comment.climb].totalRating += comment.rating;
-          climbRatings[comment.climb].count++;
-        });
-
-        let highestRatedClimbId = Object.keys(climbRatings).reduce((a, b) =>
-          (climbRatings[a].totalRating / climbRatings[a].count) > (climbRatings[b].totalRating / climbRatings[b].count) ? a : b
-        );
-
-        const highestRatedClimbDetails = await getClimb(highestRatedClimbId);
-        const climbData = highestRatedClimbDetails.data();
-        setHighestRated({
-          name: climbData.name,
-          grade: climbData.grade,
-          type: climbData.type,
-          climb: highestRatedClimbId,
-        });
-
-
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
-
-    if (yourClimbs.length > 0) {
-      fetchCommentsAndCalculateFeedback();
+        if (latestFeedbackDetails) {
+          // Assuming latestFeedbackDetails contains the data you need
+          setLatestFeedback({
+            explanation: latestFeedbackDetails.explanation,
+            climb: latestFeedbackDetails.climb,
+            rating: latestFeedbackDetails.rating,
+            climbName: latestFeedbackDetails.climbName,
+            climbGrade: latestFeedbackDetails.climbGrade
+          });
+        }
+      };
+  
+      processCommentsAndFeedback();
     }
   }, [yourClimbs]);
 
@@ -261,14 +230,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 25,
     marginBottom: 20,
-    // color: '#3498db',
     color: 'black',
   },
   activeBigNumber: {
     fontWeight: 'bold',
     fontSize: 35,
     marginBottom: 13,
-    // color: 'green',
     color: 'black',
   },
   bigNumber: {
@@ -276,7 +243,6 @@ const styles = StyleSheet.create({
     fontSize: 35,
     marginBottom: 13,
     color: 'black',
-    // color: '#ff8100',
   },
   routeTitle: {
     fontSize: 20,
@@ -303,7 +269,7 @@ const styles = StyleSheet.create({
   centeredContent: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1, // This will make the content use the available space
+    flex: 1, 
   },
   textBottom: {
     textAlign: 'center',

@@ -81,3 +81,74 @@ export const fetchTapsAndCalculateAscents = async (yourClimbs) => {
   };
 
 };
+
+export const fetchCommentsAndCalculateFeedback = async (yourClimbs) => {
+  const { getClimb } = ClimbsApi();
+  const { getCommentsBySomeField } = CommentsApi();
+
+  let comments = [];
+  let highestRatedClimbDetails = null;
+  let latestFeedbackDetails = null;
+
+  try {
+    const commentsPromises = yourClimbs.map(climb =>
+      getCommentsBySomeField('climb', climb.id)
+    );
+    const commentsSnapshots = await Promise.all(commentsPromises);
+
+    commentsSnapshots.forEach(snapshot => {
+      snapshot.docs.forEach(doc => comments.push({ ...doc.data(), timestamp: doc.data().timestamp.toDate() }));
+    });
+
+    if (comments.length > 0) {
+      const latestComment = comments.reduce((latest, current) =>
+        latest.timestamp > current.timestamp ? latest : current
+      );
+
+      const climbDetails = await getClimb(latestComment.climb);
+      latestFeedbackDetails = {
+        explanation: latestComment.explanation,
+        climb: latestComment.climb,
+        rating: latestComment.rating,
+        climbName: climbDetails.data().name,
+        climbGrade: climbDetails.data().grade
+      };
+    }
+
+    let climbRatings = {};
+    comments.forEach(comment => {
+      if (!climbRatings[comment.climb]) {
+        climbRatings[comment.climb] = { totalRating: 0, count: 0 };
+      }
+      climbRatings[comment.climb].totalRating += comment.rating;
+      climbRatings[comment.climb].count++;
+    });
+
+    if (Object.keys(climbRatings).length > 0) {
+      const highestRatedClimbId = Object.keys(climbRatings).reduce((a, b) =>
+        (climbRatings[a].totalRating / climbRatings[a].count) > (climbRatings[b].totalRating / climbRatings[b].count) ? a : b
+      );
+
+      const highestRatedClimb = await getClimb(highestRatedClimbId);
+      highestRatedClimbDetails = {
+        name: highestRatedClimb.data().name,
+        grade: highestRatedClimb.data().grade,
+        type: highestRatedClimb.data().type,
+        climb: highestRatedClimbId
+      };
+    }
+
+    return {
+      comments,
+      highestRatedClimbDetails,
+      latestFeedbackDetails
+    };
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    return {
+      comments: [],
+      highestRatedClimbDetails: null,
+      latestFeedbackDetails: null
+    };
+  }
+};
