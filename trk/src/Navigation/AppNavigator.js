@@ -36,13 +36,15 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#fe8100',
+    backgroundColor: 'white',
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
+    borderColor: '#4c6a78',
+    borderWidth: 1
   },
   text: {
-    color: 'white',
+    color: '#4c6a78',
     textAlign: 'center',
   }
 });
