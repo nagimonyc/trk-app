@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
     borderRadius: 5,
+    color: 'black'
   },
   effortHistoryList: {
     flex: 1,
