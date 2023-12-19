@@ -87,7 +87,7 @@ const GymDaily = () => {
             tap.timestamp = tap.timestamp.toDate();
             console.log(`Tap Timestamp: ${tap.timestamp}`);
             return tap;
-          });
+          }).filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false));
           totalTaps += taps.length;
           allTaps = [...allTaps, ...taps];
 

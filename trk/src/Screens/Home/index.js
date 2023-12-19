@@ -33,28 +33,27 @@ function HomeScreen(props) {
       const climbDetailsPromises = querySnapshot.docs.map(async (doc) => {
         const tapData = doc.data();
         const climbSnapshot = await getClimb(tapData.climb);
-        // Extract and format the timestamp
+        
         let timestamp = tapData.timestamp;
-        if (timestamp.toDate) { // Convert Firebase Timestamp to JavaScript Date
-          timestamp = timestamp.toDate().toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-            timeZone: 'America/New_York' // NEW YORK TIME
-          });
+        if (timestamp.toDate) {
+            timestamp = timestamp.toDate().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: 'America/New_York'
+            });
         }
+    
         return climbSnapshot.exists ? {
-          ...tapData,
-          tapTimestamp: timestamp,
-          tapId: doc.id,
-          ...climbSnapshot.data(),
+            ...tapData,
+            tapTimestamp: timestamp,
+            tapId: doc.id,
+            ...climbSnapshot.data(),
         } : null;
-      });
-
-
+    });
 
       const newClimbsHistory = (await Promise.all(climbDetailsPromises))
-        .filter(tap => tap !== null);
+        .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false));
 
       setClimbsHistory(newClimbsHistory);
     });

@@ -7,35 +7,46 @@ import ClimbsApi from "../api/ClimbsApi";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ClimberProfile = ({ navigation }) => {
     const { tapCount, currentUser } = useContext(AuthContext);
     const [climbsHistory, setClimbsHistory] = useState([]);
 
-    useEffect(() => {
-        handleTapHistory();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            handleTapHistory();
+        }, [])
+    );    
 
     const handleTapHistory = async () => {
         const { getTapsBySomeField } = TapsApi();
         const { getClimb } = ClimbsApi();
         try {
             const tapsSnapshot = await getTapsBySomeField('user', currentUser.uid);
-            const climbsPromises = [];
-            tapsSnapshot.docs.forEach(doc => {
-                const climbId = doc.data().climb;
-                const climbPromise = getClimb(climbId);
-                climbsPromises.push(climbPromise);
-            });
+    
+            // Filter taps
+            const filteredTaps = tapsSnapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
+                .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
+    
+            // Fetch climb details for each filtered tap
+            const climbsPromises = filteredTaps.map(tap => getClimb(tap.climb));
+    
+            // Resolve all promises to get climb details
             const climbsSnapshots = await Promise.all(climbsPromises);
+    
+            // Combine climb details with tap data
             const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
-                return climbSnapshot.exists ? { ...climbSnapshot.data(), tapId: tapsSnapshot.docs[index].id } : null;
+                if (!climbSnapshot.exists) return null;
+                return { ...climbSnapshot.data(), tapId: filteredTaps[index].id };
             }).filter(climb => climb !== null);
+    
             setClimbsHistory(newClimbsHistory);
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
-    };
+    };    
 
     return (
         <SafeAreaView style={styles.container}>
