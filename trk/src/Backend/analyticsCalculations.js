@@ -1,6 +1,5 @@
 import ClimbsApi from "../api/ClimbsApi";
 import TapsApi from "../api/TapsApi";
-import { AuthContext } from "../Utils/AuthContext";
 import CommentsApi from "../api/CommentsApi";
 
 export const fetchSetClimbs = async (userId) => {

@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Text, View, ScrollView, SafeAreaView, StyleSheet } from "react-native";
 import { AuthContext } from '../../Utils/AuthContext';
-import {fetchSetClimbs} from '../../Backend/analyticsCalculations';
-import { fetchTapsAndCalculateAscents } from '../../Backend/analyticsCalculations';
-import { fetchCommentsAndCalculateFeedback } from '../../Backend/analyticsCalculations';
+import {
+  fetchSetClimbs,
+  fetchTapsAndCalculateAscents,
+  fetchCommentsAndCalculateFeedback
+} from '../../Backend/analyticsCalculations';
 
 
 const GymDaily = () => {
@@ -32,7 +34,7 @@ const GymDaily = () => {
   });
   
   const { currentUser } = useContext(AuthContext);
-  const userId = currentUser.uid; 
+  const userId = currentUser?.uid; 
 
   useEffect(() => {
     const initializeSetClimbs = async () => {
@@ -81,7 +83,6 @@ const GymDaily = () => {
   
         setYourComments(comments);
         if (highestRatedClimbDetails) {
-          // Assuming highestRatedClimbDetails contains the data you need
           setHighestRated({
             name: highestRatedClimbDetails.name,
             grade: highestRatedClimbDetails.grade,
@@ -90,7 +91,6 @@ const GymDaily = () => {
           });
         }
         if (latestFeedbackDetails) {
-          // Assuming latestFeedbackDetails contains the data you need
           setLatestFeedback({
             explanation: latestFeedbackDetails.explanation,
             climb: latestFeedbackDetails.climb,
