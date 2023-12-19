@@ -144,11 +144,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 17.57,
     marginRight: 35,
+    color: 'black'
   },
   feedback: {
     marginTop: 20,
     padding: 15,  
     width: '100%',
+    color: 'black'
   },
   input: {
     backgroundColor: '#dedee0',
@@ -158,11 +160,13 @@ const styles = StyleSheet.create({
     paddingBottom: 120, // Add some padding for iOS
     paddingLeft: 10,
     textAlignVertical: 'top',
+    color: 'black'
   },
   subtitle: {
     fontSize: 17,
     marginTop: 23, 
-    marginBottom: 6
+    marginBottom: 6,
+    color: 'black'
   },
 });
 

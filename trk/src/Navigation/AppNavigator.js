@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'react-native';
+import { Button } from 'react-native-paper';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 
 import CompRanking from '../Screens/CompRanking';
 import HomeScreen from '../Screens/Home';
@@ -15,6 +17,7 @@ import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/SetDetail';
 import Settings from '../Components/Settings';
 import FeedbackForm from '../Screens/FeedbackForm';
+import DeveloperFeedbackForm from '../Screens/DeveloperFeedbackForm';
 import GlossaryDefinition from '../Screens/GlossaryDefinition';
 import GymDaily from '../Screens/GymDaily';
 
@@ -22,6 +25,32 @@ import GymDaily from '../Screens/GymDaily';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const GymTopTab = createMaterialTopTabNavigator();
+const ClimbInputStack = createStackNavigator();
+
+const FeedbackButton = ({ onPress, title, navigation }) => (
+  <TouchableOpacity onPress={() => navigation.navigate('Developer_Feedback')} style={styles.button}>
+    <Text style={styles.text}>{title}</Text>
+  </TouchableOpacity>
+);
+
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    borderColor: '#4c6a78',
+    borderWidth: 1
+  },
+  text: {
+    color: '#4c6a78',
+    textAlign: 'center',
+  }
+});
+
+
+
 
 function GymTabs() {
   return (
@@ -53,7 +82,21 @@ function HomeStack() {
       <Stack.Screen
         name="HomePage_stack"
         component={HomeScreen}
-        options={{ title: 'Home', headerBackTitleVisible: null }}
+        options={({ navigation }) => ({ 
+          title: 'Home', 
+          headerBackTitleVisible: null,
+          headerRight: () => (
+            <FeedbackButton
+              title="Feedback"
+              navigation={navigation}
+            />
+          ),
+        })}
+      />
+      <Stack.Screen
+        name="Developer_Feedback"
+        component={DeveloperFeedbackForm}
+        options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Detail"
@@ -81,8 +124,22 @@ function ProfileStack() {
       {/* removed the header for the 'home' screen as the two homescreens stacked on top of one another and showed 2 'Home' headers */}
       <Stack.Screen name="User_Profile"
         component={UserProfile}
-        options={{ title: 'Profile', headerBackTitleVisible: false }}
+        options={({ navigation }) => ({ 
+          title: 'Profile', 
+          headerBackTitleVisible: false,
+          headerRight: () => (
+            <FeedbackButton
+              title="Feedback"
+              navigation={navigation}
+            />
+          ),
+        })}
       />
+      <Stack.Screen
+              name="Developer_Feedback"
+              component={DeveloperFeedbackForm}
+              options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+            />
       <Stack.Screen
         name="Detail"
         component={ClimbDetailScreen}
@@ -122,7 +179,21 @@ function AnalyticsStack() {
       <Stack.Screen
         name="MyGym"
         component={GymTabs}
-        options={{ title: 'My Gym', headerBackTitleVisible: false }}
+        options={({ navigation }) => ({ 
+          title: 'My Gym', 
+          headerBackTitleVisible: false,
+          headerRight: () => (
+            <FeedbackButton
+              title="Feedback"
+              navigation={navigation}
+            />
+          ),
+        })}
+      />
+      <Stack.Screen
+        name="Developer_Feedback"
+        component={DeveloperFeedbackForm}
+        options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Climber_Performance"
@@ -133,6 +204,32 @@ function AnalyticsStack() {
     </Stack.Navigator>
   );
 }
+
+
+function ClimbInputStackScreen() {
+  return (
+    <ClimbInputStack.Navigator>
+      <ClimbInputStack.Screen 
+        name="Create Climb" 
+        component={ClimbInputData}
+        options={({ navigation }) => ({ 
+          headerRight: () => (
+            <FeedbackButton
+              title="Feedback"
+              navigation={navigation}
+            />
+          ),
+        })}
+      />
+      <ClimbInputStack.Screen 
+        name="Developer_Feedback" 
+        component={DeveloperFeedbackForm}
+        options={{ title: 'Developer Feedback', headerTitleAlign: 'center'}}
+      />
+    </ClimbInputStack.Navigator>
+  );
+}
+
 
 function AppTabs() {
   console.log('[TEST] AppTabs called');
@@ -158,19 +255,18 @@ function AppTabs() {
       />
       {role === 'climber' ? null :
         <Tab.Screen
-          name="Create Climb"
-          component={ClimbInputData}
-          options={{
-            tabBarIcon: ({size,focused,color}) => {
-              return (
-                <Image
-                  style={{ width: size, height: size }}
-                  source={require('../../assets/tools.png')}
-                />
-              );
-            },
-          }}
-        />}
+        name="Create Climb"
+        component={ClimbInputStackScreen} // Use the new stack here
+        options={{ title: 'Create Climb', 
+        headerShown: false,
+          tabBarIcon: ({ size, focused, color }) =>{ return (
+            <Image
+              style={{ width: size, height: size }}
+              source={require('../../assets/tools.png')}
+            />);
+          },
+        }}
+      />}
       <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
