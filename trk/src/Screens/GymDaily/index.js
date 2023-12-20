@@ -47,6 +47,7 @@ const GymDaily = () => {
   }, [userId, currentUser]) 
 
   useEffect(() => {
+
     const processTapsAndAscents = async () => {
       if (yourClimbs.length > 0) {
         const {

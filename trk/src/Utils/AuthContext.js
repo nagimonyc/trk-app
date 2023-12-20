@@ -30,24 +30,38 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         console.log('[TEST] use effect called Auth Provider 2');
-        if (currentUser) {
-            // Fetch the role from Firestore when currentUser changes.
-            console.log('[DATABASE] use effect called Auth Provider 2(prime)');
-            const unsubscribe = firestore()
-                .collection('users')
-                .doc(currentUser.uid)
-                .onSnapshot(documentSnapshot => {
-                    const userData = documentSnapshot.data();
-                    if (userData) {
-                        setRole(userData?.role);
-                        setTapCount(userData?.taps);
-                    }
-                });
-
-            // Detach listener when the component unmounts
-            return () => unsubscribe();
-        }
-    }, [currentUser]); // <-- Add this line
+        if (!currentUser) return;
+    
+        console.log('[DATABASE] use effect called Auth Provider 2(prime)');
+    
+        // Fetch the user's role from Firestore when currentUser changes.
+        const unsubscribeUser = firestore()
+            .collection('users')
+            .doc(currentUser.uid)
+            .onSnapshot(documentSnapshot => {
+                const userData = documentSnapshot.data();
+                if (userData) {
+                    setRole(userData?.role);
+                }
+            });
+    
+        // Fetch non-archived taps count
+        const unsubscribeTaps = firestore()
+            .collection('taps')
+            .where('user', '==', currentUser.uid)
+            .onSnapshot(querySnapshot => {
+                const nonArchivedCount = querySnapshot.docs
+                    .filter(doc => !doc.data().archived)
+                    .length;
+                setTapCount(nonArchivedCount);
+            });
+    
+        // Detach listeners when the component unmounts
+        return () => {
+            unsubscribeUser();
+            unsubscribeTaps();
+        };
+    }, [currentUser]);    
 
     // Return the provider component
     return (

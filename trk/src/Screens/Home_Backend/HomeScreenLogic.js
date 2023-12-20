@@ -51,7 +51,7 @@ export const useHomeScreenLogic = (props) => {
 
 
       const newClimbsHistory = (await Promise.all(climbDetailsPromises))
-        .filter(tap => tap !== null);
+        .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false));
 
       setClimbsHistory(newClimbsHistory);
     });
