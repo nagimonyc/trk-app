@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Text, View, ScrollView, SafeAreaView, StyleSheet } from "react-native";
 import { AuthContext } from '../../Utils/AuthContext';
-import ClimbsApi from '../../api/ClimbsApi';
-import TapsApi from '../../api/TapsApi';
-import CommentsApi from '../../api/CommentsApi';
+import {
+  fetchSetClimbs,
+  fetchTapsAndCalculateAscents,
+  fetchCommentsAndCalculateFeedback
+} from '../../Backend/analyticsCalculations';
 
 
 const GymDaily = () => {
@@ -30,178 +32,77 @@ const GymDaily = () => {
     rating: '',
     climbName: '',
   });
-
+  
   const { currentUser } = useContext(AuthContext);
-  const { getClimbsBySomeField } = ClimbsApi();
-  const { getTapsBySomeField } = TapsApi();
-  const { getCommentsBySomeField } = CommentsApi();
-  const { getClimb } = ClimbsApi();
-
-  const userId = currentUser.uid;
-
+  const userId = currentUser?.uid; 
 
   useEffect(() => {
-    const fetchClimbs = async () => {
-      try {
-        const querySnapshot = await getClimbsBySomeField('setter', userId);
-        if (querySnapshot && querySnapshot.docs) {
-          const climbs = querySnapshot.docs.map(doc => {
-            return {
-              id: doc.id,
-              ...doc.data()
-            };
-          }).filter(climb => !climb.archived); // Filter out archived climbs
-
-          setYourClimbs(climbs);
-          setTotalClimbs(climbs.length.toString()); // Now reflects the count of non-archived climbs
-        } else {
-          console.error("No data found in Firestore query");
-        }
-      } catch (error) {
-        console.error("Error fetching climbs:", error);
-      }
+    const initializeSetClimbs = async () => {
+      const climbs = await fetchSetClimbs(userId);
+      setYourClimbs(climbs);
+      setTotalClimbs(climbs.length.toString());
     };
-
-    fetchClimbs();
-    console.log(`Your climbs are: ${JSON.stringify(yourClimbs, null, 2)}`);
-
-  }, [userId]);
-
+  
+    initializeSetClimbs();
+  }, [userId, currentUser]) 
 
   useEffect(() => {
-    const fetchTapsAndCalculateAscents = async () => {
-      let totalTaps = 0;
-      let allTaps = [];
-      let latestAscentsCount = 0;
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      let climbFrequencyMap = {};
-      let timeFrequencyMap = {};
 
-
-
-      for (const climb of yourClimbs) {
-        const tapsSnapshot = await getTapsBySomeField('climb', climb.id);
-        if (tapsSnapshot && tapsSnapshot.docs) {
-          const taps = tapsSnapshot.docs.map(doc => {
-            const tap = doc.data();
-            tap.timestamp = tap.timestamp.toDate();
-            console.log(`Tap Timestamp: ${tap.timestamp}`);
-            return tap;
-          }).filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false));
-          totalTaps += taps.length;
-          allTaps = [...allTaps, ...taps];
-
-          latestAscentsCount += taps.filter(tap => tap.timestamp > oneDayAgo).length;
-
-          taps.forEach(tap => {
-            if (!climbFrequencyMap[tap.climb]) {
-              climbFrequencyMap[tap.climb] = { count: 0, name: climb.name, id: climb.id, grade: climb.grade };
-            }
-            climbFrequencyMap[tap.climb].count++;
-          });
-        }
+    const processTapsAndAscents = async () => {
+      if (yourClimbs.length > 0) {
+        const {
+          totalTaps,
+          allTaps,
+          peakTimeString,
+          latestAscentsCount,
+          mostCompletedClimb,
+          leastCompletedClimb
+        } = await fetchTapsAndCalculateAscents(yourClimbs);
+  
+        setAscents(allTaps);
+        setTotalAscents(totalTaps.toString());
+        setLatestAscents(latestAscentsCount.toString());
+        setPeakTime(peakTimeString);
+        setMostCompleted(mostCompletedClimb || { name: '', id: '', grade: '' });
+        setLeastCompleted(leastCompletedClimb || { name: '', id: '', grade: '' });
       }
-
-      for (const tap of allTaps) {
-        if (tap.timestamp) {
-          const hour = tap.timestamp.getHours(); 
-          timeFrequencyMap[hour] = (timeFrequencyMap[hour] || 0) + 1;
-        }
-      }
-
-
-      let peakHour = Object.keys(timeFrequencyMap).reduce((a, b) => timeFrequencyMap[a] > timeFrequencyMap[b] ? a : b, null);
-      setPeakTime(peakHour ? `${peakHour}:00 - ${parseInt(peakHour) + 1}:00` : '');
-      console.log(`peakHour is: ${peakHour}`)
-
-      setAscents(allTaps);
-      setTotalAscents(totalTaps.toString());
-      setLatestAscents(latestAscentsCount.toString());
-
-      let mostCompletedClimb = Object.values(climbFrequencyMap).reduce((a, b) => (a && b && a.count > b.count) ? a : b, null);
-      let leastCompletedClimb = Object.values(climbFrequencyMap).reduce((a, b) => (a && b && a.count < b.count) ? a : b, null);
-
-      if (mostCompletedClimb) {
-        setMostCompleted({ name: mostCompletedClimb.name, id: mostCompletedClimb.id, grade: mostCompletedClimb.grade });
-      } else {
-        setMostCompleted({ name: '', id: '', grade: '' });
-      }
-
-      if (leastCompletedClimb) {
-        setLeastCompleted({ name: leastCompletedClimb.name, id: leastCompletedClimb.id, grade: leastCompletedClimb.grade });
-      } else {
-        setLeastCompleted({ name: '', id: '', grade: '' });
-      }
-
     };
-
-
-    if (yourClimbs.length > 0) {
-      fetchTapsAndCalculateAscents();
-    }
+  
+    processTapsAndAscents();
   }, [yourClimbs]);
 
 
   useEffect(() => {
-    const fetchCommentsAndCalculateFeedback = async () => {
-      try {
-        const commentsPromises = yourClimbs.map(climb =>
-          getCommentsBySomeField('climb', climb.id)
-        );
-        const commentsSnapshots = await Promise.all(commentsPromises);
-        let comments = [];
-        commentsSnapshots.forEach(snapshot => {
-          snapshot.docs.forEach(doc => comments.push({ ...doc.data(), timestamp: doc.data().timestamp.toDate() }));
-        });
-
+    
+    if (yourClimbs.length > 0) {
+      const processCommentsAndFeedback = async () => {
+        const {
+          comments,
+          highestRatedClimbDetails,
+          latestFeedbackDetails
+        } = await fetchCommentsAndCalculateFeedback(yourClimbs);
+  
         setYourComments(comments);
- 
-        if (comments.length > 0) {
-          const latestComment = comments.reduce((latest, current) =>
-            latest.timestamp > current.timestamp ? latest : current
-          );
-
-          const climbDetails = await getClimb(latestComment.climb);
-          const climbData = climbDetails.data();
-          setLatestFeedback({
-            explanation: latestComment.explanation,
-            climb: latestComment.climb,
-            rating: latestComment.rating,
-            climbName: climbData.name,
-            climbGrade: climbData.grade,
+        if (highestRatedClimbDetails) {
+          setHighestRated({
+            name: highestRatedClimbDetails.name,
+            grade: highestRatedClimbDetails.grade,
+            type: highestRatedClimbDetails.type,
+            climb: highestRatedClimbDetails.id
           });
         }
-
-        let climbRatings = {};
-        comments.forEach(comment => {
-          if (!climbRatings[comment.climb]) {
-            climbRatings[comment.climb] = { totalRating: 0, count: 0 };
-          }
-          climbRatings[comment.climb].totalRating += comment.rating;
-          climbRatings[comment.climb].count++;
-        });
-
-        let highestRatedClimbId = Object.keys(climbRatings).reduce((a, b) =>
-          (climbRatings[a].totalRating / climbRatings[a].count) > (climbRatings[b].totalRating / climbRatings[b].count) ? a : b
-        );
-
-        const highestRatedClimbDetails = await getClimb(highestRatedClimbId);
-        const climbData = highestRatedClimbDetails.data();
-        setHighestRated({
-          name: climbData.name,
-          grade: climbData.grade,
-          type: climbData.type,
-          climb: highestRatedClimbId,
-        });
-
-
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
-
-    if (yourClimbs.length > 0) {
-      fetchCommentsAndCalculateFeedback();
+        if (latestFeedbackDetails) {
+          setLatestFeedback({
+            explanation: latestFeedbackDetails.explanation,
+            climb: latestFeedbackDetails.climb,
+            rating: latestFeedbackDetails.rating,
+            climbName: latestFeedbackDetails.climbName,
+            climbGrade: latestFeedbackDetails.climbGrade
+          });
+        }
+      };
+  
+      processCommentsAndFeedback();
     }
   }, [yourClimbs]);
 
@@ -330,14 +231,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 25,
     marginBottom: 20,
-    // color: '#3498db',
     color: 'black',
   },
   activeBigNumber: {
     fontWeight: 'bold',
     fontSize: 35,
     marginBottom: 13,
-    // color: 'green',
     color: 'black',
   },
   bigNumber: {
@@ -345,7 +244,6 @@ const styles = StyleSheet.create({
     fontSize: 35,
     marginBottom: 13,
     color: 'black',
-    // color: '#ff8100',
   },
   routeTitle: {
     fontSize: 20,
@@ -372,7 +270,7 @@ const styles = StyleSheet.create({
   centeredContent: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1, // This will make the content use the available space
+    flex: 1, 
   },
   textBottom: {
     textAlign: 'center',
