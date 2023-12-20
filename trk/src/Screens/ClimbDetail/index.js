@@ -22,7 +22,7 @@ function ClimbDetail(props) {
   const [attempts, setAttempts] = useState('1');
   const [witness1, setWitness1] = useState('');
   const [witness2, setWitness2] = useState('');
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, role } = useContext(AuthContext);
   const [tapId, setTapId] = useState(props.route.params.tapId || null);
 
 
@@ -203,6 +203,35 @@ function ClimbDetail(props) {
     }
   };
 
+  const archiveTap = async () => {
+        Alert.alert(
+            "Delete Tap",
+            "Do you really want to delete this tap?",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                { 
+                    text: "Yes", 
+                    onPress: async () => {
+                        try {
+                            await TapsApi().updateTap(tapId, { archived: true });
+                            Alert.alert("Tap Deleted", "The tap has been successfully deleted.");
+                            props.navigation.goBack();
+                        } catch (error) {
+                            console.error("Error deleting tap:", error);
+                            Alert.alert("Error", "Could not delete tap.");
+                        }
+                    } 
+                }
+            ]
+        );
+    };
+
+
+
   const onFeedback = async () => {
     navigation.navigate('Feedback', { climbName: climbData.name, climbGrade: climbData.grade, climbId: climbId })
   };
@@ -368,6 +397,11 @@ function ClimbDetail(props) {
                   <Text style={styles.info}>{climbData.info}</Text>
                 </View>
               )}
+              {role == 'climber' && <>
+                <View style={styles.button}>
+                <Button title='Delete Tap' onPress={archiveTap} color="black" />
+                </View>
+                </>}
             </View>
           </View>
         </ScrollView>

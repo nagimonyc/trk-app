@@ -12,7 +12,6 @@ function HomeScreen(props) {
     androidPromptRef,
     logo
   } = useHomeScreenLogic(props);
-
   return (
     <>
       <View style={[styles.wrapper, styles.center]}>
