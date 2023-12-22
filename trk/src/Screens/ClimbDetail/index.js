@@ -35,35 +35,29 @@ function ClimbDetail(props) {
           const climbDataResult = await ClimbsApi().getClimb(climbId);
           if (climbDataResult && climbDataResult._data) {
             setClimbData(climbDataResult._data);
-            console.log("Fetched climb data:", climbDataResult._data);
-
-            if (currentUser.uid !== climbDataResult._data.setter) {
-              const { addTap } = TapsApi();
-              const tap = {
-                climb: climbId,
-                user: currentUser.uid,
-                timestamp: new Date(),
-                completion: 0,
-                attempts: '',
-                witness1: '',
-                witness2: '',
-              };
-              const documentReference = await addTap(tap);
-              setTapId(documentReference.id); // Set tapId only when navigating from home
-            }
           } else {
-            console.error('Climb data not found or is null');
+            Alert.alert(
+              "Error",
+              "Climb data not found.",
+              [{ text: "OK", onPress: () => navigation.goBack() }],
+              { cancelable: false }
+            );
           }
         } catch (error) {
           console.error('Error fetching climb data:', error);
+          Alert.alert(
+            "Error",
+            "Failed to load climb data.",
+            [{ text: "OK", onPress: () => navigation.goBack() }],
+            { cancelable: false }
+          );
         } finally {
           setIsLoading(false);
         }
       }
       fetchData();
     }
-  }, [climbId, isFromHome, currentUser.uid]);
-
+  }, [climbId, isFromHome, currentUser.uid, navigation]);  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -248,7 +242,7 @@ function ClimbDetail(props) {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !climbData) {
     return (
       <View style={styles.center}>
         <Text>Fetching climb information...</Text>
