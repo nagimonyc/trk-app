@@ -35,6 +35,22 @@ function ClimbDetail(props) {
           const climbDataResult = await ClimbsApi().getClimb(climbId);
           if (climbDataResult && climbDataResult._data) {
             setClimbData(climbDataResult._data);
+            console.log("Fetched climb data:", climbDataResult._data);
+
+            if (currentUser.uid !== climbDataResult._data.setter) {
+              const { addTap } = TapsApi();
+              const tap = {
+                climb: climbId,
+                user: currentUser.uid,
+                timestamp: new Date(),
+                completion: 0,
+                attempts: '',
+                witness1: '',
+                witness2: '',
+              };
+              const documentReference = await addTap(tap);
+              setTapId(documentReference.id); // Set tapId only when navigating from home
+            }
           } else {
             Alert.alert(
               "Error",
