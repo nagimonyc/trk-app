@@ -52,18 +52,28 @@ function ClimbDetail(props) {
               setTapId(documentReference.id); // Set tapId only when navigating from home
             }
           } else {
-            console.error('Climb data not found or is null');
+            Alert.alert(
+              "Error",
+              "Climb data not found.",
+              [{ text: "OK", onPress: () => navigation.goBack() }],
+              { cancelable: false }
+            );
           }
         } catch (error) {
           console.error('Error fetching climb data:', error);
+          Alert.alert(
+            "Error",
+            "Failed to load climb data.",
+            [{ text: "OK", onPress: () => navigation.goBack() }],
+            { cancelable: false }
+          );
         } finally {
           setIsLoading(false);
         }
       }
       fetchData();
     }
-  }, [climbId, isFromHome, currentUser.uid]);
-
+  }, [climbId, isFromHome, currentUser.uid, navigation]);  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -248,7 +258,7 @@ function ClimbDetail(props) {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !climbData) {
     return (
       <View style={styles.center}>
         <Text>Fetching climb information...</Text>

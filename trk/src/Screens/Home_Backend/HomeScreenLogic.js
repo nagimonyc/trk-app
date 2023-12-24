@@ -74,39 +74,48 @@ export const useHomeScreenLogic = (props) => {
     checkNfc();
   }, []);
 
-
   async function identifyClimb() {
+    let isReading = true;  // Flag to indicate NFC reading is in progress
+  
     if (Platform.OS === 'android') {
       androidPromptRef.current.setVisible(true);
     }
   
     try {
       await NfcManager.requestTechnology(NfcTech.NfcA);
-      const climbId = await readClimb(); // Read climb ID from NFC tag
+      const climbId = await readClimb(); 
+      isReading = false;  // Clear the flag on successful read
+  
       if (climbId && climbId[0]) {
         console.log(climbId[0]);
-        navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true }); // Navigate with climbId
+        console.log('Climb ID worked');
+        //Better way to verify climb_id
+        navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
       } else {
-        throw new Error('Invalid climb ID'); // Handle invalid climb ID
+        throw new Error('Invalid climb ID'); 
       }
     } catch (ex) {
-      Alert.alert('Error', ex.message || 'Climb not found!', [{ text: 'OK' }]);
+      if (isReading) {
+        Alert.alert('Info', 'Climb tagging cancelled.', [{ text: 'OK' }]);
+      } else {
+        Alert.alert('Error', ex.message || 'Climb not found!', [{ text: 'OK' }]);
+      }
     } finally {
       NfcManager.cancelTechnologyRequest();
       if (Platform.OS === 'android') {
         androidPromptRef.current.setVisible(false);
       }
     }
-
+  
     if (Platform.OS === 'android') {
       androidPromptRef.current.setVisible(false);
     }
-
+  
     analytics().logEvent('Tap_to_Track_pressed', {
       user_id: currentUser.uid,
       timestamp: new Date().toISOString()
     });
-  }
+  }  
 
   function renderNfcButtons() {
     if (hasNfc === null) {
