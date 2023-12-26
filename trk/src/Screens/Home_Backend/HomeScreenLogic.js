@@ -8,6 +8,11 @@ import { AuthContext } from '../../Utils/AuthContext';
 import analytics from '@react-native-firebase/analytics';
 import TapsApi from '../../api/TapsApi';
 
+import { useDispatch } from 'react-redux';
+import { addClimb } from '../../Actions/tapActions';
+
+import NetInfo from '@react-native-community/netinfo';
+
 export const useHomeScreenLogic = (props) => {
   const [climbsHistory, setClimbsHistory] = useState([]);
   // Initialize androidPromptRef conditionally based on the platform
@@ -20,6 +25,22 @@ export const useHomeScreenLogic = (props) => {
   const [enabled, setEnabled] = React.useState(null);
   // user check
   const { currentUser } = useContext(AuthContext);
+
+  const dispatch = useDispatch();
+
+
+  const checkConnectivity = (climbId) => {
+    NetInfo.fetch().then(state => {
+      console.log("Is connected?", state.isConnected);
+      if (state.isConnected) {
+        console.log('Navigating');
+        navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
+      } else {
+        dispatch(addClimb(climbId[0], currentUser));
+        Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]);
+      }
+    });
+  };
 
   useEffect(() => {
     const { onLatestFourTapsUpdate } = TapsApi(); // Assuming this is the method for subscribing to changes
@@ -90,7 +111,8 @@ export const useHomeScreenLogic = (props) => {
         console.log(climbId[0]);
         console.log('Climb ID worked');
         //Better way to verify climb_id
-        navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
+        checkConnectivity(climbId);
+        //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
       } else {
         throw new Error('Invalid climb ID'); 
       }

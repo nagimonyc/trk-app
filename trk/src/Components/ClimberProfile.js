@@ -12,6 +12,7 @@ import { useFocusEffect } from '@react-navigation/native';
 const ClimberProfile = ({ navigation }) => {
     const { tapCount, currentUser } = useContext(AuthContext);
     const [climbsHistory, setClimbsHistory] = useState([]);
+    const [historyCount, setHistoryCount] = useState(0);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -40,9 +41,10 @@ const ClimberProfile = ({ navigation }) => {
             const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
                 return { ...climbSnapshot.data(), tapId: filteredTaps[index].id };
-            }).filter(climb => climb !== null);
+            }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
     
             setClimbsHistory(newClimbsHistory);
+            setHistoryCount(newClimbsHistory.length);
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
@@ -63,7 +65,7 @@ const ClimberProfile = ({ navigation }) => {
                 </View>
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, {}]}>
-                        <Text style={styles.any_text}>{tapCount}</Text>
+                        <Text style={styles.any_text}>{historyCount}</Text>
                         <Text style={styles.any_text}>Total Climbs</Text>
                     </View>
                     <View style={[styles.effortRecapChild, {}]}>
