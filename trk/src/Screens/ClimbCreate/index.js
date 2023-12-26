@@ -180,7 +180,7 @@ const ClimbInputData = (props) => {
         try {
           await NfcManager.requestTechnology(NfcTech.NfcA);
           await ensurePasswordProtection();
-          const climbBytes = await writeClimb(newClimbId._documentPath._parts[1]);
+          const climbBytes = await writeClimb(newClimbId._documentPath._parts[1], grade);
           let imagesArray = [];
           if (image) {
             const newImageRef = await uploadImage(image.path);
@@ -192,7 +192,9 @@ const ClimbInputData = (props) => {
           await writeSignature(climbBytes);
         }
         catch (ex) {
-          // console.warn("error is hello world");
+          console.error('Error: ', ex);
+          //Errors show up as writeSignature fails sometimes.
+          //NEED TO SOLVE
         }
 
         finally {

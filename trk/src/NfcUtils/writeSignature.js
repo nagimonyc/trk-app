@@ -11,7 +11,7 @@ async function writeSignature(climbBytes) {
   console.warn('sig', sig);
   const sigBytes = HexUtils.hexToBytes(sig.r + sig.s);
 
-  const sigPageIdx = 12;
+  const sigPageIdx = 15;
   for (let i = 0; i < sigBytes.length; i += 4) {
     console.log("sigBytes.length is ", sigBytes.length);
     const pageIdx = sigPageIdx + i / 4;

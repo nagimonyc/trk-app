@@ -2,9 +2,9 @@ import NfcManager from 'react-native-nfc-manager';
 import * as HexUtils from '../Utils/HexUtils';
 import * as Signer from '../Utils/Signer';
 
-async function verifySignature(pokemonBytes) {
+async function verifySignature(climbBytes) {
   const tag = await NfcManager.getTag();
-  const msgHex = HexUtils.bytesToHex(pokemonBytes) + tag.id;
+  const msgHex = HexUtils.bytesToHex(climbBytes) + tag.id;
   // console.warn('msg', msgHex);
 
   const sigPageIdx = 12;
