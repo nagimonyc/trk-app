@@ -62,6 +62,18 @@ const ClimbInputData = (props) => {
     console.log('Cancel button was pressed in AndroidPrompt');
   };
 
+  const validateInput = () => {
+    if (name.length > 10) {
+      Alert.alert("Validation Error", "Name must be 10 characters or less.");
+      return false;
+    }
+    if (grade.length > 5) {
+      Alert.alert("Validation Error", "Grade must be 5 characters or less.");
+      return false;
+    }
+    return true;
+  };
+
   const [gymItems, setGymItems] = useState([]);
 
   useEffect(() => {
@@ -102,7 +114,7 @@ const ClimbInputData = (props) => {
 
 
   async function handleUpdateClimb() {
-
+    if (!validateInput()) return;
     const currentClimbData = await ClimbsApi().getClimb(climbData.id);
     let imagesArray = currentClimbData.images || [];
 
@@ -149,6 +161,7 @@ const ClimbInputData = (props) => {
 
 
   async function handleAddClimb() {
+    if (!validateInput()) return;
     let imagesArray = [];
     if (image && image.path) {
       const newImageRef = await uploadImage(image.path);
@@ -180,7 +193,7 @@ const ClimbInputData = (props) => {
         try {
           await NfcManager.requestTechnology(NfcTech.NfcA);
           await ensurePasswordProtection();
-          const climbBytes = await writeClimb(newClimbId._documentPath._parts[1], grade);
+          const climbBytes = await writeClimb(newClimbId._documentPath._parts[1], grade, name);
           let imagesArray = [];
           if (image) {
             const newImageRef = await uploadImage(image.path);
