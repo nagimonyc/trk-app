@@ -1,6 +1,6 @@
 import NfcManager from 'react-native-nfc-manager';
 
-async function writeClimb(climbID, grade, color) {
+async function writeClimb(climbID, grade, name) {
   if (typeof climbID !== 'string' || climbID.length !== 20) {
     throw new Error('climbID must be a string of exactly 20 characters.');
   }
@@ -9,14 +9,14 @@ async function writeClimb(climbID, grade, color) {
     throw new Error('grade must be a string of less than or equal to 5 characters, by U.S convention.');
   }
 
-  if (typeof color !== 'string' || color.length > 10) {
-    throw new Error('color must be a string of less than or equal to 10 characters.');
+  if (typeof name !== 'string' || name.length > 10) {
+    throw new Error('name must be a string of less than or equal to 10 characters.');
   }
 
 
 
   console.warn('The grade is: ', grade);
-  console.warn('The color is: ', color);
+  console.warn('The name is: ', name);
   
   const blocks = [];
   let allBytes = [];
@@ -61,10 +61,10 @@ async function writeClimb(climbID, grade, color) {
   //not adding it to returned bytes 
   allBytes = [...allBytes, ...block];
 
-  //Now adding color (3 blocks)
+  //Now adding name (3 blocks)
   for (let i = 0; i < 12; i += 4) {
-    if (i+4 <= color.length) {
-      let subStr = color.substring(i, i + 4);
+    if (i+4 <= name.length) {
+      let subStr = name.substring(i, i + 4);
       let block = [];
       for (let j = 0; j < subStr.length; j++) {
         block.push(subStr.charCodeAt(j));
@@ -73,7 +73,7 @@ async function writeClimb(climbID, grade, color) {
       allBytes = [...allBytes, ...block];
     }
     else {
-      let subStr = color.substring(i);
+      let subStr = name.substring(i);
       let block = [];
       for (let j = 0; j < 4; j++) {
         if (j<subStr.length) {
