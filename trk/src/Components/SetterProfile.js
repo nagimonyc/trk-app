@@ -57,9 +57,9 @@ const SetterProfile = ({ navigation }) => {
                     </View>
                 </View>
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
-                    <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
                         <View style={{ flex: 1 }}></View>
-                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black' }}>
+                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black'}}>
                             Recap
                         </Text>
                         <TouchableOpacity
@@ -69,7 +69,7 @@ const SetterProfile = ({ navigation }) => {
                             <Text style={styles.buttonText}>Reload</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={[styles.effortHistoryList, { backgroundColor: '#F2E5D6' }]}>
+                    <View style={[styles.effortHistoryList]}>
                         <TapHistory climbsHistory={setHistory} />
                     </View>
                 </View>
@@ -82,16 +82,21 @@ const SetterProfile = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 20,
+        width: '100%',
+        margin: 0,
     },
     innerContainer: {
         flex: 1,
+        paddingVertical: 5,
+        width: '100%',
+        margin: 0,
     },
     header: {
         flex: 0.75,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        paddingHorizontal: 20,
     },
     any_text: {
         color: 'black',
@@ -104,13 +109,16 @@ const styles = StyleSheet.create({
     effortRecap: {
         flex: 0.75,
         flexDirection: 'row',
-        paddingHorizontal: 20,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
+
     effortRecapChild: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         color: 'black',
+        paddingHorizontal: 10, 
     },
     effortRecapGraph: {
         flex: 3,
@@ -126,14 +134,19 @@ const styles = StyleSheet.create({
     },
     effortHistory: {
         flex: 4,
-        paddingHorizontal: 5,
+        padding: 0,
         color: 'black',
+        width: '100%',
+        margin: 0,
     },
     effortHistoryList: {
         flex: 1,
         width: '100%',
         color: 'black',
-    },
+        backgroundColor: 'transparent', 
+        paddingHorizontal: 0, 
+        paddingVertical: 5,
+    },    
     pillButton: {
         backgroundColor: '#3498db', // or any color of your choice
         paddingHorizontal: 20,
