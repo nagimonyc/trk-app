@@ -12,6 +12,7 @@ import { useFocusEffect } from '@react-navigation/native';
 const ClimberProfile = ({ navigation }) => {
     const { tapCount, currentUser } = useContext(AuthContext);
     const [climbsHistory, setClimbsHistory] = useState([]);
+    const [historyCount, setHistoryCount] = useState(0);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -40,9 +41,10 @@ const ClimberProfile = ({ navigation }) => {
             const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
                 return { ...climbSnapshot.data(), tapId: filteredTaps[index].id };
-            }).filter(climb => climb !== null);
+            }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
     
             setClimbsHistory(newClimbsHistory);
+            setHistoryCount(newClimbsHistory.length);
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
@@ -63,7 +65,7 @@ const ClimberProfile = ({ navigation }) => {
                 </View>
                 <View style={styles.effortRecap}>
                     <View style={[styles.effortRecapChild, {}]}>
-                        <Text style={styles.any_text}>{tapCount}</Text>
+                        <Text style={styles.any_text}>{historyCount}</Text>
                         <Text style={styles.any_text}>Total Climbs</Text>
                     </View>
                     <View style={[styles.effortRecapChild, {}]}>
@@ -72,7 +74,7 @@ const ClimberProfile = ({ navigation }) => {
                     </View>
                 </View>
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
-                    <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
                         <View style={{ flex: 1 }}></View>
                         <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black' }}>
                             Recap
@@ -84,7 +86,7 @@ const ClimberProfile = ({ navigation }) => {
                             <Text style={styles.buttonText}>Reload</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={[styles.effortHistoryList, { backgroundColor: '#F2E5D6' }]}>
+                    <View style={[styles.effortHistoryList]}>
                         <TapHistory climbsHistory={climbsHistory} />
                     </View>
                 </View>
@@ -97,17 +99,21 @@ const ClimberProfile = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 20,
+        width: '100%',
+        margin: 0,
     },
     innerContainer: {
         flex: 1,
+        paddingVertical: 5,
+        width: '100%',
+        margin: 0,
     },
     header: {
         flex: 0.75,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        color: 'black',
+        paddingHorizontal: 20,
     },
     any_text: {
         color: 'black',
@@ -120,13 +126,15 @@ const styles = StyleSheet.create({
     effortRecap: {
         flex: 0.75,
         flexDirection: 'row',
-        paddingHorizontal: 20,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     effortRecapChild: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         color: 'black',
+        paddingHorizontal: 10, 
     },
     effortRecapGraph: {
         flex: 3,
@@ -142,12 +150,18 @@ const styles = StyleSheet.create({
     },
     effortHistory: {
         flex: 4,
-        paddingHorizontal: 5,
+        padding: 0,
+        color: 'black',
+        width: '100%',
+        margin: 0,
     },
     effortHistoryList: {
         flex: 1,
         width: '100%',
         color: 'black',
+        backgroundColor: 'transparent', 
+        paddingHorizontal: 0, 
+        paddingVertical: 5,
     },
     pillButton: {
         backgroundColor: '#3498db', // or any color of your choice
