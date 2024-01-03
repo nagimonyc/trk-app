@@ -5,7 +5,7 @@ import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from '../../Utils/AuthContext';
 import CommentsApi from '../../api/CommentsApi';
-
+import {renderRating, navigateToSetConfig, loadImageUrl, getTaps, getComments} from '../SetDetail_Backend/SetDetailLogic';
 
 function SetDetail(props) {
   console.log('[TEST] SetDetail called')
@@ -20,41 +20,31 @@ function SetDetail(props) {
   const [setterImageUrl, setSetterImageUrl] = useState(null);
   const [feedbackList, setFeedbackList] = useState([]);
 
-  const { getCommentsBySomeField } = CommentsApi();
-
 
   useEffect(() => {
-    if (climbData.images && climbData.images.length > 0) {
-      const latestImageRef = climbData.images[climbData.images.length - 1];
-      storage().ref(latestImageRef.path).getDownloadURL()
-        .then((url) => {
-          setClimbImageUrl(url);
-        })
-        .catch((error) => {
-          console.error("Error getting latest climb image URL: ", error);
-        });
-    } else {
-      setClimbImageUrl('climb photos/the_crag.png'); // Set a default image or handle as needed
-    }
-
-    const setterReference = storage().ref('profile photos/marcial.png');
-    setterReference.getDownloadURL()
-      .then((url) => {
-        setSetterImageUrl(url);
-      })
-      .catch((error) => {
-        console.error("Error getting setter image URL: ", error);
-      });
+    const loadImages = async () => {
+      try {
+        let climbImageURL = 'climb photos/the_crag.png'; 
+        if (climbData.images && climbData.images.length > 0) {
+          const latestImageRef = climbData.images[climbData.images.length - 1];
+          climbImageURL = latestImageRef.path;
+        }
+        const loadedClimbImageUrl = await loadImageUrl(climbImageURL);
+        setClimbImageUrl(loadedClimbImageUrl);
+        const setterImageUrl = await loadImageUrl('profile photos/marcial.png');
+        setSetterImageUrl(setterImageUrl);
+      } catch (error) {
+        console.error("Error loading images: ", error);
+      }
+    };
+      loadImages();
   }, [climbData.images]);
 
   useEffect(() => {
     const fetchTapCount = async () => {
       try {
-        const tapQuerySnapshot = await firestore()
-          .collection('taps')
-          .where('climb', '==', climbData.id)
-          .get();
-        setTapCount(tapQuerySnapshot.size);
+        const tapCount = await getTaps(climbData);
+        setTapCount(tapCount);
       } catch (error) {
         console.error('Error fetching tap count:', error);
       }
@@ -65,18 +55,7 @@ function SetDetail(props) {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const querySnapshot = await getCommentsBySomeField('climb', climbData.id);
-        const comments = [];
-        querySnapshot.forEach(doc => {
-          const commentData = doc.data();
-          comments.push({
-            id: doc.id,
-            explanation: commentData.explanation,
-            rating: commentData.rating,
-            timestamp: commentData.timestamp
-          });
-        });
-        comments.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+        const comments = await getComments(climbData);
         setFeedbackList(comments);
       } catch (error) {
         console.error('Error fetching comments:', error);
@@ -85,15 +64,6 @@ function SetDetail(props) {
     fetchComments();
   }, [climbData.id]);
 
-  const renderRating = (rating) => {
-    return '⭐️'.repeat(rating);
-  };
-
-  const navigateToSetConfig = () => {
-    navigation.navigate('ClimbInputData', { climbData, editMode: true });
-  };
-
-
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -101,7 +71,7 @@ function SetDetail(props) {
           <SafeAreaView />
           {(role === 'setter' ?
             <View style={styles.buttonContainer}>
-              <Button style={{}} title='edit' onPress={navigateToSetConfig}></Button>
+              <Button style={{}} title='edit' onPress={() => navigateToSetConfig(navigation, climbData)}></Button>
             </View>
             : null
           )}
@@ -134,7 +104,7 @@ function SetDetail(props) {
               feedbackList.map((comment, index) => (
                 <View key={index} style={styles.commentContainer}>
                   <Text style={styles.commentText}>{comment.explanation}</Text>
-                  <Text style={styles.commentRating}>{renderRating(comment.rating)}</Text>
+                  <Text style={styles.commentRating}>{() => renderRating(comment.rating)}</Text>
                 </View>
               ))
             ) : (
@@ -177,6 +147,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 15,
     fontSize: 17.57,
+    color: 'black',
   },
 
   topLeft: {
@@ -228,6 +199,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
+    color: 'black',
   },
   countBox: {
     marginTop: 15,
@@ -249,18 +221,21 @@ const styles = StyleSheet.create({
     marginTop: 15,
     alignSelf: 'flex-start',
     marginLeft: 30,
+    color: 'black',
 
   },
   subheading: {
     fontWeight: '700',
     fontSize: 20,
     textAlign: 'left',
+    color: 'black',
   },
   info: {
     marginTop: 5,
     fontSize: 16,
     textAlign: 'left',
     marginBottom: 10,
+    color: 'black',
   },
   buttonContainer: {
     width: '100%', // take full width
@@ -273,15 +248,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
     flex: 1,
+    color: 'black',
   },
   feedbackTitle: {
     fontWeight: 'bold',
     fontSize: 18,
     marginBottom: 5,
     marginTop: 15,
+    color: 'black',
   },
   noFeedback: {
     marginTop: 15,
+    color: 'black',
   },
   commentContainer: {
     flexDirection: 'row',
@@ -291,11 +269,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
+    color: 'black',
   },
   commentRating: {
     fontWeight: 'bold',
     marginLeft: 10,
     marginRight: 7,
+    color: 'black',
 
   },
 })
