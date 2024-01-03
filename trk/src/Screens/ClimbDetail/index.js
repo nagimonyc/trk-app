@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, But
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { AuthContext } from '../../Utils/AuthContext';
-
+import { fetchClimbData, getTapDetails, loadImageUrl, updateTap, archiveTap, handleUpdate, onShare, onFeedback, onDefinition, getSelectedIndex} from '../ClimbDetail_Backend/ClimbDetailLogic';
 
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
@@ -32,38 +32,16 @@ function ClimbDetail(props) {
     if (isFromHome && climbId) {
       async function fetchData() {
         try {
-          const climbDataResult = await ClimbsApi().getClimb(climbId);
-          if (climbDataResult && climbDataResult._data) {
-            setClimbData(climbDataResult._data);
-            console.log("Fetched climb data:", climbDataResult._data);
-
-            if (currentUser.uid !== climbDataResult._data.setter) {
-              const { addTap } = TapsApi();
-              const tap = {
-                climb: climbId,
-                user: currentUser.uid,
-                timestamp: new Date(),
-                completion: 0,
-                attempts: '',
-                witness1: '',
-                witness2: '',
-              };
-              const documentReference = await addTap(tap);
-              setTapId(documentReference.id); // Set tapId only when navigating from home
-            }
-          } else {
-            Alert.alert(
-              "Error",
-              "Climb data not found.",
-              [{ text: "OK", onPress: () => navigation.goBack() }],
-              { cancelable: false }
-            );
+          const { climbData, tapId } = await fetchClimbData(climbId, currentUser);
+          setClimbData(climbData);
+          if (tapId) {
+            setTapId(tapId);
           }
         } catch (error) {
-          console.error('Error fetching climb data:', error);
+          console.error('Error:', error);
           Alert.alert(
             "Error",
-            "Failed to load climb data.",
+            error,
             [{ text: "OK", onPress: () => navigation.goBack() }],
             { cancelable: false }
           );
@@ -78,9 +56,9 @@ function ClimbDetail(props) {
   useEffect(() => {
     const fetchData = async () => {
       if (props.route.params.profileCheck && tapId) {
-        const { getTap } = TapsApi();
+        //const { getTap } = TapsApi();
         try {
-          const tap = (await getTap(tapId)).data();  // Using await here
+          const tap = await getTapDetails(tapId)  // Using await here
           let stringCompletion;
           if (tap.completion === 0.5) {
             stringCompletion = 'Zone'
@@ -118,145 +96,31 @@ function ClimbDetail(props) {
 
 
   useEffect(() => {
-    // Function to load the image URL from Firebase Storage
-    const loadImage = (imagePath) => {
-      storage().ref(imagePath).getDownloadURL()
-        .then((url) => {
-          setClimbImageUrl(url);
-        })
-        .catch((error) => {
-          console.error("Error getting image URL: ", error);
-        });
-    };
+    const loadImages = async () => {
+        try {
+            // Default image path
+            let climbImageURL = 'climb photos/the_crag.png'; 
 
-    if (climbData && climbData.images && climbData.images.length > 0) {
-      // Load the latest climb image
-      const latestImageRef = climbData.images[climbData.images.length - 1];
-      loadImage(latestImageRef.path);
-    } else {
-      // Load the default image from Firebase Storage
-      loadImage('climb photos/the_crag.png');
-    }
+            // If there is climb data and images are available, use the latest image
+            if (climbData && climbData.images && climbData.images.length > 0) {
+                const latestImageRef = climbData.images[climbData.images.length - 1];
+                climbImageURL = latestImageRef.path;
+            }
 
-    // Load the setter image (same logic as before)
-    const setterReference = storage().ref('profile photos/marcial.png');
-    setterReference.getDownloadURL()
-      .then((url) => {
-        setSetterImageUrl(url);
-      })
-      .catch((error) => {
-        console.error("Error getting setter image URL: ", error);
-      });
-  }, [climbData]);
+            // Load climb image
+            const loadedClimbImageUrl = await loadImageUrl(climbImageURL);
+            setClimbImageUrl(loadedClimbImageUrl);
 
-
-  const handleUpdate = async () => {
-
-    let numericCompletion;
-    if (completion === 'Zone') {
-      numericCompletion = 0.5;
-    } else if (completion === 'Top') {
-      numericCompletion = 1;
-    }
-
-    let numericAttempts;
-    if (attempts === '⚡️') {
-      numericAttempts = 1;
-    } else {
-      numericAttempts = parseInt(attempts, 10); // Convert to integer if it's not the flash emoji
-    }
-
-    const updatedTap = {
-      completion: numericCompletion,
-      attempts: numericAttempts,
-      witness1: witness1,
-      witness2: witness2,
-    };
-    try {
-      const { updateTap } = TapsApi();
-      await updateTap(tapId, updatedTap);
-      Alert.alert("Success", "Tap has been updated");
-    } catch (error) {
-      Alert.alert("Error", "Couldn't update tap");
-    }
-  }
-
-  const onShare = async () => {
-    try {
-      // Gather climb information
-      const climbName = climbData.name;
-      const climbGrade = climbData.grade;
-
-      // Format the share message
-      const message = `Check out this climb I did on Nagimo.\n\n` +
-        `Name: ${climbName}\n` +
-        `Grade: ${climbGrade}\n` +
-        `Location: Palladium\n\n`;
-
-      // Share the message
-      const result = await Share.share({
-        message: message,
-      });
-
-      // Additional logic based on the share result
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
+            // Load setter image
+            const setterImageUrl = await loadImageUrl('profile photos/marcial.png');
+            setSetterImageUrl(setterImageUrl);
+        } catch (error) {
+            console.error("Error loading images: ", error);
         }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error) {
-      Alert.alert(error.message);
-    }
-  };
-
-  const archiveTap = async () => {
-        Alert.alert(
-            "Delete Tap",
-            "Do you really want to delete this tap?",
-            [
-                {
-                    text: "Cancel",
-                    onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel"
-                },
-                { 
-                    text: "Yes", 
-                    onPress: async () => {
-                        try {
-                            await TapsApi().updateTap(tapId, { archived: true });
-                            Alert.alert("Tap Deleted", "The tap has been successfully deleted.");
-                            props.navigation.goBack();
-                        } catch (error) {
-                            console.error("Error deleting tap:", error);
-                            Alert.alert("Error", "Could not delete tap.");
-                        }
-                    } 
-                }
-            ]
-        );
     };
 
-
-
-  const onFeedback = async () => {
-    navigation.navigate('Feedback', { climbName: climbData.name, climbGrade: climbData.grade, climbId: climbId })
-  };
-
-  const onDefinition = (descriptor) => {
-    navigation.navigate('Definition', { descriptor: descriptor });
-  };
-
-  const getSelectedIndex = (value) => {
-    if (value === '⚡️') {
-      return 0;  // '⚡️' represents a '1', so return 0 for the index
-    } else {
-      return parseInt(value, 10) - 1;
-    }
-  };
+    loadImages();
+    }, [climbData]);
 
   if (isLoading || !climbData) {
     return (
@@ -345,7 +209,7 @@ function ClimbDetail(props) {
                 <Button
                   title="Update"
                   disabled={!witness1 || !witness2 || !completion || !attempts}
-                  onPress={handleUpdate}
+                  onPress={() => handleUpdate(completion, attempts, witness1, witness2, tapId)}
                 >
 
                 </Button>
@@ -382,7 +246,7 @@ function ClimbDetail(props) {
                   <TouchableOpacity
                     key={index}
                     style={styles.descriptorButton}
-                    onPress={() => onDefinition(descriptor)}
+                    onPress={() => onDefinition(navigation, descriptor)}
                     activeOpacity={0.6}
                   >
                     <Text style={styles.descriptorText}>{descriptor}</Text>
@@ -395,10 +259,10 @@ function ClimbDetail(props) {
 
               <View style={{ marginTop: 20 }}>
                 <View style={styles.button}>
-                  <Button title='Review this climb' onPress={onFeedback} />
+                  <Button title='Review this climb' onPress={() => onFeedback(navigation, climbData, climbId)} />
                 </View>
                 <View style={styles.button}>
-                  <Button title='Share' onPress={onShare} />
+                  <Button title='Share' onPress={() => onShare(climbData)} />
                 </View>
               </View>
               {climbData.info && (
@@ -409,7 +273,7 @@ function ClimbDetail(props) {
               )}
               {role == 'climber' && <>
                 <View style={styles.button}>
-                <Button title='Delete Tap' onPress={archiveTap} color="black" />
+                <Button title='Delete Tap' onPress={() => archiveTap(navigation, tapId)} color="black" />
                 </View>
                 </>}
             </View>
@@ -451,6 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 17.57,
     flexWrap: 'wrap',
     maxWidth: '60%',
+    color: 'black',
   },
 
   topLeft: {
