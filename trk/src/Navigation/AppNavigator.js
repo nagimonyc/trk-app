@@ -134,7 +134,7 @@ function RecordStack() {
       <Stack.Screen
         name="Detail"
         component={ClimbDetailScreen}
-        options={{ title: 'Climb Detail', headerBackTitle: 'Home', headerTitleAlign: 'center' }}
+        options={{ title: 'Climb Detail', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Feedback"
