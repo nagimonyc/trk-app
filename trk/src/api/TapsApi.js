@@ -1,5 +1,6 @@
 import firebase from "@react-native-firebase/app";
 import "@react-native-firebase/firestore";
+import moment from "moment-timezone";
 
 function TapsApi() {
 
@@ -47,6 +48,16 @@ function TapsApi() {
         return await tapRef.update(updatedTap);
     }
 
+    async function getTapsByClimbAndDate(climbId, date) {
+        const startOfDay = moment(date).startOf('day').toDate();
+        const endOfDay = moment(date).endOf('day').toDate();
+        return ref.where('climb', '==', climbId)
+                .where('timestamp', '>=', startOfDay)
+                .where('timestamp', '<=', endOfDay)
+                .get();
+    }
+
+
     return {
         addTap,
         getTap,
@@ -55,7 +66,8 @@ function TapsApi() {
         getTapsBySomeField,
         getTopTenTaps,
         updateTap,
-        onLatestFourTapsUpdate
+        onLatestFourTapsUpdate,
+        getTapsByClimbAndDate
     };
 }
 

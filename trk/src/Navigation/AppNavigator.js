@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'react-native';
 import { Button } from 'react-native-paper';
-import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
 import CompRanking from '../Screens/CompRanking';
 import HomeScreen from '../Screens/Home';
@@ -20,6 +20,7 @@ import FeedbackForm from '../Screens/FeedbackForm';
 import DeveloperFeedbackForm from '../Screens/DeveloperFeedbackForm';
 import GlossaryDefinition from '../Screens/GlossaryDefinition';
 import GymDaily from '../Screens/GymDaily';
+import LiveClimbTracker from '../Screens/LiveClimbTracker';
 
 
 const Stack = createStackNavigator();
@@ -33,6 +34,11 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
   </TouchableOpacity>
 );
 
+const TrackerButton = ({ onPress, title, navigation }) => (
+  <TouchableOpacity onPress={() => navigation.navigate('Climbs_Tracker')} style={styles.button_tracker}>
+    <Text style={styles.text_tracker}>{title}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   button: {
@@ -43,8 +49,20 @@ const styles = StyleSheet.create({
     borderColor: '#4c6a78',
     borderWidth: 1
   },
+  button_tracker: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    borderColor: '#fe8100',
+    borderWidth: 1
+  },
   text: {
     color: '#4c6a78',
+    textAlign: 'center',
+  },
+  text_tracker: {
+    color: '#fe8100',
     textAlign: 'center',
   }
 });
@@ -86,10 +104,15 @@ function HomeStack() {
           title: 'Home', 
           headerBackTitleVisible: null,
           headerRight: () => (
+            <View style={{display: 'flex', flexDirection: 'row'}}>
+            <TrackerButton 
+            title="Tracker"
+            navigation={navigation}/>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
             />
+            </View>
           ),
         })}
       />
@@ -97,6 +120,11 @@ function HomeStack() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Detail"
@@ -128,10 +156,15 @@ function ProfileStack() {
           title: 'Profile', 
           headerBackTitleVisible: false,
           headerRight: () => (
+            <View style={{display: 'flex', flexDirection: 'row'}}>
+            <TrackerButton 
+            title="Tracker"
+            navigation={navigation}/>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
             />
+            </View>
           ),
         })}
       />
@@ -140,6 +173,11 @@ function ProfileStack() {
               component={DeveloperFeedbackForm}
               options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
             />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
+      />
       <Stack.Screen
         name="Detail"
         component={ClimbDetailScreen}
@@ -183,10 +221,15 @@ function AnalyticsStack() {
           title: 'My Gym', 
           headerBackTitleVisible: false,
           headerRight: () => (
+            <View style={{display: 'flex', flexDirection: 'row'}}>
+            <TrackerButton 
+            title="Tracker"
+            navigation={navigation}/>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
             />
+            </View>
           ),
         })}
       />
@@ -194,6 +237,11 @@ function AnalyticsStack() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Climber_Performance"
@@ -214,10 +262,15 @@ function ClimbInputStackScreen() {
         component={ClimbInputData}
         options={({ navigation }) => ({ 
           headerRight: () => (
+            <View style={{display: 'flex', flexDirection: 'row'}}>
+            <TrackerButton 
+            title="Tracker"
+            navigation={navigation}/>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
             />
+            </View>
           ),
         })}
       />
@@ -225,6 +278,11 @@ function ClimbInputStackScreen() {
         name="Developer_Feedback" 
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center'}}
+      />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
     </ClimbInputStack.Navigator>
   );
