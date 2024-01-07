@@ -17,7 +17,7 @@ const LiveClimbTracker = () => {
 
     const [openGymPicker, setOpenGymPicker] = useState(false);
     const [openClimbPicker, setOpenClimbPicker] = useState(false);
-    const currentDate = moment.tz({ year: 2023, month: 11, day: 12 }, 'America/New_York');
+    const currentDate = moment().tz('America/New_York');
     const [activeDate, setActiveDate] = useState(currentDate);
     
     const [reloadTrigger, setReloadTrigger] = useState(false);
