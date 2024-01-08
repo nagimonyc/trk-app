@@ -53,6 +53,11 @@ const ClimberProfile = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
+                <View style={styles.greeting}>
+                <Text style={styles.greeting_text}>
+                    Hi <Text style={{color: 'black'}}>{currentUser && currentUser.email ? currentUser.email.split('@')[0] : ''}</Text> 🖖
+                </Text>
+                </View>
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Activity</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
@@ -174,7 +179,18 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontSize: 16
+    },
+    greeting: {
+        display: 'flex',
+        paddingTop: 20,
+        paddingHorizontal: 20
+        
+    },
+    greeting_text: {
+        color: 'black',
+        fontSize: 20,
     }
+
 });
 
 export default ClimberProfile;
