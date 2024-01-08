@@ -158,9 +158,6 @@ function ProfileStack() {
           headerBackTitleVisible: false,
           headerRight: () => (
             <View style={{display: 'flex', flexDirection: 'row'}}>
-            <TrackerButton 
-            title="Tracker"
-            navigation={navigation}/>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
@@ -173,11 +170,6 @@ function ProfileStack() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
-      />
-      <Stack.Screen
-        name="Climbs_Tracker"
-        component={LiveClimbTracker}
-        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Detail"
@@ -223,9 +215,6 @@ function AnalyticsStack() {
           headerBackTitleVisible: false,
           headerRight: () => (
             <View style={{display: 'flex', flexDirection: 'row'}}>
-            <TrackerButton 
-            title="Tracker"
-            navigation={navigation}/>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
@@ -238,11 +227,6 @@ function AnalyticsStack() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
-      />
-      <Stack.Screen
-        name="Climbs_Tracker"
-        component={LiveClimbTracker}
-        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Climber_Performance"
@@ -264,9 +248,6 @@ function ClimbInputStackScreen() {
         options={({ navigation }) => ({
           headerRight: () => (
             <View style={{display: 'flex', flexDirection: 'row'}}>
-            <TrackerButton 
-            title="Tracker"
-            navigation={navigation}/>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
@@ -279,11 +260,6 @@ function ClimbInputStackScreen() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
-      />
-      <Stack.Screen
-        name="Climbs_Tracker"
-        component={LiveClimbTracker}
-        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
     </ClimbInputStack.Navigator>
   );
