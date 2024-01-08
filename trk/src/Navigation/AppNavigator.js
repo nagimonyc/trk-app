@@ -22,6 +22,7 @@ import DeveloperFeedbackForm from '../Screens/NavScreens/DeveloperFeedbackForm/F
 import GlossaryDefinition from '../Screens/NavScreens/GlossaryDefinition';
 import GymDaily from '../Screens/TabScreens/GymAnalytics/GymDaily/Frontend';
 import LiveClimbTracker from '../Screens/LiveClimbTracker';
+import RecordScreen from '../Screens/TabScreens/Record/Frontend';
 
 
 const Stack = createStackNavigator();
@@ -128,9 +129,41 @@ function HomeStack() {
         options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
+        name="Feedback"
+        component={FeedbackForm}
+        options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function RecordStack() {
+  console.log('[TEST] HomeStack called');
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="RecordPage_stack"
+        component={RecordScreen}
+        options={({ navigation }) => ({
+          title: 'Record',
+          headerBackTitleVisible: null,
+          headerRight: () => (
+            <FeedbackButton
+              title="Feedback"
+              navigation={navigation}
+            />
+          ),
+        })}
+      />
+      <Stack.Screen
+        name="Developer_Feedback"
+        component={DeveloperFeedbackForm}
+        options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
         name="Detail"
         component={ClimbDetailScreen}
-        options={{ title: 'Climb Detail', headerBackTitle: 'Home', headerTitleAlign: 'center' }}
+        options={{ title: 'Climb Detail', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Feedback"
@@ -305,6 +338,24 @@ function AppTabs() {
             },
           }}
         />}
+      <Tab.Screen
+        name="Record"
+        component={RecordStack}
+        options={{
+          title: 'Record',
+          headerShown: false,
+
+          // To be completed by @abhipi or @redpepper-nag
+
+          // tabBarIcon: ({ size, focused, color }) => {
+          //   return (
+          //     <Image
+          //       style={{ width: size, height: size }}
+          //       source={require('../../assets/record.png')}
+          //     />
+          //   );
+        }}
+      />
       <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
