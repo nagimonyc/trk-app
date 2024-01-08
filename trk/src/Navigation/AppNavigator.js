@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'react-native';
 import { Button } from 'react-native-paper';
-import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
 import CompRanking from '../Screens/TabScreens/GymAnalytics/CompRanking/Frontend';
 import HomeScreen from '../Screens/TabScreens/Home/Frontend';
@@ -16,10 +16,12 @@ import { AuthContext } from '../Utils/AuthContext';
 import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/NavScreens/Set/Frontend';
 import Settings from '../Components/Settings';
+
 import FeedbackForm from '../Screens/NavScreens/FeedbackForm/Frontend';
 import DeveloperFeedbackForm from '../Screens/NavScreens/DeveloperFeedbackForm/Frontend';
 import GlossaryDefinition from '../Screens/NavScreens/GlossaryDefinition';
 import GymDaily from '../Screens/TabScreens/GymAnalytics/GymDaily/Frontend';
+import LiveClimbTracker from '../Screens/LiveClimbTracker';
 import RecordScreen from '../Screens/TabScreens/Record/Frontend';
 
 
@@ -34,6 +36,11 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
   </TouchableOpacity>
 );
 
+const TrackerButton = ({ onPress, title, navigation }) => (
+  <TouchableOpacity onPress={() => navigation.navigate('Climbs_Tracker')} style={styles.button_tracker}>
+    <Text style={styles.text_tracker}>{title}</Text>
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   button: {
@@ -44,8 +51,20 @@ const styles = StyleSheet.create({
     borderColor: '#4c6a78',
     borderWidth: 1
   },
+  button_tracker: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    borderColor: '#fe8100',
+    borderWidth: 1
+  },
   text: {
     color: '#4c6a78',
+    textAlign: 'center',
+  },
+  text_tracker: {
+    color: '#fe8100',
     textAlign: 'center',
   }
 });
@@ -87,10 +106,15 @@ function HomeStack() {
           title: 'Home',
           headerBackTitleVisible: null,
           headerRight: () => (
+            <View style={{display: 'flex', flexDirection: 'row'}}>
+            <TrackerButton 
+            title="Tracker"
+            navigation={navigation}/>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
             />
+            </View>
           ),
         })}
       />
@@ -98,6 +122,11 @@ function HomeStack() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Feedback"
@@ -161,10 +190,12 @@ function ProfileStack() {
           title: 'Profile',
           headerBackTitleVisible: false,
           headerRight: () => (
+            <View style={{display: 'flex', flexDirection: 'row'}}>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
             />
+            </View>
           ),
         })}
       />
@@ -216,10 +247,12 @@ function AnalyticsStack() {
           title: 'My Gym',
           headerBackTitleVisible: false,
           headerRight: () => (
+            <View style={{display: 'flex', flexDirection: 'row'}}>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
             />
+            </View>
           ),
         })}
       />
@@ -247,10 +280,12 @@ function ClimbInputStackScreen() {
         component={ClimbInputData}
         options={({ navigation }) => ({
           headerRight: () => (
+            <View style={{display: 'flex', flexDirection: 'row'}}>
             <FeedbackButton
               title="Feedback"
               navigation={navigation}
             />
+            </View>
           ),
         })}
       />
