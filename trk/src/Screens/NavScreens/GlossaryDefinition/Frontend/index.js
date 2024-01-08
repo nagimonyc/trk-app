@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, ScrollView, SafeAreaView, StyleSheet, Image } from "react-native";
-import DescriptorsApi from "../../../api/DescriptorsApi";
+import DescriptorsApi from "../../../../api/DescriptorsApi";
 import storage from '@react-native-firebase/storage';
 
 const GlossaryDefinition = ({ route }) => {

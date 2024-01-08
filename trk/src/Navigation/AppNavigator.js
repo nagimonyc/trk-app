@@ -19,7 +19,7 @@ import Settings from '../Components/Settings';
 
 import FeedbackForm from '../Screens/NavScreens/FeedbackForm/Frontend';
 import DeveloperFeedbackForm from '../Screens/NavScreens/DeveloperFeedbackForm/Frontend';
-import GlossaryDefinition from '../Screens/NavScreens/GlossaryDefinition';
+import GlossaryDefinition from '../Screens/NavScreens/GlossaryDefinition/Frontend';
 import GymDaily from '../Screens/TabScreens/GymAnalytics/GymDaily/Frontend';
 import LiveClimbTracker from '../Screens/LiveClimbTracker';
 import RecordScreen from '../Screens/TabScreens/Record/Frontend';
@@ -106,14 +106,14 @@ function HomeStack() {
           title: 'Home',
           headerBackTitleVisible: null,
           headerRight: () => (
-            <View style={{display: 'flex', flexDirection: 'row'}}>
-            <TrackerButton 
-            title="Tracker"
-            navigation={navigation}/>
-            <FeedbackButton
-              title="Feedback"
-              navigation={navigation}
-            />
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <TrackerButton
+                title="Tracker"
+                navigation={navigation} />
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
             </View>
           ),
         })}
@@ -190,11 +190,11 @@ function ProfileStack() {
           title: 'Profile',
           headerBackTitleVisible: false,
           headerRight: () => (
-            <View style={{display: 'flex', flexDirection: 'row'}}>
-            <FeedbackButton
-              title="Feedback"
-              navigation={navigation}
-            />
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
             </View>
           ),
         })}
@@ -247,11 +247,11 @@ function AnalyticsStack() {
           title: 'My Gym',
           headerBackTitleVisible: false,
           headerRight: () => (
-            <View style={{display: 'flex', flexDirection: 'row'}}>
-            <FeedbackButton
-              title="Feedback"
-              navigation={navigation}
-            />
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
             </View>
           ),
         })}
@@ -280,11 +280,11 @@ function ClimbInputStackScreen() {
         component={ClimbInputData}
         options={({ navigation }) => ({
           headerRight: () => (
-            <View style={{display: 'flex', flexDirection: 'row'}}>
-            <FeedbackButton
-              title="Feedback"
-              navigation={navigation}
-            />
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
             </View>
           ),
         })}
