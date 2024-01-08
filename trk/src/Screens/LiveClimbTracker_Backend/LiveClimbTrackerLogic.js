@@ -9,6 +9,8 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
     const {fetchGyms} = GymsApi();
     const {getClimbsBySomeField} = ClimbsApi();
     const {getTapsBySomeField, getTapsByClimbAndDate} = TapsApi();
+    
+    const [defaultSelected, setdefaultSelected] = useState(null);
 
     const [gyms, setGyms] = useState([]);
     const [climbs, setClimbs] = useState([]);
@@ -23,8 +25,11 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
     useEffect(() => {
         async function fetchGymData() {
             const gymsData = await fetchGyms();
-            const formattedGyms = gymsData.map(doc => ({ label: doc.data().Name, value: doc.id, location: doc.data().Location}));
+            const formattedGyms = gymsData.map(doc => ({ label: doc.data().Name, value: doc.id, location: doc.data().Location})).filter(gym => gym !== null && gym.label === 'Movement LIC');
             setGyms(formattedGyms);
+            if (formattedGyms && formattedGyms.length > 0) {
+                setdefaultSelected(formattedGyms[0].value);
+            }
         }
         fetchGymData();
     }, []);
@@ -90,7 +95,7 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
         }
     }, [climbs, reloadFlag, selectedDate]);  //Also run when date changes
     
-    return { gyms, climbs, taps, loading, formattedTaps };
+    return { gyms, climbs, taps, loading, formattedTaps, defaultSelected};
 }
 
 export default usePopularTimesData;

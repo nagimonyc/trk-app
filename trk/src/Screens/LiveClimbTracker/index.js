@@ -27,7 +27,7 @@ const LiveClimbTracker = () => {
 
     const [selectedGymId, setSelectedGymId] = useState(null);
     const [selectedClimbId, setSelectedClimbId] = useState(null);
-    const { gyms, climbs, taps, loading, formattedTaps } = usePopularTimesData(selectedGymId, selectedClimbId, reloadTrigger, activeDate);
+    const { gyms, climbs, taps, loading, formattedTaps, defaultSelected} = usePopularTimesData(selectedGymId, selectedClimbId, reloadTrigger, activeDate);
 
     // Logic for the live line position
     const chartWidth = Dimensions.get('window').width - 60;
@@ -98,6 +98,10 @@ const LiveClimbTracker = () => {
         return () => clearInterval(intervalId); // Clean up the interval
     }, [selectedGymId, reloadTrigger]);
 
+    useEffect(() => {
+        setSelectedGymId(defaultSelected);
+    }, [defaultSelected]);
+
     //To change based on calendar strip date.
     const fetchGraph = (date) => {
         console.log('Fetching: ', date);
@@ -111,11 +115,11 @@ const LiveClimbTracker = () => {
             <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: '100%', marginBottom: 40}}>
             <DropDownPicker
                 open={openGymPicker}
-                value={selectedGymId}
+                value={defaultSelected}
                 items={gyms}
                 setOpen={setOpenGymPicker}
                 setValue={setSelectedGymId}
-                placeholder="Select a Gym"
+                placeholder="Movement LIC"
                 style={{ height: 40}}
                 containerStyle={{width: '80%', marginRight: 30}}
             />
