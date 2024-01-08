@@ -16,7 +16,7 @@ function ClimbsApi() {
     }
 
     function getClimbsBySomeField(field, value) {
-        return ref.where(field, '==', value).get();
+        return ref.where(field, '==', value).orderBy('timestamp','desc').get();
     }
 
     function updateClimb(climbId, updatedClimb) {

@@ -29,7 +29,7 @@ function TapsApi() {
 
     // Get taps with some specific field value
     function getTapsBySomeField(field, value) {
-        return ref.where(field, '==', value).get();
+        return ref.where(field, '==', value).orderBy('timestamp','desc').get();
     }
 
     // Get top 10 most recent taps
