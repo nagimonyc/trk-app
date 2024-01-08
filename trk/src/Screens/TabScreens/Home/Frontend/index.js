@@ -1,6 +1,4 @@
 import { Text, View, StyleSheet, Image } from 'react-native';
-import NfcManager from 'react-native-nfc-manager';
-import AndroidPrompt from '../../../../Components/AndroidPrompt';
 import TapHistory from '../../../../Components/TapHistory';
 import useHomeScreenLogic from '../Backend/HomeScreenLogic';
 
@@ -8,8 +6,6 @@ function HomeScreen(props) {
     console.log('[TEST] HomeScreen called');
     const {
         climbsHistory,
-        androidPromptRef,
-        logo
     } = useHomeScreenLogic(props);
     return (
         <>
@@ -25,8 +21,6 @@ function HomeScreen(props) {
                     <TapHistory climbsHistory={climbsHistory} fromHome={true} />
                 </View>
             </View >
-            {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null
-            }
         </>
     );
 }
