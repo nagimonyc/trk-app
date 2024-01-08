@@ -49,7 +49,7 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
     if (fromHome) {
         return (
             <View>
-                <ListItemContainer dotStyle={styles.climbDot}>
+                <ListItemContainer dotStyle={styles.climbDot} grade={climb.grade}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.timerInfo}>
                         <Text>{tapTimestamp}</Text>
@@ -61,7 +61,7 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
     else {
         return (
             <TouchableOpacity onPress={role === 'climber' ? navigateToDetail : navigateToSet}>
-                <ListItemContainer dotStyle={styles.climbDot}>
+                <ListItemContainer dotStyle={styles.climbDot} grade={climb.grade}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.setterDot}>
                         {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
@@ -74,12 +74,16 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
 
 const styles = StyleSheet.create({
     climbDot: {
-        width: 30,
-        height: 30,
+        width: 'auto',
+        height: 'auto',
         borderRadius: 15,
-        backgroundColor: '#C73B3B',
+        backgroundColor: 'white',
+        color: 'black',
+        borderColor: '#fe8100',
+        borderWidth: 1,
         marginRight: 8,
         marginLeft: 10,
+        padding: 8
     },
     climbName: {
         fontWeight: '700',
