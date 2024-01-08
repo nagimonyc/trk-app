@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { Text } from 'react-native-paper';
 
-const ListItemContainer = ({ children, showDot = true, dotStyle = {} }) => {
+const ListItemContainer = ({ children, showDot = true, dotStyle = {}, grade}) => {
     return (
         <View style={styles.container}>
-            {showDot && <View style={[styles.defaultDot, dotStyle]} />}
+            {showDot && <Text style={[styles.defaultDot, dotStyle]}>{grade}</Text>}
             {children}
         </View>
     );
