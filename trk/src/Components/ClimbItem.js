@@ -5,6 +5,13 @@ import { AuthContext } from '../Utils/AuthContext';
 import storage from '@react-native-firebase/storage';
 import ListItemContainer from './ListItemContainer';
 import TapsApi from '../api/TapsApi';
+import Svg, { Path } from 'react-native-svg';
+
+const RightArrow = () => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <Path d="M9 18l6-6-6-6" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </Svg>
+);
 
 const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
     console.log('[TEST] ClimbItem called');
@@ -64,7 +71,7 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
                 <ListItemContainer dotStyle={styles.climbDot}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.setterDot}>
-                        {imageURL && <Image source={{ uri: imageURL }} style={{ width: '100%', height: '100%' }} />}
+                        <RightArrow style={{ width: '100%', height: '100%' }} />
                     </View>
                 </ListItemContainer>
             </TouchableOpacity>
