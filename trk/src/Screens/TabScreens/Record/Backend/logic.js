@@ -125,7 +125,9 @@ export const useHomeScreenLogic = (props) => {
         } else {
             return (
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.tapText}>Tap to Track</Text>
+                    <Text style={styles.tapText}>Completed a climb?</Text>
+                    <Text style={styles.celebration}>🎉🎉🎉</Text>
+                    <Text style={styles.instructions}>Tap below to save your achievement</Text>
                     <TouchableOpacity style={styles.button} onPress={identifyClimb}>
                         <Image source={logo} style={styles.image} resizeMode="contain" />
                     </TouchableOpacity>
@@ -152,19 +154,35 @@ const styles = StyleSheet.create({
         marginTop: 15,
     },
     tapText: {
-        marginTop: 50,
+        marginTop: 100,
         textAlign: 'center',
         color: 'black',
         fontSize: 25,
         marginBottom: 10,
         fontWeight: '600',
     },
+  celebration: {
+        marginTop: 20,
+        textAlign: 'center',
+        color: 'black',
+        fontSize: 20,
+        marginBottom: 10,
+    },
+  instructions: {
+        marginTop: 30,
+        textAlign: 'center',
+        color: 'black',
+        fontSize: 20,
+        marginBottom: 10,
+        marginHorizontal: 40,
+    },
     button: {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10,
         borderRadius: 5,
-        color: 'black'
+        color: 'black',
+        marginTop: 50,
     }
 
 });
