@@ -128,13 +128,13 @@ const GymDaily = () => {
               <View style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.activeBigNumber}>{totalClimbs}</Text>
-                  <Text>Active Climbs</Text>
+                  <Text style={{color: 'black'}}>Active Climbs</Text>
                 </View>
               </View>
               <View style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{totalAscents}</Text>
-                  <Text>Total ascents</Text>
+                  <Text style={{color: 'black'}}>Total ascents</Text>
                 </View>
               </View>
             </View>
@@ -179,13 +179,13 @@ const GymDaily = () => {
               <View style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.time}>{peakTime}</Text>
-                  <Text>Most active time</Text>
+                  <Text style={{color: 'black'}}>Most active time</Text>
                 </View>
               </View>
               <View style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{latestAscents}</Text>
-                  <Text>Ascents since yesterday</Text>
+                  <Text style={{color: 'black'}}>Ascents since yesterday</Text>
                 </View>
               </View>
             </View>
@@ -263,9 +263,11 @@ const styles = StyleSheet.create({
   },
   rating: {
     marginBottom: 4,
+    color: 'black',
   },
   climbName: {
     marginBottom: 10,
+    color: 'black',
   },
   centeredContent: {
     alignItems: 'center',
@@ -275,6 +277,7 @@ const styles = StyleSheet.create({
   textBottom: {
     textAlign: 'center',
     marginBottom: 10,
+    color: 'black'
   },
 
 });

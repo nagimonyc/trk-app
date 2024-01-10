@@ -203,10 +203,12 @@ const styles = StyleSheet.create({
   },
   countBox: {
     marginTop: 15,
+    color: 'black',
   },
   count: {
     fontSize: 45,
-    fontWeight: '700'
+    fontWeight: '700',
+    color: 'black',
   },
   circleWrapper: {
     width: 100,  // or whatever width keeps your layout consistent

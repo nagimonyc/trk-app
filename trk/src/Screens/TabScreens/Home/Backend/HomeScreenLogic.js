@@ -54,20 +54,6 @@ export const useHomeScreenLogic = (props) => {
     return () => unsubscribe();
   }, []);
 
-
-  React.useEffect(() => {
-    console.log('[TEST] HomeScreen useEffect called');
-    async function checkNfc() {
-      const supported = await NfcManager.isSupported();
-      if (supported) {
-        await NfcManager.start();
-        setEnabled(await NfcManager.isEnabled());
-      }
-      setHasNfc(supported);
-    }
-    checkNfc();
-  }, []);
-
   return {
     climbsHistory,
     androidPromptRef,
