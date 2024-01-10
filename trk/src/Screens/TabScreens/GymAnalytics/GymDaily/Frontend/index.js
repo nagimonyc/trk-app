@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Text, View, ScrollView, SafeAreaView, StyleSheet } from "react-native";
+import { Text, View, ScrollView, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import { AuthContext } from '../../../../../Utils/AuthContext';
 import {
   fetchSetClimbs,
@@ -114,6 +114,10 @@ const GymDaily = () => {
     return starRating;
   };
 
+  const onClick = () => {
+    // onpress handler logic to navigate to databreakdown screen
+  }
+
 
   return (
     <ScrollView>
@@ -125,46 +129,46 @@ const GymDaily = () => {
           <View style={styles.boxCollection}>
 
             <View style={styles.row}>
-              <View style={styles.box}>
+            <TouchableOpacity style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.activeBigNumber}>{totalClimbs}</Text>
                   <Text>Active Climbs</Text>
-                </View>
               </View>
-              <View style={styles.box}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{totalAscents}</Text>
                   <Text>Total ascents</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.row}>
-              <View style={styles.box}>
+              <TouchableOpacity style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{mostCompleted.name}</Text>
                   <Text style={styles.routeGrade}>{mostCompleted.grade}</Text>
                 </View>
                 <Text style={styles.textBottom}>Most completed route</Text>
-              </View>
-              <View style={styles.box}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{highestRated.name}</Text>
                   <Text style={styles.routeGrade}>{highestRated.grade}</Text>
                 </View>
                 <Text style={styles.textBottom}>Highest rated climb</Text>
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.row}>
-              <View style={styles.box}>
+              <TouchableOpacity style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{leastCompleted.name}</Text>
                   <Text style={styles.routeGrade}>{leastCompleted.grade}</Text>
                 </View>
                 <Text style={styles.textBottom}>Least completed route</Text>
-              </View>
-              <View style={styles.box}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.feedback}>{latestFeedback.explanation}</Text>
                   <Text style={styles.rating}>{getStars(latestFeedback.rating)}</Text>
@@ -172,22 +176,22 @@ const GymDaily = () => {
                 </View>
                 <Text style={styles.textBottom}>Latest feedback</Text>
 
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.row}>
-              <View style={styles.box}>
+              <TouchableOpacity style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.time}>{peakTime}</Text>
                   <Text>Most active time</Text>
                 </View>
-              </View>
-              <View style={styles.box}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.box}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{latestAscents}</Text>
                   <Text>Ascents since yesterday</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
 
           </View>
