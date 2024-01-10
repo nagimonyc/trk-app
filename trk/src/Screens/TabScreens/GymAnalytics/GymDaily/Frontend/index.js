@@ -55,16 +55,16 @@ const GymDaily = () => {
           allTaps,
           peakTimeString,
           latestAscentsCount,
-          mostCompletedClimb,
-          leastCompletedClimb
+          mostCompletedClimbs,
+          leastCompletedClimbs
         } = await fetchTapsAndCalculateAscents(yourClimbs);
 
         setAscents(allTaps);
         setTotalAscents(totalTaps.toString());
         setLatestAscents(latestAscentsCount.toString());
         setPeakTime(peakTimeString);
-        setMostCompleted(mostCompletedClimb || { name: '', id: '', grade: '' });
-        setLeastCompleted(leastCompletedClimb || { name: '', id: '', grade: '' });
+        setMostCompleted(mostCompletedClimbs[0] || { name: '', id: '', grade: '' });
+        setLeastCompleted(leastCompletedClimbs[0] || { name: '', id: '', grade: '' });
       }
     };
 
