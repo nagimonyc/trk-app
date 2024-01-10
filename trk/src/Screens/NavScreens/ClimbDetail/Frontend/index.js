@@ -13,7 +13,7 @@ import { fetchClimbData, getTapDetails, loadImageUrl, updateTap, archiveTap, han
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
 
-  const { climbId, isFromHome } = props.route.params;
+  const { climbId, isFromHome} = props.route.params;
   const [climbData, setClimbData] = useState(props.route.params.climbData || null);
   const [isLoading, setIsLoading] = useState(isFromHome);
   const [climbImageUrl, setClimbImageUrl] = useState(null);
@@ -32,16 +32,16 @@ function ClimbDetail(props) {
     if (isFromHome && climbId) {
       async function fetchData() {
         try {
-          const { climbData, tapId } = await fetchClimbData(climbId, currentUser);
+          const { climbData, tapId } = await fetchClimbData(climbId, currentUser, role);
           setClimbData(climbData);
           if (tapId) {
             setTapId(tapId);
           }
         } catch (error) {
-          console.error('Error:', error);
+          console.log('Error caught:', error);
           Alert.alert(
             "Error",
-            error,
+            error.message,
             [{ text: "OK", onPress: () => navigation.goBack() }],
             { cancelable: false }
           );

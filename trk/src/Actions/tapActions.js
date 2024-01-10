@@ -2,15 +2,16 @@ import ClimbsApi from '../api/ClimbsApi';
 import TapsApi from '../api/TapsApi';
 import Toast from 'react-native-toast-message';
 
-export const processClimbId = (climbId, currentUser) => {
+export const processClimbId = (climbId, currentUser, role) => {
     return new Promise(async(resolve, reject) => {
       // To process the climbId
       console.log('Processing climbId:', climbId);
-      console.log('Current User: ', currentUser)
+      console.log('Current User: ', currentUser);
+      console.log('Current Role: ', role);
       try {
         const climbDataResult = await ClimbsApi().getClimb(climbId);
         if (climbDataResult && climbDataResult._data) {
-          if (currentUser.uid !== climbDataResult._data.setter) {
+          if (currentUser.uid !== climbDataResult._data.setter && role !== "setter") { //case for climbers (tap should log), else should not
             const { addTap } = TapsApi();
             const tap = {
               climb: climbId,
@@ -32,7 +33,7 @@ export const processClimbId = (climbId, currentUser) => {
             });
           } else {
             // Handle the case where currentUser.uid === climbDataResult._data.setter
-            console.log('The Setter is the user. Tap was not added');
+            console.log('The Setter is the user or this a Setter Account. Tap was not added');
             reject(new Error('User cannot log their own climb')); 
             Toast.show({
                 type: 'success',
@@ -47,7 +48,7 @@ export const processClimbId = (climbId, currentUser) => {
             });
         }
       } catch (error) {
-        console.error('Error processing climbId:', error);
+        //console.error('Error processing climbId:', error);
         reject(new Error('Firebase error'));
         Toast.show({
             type: 'error',
@@ -57,15 +58,15 @@ export const processClimbId = (climbId, currentUser) => {
     });
 };
 
-export const addClimb = (climbId, currentUser) => {
+export const addClimb = (climbId, currentUser, role) => {
     return {
       type: 'ADD_CLIMB',
-      payload: {climbId, currentUser},
+      payload: {climbId, currentUser, role},
       meta: {
         offline: {
-          effect: { climbId: climbId, currentUser: currentUser },
-          commit: { type: 'ADD_CLIMB_COMMIT', meta: {climbId, currentUser} },
-          rollback: { type: 'ADD_CLIMB_ROLLBACK', meta: {climbId, currentUser} }
+          effect: { climbId: climbId, currentUser: currentUser, role: role},
+          commit: { type: 'ADD_CLIMB_COMMIT', meta: {climbId, currentUser, role} },
+          rollback: { type: 'ADD_CLIMB_ROLLBACK', meta: {climbId, currentUser, role} }
         }
       }
     };
