@@ -1,8 +1,8 @@
 import React from "react";
 import { Platform, SafeAreaView, Text, StyleSheet, View, Image, Button, TouchableOpacity, Alert, ScrollView } from "react-native";
-import { AuthContext } from "../Utils/AuthContext";
-import TapHistory from "./TapHistory";
-import ClimbsApi from "../api/ClimbsApi";
+import { AuthContext } from "../../../../Utils/AuthContext";
+import TapHistory from "../../../../Components/TapHistory";
+import ClimbsApi from "../../../../api/ClimbsApi";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -47,7 +47,7 @@ const SetterProfile = ({ navigation }) => {
                         {
                             Platform.OS === 'android' ?
                                 <Icon name="settings" size={30} color="#3498db" /> :
-                                <Image source={require('../../assets/settings.png')} style={{ width: 30, height: 30 }} />
+                                <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
                         }
                     </TouchableOpacity>
                 </View>
