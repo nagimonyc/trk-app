@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image } from "react-native";
-import { AuthContext } from "../Utils/AuthContext";
-import TapHistory from "./TapHistory";
-import TapsApi from "../api/TapsApi";
-import ClimbsApi from "../api/ClimbsApi";
+import { AuthContext } from "../../../../Utils/AuthContext";
+import TapHistory from "../../../../Components/TapHistory";
+import TapsApi from "../../../../api/TapsApi";
+import ClimbsApi from "../../../../api/ClimbsApi";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -64,7 +64,7 @@ const ClimberProfile = ({ navigation }) => {
                         {
                             Platform.OS === 'android' ?
                                 <Icon name="settings" size={30} color="#3498db" /> :
-                                <Image source={require('../../assets/settings.png')} style={{ width: 30, height: 30 }} />
+                                <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
                         }
                     </TouchableOpacity>
                 </View>
