@@ -32,7 +32,6 @@ export const useHomeScreenLogic = (props) => {
             console.log("Is connected?", state.isConnected);
             if (state.isConnected) {
                 console.log('Navigating');
-                Alert.alert('Success', 'Climb saved to Profile.', [{ text: 'OK' }]);
                 navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
             } else {
                 dispatch(addClimb(climbId[0], currentUser));

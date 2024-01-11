@@ -36,6 +36,7 @@ function ClimbDetail(props) {
           setClimbData(climbData);
           if (tapId) {
             setTapId(tapId);
+            Alert.alert('Success', 'Climb saved to Profile.', [{ text: 'OK' }]);
           }
         } catch (error) {
           console.error('Error:', error);
