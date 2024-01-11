@@ -6,21 +6,33 @@ import moment from 'moment-timezone';
 
 // Helper function to format timestamp
 const formatTimestamp = (timestamp) => {
-    return moment(timestamp).format("Do MMM [starting at] h A");
+    //console.log(timestamp);
+    const formattedDate = moment(timestamp, 'YYYY-MM-DD HH:mm').tz('America/New_York').format('Do MMM [starting at] hA');
+    if (formattedDate === 'Invalid date') {
+        //console.error('Invalid date detected:', timestamp);
+        return 'Unknown Date';
+    }
+    return formattedDate;
 };
 
 
-// Helper function to group climbs by 4-hour ranges using Moment.js
+const convertTimestampToDate = (timestamp) => {
+    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+};
+
 const groupClimbsByTimestamp = (climbs) => {
     const grouped = {};
     climbs.forEach(climb => {
-        // Use Moment.js for date manipulation
-        const date = moment(climb.tapTimestamp).tz('America/New_York');
-        //console.log(date);
+        // Convert the timestamp to a standard JavaScript Date object
+        const date = moment(convertTimestampToDate(climb.timestamp)).tz('America/New_York');
+        
         // Round down the timestamp to the nearest 4 hours
-        const roundedDate = date.subtract(date.hour() % 4, 'hours').startOf('hour');
-        //console.log(roundedDate);
-        const key = roundedDate.valueOf(); // Use the adjusted timestamp as a key
+        const hours = date.hours();
+        const roundedHours = hours - (hours % 4);
+        const roundedDate = date.clone().hours(roundedHours).minutes(0).seconds(0).milliseconds(0);
+
+        const key = roundedDate.format('YYYY-MM-DD HH:mm'); // Formatted key
+        //console.log(key); // Debugging
         if (!grouped[key]) {
             grouped[key] = [];
         }
@@ -28,7 +40,6 @@ const groupClimbsByTimestamp = (climbs) => {
     });
     return grouped;
 };
-
 
 const SessionTapHistory = (props) => {
     console.log('[TEST] SessionTapHistory called');
@@ -39,11 +50,11 @@ const SessionTapHistory = (props) => {
             {Object.entries(groupedClimbs).map(([key, climbs]) => (
                 <View key={key}>
                     <Text style={{color: 'black', padding: 10, fontWeight: 'bold'}}>
-                        {`Session on ${formatTimestamp(Number(key))}`}
+                        {`Session on ${formatTimestamp(key)}`}
                     </Text>
                     <ListHistory
                         data={climbs}
-                        renderItem={(item) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={item.tapTimestamp} fromHome={props.fromHome} />}
+                        renderItem={(item) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={item.timestamp} fromHome={props.fromHome} />}
                         keyExtractor={(item, index) => index.toString()}
                     />
                 </View>
