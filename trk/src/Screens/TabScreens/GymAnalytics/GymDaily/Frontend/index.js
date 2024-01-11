@@ -8,7 +8,7 @@ import {
 } from '../Backend/analyticsCalculations';
 
 
-const GymDaily = () => {
+const GymDaily = ({navigation}) => {
 
   const [yourClimbs, setYourClimbs] = useState([]);
   const [yourComments, setYourComments] = useState([]);
@@ -114,8 +114,8 @@ const GymDaily = () => {
     return starRating;
   };
 
-  const onClick = () => {
-    // onpress handler logic to navigate to databreakdown screen
+  const onClick = (title) => {
+    navigation.navigate('Data Detail', title)
   }
 
 
@@ -129,13 +129,13 @@ const GymDaily = () => {
           <View style={styles.boxCollection}>
 
             <View style={styles.row}>
-            <TouchableOpacity style={styles.box}>
+            <TouchableOpacity style={styles.box} onPress={() => onClick('Active Climbs')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.activeBigNumber}>{totalClimbs}</Text>
                   <Text>Active Climbs</Text>
               </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Total Ascents')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{totalAscents}</Text>
                   <Text>Total ascents</Text>
@@ -144,14 +144,14 @@ const GymDaily = () => {
             </View>
 
             <View style={styles.row}>
-              <TouchableOpacity style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Highest Completion')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{mostCompleted.name}</Text>
                   <Text style={styles.routeGrade}>{mostCompleted.grade}</Text>
                 </View>
                 <Text style={styles.textBottom}>Most completed route</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Highest Rated')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{highestRated.name}</Text>
                   <Text style={styles.routeGrade}>{highestRated.grade}</Text>
@@ -161,14 +161,14 @@ const GymDaily = () => {
             </View>
 
             <View style={styles.row}>
-              <TouchableOpacity style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Lowest Completion')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{leastCompleted.name}</Text>
                   <Text style={styles.routeGrade}>{leastCompleted.grade}</Text>
                 </View>
                 <Text style={styles.textBottom}>Least completed route</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Latest Feedback')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.feedback}>{latestFeedback.explanation}</Text>
                   <Text style={styles.rating}>{getStars(latestFeedback.rating)}</Text>
@@ -180,13 +180,13 @@ const GymDaily = () => {
             </View>
 
             <View style={styles.row}>
-              <TouchableOpacity style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Heatmap')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.time}>{peakTime}</Text>
                   <Text>Most active time</Text>
                 </View>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Latest Ascents')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{latestAscents}</Text>
                   <Text>Ascents since yesterday</Text>

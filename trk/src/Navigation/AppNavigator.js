@@ -16,6 +16,7 @@ import { AuthContext } from '../Utils/AuthContext';
 import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/NavScreens/Set/Frontend';
 import Settings from '../Components/Settings';
+import DataDetail from '../Screens/NavScreens/DataDetail/Frontend';
 
 import FeedbackForm from '../Screens/NavScreens/FeedbackForm/Frontend';
 import DeveloperFeedbackForm from '../Screens/NavScreens/DeveloperFeedbackForm/Frontend';
@@ -265,6 +266,11 @@ function AnalyticsStack() {
         name="Climber_Performance"
         component={ClimberPerformance}
         options={{ title: 'Climber Performance', headerBackTitle: 'Ranking', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+      name="Data Detail"
+      component={DataDetail}
+      options={{title: 'Data Detail', headerBackTitle:'Daily Summary', headerTitleAlign: 'center' }} 
       />
 
     </Stack.Navigator>
