@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useFocusEffect } from '@react-navigation/native';
+import SessionTapHistory from "../../../../Components/SessionTapHistory";
 
 const ClimberProfile = ({ navigation }) => {
     const { tapCount, currentUser } = useContext(AuthContext);
@@ -92,7 +93,7 @@ const ClimberProfile = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                     <View style={[styles.effortHistoryList]}>
-                        <TapHistory climbsHistory={climbsHistory} />
+                        <SessionTapHistory climbsHistory={climbsHistory} />
                     </View>
                 </View>
             </View>
