@@ -1,7 +1,7 @@
 import React from 'react';
 import ListHistory from './ListHistory';
 import ClimbItem from './ClimbItem';
-import { View, Text } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import moment from 'moment-timezone';
 
 // Helper function to format timestamp
@@ -35,7 +35,7 @@ const SessionTapHistory = (props) => {
     // Group climbs by timestamp
     const groupedClimbs = groupClimbsByTimestamp(props.climbsHistory);
     return (
-        <View>
+        <ScrollView>
             {Object.entries(groupedClimbs).map(([key, climbs]) => (
                 <View key={key}>
                     <Text style={{color: 'black', padding: 10, fontWeight: 'bold'}}>
@@ -48,7 +48,7 @@ const SessionTapHistory = (props) => {
                     />
                 </View>
             ))}
-        </View>
+        </ScrollView>
     );
 }
 
