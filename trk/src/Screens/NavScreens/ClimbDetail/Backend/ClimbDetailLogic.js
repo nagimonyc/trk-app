@@ -3,6 +3,7 @@ import ClimbsApi from '../../../../api/ClimbsApi';
 import storage from '@react-native-firebase/storage';
 import { Alert } from 'react-native';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share, TouchableOpacity } from 'react-native';
+import moment from 'moment-timezone';
 
 export const fetchClimbData = async (climbId, currentUser) => {
   try {
@@ -16,7 +17,7 @@ export const fetchClimbData = async (climbId, currentUser) => {
         const tap = {
           climb: climbId,
           user: currentUser.uid,
-          timestamp: new Date(),
+          timestamp: moment().tz('America/New_York'),
           completion: 0,
           attempts: '',
           witness1: '',

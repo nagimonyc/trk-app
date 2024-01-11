@@ -15,7 +15,7 @@ export const processClimbId = (climbId, currentUser) => {
             const tap = {
               climb: climbId,
               user: currentUser.uid,
-              timestamp: new Date(),
+              timestamp: moment().tz('America/New_York'),
               completion: 0,
               attempts: '',
               witness1: '',
