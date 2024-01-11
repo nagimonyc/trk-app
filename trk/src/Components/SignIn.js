@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import firestore from '@react-native-firebase/firestore';
 
 GoogleSignin.configure({
@@ -67,7 +67,7 @@ const SignIn = ({ onForgotPassword, role, nyuComp}) => {
                     });
             }
         } catch (error) {
-            console.error(error);
+            //console.error(error);
             Alert.alert('Sign in Error', 'Failed to sign in with Google');
         }
     };
@@ -95,10 +95,12 @@ const SignIn = ({ onForgotPassword, role, nyuComp}) => {
                         <Button title="Login" onPress={handleSignIn} />
                     </View>
                     <View>
-                        <Button
-                            title="Google Sign-In"
+                    <GoogleSigninButton
+                            size={GoogleSigninButton.Size.Standard}
+                            color={GoogleSigninButton.Color.Dark}
                             onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
-                        />
+                            disabled={false}
+                    />
                     </View>
                 </View>
                 <Text onPress={handleForgotPassword} style={styles.forgotPasswordText}>Forgot Password?</Text>
