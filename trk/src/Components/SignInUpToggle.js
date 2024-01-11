@@ -48,7 +48,7 @@ const SignInUpToggle = () => {
                 </View>
             </View>
             <View style={styles.formContainer}>
-                {isSignIn ? <SignIn onForgotPassword={handleForgotPassword} /> : <SignUp role={setterIsEnabled} nyuComp={nyuCompIsEnabled} />}
+                {isSignIn ? <SignIn onForgotPassword={handleForgotPassword} role={setterIsEnabled} nyuComp={nyuCompIsEnabled}/> : <SignUp role={setterIsEnabled} nyuComp={nyuCompIsEnabled} />}
             </View>
 
             <View style={styles.buttonContainer}>
