@@ -124,8 +124,8 @@ function ClimbDetail(props) {
 
   if (isLoading || !climbData) {
     return (
-      <View style={styles.center}>
-        <Text>Fetching climb information...</Text>
+      <View style={styles.loading}>
+        <Text style={{color: 'black'}}>Fetching climb information...</Text>
       </View>
     );
     //  the reason i put this here is because we will eventually display name and grade here when we encode it onto the nfc tags 
@@ -410,6 +410,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#007AFF', // Color indicating it's clickable (like a link)
   },
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+  }
 })
 
 export default ClimbDetail;
