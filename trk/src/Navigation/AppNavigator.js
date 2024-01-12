@@ -330,7 +330,7 @@ function AppTabs() {
       />
       {role === 'climber' ? null :
         <Tab.Screen
-          name="Create Climb"
+          name="Create_Climb_Tab"
           component={ClimbInputStackScreen} // Use the new stack here
           options={{
             title: 'Create Climb',
@@ -350,16 +350,15 @@ function AppTabs() {
         options={{
           title: 'Record',
           headerShown: false,
-
           // To be completed by @abhipi or @redpepper-nag
-
-          // tabBarIcon: ({ size, focused, color }) => {
-          //   return (
-          //     <Image
-          //       style={{ width: size, height: size }}
-          //       source={require('../../assets/record.png')}
-          //     />
-          //   );
+           tabBarIcon: ({ size, focused, color }) => {
+             return (
+               <Image
+                 style={{ width: size, height: size }}
+                 source={require('../../assets/record.png')}
+               />
+             );
+           },
         }}
       />
       <Tab.Screen

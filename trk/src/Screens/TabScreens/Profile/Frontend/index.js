@@ -3,8 +3,8 @@ import { SafeAreaView, StyleSheet, View, Text, Button, Alert } from "react-nativ
 import { AuthContext } from "../../../../Utils/AuthContext";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
-import SetterProfile from "../../../../Components/SetterProfile";
-import ClimberProfile from "../../../../Components/ClimberProfile";
+import SetterProfile from "../Backend/SetterProfile";
+import ClimberProfile from "../Backend/ClimberProfile";
 
 const UserProfile = ({ navigation }) => {
     const { role } = React.useContext(AuthContext);

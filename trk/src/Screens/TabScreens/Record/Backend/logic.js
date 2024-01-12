@@ -22,7 +22,7 @@ export const useHomeScreenLogic = (props) => {
     const [hasNfc, setHasNfc] = React.useState(null);
     const [enabled, setEnabled] = React.useState(null);
     // user check
-    const { currentUser } = useContext(AuthContext);
+    const { currentUser,role} = useContext(AuthContext);
 
     const dispatch = useDispatch();
 
@@ -32,9 +32,9 @@ export const useHomeScreenLogic = (props) => {
             console.log("Is connected?", state.isConnected);
             if (state.isConnected) {
                 console.log('Navigating');
-                navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
+                navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true});
             } else {
-                dispatch(addClimb(climbId[0], currentUser));
+                dispatch(addClimb(climbId[0], currentUser, role));
                 Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]);
             }
         });
@@ -43,6 +43,8 @@ export const useHomeScreenLogic = (props) => {
 
     useEffect(() => {
         console.log('[TEST] HomeScreen useEffect called');
+        //console.log('User role testing......');
+        //console.log(role);
         async function checkNfc() {
             const supported = await NfcManager.isSupported();
             if (supported) {
@@ -77,7 +79,7 @@ export const useHomeScreenLogic = (props) => {
             }
         } catch (ex) {
             if (isReading) {
-                Alert.alert('Info', 'Climb tagging cancelled.', [{ text: 'OK' }]);
+                Alert.alert('Action', 'Climb tagging cancelled.', [{ text: 'OK' }]);
             } else {
                 Alert.alert('Error', ex.message || 'Climb not found!', [{ text: 'OK' }]);
             }

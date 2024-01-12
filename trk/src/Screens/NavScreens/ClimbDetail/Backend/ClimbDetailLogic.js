@@ -4,14 +4,14 @@ import storage from '@react-native-firebase/storage';
 import { Alert } from 'react-native';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share, TouchableOpacity } from 'react-native';
 
-export const fetchClimbData = async (climbId, currentUser) => {
+export const fetchClimbData = async (climbId, currentUser, role) => {
   try {
     const climbDataResult = await ClimbsApi().getClimb(climbId);
     let tapId = null;
     if (climbDataResult && climbDataResult._data) {
       //setClimbData(climbDataResult._data);
       console.log("Fetched climb data:", climbDataResult._data);
-      if (currentUser.uid !== climbDataResult._data.setter) {
+      if (currentUser.uid !== climbDataResult._data.setter && role !== "setter") { //case for climbers (tap should log), else should not
         const { addTap } = TapsApi();
         const tap = {
           climb: climbId,
@@ -23,6 +23,7 @@ export const fetchClimbData = async (climbId, currentUser) => {
           witness2: '',
         };
         const documentReference = await addTap(tap);
+        console.log('Tap created!');
         //setTapId(documentReference.id); // Set tapId only when navigating from home
         tapId = documentReference.id;
       }
@@ -31,7 +32,7 @@ export const fetchClimbData = async (climbId, currentUser) => {
       throw new Error("Climb data not found.");
     }
   } catch (error) {
-    console.error('Error fetching climb data:', error);
+    //console.error('Error fetching climb data:', error);
     throw new Error("Failed to load climb data.");
   }
 };

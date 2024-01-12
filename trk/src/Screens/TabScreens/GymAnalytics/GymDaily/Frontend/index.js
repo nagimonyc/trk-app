@@ -55,16 +55,16 @@ const GymDaily = ({navigation}) => {
           allTaps,
           peakTimeString,
           latestAscentsCount,
-          mostCompletedClimb,
-          leastCompletedClimb
+          mostCompletedClimbs,
+          leastCompletedClimbs
         } = await fetchTapsAndCalculateAscents(yourClimbs);
 
         setAscents(allTaps);
         setTotalAscents(totalTaps.toString());
         setLatestAscents(latestAscentsCount.toString());
         setPeakTime(peakTimeString);
-        setMostCompleted(mostCompletedClimb || { name: '', id: '', grade: '' });
-        setLeastCompleted(leastCompletedClimb || { name: '', id: '', grade: '' });
+        setMostCompleted(mostCompletedClimbs[0] || { name: '', id: '', grade: '' });
+        setLeastCompleted(leastCompletedClimbs[0] || { name: '', id: '', grade: '' });
       }
     };
 
@@ -132,13 +132,14 @@ const GymDaily = ({navigation}) => {
             <TouchableOpacity style={styles.box} onPress={() => onClick('Active Climbs')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.activeBigNumber}>{totalClimbs}</Text>
-                  <Text>Active Climbs</Text>
+                  <Text style={{color: 'black'}}>Active Climbs</Text>
+                </View>
               </View>
               </TouchableOpacity>
               <TouchableOpacity style={styles.box} onPress={() => onClick('Total Ascents')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{totalAscents}</Text>
-                  <Text>Total ascents</Text>
+                  <Text style={{color: 'black'}}>Total ascents</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -183,13 +184,13 @@ const GymDaily = ({navigation}) => {
               <TouchableOpacity style={styles.box} onPress={() => onClick('Heatmap')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.time}>{peakTime}</Text>
-                  <Text>Most active time</Text>
+                  <Text style={{color: 'black'}}>Most active time</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity style={styles.box} onPress={() => onClick('Latest Ascents')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{latestAscents}</Text>
-                  <Text>Ascents since yesterday</Text>
+                  <Text style={{color: 'black'}}>Ascents since yesterday</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -267,9 +268,11 @@ const styles = StyleSheet.create({
   },
   rating: {
     marginBottom: 4,
+    color: 'black',
   },
   climbName: {
     marginBottom: 10,
+    color: 'black',
   },
   centeredContent: {
     alignItems: 'center',
@@ -279,6 +282,7 @@ const styles = StyleSheet.create({
   textBottom: {
     textAlign: 'center',
     marginBottom: 10,
+    color: 'black'
   },
 
 });

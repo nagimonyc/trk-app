@@ -6,7 +6,7 @@ import tapReducer from './Reducers/tapReducer';
 import {processClimbId} from './Actions/tapActions';
 
 const effect = (effect, _action) => {
-    return processClimbId(effect.climbId, effect.currentUser);
+    return processClimbId(effect.climbId, effect.currentUser, effect.role);
 };
 
 const discard = (error, action, retries) => {

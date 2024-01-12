@@ -33,6 +33,10 @@ export const fetchTapsAndCalculateAscents = async (yourClimbs) => {
   let timeFrequencyMap = {};
 
   for (const climb of yourClimbs) {
+    climbFrequencyMap[climb.id] = { count: 0, name: climb.name, id: climb.id, grade: climb.grade };
+  }
+
+  for (const climb of yourClimbs) {
     const tapsSnapshot = await getTapsBySomeField('climb', climb.id);
     if (tapsSnapshot && tapsSnapshot.docs) {
       const taps = tapsSnapshot.docs.map(doc => {
@@ -66,17 +70,34 @@ export const fetchTapsAndCalculateAscents = async (yourClimbs) => {
   let peakTimeString = peakHour ? `${peakHour}:00 - ${parseInt(peakHour) + 1}:00` : '';
 
   // Determine most and least completed climbs
-  let mostCompletedClimb = Object.values(climbFrequencyMap).reduce((a, b) => (a && b && a.count > b.count) ? a : b, null);
-  let leastCompletedClimb = Object.values(climbFrequencyMap).reduce((a, b) => (a && b && a.count < b.count) ? a : b, null);
-
+  let mostCompletedClimbs = [];
+  let leastCompletedClimbs = [];
+  let maxCount = 0;
+  let minCount = Infinity;
+  
+  Object.values(climbFrequencyMap).forEach(climb => {
+    if (climb.count > maxCount) {
+      mostCompletedClimbs = [climb];
+      maxCount = climb.count;
+    } else if (climb.count === maxCount) {
+      mostCompletedClimbs.push(climb);
+    }
+  
+    if (climb.count < minCount) {
+      leastCompletedClimbs = [climb];
+      minCount = climb.count;
+    } else if (climb.count === minCount) {
+      leastCompletedClimbs.push(climb);
+    }
+  });
   // Return the calculated values
   return {
     totalTaps,
     allTaps,
     peakTimeString,
     latestAscentsCount,
-    mostCompletedClimb,
-    leastCompletedClimb
+    mostCompletedClimbs,
+    leastCompletedClimbs
   };
 
 };
