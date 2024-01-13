@@ -13,7 +13,7 @@ const RightArrow = () => (
   </Svg>
 );
 
-const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
+const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp}) => {
     console.log('[TEST] ClimbItem called');
     const [imageURL, setImageURL] = useState(null);
     const navigation = useNavigation();
@@ -59,7 +59,7 @@ const ClimbItem = ({ climb, tapId, fromHome = false, tapTimestamp }) => {
                 <ListItemContainer dotStyle={styles.climbDot} grade={climb.grade}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.timerInfo}>
-                        <Text>{tapTimestamp}</Text>
+                        <Text style={{color: 'black'}}>{tapTimestamp}</Text>
                     </View>
                 </ListItemContainer>
             </View>
