@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import firestore from '@react-native-firebase/firestore';
 
-const SignIn = ({ onForgotPassword }) => {
+GoogleSignin.configure({
+  webClientId: '786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com',
+});
+
+const SignIn = ({ onForgotPassword, role, nyuComp}) => {
     console.log("[TEST] sign in call");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -30,6 +36,42 @@ const SignIn = ({ onForgotPassword }) => {
         onForgotPassword(email);
     };
 
+    const onGoogleButtonPress = async () => {
+        try {
+            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+            await GoogleSignin.signOut();
+            const { idToken } = await GoogleSignin.signIn();
+            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+            const userCredential = await auth().signInWithCredential(googleCredential);
+            console.log('Signed in with Google!');
+            // Check if the user is new
+            if (userCredential.additionalUserInfo.isNewUser) {
+                const user = userCredential.user;
+                // Here, set the additional data as you like
+                firestore()
+                    .collection('users')
+                    .doc(user.uid)
+                    .set({
+                        email: user.email,
+                        uid: user.uid,
+                        role: role ? 'setter' : 'climber', // set a default or desired role
+                        taps: 0,
+                        nyuComp: nyuComp, // set default or desired value
+                        timestamp: new Date(),
+                    })
+                    .then(() => {
+                        console.log('New user added to Firestore');
+                    })
+                    .catch((error) => {
+                        console.log('Error adding new user to Firestore:', error);
+                    });
+            }
+        } catch (error) {
+            //console.error(error);
+            Alert.alert('Sign in Error', 'Failed to sign in with Google');
+        }
+    };
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.container}>
@@ -48,7 +90,19 @@ const SignIn = ({ onForgotPassword }) => {
                     onChangeText={setPassword}
                     style={styles.input}
                 />
-                <Button title="Login" onPress={handleSignIn} />
+                <View style={{ display: 'flex', flexDirection: 'column', padding: 10 }}>
+                    <View style={{ marginBottom: 10 }}>
+                        <Button title="Login" onPress={handleSignIn} />
+                    </View>
+                    <View>
+                    <GoogleSigninButton
+                            size={GoogleSigninButton.Size.Standard}
+                            color={GoogleSigninButton.Color.Dark}
+                            onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
+                            disabled={false}
+                    />
+                    </View>
+                </View>
                 <Text onPress={handleForgotPassword} style={styles.forgotPasswordText}>Forgot Password?</Text>
                 <View style={styles.prompt}>
                     <Text style={styles.promptText}>Don't have an account?</Text>
