@@ -3,8 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'react-native';
-import { Button } from 'react-native-paper';
-import { StyleSheet, TouchableOpacity, Text, View } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
 import CompRanking from '../Screens/TabScreens/GymAnalytics/CompRanking/Frontend';
 import HomeScreen from '../Screens/TabScreens/Home/Frontend';
@@ -47,7 +46,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 10,
     borderRadius: 5,
-    marginRight: 10,
+    marginRight: Platform.OS === 'ios' ? 0 : 10, 
+    marginLeft: Platform.OS === 'ios' ? 10 : 0, 
     borderColor: '#4c6a78',
     borderWidth: 1
   },
@@ -105,15 +105,25 @@ function HomeStack() {
         options={({ navigation }) => ({
           title: 'Home',
           headerBackTitleVisible: null,
-          headerRight: () => (
+          headerTitle: 'Home',
+          headerLeft: Platform.OS === 'ios' ? () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
               <TrackerButton
                 title="Tracker"
                 navigation={navigation} />
-              <FeedbackButton
-                title="Feedback"
-                navigation={navigation}
-              />
+            </View>
+          ) : null,
+          headerRight: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              {Platform.OS !== 'ios' &&  
+              <TrackerButton
+              title="Tracker"
+              navigation={navigation} />
+            }
+            <FeedbackButton
+            title="Feedback"
+            navigation={navigation}
+          />
             </View>
           ),
         })}
