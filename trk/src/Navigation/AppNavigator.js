@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 10,
     borderRadius: 5,
-    marginRight: Platform.OS === 'ios' ? 0 : 10, 
-    marginLeft: Platform.OS === 'ios' ? 10 : 0, 
+    marginRight: 10,
+    marginLeft: 10,
     borderColor: '#4c6a78',
     borderWidth: 1
   },
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
+    marginLeft: 10,
     borderColor: '#fe8100',
     borderWidth: 1
   },
