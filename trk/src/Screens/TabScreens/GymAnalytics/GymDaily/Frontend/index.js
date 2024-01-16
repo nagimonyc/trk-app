@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Text, View, ScrollView, SafeAreaView, StyleSheet } from "react-native";
+import { Text, View, ScrollView, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import { AuthContext } from '../../../../../Utils/AuthContext';
 import {
   fetchSetClimbs,
@@ -8,7 +8,7 @@ import {
 } from '../Backend/analyticsCalculations';
 
 
-const GymDaily = () => {
+const GymDaily = ({navigation}) => {
 
   const [yourClimbs, setYourClimbs] = useState([]);
   const [yourComments, setYourComments] = useState([]);
@@ -114,6 +114,10 @@ const GymDaily = () => {
     return starRating;
   };
 
+  const onClick = (title) => {
+    navigation.navigate('Data Detail', title)
+  }
+
 
   return (
     <ScrollView>
@@ -125,46 +129,47 @@ const GymDaily = () => {
           <View style={styles.boxCollection}>
 
             <View style={styles.row}>
-              <View style={styles.box}>
+            <TouchableOpacity style={styles.box} onPress={() => onClick('Active Climbs')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.activeBigNumber}>{totalClimbs}</Text>
                   <Text style={{color: 'black'}}>Active Climbs</Text>
                 </View>
               </View>
-              <View style={styles.box}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Total Ascents')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{totalAscents}</Text>
                   <Text style={{color: 'black'}}>Total ascents</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.row}>
-              <View style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Highest Completion')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{mostCompleted.name}</Text>
                   <Text style={styles.routeGrade}>{mostCompleted.grade}</Text>
                 </View>
                 <Text style={styles.textBottom}>Most completed route</Text>
-              </View>
-              <View style={styles.box}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Highest Rated')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{highestRated.name}</Text>
                   <Text style={styles.routeGrade}>{highestRated.grade}</Text>
                 </View>
                 <Text style={styles.textBottom}>Highest rated climb</Text>
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.row}>
-              <View style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Lowest Completion')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.routeTitle}>{leastCompleted.name}</Text>
                   <Text style={styles.routeGrade}>{leastCompleted.grade}</Text>
                 </View>
                 <Text style={styles.textBottom}>Least completed route</Text>
-              </View>
-              <View style={styles.box}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Latest Feedback')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.feedback}>{latestFeedback.explanation}</Text>
                   <Text style={styles.rating}>{getStars(latestFeedback.rating)}</Text>
@@ -172,22 +177,22 @@ const GymDaily = () => {
                 </View>
                 <Text style={styles.textBottom}>Latest feedback</Text>
 
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.row}>
-              <View style={styles.box}>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Heatmap')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.time}>{peakTime}</Text>
                   <Text style={{color: 'black'}}>Most active time</Text>
                 </View>
-              </View>
-              <View style={styles.box}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.box} onPress={() => onClick('Latest Ascents')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{latestAscents}</Text>
                   <Text style={{color: 'black'}}>Ascents since yesterday</Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
 
           </View>
