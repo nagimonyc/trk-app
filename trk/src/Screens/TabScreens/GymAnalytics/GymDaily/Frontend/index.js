@@ -134,14 +134,16 @@ const GymDaily = ({navigation}) => {
                   <Text style={styles.activeBigNumber}>{totalClimbs}</Text>
                   <Text style={{color: 'black'}}>Active Climbs</Text>
                 </View>
-              </View>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.box} onPress={() => onClick('Total Ascents')}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.box} onPress={() => onClick('Total Ascents')}>
                 <View style={styles.centeredContent}>
                   <Text style={styles.bigNumber}>{totalAscents}</Text>
                   <Text style={{color: 'black'}}>Total ascents</Text>
                 </View>
               </TouchableOpacity>
+              </View>
+              
+
             </View>
 
             <View style={styles.row}>
@@ -196,7 +198,6 @@ const GymDaily = ({navigation}) => {
             </View>
 
           </View>
-        </View>
       </SafeAreaView>
     </ScrollView>
   )
