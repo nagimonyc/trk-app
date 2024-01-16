@@ -12,8 +12,9 @@ const DataDetail = ({ route }) => {
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
           </View>
-          <Text >Insert detailed breakdown goes here</Text>
-          {/* Hardcoded for now */}
+          <View style={styles.main}>
+          <Text>This feature is coming soon 🔥</Text>
+          </View>
         </View>
       </SafeAreaView>
     </ScrollView>
@@ -30,7 +31,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'black',
-  }
+  }, 
+  main: {
+    marginLeft: 20,
+    marginTop: 20,
+  },
 })
 
 export default DataDetail;
