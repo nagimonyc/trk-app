@@ -17,12 +17,22 @@ const formatTimestamp = (timestamp) => {
 
 
 const convertTimestampToDate = (timestamp) => {
+    if (!timestamp || typeof timestamp.seconds !== 'number') {
+        console.error('Invalid or missing timestamp:', timestamp);
+        return null; // Or return a default date, as per your logic
+    }
     return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
 };
 
 const groupClimbsByTimestamp = (climbs) => {
     const grouped = {};
     climbs.forEach(climb => {
+        const dateObject = convertTimestampToDate(climb.timestamp);
+        if (!dateObject) {
+            // Handle the error or skip this climb
+            console.error('Skipping climb due to invalid date:', climb);
+            return;
+        }
         // Convert the timestamp to a standard JavaScript Date object
         const date = moment(convertTimestampToDate(climb.timestamp)).tz('America/New_York');
         
