@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform, Animated } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import readClimb from '../../../../NfcUtils/readClimb';
 import Image from '../../../../Components/Image';
@@ -12,6 +12,8 @@ import { addClimb } from '../../../../Actions/tapActions';
 import NetInfo from '@react-native-community/netinfo';
 
 export const useHomeScreenLogic = (props) => {
+    // Animation
+    const logoScale = useRef(new Animated.Value(1)).current;
 
     // Initialize androidPromptRef conditionally based on the platform
     const androidPromptRef = Platform.OS === 'android' ? React.useRef() : null;
@@ -22,17 +24,34 @@ export const useHomeScreenLogic = (props) => {
     const [hasNfc, setHasNfc] = React.useState(null);
     const [enabled, setEnabled] = React.useState(null);
     // user check
-    const { currentUser,role} = useContext(AuthContext);
+    const { currentUser, role } = useContext(AuthContext);
 
     const dispatch = useDispatch();
 
+    // Create an animation function
+    const startLogoAnimation = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(logoScale, {
+                    toValue: 1.05, // Slightly larger
+                    duration: 1750,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(logoScale, {
+                    toValue: 1, // Back to normal
+                    duration: 1750,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    };
 
     const checkConnectivity = (climbId) => {
         NetInfo.fetch().then(state => {
             console.log("Is connected?", state.isConnected);
             if (state.isConnected) {
                 console.log('Navigating');
-                navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true});
+                navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
             } else {
                 dispatch(addClimb(climbId[0], currentUser, role));
                 Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]);
@@ -40,11 +59,8 @@ export const useHomeScreenLogic = (props) => {
         });
     };
 
-
     useEffect(() => {
         console.log('[TEST] HomeScreen useEffect called');
-        //console.log('User role testing......');
-        //console.log(role);
         async function checkNfc() {
             const supported = await NfcManager.isSupported();
             if (supported) {
@@ -54,6 +70,7 @@ export const useHomeScreenLogic = (props) => {
             setHasNfc(supported);
         }
         checkNfc();
+        startLogoAnimation();
     }, []);
 
     async function identifyClimb() {
@@ -104,11 +121,14 @@ export const useHomeScreenLogic = (props) => {
         if (hasNfc === null) {
             return null;
         } else if (!hasNfc) {
-
             return (
                 <>
                     <Text style={styles.tapText}>Your device doesn't support NFC</Text>
-                    <Image source={logo} style={styles.image} resizeMode="contain" />
+                    <Animated.Image
+                        source={logo}
+                        style={[styles.image, { transform: [{ scale: logoScale }] }]}
+                        resizeMode="contain"
+                    />
                 </>
             );
         } else if (!enabled) {
@@ -131,12 +151,15 @@ export const useHomeScreenLogic = (props) => {
                     <Text style={styles.celebration}>🎉🎉🎉</Text>
                     <Text style={styles.instructions}>Tap below to save your achievement</Text>
                     <TouchableOpacity style={styles.button} onPress={identifyClimb}>
-                        <Image source={logo} style={styles.image} resizeMode="contain" />
+                        <Animated.Image
+                            source={logo}
+                            style={[styles.image, { transform: [{ scale: logoScale }] }]}
+                            resizeMode="contain"
+                        />
                     </TouchableOpacity>
                 </View>
             );
         };
-
     }
     return {
         renderNfcButtons,
@@ -163,14 +186,14 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         fontWeight: '600',
     },
-  celebration: {
+    celebration: {
         marginTop: 20,
         textAlign: 'center',
         color: 'black',
         fontSize: 20,
         marginBottom: 10,
     },
-  instructions: {
+    instructions: {
         marginTop: 30,
         textAlign: 'center',
         color: 'black',
