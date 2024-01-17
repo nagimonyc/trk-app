@@ -19,72 +19,77 @@ const ClimberProfile = ({ navigation }) => {
         React.useCallback(() => {
             handleTapHistory();
         }, [])
-    );    
+    );
 
     const handleTapHistory = async () => {
         const { getTapsBySomeField } = TapsApi();
         const { getClimb } = ClimbsApi();
         try {
             const tapsSnapshot = await getTapsBySomeField('user', currentUser.uid);
-    
+
             // Filter taps
             const filteredTaps = tapsSnapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
                 .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
-    
+
             // Fetch climb details for each filtered tap
             const climbsPromises = filteredTaps.map(tap => getClimb(tap.climb));
-    
+
             // Resolve all promises to get climb details
             const climbsSnapshots = await Promise.all(climbsPromises);
-    
+
             // Combine climb details with tap data
             const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
                 return { ...climbSnapshot.data(), tapId: filteredTaps[index].id };
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
-    
+
             setClimbsHistory(newClimbsHistory);
             setHistoryCount(newClimbsHistory.length);
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
-    };    
+    };
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
-                <View style={styles.greeting}>
-                <Text style={styles.greeting_text}>
-                    Hi <Text style={{color: 'black'}}>{currentUser && currentUser.email ? currentUser.email.split('@')[0] : ''}</Text> 🖖
-                </Text>
+                <View style={styles.profileTop}>
+                    <View style={styles.topLine}>
+                        <View style={styles.initialCircle}>
+                            <Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>
+                        </View>
+                        <View style={styles.recapData}>
+                            <Text style={styles.recapNumber}>{historyCount}</Text>
+                            <Text style={styles.any_text}>Climbs</Text>
+                        </View>
+                        <View style={styles.recapData}>
+                            <Text style={styles.recapNumber}>X</Text>
+                            <Text style={styles.any_text}>Sessions</Text>
+                        </View>
+                        <TouchableOpacity style={styles.settings}
+                        onPress={() => navigation.navigate('Settings')}>
+                            {
+                                Platform.OS === 'android' ?
+                                    <Icon name="settings" size={30} color="#3498db" /> :
+                                    <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
+                            }
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.greeting}>
+                        <Text style={styles.greeting_text}>
+                            Hi <Text style={{ color: 'black' }}>{currentUser && currentUser.email ? currentUser.email.split('@')[0] : ''}</Text> 🖖
+                        </Text>
+                    </View>
                 </View>
                 <View style={styles.header}>
                     <Text style={styles.titleText}>Activity</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-                        {
-                            Platform.OS === 'android' ?
-                                <Icon name="settings" size={30} color="#3498db" /> :
-                                <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
-                        }
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.effortRecap}>
-                    <View style={[styles.effortRecapChild, {}]}>
-                        <Text style={styles.any_text}>{historyCount}</Text>
-                        <Text style={styles.any_text}>Total Climbs</Text>
-                    </View>
-                    <View style={[styles.effortRecapChild, {}]}>
-                        {/* <Text>CLIMB</Text>
-                        <Text>Best Effort</Text> */}
-                    </View>
+
                 </View>
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={{ width: '100%', justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
                         <View style={{ flex: 1 }}></View>
-                        <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black' }}>
-                            Recap
-                        </Text>
+
                         <TouchableOpacity
                             style={[styles.pillButton]}
                             onPress={handleTapHistory}
@@ -123,24 +128,12 @@ const styles = StyleSheet.create({
     },
     any_text: {
         color: 'black',
+
     },
     titleText: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
         color: 'black',
-    },
-    effortRecap: {
-        flex: 0.75,
-        flexDirection: 'row',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    effortRecapChild: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'black',
-        paddingHorizontal: 10, 
     },
     effortRecapGraph: {
         flex: 3,
@@ -165,8 +158,8 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         color: 'black',
-        backgroundColor: 'transparent', 
-        paddingHorizontal: 0, 
+        backgroundColor: 'transparent',
+        paddingHorizontal: 0,
         paddingVertical: 5,
     },
     pillButton: {
@@ -183,15 +176,45 @@ const styles = StyleSheet.create({
     },
     greeting: {
         display: 'flex',
-        paddingTop: 20,
-        paddingHorizontal: 20
-        
+        paddingTop: 10,
+
     },
     greeting_text: {
         color: 'black',
-        fontSize: 20,
-    }
+        fontSize: 16,
+    },
+    initialCircle: {
+        backgroundColor: '#D9D9D9',
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+    },
+    profileTop: {
+        marginLeft: 20,
+        marginTop: 10,
+    },
+    topLine: {
+        flexDirection: 'row', // Align children in a row
+        alignItems: 'center', // Center children vertically
+        justifyContent: 'space-between', // Changed from 'space-around' to 'space-between'
 
+    },
+    recapNumber: {
+        color: 'black',
+        fontWeight: 'bold',
+    }, 
+    settings: {
+        marginRight: 15,
+        alignSelf: 'flex-start', 
+    }, 
+    recapData: {
+        marginTop: 10,
+        alignItems: 'center', 
+        flexDirection: 'column',
+    }
 });
 
 export default ClimberProfile;
