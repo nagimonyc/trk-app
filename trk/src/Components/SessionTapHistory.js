@@ -17,24 +17,28 @@ const formatTimestamp = (timestamp) => {
 
 
 const convertTimestampToDate = (timestamp) => {
-    if (!timestamp || typeof timestamp.seconds !== 'number') {
+    console.log("Received timestamp:", timestamp);
+    if (!timestamp || typeof timestamp.seconds !== 'number' || typeof timestamp.nanoseconds !== 'number') {
         console.error('Invalid or missing timestamp:', timestamp);
-        return null; // Or return a default date, as per your logic
+        return null; // Return null or a default date, as per your logic
     }
-    return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+    // Convert to milliseconds and create a new Date object
+    return new Date(timestamp.seconds * 1000 + Math.round(timestamp.nanoseconds / 1000000));
 };
+
 
 const groupClimbsByTimestamp = (climbs) => {
     const grouped = {};
     climbs.forEach(climb => {
-        const dateObject = convertTimestampToDate(climb.timestamp);
+        const dateObject = convertTimestampToDate(climb.tapTimestamp);
+        console.log('Date Object:', dateObject);
         if (!dateObject) {
             // Handle the error or skip this climb
             console.error('Skipping climb due to invalid date:', climb);
             return;
         }
         // Convert the timestamp to a standard JavaScript Date object
-        const date = moment(convertTimestampToDate(climb.timestamp)).tz('America/New_York');
+        const date = moment(dateObject).tz('America/New_York');
         
         // Round down the timestamp to the nearest 4 hours
         const hours = date.hours();
@@ -42,7 +46,8 @@ const groupClimbsByTimestamp = (climbs) => {
         const roundedDate = date.clone().hours(roundedHours).minutes(0).seconds(0).milliseconds(0);
 
         const key = roundedDate.format('YYYY-MM-DD HH:mm'); // Formatted key
-        //console.log(key); // Debugging
+        console.log(key); // Debugging
+        //console.log(climb.tapId);
         if (!grouped[key]) {
             grouped[key] = [];
         }
@@ -54,6 +59,7 @@ const groupClimbsByTimestamp = (climbs) => {
 const SessionTapHistory = (props) => {
     console.log('[TEST] SessionTapHistory called');
     // Group climbs by timestamp
+    console.log(props.climbsHistory);
     const groupedClimbs = groupClimbsByTimestamp(props.climbsHistory);
     return (
         <ScrollView>
@@ -64,7 +70,7 @@ const SessionTapHistory = (props) => {
                     </Text>
                     <ListHistory
                         data={climbs}
-                        renderItem={(item) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={item.timestamp} fromHome={props.fromHome} />}
+                        renderItem={(item) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={item.tapTimestamp} fromHome={props.fromHome} />}
                         keyExtractor={(item, index) => index.toString()}
                     />
                 </View>

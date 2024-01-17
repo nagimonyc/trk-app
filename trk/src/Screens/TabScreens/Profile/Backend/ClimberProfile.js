@@ -41,7 +41,7 @@ const ClimberProfile = ({ navigation }) => {
             // Combine climb details with tap data
             const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
-                return { ...climbSnapshot.data(), tapId: filteredTaps[index].id };
+                return { ...climbSnapshot.data(), tapId: filteredTaps[index].id, tapTimestamp: filteredTaps[index].timestamp};
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
     
             setClimbsHistory(newClimbsHistory);
