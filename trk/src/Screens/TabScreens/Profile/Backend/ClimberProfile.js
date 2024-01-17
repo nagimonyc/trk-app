@@ -85,12 +85,12 @@ const ClimberProfile = ({ navigation }) => {
                         <Text style={{ fontWeight: 'bold', flex: 1, textAlign: 'center', color: 'black' }}>
                             Recap
                         </Text>
-                        <TouchableOpacity
+                       {/* <TouchableOpacity
                             style={[styles.pillButton]}
                             onPress={handleTapHistory}
                         >
                             <Text style={styles.buttonText}>Reload</Text>
-                        </TouchableOpacity>
+                    </TouchableOpacity> */}
                     </View>
                     <View style={[styles.effortHistoryList]}>
                         <SessionTapHistory climbsHistory={climbsHistory} />
