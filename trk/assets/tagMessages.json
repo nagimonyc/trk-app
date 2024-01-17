@@ -1,6 +1,6 @@
 {
   "FTUFirstClimb": [
-      "Completed a climb. Tap below to save it!"
+      "Completed a climb? Tap below to save it!"
   ],
   "FTUNotFirstClimb": [
       "Keep climbing, keep tapping!",
@@ -10,7 +10,7 @@
       "Ready for more? Tap your first climb!",
       "Here for another session? That's dedication"
   ],
-  "ReturningUserFirstClimbOfMultipleSessions": [
+  "ReturningUserFirstClimbOfAnotherSession": [
       "Nice to see you again",
       "Back again so soon!",
       "Fancy seeing you here",
