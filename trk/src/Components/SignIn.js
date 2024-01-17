@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert, Platform } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import firestore from '@react-native-firebase/firestore';
 
 GoogleSignin.configure({
-  webClientId: '786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com',
+    webClientId: '786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com',
 });
 
-const SignIn = ({ onForgotPassword, role, nyuComp}) => {
+const SignIn = ({ onForgotPassword, role, nyuComp }) => {
     console.log("[TEST] sign in call");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -94,14 +94,18 @@ const SignIn = ({ onForgotPassword, role, nyuComp}) => {
                     <View style={{ marginBottom: 10 }}>
                         <Button title="Login" onPress={handleSignIn} />
                     </View>
-                    <View>
-                    <GoogleSigninButton
-                            size={GoogleSigninButton.Size.Standard}
-                            color={GoogleSigninButton.Color.Dark}
-                            onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
-                            disabled={false}
-                    />
-                    </View>
+                    {
+                        Platform.OS !== 'ios' && (
+                            <View>
+                                <GoogleSigninButton
+                                    size={GoogleSigninButton.Size.Standard}
+                                    color={GoogleSigninButton.Color.Dark}
+                                    onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
+                                    disabled={false}
+                                />
+                            </View>
+                        )
+                    }
                 </View>
                 <Text onPress={handleForgotPassword} style={styles.forgotPasswordText}>Forgot Password?</Text>
                 <View style={styles.prompt}>
@@ -131,7 +135,7 @@ const styles = StyleSheet.create({
     prompt: {
         position: 'absolute',
         bottom: -20,
-        flexDirection: 'row', 
+        flexDirection: 'row',
         alignItems: 'center',
     },
     promptText: {
