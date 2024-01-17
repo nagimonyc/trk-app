@@ -274,7 +274,7 @@ function ClimbDetail(props) {
               )}
               {role == 'climber' && <>
                 <View style={styles.button}>
-                  <Button title='Delete Tap' onPress={() => archiveTap(navigation, tapId)} color="black" />
+                  <Button title='Delete Tap' onPress={() => archiveTap(navigation, tapId)} color="red" />
                 </View>
               </>}
             </View>
