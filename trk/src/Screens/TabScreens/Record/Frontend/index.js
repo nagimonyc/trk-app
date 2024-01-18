@@ -12,7 +12,7 @@ function RecordScreen(props) {
     } = logic(props);
     return (
         <>
-            <View style={[styles.wrapper, styles.center]}>
+            <View style={styles.center}>
                 {renderNfcButtons()}
             </View>
             {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
@@ -21,12 +21,12 @@ function RecordScreen(props) {
 }
 
 const styles = StyleSheet.create({
-    wrapper: {
-        flex: 1,
-    },
     center: {
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        margin: 0,
+        padding: 0,
     },
 });
 
