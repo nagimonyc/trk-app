@@ -13,7 +13,6 @@ import { addClimb } from '../../../../Actions/tapActions';
 import tapMessage from '../../../../../assets/tagMessages.json';
 import NetInfo from '@react-native-community/netinfo';
 import Toast from 'react-native-toast-message';
-import { Animated } from 'react-native';
 import ClimbItem from '../../../../Components/ClimbItem';
 import { LayoutAnimation, UIManager} from 'react-native'; //For smoother animations
 import { IconButton } from 'react-native-paper';
