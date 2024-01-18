@@ -1,13 +1,15 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform, Animated } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import readClimb from '../../../../NfcUtils/readClimb';
 import Image from '../../../../Components/Image';
 import { AuthContext } from '../../../../Utils/AuthContext';
 import analytics from '@react-native-firebase/analytics';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { useDispatch } from 'react-redux';
 import { addClimb } from '../../../../Actions/tapActions';
+import tapMessage from '../../../../../assets/tagMessages.json'
 
 import NetInfo from '@react-native-community/netinfo';
 
@@ -28,6 +30,42 @@ export const useHomeScreenLogic = (props) => {
 
     const dispatch = useDispatch();
 
+    //Next PR these will actually be calculated rather than hardcoded (set the true value to the option with the most messages in JSON file)
+    let isFirstTimeUser = false;
+    let isFTUNotFirstClimb = false;
+    let isReturningUserFirstClimbOfDay = false;
+    let isReturningUserFirstClimbOfAnotherSession = true;
+    let isReturningUserNotFirstClimb = false;
+
+
+    const [selectedMessage, setSelectedMessage] = useState('');
+    
+
+    function randomIndex(array) {
+        return Math.floor(Math.random() * array.length);
+    }
+
+    const selectRandomMessage = useCallback(() => {
+        let message;
+        if (isFirstTimeUser) {
+            message = tapMessage.FTUFirstClimb[randomIndex(tapMessage.FTUFirstClimb)];
+        } else if (isFTUNotFirstClimb) {
+            message = tapMessage.FTUNotFirstClimb[randomIndex(tapMessage.FTUNotFirstClimb)];
+        } else if (isReturningUserFirstClimbOfDay) {
+            message = tapMessage.ReturningUserFirstClimbOfDay[randomIndex(tapMessage.ReturningUserFirstClimbOfDay)];
+        } else if (isReturningUserFirstClimbOfAnotherSession) {
+            message = tapMessage.ReturningUserFirstClimbOfAnotherSession[randomIndex(tapMessage.ReturningUserFirstClimbOfAnotherSession)];
+        } else if (isReturningUserNotFirstClimb) {
+            message = tapMessage.ReturningUserNotFirstClimb[randomIndex(tapMessage.ReturningUserNotFirstClimb)];
+        } else {
+            // Default message or other logic
+            message = "Completed a climb? 🎉🎉🎉  Tap below to save your achievement";
+        }
+        setSelectedMessage(message);
+    }, [isFirstTimeUser, isFTUNotFirstClimb, isReturningUserFirstClimbOfDay]);
+
+    useFocusEffect(selectRandomMessage);
+  
     // Create an animation function
     const startLogoAnimation = () => {
         Animated.loop(
@@ -145,11 +183,14 @@ export const useHomeScreenLogic = (props) => {
                 </>
             );
         } else {
+
+            const messageComponent = selectedMessage.split(/(?<=[.,!?  ])\s/).map((sentence, index) => (
+                <Text key={index} style={index === 0 ? styles.tapText : styles.sentence}>{sentence}</Text>
+            ));
+
             return (
                 <View style={{ flex: 1 }}>
-                    <Text style={styles.tapText}>Completed a climb?</Text>
-                    <Text style={styles.celebration}>🎉🎉🎉</Text>
-                    <Text style={styles.instructions}>Tap below to save your achievement</Text>
+                    {messageComponent}
                     <TouchableOpacity style={styles.button} onPress={identifyClimb}>
                         <Animated.Image
                             source={logo}
@@ -208,7 +249,15 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         color: 'black',
         marginTop: 50,
-    }
+    },
+    sentence: {
+        textAlign: 'center',
+        color: 'black',
+        fontSize: 25,
+        marginBottom: 10,
+        fontWeight: '600',
+        marginTop: 20,
+    },
 
 });
 
