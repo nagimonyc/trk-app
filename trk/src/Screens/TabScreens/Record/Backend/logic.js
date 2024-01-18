@@ -57,7 +57,7 @@ export const useHomeScreenLogic = (props) => {
             message = tapMessage.ReturningUserNotFirstClimb[randomIndex(tapMessage.ReturningUserNotFirstClimb)];
         } else {
             // Default message or other logic
-            message = "Completed a climb? Tap below to save your achievement";
+            message = "Completed a climb? 🎉🎉🎉  Tap below to save your achievement";
         }
         setSelectedMessage(message);
     }, [isFirstTimeUser, isFTUNotFirstClimb, isReturningUserFirstClimbOfDay]);
