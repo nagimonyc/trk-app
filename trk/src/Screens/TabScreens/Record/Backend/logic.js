@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import React, { useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { Text, View, TouchableOpacity, StyleSheet, Alert, Platform, Animated } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import readClimb from '../../../../NfcUtils/readClimb';
 import Image from '../../../../Components/Image';
@@ -7,8 +7,10 @@ import { AuthContext } from '../../../../Utils/AuthContext';
 import analytics from '@react-native-firebase/analytics';
 import ClimbsApi from '../../../../api/ClimbsApi';
 import TapsApi from '../../../../api/TapsApi';
+import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { addClimb } from '../../../../Actions/tapActions';
+import tapMessage from '../../../../../assets/tagMessages.json';
 import NetInfo from '@react-native-community/netinfo';
 import Toast from 'react-native-toast-message';
 import { Animated } from 'react-native';
@@ -18,6 +20,8 @@ import { IconButton } from 'react-native-paper';
 import Svg, { Path } from 'react-native-svg';
 
 export const useHomeScreenLogic = (props) => {
+    // Animation
+    const logoScale = useRef(new Animated.Value(1)).current;
 
     // Initialize androidPromptRef conditionally based on the platform
     const androidPromptRef = Platform.OS === 'android' ? React.useRef() : null;
@@ -28,7 +32,7 @@ export const useHomeScreenLogic = (props) => {
     const [hasNfc, setHasNfc] = React.useState(null);
     const [enabled, setEnabled] = React.useState(null);
     // user check
-    const { currentUser,role} = useContext(AuthContext);
+    const { currentUser, role } = useContext(AuthContext);
 
     //Storing the newly added tap data for creation of ClimbItem and future tasks.
     const [tapId, setTapId] = useState(null);
@@ -46,6 +50,59 @@ export const useHomeScreenLogic = (props) => {
         </Svg>
     );
 
+    //Next PR these will actually be calculated rather than hardcoded (set the true value to the option with the most messages in JSON file)
+    let isFirstTimeUser = false;
+    let isFTUNotFirstClimb = false;
+    let isReturningUserFirstClimbOfDay = false;
+    let isReturningUserFirstClimbOfAnotherSession = true;
+    let isReturningUserNotFirstClimb = false;
+
+
+    const [selectedMessage, setSelectedMessage] = useState('');
+    
+
+    function randomIndex(array) {
+        return Math.floor(Math.random() * array.length);
+    }
+
+    const selectRandomMessage = useCallback(() => {
+        let message;
+        if (isFirstTimeUser) {
+            message = tapMessage.FTUFirstClimb[randomIndex(tapMessage.FTUFirstClimb)];
+        } else if (isFTUNotFirstClimb) {
+            message = tapMessage.FTUNotFirstClimb[randomIndex(tapMessage.FTUNotFirstClimb)];
+        } else if (isReturningUserFirstClimbOfDay) {
+            message = tapMessage.ReturningUserFirstClimbOfDay[randomIndex(tapMessage.ReturningUserFirstClimbOfDay)];
+        } else if (isReturningUserFirstClimbOfAnotherSession) {
+            message = tapMessage.ReturningUserFirstClimbOfAnotherSession[randomIndex(tapMessage.ReturningUserFirstClimbOfAnotherSession)];
+        } else if (isReturningUserNotFirstClimb) {
+            message = tapMessage.ReturningUserNotFirstClimb[randomIndex(tapMessage.ReturningUserNotFirstClimb)];
+        } else {
+            // Default message or other logic
+            message = "Completed a climb? 🎉🎉🎉  Tap below to save your achievement";
+        }
+        setSelectedMessage(message);
+    }, [isFirstTimeUser, isFTUNotFirstClimb, isReturningUserFirstClimbOfDay]);
+
+    useFocusEffect(selectRandomMessage);
+  
+    // Create an animation function
+    const startLogoAnimation = () => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(logoScale, {
+                    toValue: 1.05, // Slightly larger
+                    duration: 1750,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(logoScale, {
+                    toValue: 1, // Back to normal
+                    duration: 1750,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    };
 
     const checkConnectivity = (climbId) => {
         NetInfo.fetch().then(state => {
@@ -185,8 +242,6 @@ export const useHomeScreenLogic = (props) => {
       
     useEffect(() => {
         console.log('[TEST] HomeScreen useEffect called');
-        //console.log('User role testing......');
-        //console.log(role);
         async function checkNfc() {
             const supported = await NfcManager.isSupported();
             if (supported) {
@@ -196,6 +251,7 @@ export const useHomeScreenLogic = (props) => {
             setHasNfc(supported);
         }
         checkNfc();
+        startLogoAnimation();
     }, []);
 
     async function identifyClimb() {
@@ -246,11 +302,14 @@ export const useHomeScreenLogic = (props) => {
         if (hasNfc === null) {
             return null;
         } else if (!hasNfc) {
-
             return (
                 <>
                     <Text style={styles.tapText}>Your device doesn't support NFC</Text>
-                    <Image source={logo} style={styles.image} resizeMode="contain" />
+                    <Animated.Image
+                        source={logo}
+                        style={[styles.image, { transform: [{ scale: logoScale }] }]}
+                        resizeMode="contain"
+                    />
                 </>
             );
         } else if (!enabled) {
@@ -269,7 +328,12 @@ export const useHomeScreenLogic = (props) => {
         } else {
             if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
                 UIManager.setLayoutAnimationEnabledExperimental(true);
-            }              
+            }
+
+            const messageComponent = selectedMessage.split(/(?<=[.,!?  ])\s/).map((sentence, index) => (
+                <Text key={index} style={index === 0 ? styles.tapText : styles.sentence}>{sentence}</Text>
+            ));
+
             return (
                 <View style={{flex: 1, margin: 0, padding: 0, justifyContent: 'center', width: '100%'}}>
                     {tapId !== null && climb !== null && tapObj !== null && ( //Animated Top View
@@ -298,18 +362,19 @@ export const useHomeScreenLogic = (props) => {
 
                         </Animated.View>
                     )}
-                    <View style={{paddingVertical: 20}}>
-                    <Text style={styles.tapText}>Completed a climb?</Text>
-                    <Text style={styles.celebration}>🎉🎉🎉</Text>
-                    <Text style={styles.instructions}>Tap below to save your achievement</Text>
+                    <View style={{paddingVertical: 20, flex: 1}}>
+                    {messageComponent}
                     <TouchableOpacity style={styles.button} onPress={identifyClimb}>
-                        <Image source={logo} style={styles.image} resizeMode="contain" />
+                        <Animated.Image
+                            source={logo}
+                            style={[styles.image, { transform: [{ scale: logoScale }] }]}
+                            resizeMode="contain"
+                        />
                     </TouchableOpacity>
                     </View>
                 </View>
             );
         };
-
     }
     return {
         renderNfcButtons,
@@ -340,6 +405,7 @@ const styles = StyleSheet.create({
         color: 'black',
         fontSize: 20,
     },
+
   instructions: {
         marginTop: 10,
         textAlign: 'center',
@@ -376,7 +442,15 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontSize: 15
-    },   
+    },
+    sentence: {
+        textAlign: 'center',
+        color: 'black',
+        fontSize: 25,
+        marginBottom: 10,
+        fontWeight: '600',
+        marginTop: 20,
+    },
 });
 
 export default useHomeScreenLogic;
