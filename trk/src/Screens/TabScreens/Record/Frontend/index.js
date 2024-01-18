@@ -21,6 +21,7 @@ function RecordScreen(props) {
 }
 
 const styles = StyleSheet.create({
+    //Simplified CSS logic (one style variable)
     center: {
         flex: 1,
         alignItems: 'center',

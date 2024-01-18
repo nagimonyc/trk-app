@@ -14,6 +14,8 @@ import { RefreshControl, ScrollView} from 'react-native';
 
 
 const ClimberProfile = ({ navigation }) => {
+
+    //We now store sessions and session count here, as well as the refreshing state for reloads.
     const { tapCount, currentUser } = useContext(AuthContext);
     const [climbsHistory, setClimbsHistory] = useState([]);
     const [sessionsHistory, setSessionsHistory] = useState([]);
@@ -53,21 +55,25 @@ const ClimberProfile = ({ navigation }) => {
 
             const sessions = groupClimbsByTimestamp(newClimbsHistory);
             setClimbsHistory(newClimbsHistory);
-            setSessionsHistory(sessions);
+            setSessionsHistory(sessions); //Updating sessions on fetching a new climbHistory
             //console.log(sessions);
             setHistoryCount(newClimbsHistory.length);
-            setSessionCount(Object.keys(sessions).length);
+            setSessionCount(Object.keys(sessions).length); //Session count updated
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
     };
 
+    //New Refreshing logic for drop-down reloading
     const onRefresh = React.useCallback(() => {
         console.log('Refreshing...');
         setRefreshing(true);
         handleTapHistory().then(() => setRefreshing(false));
       }, []);
       
+
+    //The following are SessionTapHistory formatting functions to deal with the creation of sessions
+    //MIGRATED CODE
 
     // Helper function to format timestamp
     const formatTimestamp = (timestamp) => {
@@ -91,7 +97,7 @@ const ClimberProfile = ({ navigation }) => {
         return new Date(timestamp.seconds * 1000 + Math.round(timestamp.nanoseconds / 1000000));
     };
 
-
+    //CREATION OF SESSIONS WITH 4 HOUR GROUPS (Will alter in the next PR to make dynamic)
     const groupClimbsByTimestamp = (climbs) => {
         const grouped = {};
         climbs.forEach(climb => {
@@ -121,6 +127,7 @@ const ClimberProfile = ({ navigation }) => {
         return grouped;
     };
 
+    //Scroll View Added for Drag Down Refresh
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView
@@ -172,7 +179,7 @@ const ClimberProfile = ({ navigation }) => {
         </SafeAreaView>
     );
 }
-
+//Sessions are now passed to SessionTapHistory (displaying logic only now)
 
 const styles = StyleSheet.create({
     container: {

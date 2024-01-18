@@ -4,6 +4,9 @@ import ClimbItem from './ClimbItem';
 import { ScrollView, Text, View } from 'react-native';
 import moment from 'moment-timezone';
 
+//Removed all session creation code, moving it to ClimberProfile's backend. This allows for calculation of number of sessions, and future session tasks.
+//ONLY DISPLAYING IS DONE HERE NOW
+
 const SessionTapHistory = (props) => {
     console.log('[TEST] SessionTapHistory called');
     // Group climbs by timestamp
@@ -21,6 +24,7 @@ const SessionTapHistory = (props) => {
         return formattedDate;
     };
     
+    //Time stamp formatting like Home Page for clarity (Altered ClimbItem to match)
     const timeStampFormatting = (timestamp) => {
         let tempTimestamp = null;
         if (timestamp.toDate) { // Convert Firebase Timestamp to JavaScript Date

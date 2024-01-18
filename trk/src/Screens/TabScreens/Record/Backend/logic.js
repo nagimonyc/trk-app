@@ -13,7 +13,7 @@ import NetInfo from '@react-native-community/netinfo';
 import Toast from 'react-native-toast-message';
 import { Animated } from 'react-native';
 import ClimbItem from '../../../../Components/ClimbItem';
-import { LayoutAnimation, UIManager} from 'react-native';
+import { LayoutAnimation, UIManager} from 'react-native'; //For smoother animations
 import { IconButton } from 'react-native-paper';
 import Svg, { Path } from 'react-native-svg';
 
@@ -30,15 +30,16 @@ export const useHomeScreenLogic = (props) => {
     // user check
     const { currentUser,role} = useContext(AuthContext);
 
+    //Storing the newly added tap data for creation of ClimbItem and future tasks.
     const [tapId, setTapId] = useState(null);
     const [climb, setClimb] = useState(null);
     const [tapObj, setTapObj] = useState(null);
 
-    const fadeAnim = React.useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0
-
+    const fadeAnim = React.useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0 (Animation Value)
 
     const dispatch = useDispatch();
 
+    //Right Arrow for UI (Check it out Button to match Profile)
     const RightArrow = () => (
         <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <Path d="M9 18l6-6-6-6" stroke="#FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -52,10 +53,10 @@ export const useHomeScreenLogic = (props) => {
             if (state.isConnected) {
                 console.log('Navigating');
                 //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true});
-                addClimbWithNetwork(climbId[0]);
+                addClimbWithNetwork(climbId[0]); //No Navigation to Climb Detail, done in record itself
             } else {
                 dispatch(addClimb(climbId[0], currentUser, role));
-                Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]);
+                Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]); //Offline Processing done as usual
             }
         });
     };
@@ -79,7 +80,7 @@ export const useHomeScreenLogic = (props) => {
               const documentReference =  await addTap(tap);
               const tapDataResult = await TapsApi().getTap(documentReference.id);
               setClimb(climbDataResult._data);
-              setTapObj(tapDataResult._data);
+              setTapObj(tapDataResult._data); //All relevant data is collected and set.
               setTapId(documentReference.id);
               console.log('Climb was processed!');
               console.log('Tap ID: ', documentReference.id);
@@ -87,6 +88,7 @@ export const useHomeScreenLogic = (props) => {
               console.log('Tap: ', tapDataResult._data);
             } else {
               console.log('The Setter is the user or this a Setter Account. Tap was not added');
+              //Toasts are shown for non-recorded logic (Tap not created).
               Toast.show({
                 type: 'success',
                 text1: 'You are a Setter! View in Profile.',
@@ -107,7 +109,8 @@ export const useHomeScreenLogic = (props) => {
         });
         }
       }; 
-      
+
+      //FADE-IN AND OUT ANIMATION HANDLER
       useEffect(() => {
         if (tapId) {
           // Immediate fade-in animation
@@ -166,7 +169,7 @@ export const useHomeScreenLogic = (props) => {
         }
       }, [tapId, fadeAnim]);
                  
-    
+    //Timestamp formatting for future ClimbItem call
     const timeStampFormatting = (timestamp) => {
         let tempTimestamp = null;
         if (timestamp.toDate) { // Convert Firebase Timestamp to JavaScript Date
@@ -269,7 +272,7 @@ export const useHomeScreenLogic = (props) => {
             }              
             return (
                 <View style={{flex: 1, margin: 0, padding: 0, justifyContent: 'center', width: '100%'}}>
-                    {tapId !== null && climb !== null && tapObj !== null && (
+                    {tapId !== null && climb !== null && tapObj !== null && ( //Animated Top View
                         <Animated.View
                             style={{
                             ...styles.tapIdContainer, 
