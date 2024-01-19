@@ -3,6 +3,7 @@ import ListHistory from './ListHistory';
 import ClimbItem from './ClimbItem';
 import { ScrollView, Text, View } from 'react-native';
 import moment from 'moment-timezone';
+import { StyleSheet } from 'react-native';
 
 //Removed all session creation code, moving it to ClimberProfile's backend. This allows for calculation of number of sessions, and future session tasks.
 //ONLY DISPLAYING IS DONE HERE NOW
@@ -11,18 +12,34 @@ const SessionTapHistory = (props) => {
     console.log('[TEST] SessionTapHistory called');
     // Group climbs by timestamp
     console.log(props.climbsHistory);
-    console.log(props.sessions);
+    console.log(props.currentSession);
 
     // Helper function to format timestamp
     const formatTimestamp = (timestamp) => {
-        //console.log(timestamp);
-        const formattedDate = moment(timestamp, 'YYYY-MM-DD HH:mm').tz('America/New_York').format('Do MMM [starting at] hA');
+        const date = moment(timestamp).tz('America/New_York');
+        
+        // Round down to the nearest half hour
+        const minutes = date.minutes();
+        const roundedMinutes = minutes < 30 ? 0 : 30;
+        date.minutes(roundedMinutes);
+        date.seconds(0);
+        date.milliseconds(0);
+    
+        let formatString;
+        if (roundedMinutes === 0) {
+            // Format without minutes for times on the hour
+            formatString = 'Do MMM [starting at] h A';
+        } else {
+            // Format with minutes for times on the half hour
+            formatString = 'Do MMM [starting at] h:mm A';
+        }
+    
+        const formattedDate = date.format(formatString);
         if (formattedDate === 'Invalid date') {
-            //console.error('Invalid date detected:', timestamp);
             return 'Unknown Date';
         }
         return formattedDate;
-    };
+    };    
     
     //Time stamp formatting like Home Page for clarity (Altered ClimbItem to match)
     const timeStampFormatting = (timestamp) => {
@@ -37,18 +54,50 @@ const SessionTapHistory = (props) => {
         }
         return tempTimestamp;
     };
-    const groupedClimbs = props.sessions;
+
+    const styles = StyleSheet.create({
+        firstItemShadow: {
+            shadowColor: 'blue',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.8,
+            shadowRadius: 2,  
+            elevation: 5 // for Android
+        },
+    });
+    
+    const groupedClimbs = props.currentSession;
     return (
-        <ScrollView>
-            {Object.entries(groupedClimbs).map(([key, climbs]) => (
+        <ScrollView style={{paddingVertical: 10}}>
+            {Object.entries(groupedClimbs).reverse().map(([key, climbs]) => (
                 <View key={key}>
-                    <Text style={{color: 'black', paddingVertical: 10, fontWeight: 'bold', paddingHorizontal: 20}}>
-                        {`Session on ${formatTimestamp(key)}`}
-                    </Text>
+                    <View style={{paddingVertical: 5, paddingHorizontal: 20}}>
+                        {(props.isCurrent && climbs) && (
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
+                                <Text style={{color: 'black', fontWeight: 'bold'}}>Climbs in Current Session</Text>
+                                <View style={{padding: 5, borderRadius: 5, borderWidth: 1, borderColor: '#fe8100'}}>
+                                    <Text style={{color: '#fe8100'}}>LIVE</Text>
+                                </View>
+                            </View>
+                        )}
+                        {(props.isCurrent && !climbs) && (
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
+                                <Text style={{color: 'black', fontWeight: 'bold'}}>No active session</Text>
+                                <View style={{padding: 5, borderRadius: 5, borderWidth: 1, borderColor: '#fe8100'}}>
+                                    <Text style={{color: '#fe8100'}}>LIVE</Text>
+                                </View>
+                            </View>
+                        )}
+                        {!props.isCurrent && (
+                            <Text style={{color: 'black', fontWeight: 'bold'}}>
+                                {`Session on ${formatTimestamp(key)}`}
+                            </Text>
+                        )}
+                    </View>
                     <ListHistory
                         data={climbs}
-                        renderItem={(item) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={timeStampFormatting(item.tapTimestamp)} fromHome={props.fromHome} />}
+                        renderItem={(item, index, isHighlighted) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={timeStampFormatting(item.tapTimestamp)} fromHome={props.fromHome} isHighlighted={(index == 0 && isHighlighted)}/>}
                         keyExtractor={(item, index) => index.toString()}
+                        isHighlighted = {props.isCurrent}
                     />
                 </View>
             ))}

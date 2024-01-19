@@ -19,6 +19,7 @@ const ClimberProfile = ({ navigation }) => {
     const { tapCount, currentUser } = useContext(AuthContext);
     const [climbsHistory, setClimbsHistory] = useState([]);
     const [sessionsHistory, setSessionsHistory] = useState([]);
+    const [currentSession, setCurrentSession] = useState([]); //to store climbs in the current session
     const [historyCount, setHistoryCount] = useState(0);
     const [sessionCount, setSessionCount] = useState(0);
     const [refreshing, setRefreshing] = useState(false);
@@ -26,7 +27,9 @@ const ClimberProfile = ({ navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            handleTapHistory();
+            console.log('Loading Profile...');
+            setRefreshing(true);
+            handleTapHistory().then(() => setRefreshing(false));
         }, [])
     );
 
@@ -53,12 +56,18 @@ const ClimberProfile = ({ navigation }) => {
                 return { ...climbSnapshot.data(), tapId: filteredTaps[index].id, tapTimestamp: filteredTaps[index].timestamp};
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
 
-            const sessions = groupClimbsByTimestamp(newClimbsHistory);
+            //const sessionsOld = groupClimbsByTimestamp(newClimbsHistory);
+            const {expiredSessions, activeSession, sessionKey} = groupClimbsByTimestampDynamic(newClimbsHistory);
+            //console.log('Expired Sessions: ', expiredSessions);
+            //console.log('Current Session: ', activeSession);
+            //console.log('Old Sessions: ', sessionsOld);
+            //groupClimbsByTimestampDynamic(newClimbsHistory);
             setClimbsHistory(newClimbsHistory);
-            setSessionsHistory(sessions); //Updating sessions on fetching a new climbHistory
+            setSessionsHistory(expiredSessions); //Updating sessions on fetching a new climbHistory
+            setCurrentSession(activeSession);
             //console.log(sessions);
             setHistoryCount(newClimbsHistory.length);
-            setSessionCount(Object.keys(sessions).length); //Session count updated
+            setSessionCount(Object.keys(expiredSessions).length + (activeSession[sessionKey]? 1: 0)); //Session count updated
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
@@ -127,6 +136,67 @@ const ClimberProfile = ({ navigation }) => {
         return grouped;
     };
 
+    //NEW SESSION CREATION (6 hour dynamic sessions)
+    const groupClimbsByTimestampDynamic = (climbs) => {
+        const expiredSessions = {}; // Object to store expired sessions with keys
+        let currentSessionClimbs = []; // To store the current session climbs
+        let sessionStartTimestamp = null;
+        let sessionKey = null;
+        const currentTime = new Date().getTime();
+    
+        // Iterate from the oldest to the newest climb
+        for (let i = climbs.length - 1; i >= 0; i--) {
+            const climb = climbs[i];
+            const climbDate = convertTimestampToDate(climb.tapTimestamp);
+    
+            if (!climbDate) {
+                console.error('Skipping climb due to invalid date:', climb);
+                continue;
+            }
+    
+            if (currentSessionClimbs.length === 0) {
+                sessionStartTimestamp = climbDate;
+                sessionKey = moment(climbDate).tz('America/New_York').format('YYYY-MM-DD HH:mm');
+                currentSessionClimbs.push(climb);
+            } else {
+                const timeDiff = climbDate - sessionStartTimestamp;
+    
+                if (timeDiff <= 6 * 3600 * 1000) { // 6 hours in milliseconds
+                    currentSessionClimbs.push(climb);
+                } else {
+                    if (!expiredSessions[sessionKey]) {
+                        expiredSessions[sessionKey] = [];
+                    }
+                    currentSessionClimbs.reverse();
+                    expiredSessions[sessionKey].push(...currentSessionClimbs);
+                    currentSessionClimbs = [climb]; // Start a new session
+                    sessionStartTimestamp = climbDate;
+                    sessionKey = moment(climbDate).tz('America/New_York').format('YYYY-MM-DD HH:mm');
+                }
+            }
+        }
+    
+        let currentSession = null;
+        if (currentSessionClimbs.length > 0) {
+            currentSessionClimbs.reverse();
+            // Check if the last session is still within the 6-hour window
+            if (currentTime - sessionStartTimestamp.getTime() <= 6 * 3600 * 1000) {
+                // This is the current session
+                currentSession = currentSessionClimbs;
+            } else {
+                if (!expiredSessions[sessionKey]) {
+                    expiredSessions[sessionKey] = [];
+                }
+                expiredSessions[sessionKey].push(...currentSessionClimbs);
+            }
+        }
+        //console.log('Session Timestamp: ', sessionKey);
+        const activeSession = {};
+        activeSession[sessionKey] = currentSession;
+        return { expiredSessions, activeSession, sessionKey};
+    };    
+
+
     //Scroll View Added for Drag Down Refresh
     return (
         <SafeAreaView style={styles.container}>
@@ -171,7 +241,8 @@ const ClimberProfile = ({ navigation }) => {
                 </View>
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={[styles.effortHistoryList]}>
-                        <SessionTapHistory climbsHistory={climbsHistory} sessions={sessionsHistory}/>
+                        <SessionTapHistory climbsHistory={climbsHistory} currentSession={currentSession} isCurrent={true}/>
+                        <SessionTapHistory climbsHistory={climbsHistory} currentSession={sessionsHistory} isCurrent={false}/>
                     </View>
                 </View>
             </View>
@@ -189,7 +260,7 @@ const styles = StyleSheet.create({
     },
     innerContainer: {
         flex: 1,
-        paddingVertical: 5,
+        paddingTop: 5,
         width: '100%',
         margin: 0,
     },
@@ -199,7 +270,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 20,
+        paddingTop: 20,
     },
     any_text: {
         color: 'black',
@@ -209,6 +280,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
         paddingTop: 10,
+        paddingBottom: 0,
     },
     effortRecapGraph: {
         flex: 3,
@@ -235,7 +307,7 @@ const styles = StyleSheet.create({
         color: 'black',
         backgroundColor: 'transparent',
         paddingHorizontal: 0,
-        paddingVertical: 5,
+        paddingVertical: 10,
     },
     pillButton: {
         backgroundColor: '#3498db', // or any color of your choice
