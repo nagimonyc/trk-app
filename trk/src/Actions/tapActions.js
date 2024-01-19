@@ -20,7 +20,7 @@ export const processClimbId = (climbId, currentUser, role) => {
               let isSessionStart = false;
               const lastTapSnapshot = await getLastUserTap(currentUser.uid);
               let lastUserTap = null;
-              console.log('Snapshot: ', lastTapSnapshot.docs);
+              //console.log('Snapshot: ', lastTapSnapshot.docs);
               if (!lastTapSnapshot.empty) {
                 lastUserTap = lastTapSnapshot.docs[0].data();
                 console.log('Last Tap Data:', lastUserTap);
@@ -34,7 +34,6 @@ export const processClimbId = (climbId, currentUser, role) => {
                 const lastExpiryTime = lastUserTap.expiryTime ? lastUserTap.expiryTime.toDate() : null;
                 if (!lastExpiryTime || currentTime > lastExpiryTime) {
                     // If expiry time is not set or current time is past the expiry time
-                    console.log('Here');
                     isSessionStart = true;
                 } else {
                     // Current time is within the expiry time of the last session
