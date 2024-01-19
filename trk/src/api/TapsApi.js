@@ -123,6 +123,40 @@ function TapsApi() {
             .where("expiryTime", ">", firebase.firestore.Timestamp.now())
             .orderBy("expiryTime", "desc").get();
     }
+
+    function getRecentFiveSessions(userId) {
+        console.log('User ID: ', userId);
+        console.log('Fetching 5 Session Start Climbs....');
+        return ref
+            .where('user', '==', userId)
+            .where('isSessionStart', '==', true)
+            .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
+            .orderBy("expiryTime", "desc")
+            .limit(5)
+            .get();
+    }
+
+    function getTapsAfterSessionStart(userId) {
+        console.log('User ID: ', userId);
+        console.log('Fetching 5 Session Start Climbs....');
+        return ref
+            .where('user', '==', userId)
+            .where('isSessionStart', '==', true)
+            .orderBy("expiryTime", "desc")
+            .limit(5)
+            .get();
+    }
+
+    function getExpiredTaps(userId) {
+        console.log('User ID: ', userId);
+        console.log('Fetching Expired Climbs....');
+        return ref
+            .where('user', '==', userId)
+            .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
+            .orderBy("expiryTime", "desc")
+            .get();
+    }
+    
     
 
     return {
@@ -137,6 +171,8 @@ function TapsApi() {
         getTapsByClimbAndDate, 
         getLastUserTap,
         getActiveSessionTaps,
+        getRecentFiveSessions,
+        getExpiredTaps,
     };
 }
 
