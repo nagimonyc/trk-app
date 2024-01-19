@@ -400,6 +400,7 @@ export const useHomeScreenLogic = (props) => {
                         </View>
 
                         <ClimbItem climb={climb} tapId={tapId} tapTimestamp={timeStampFormatting(tapObj.timestamp)} fromHome={true}/>
+                        
                         <View style={{display: 'flex', flexDirection: 'column', paddingVertical: 5}}>
                         <View style={{ alignSelf: 'center' }}>
                             {tapObj.isSessionStart && <Text style={{ backgroundColor: 'white', textAlign: 'center', paddingHorizontal: 5, paddingVertical: 3, fontSize: 13, borderRadius: 3, color: 'black'}}>First Tap in Session!</Text>}
@@ -432,6 +433,8 @@ export const useHomeScreenLogic = (props) => {
         androidPromptRef,
     };
 };
+//Have leveraged the abilities of the new session mock object
+//@redpepper-nag
 
 const styles = StyleSheet.create({
     center: {

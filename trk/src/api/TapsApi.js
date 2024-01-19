@@ -104,6 +104,8 @@ function TapsApi() {
                 .get();
     }
 
+
+    //To get the last Tap made by a user
     function getLastUserTap(userId) {
         console.log('User ID: ', userId);
         return ref
@@ -115,6 +117,7 @@ function TapsApi() {
             .get();
     }
 
+    //To get all the taps in the current session
     function getActiveSessionTaps(userId) {
         console.log('User ID: ', userId);
         console.log('Fetching Active Session Climbs....');
@@ -124,6 +127,7 @@ function TapsApi() {
             .orderBy("expiryTime", "desc").get();
     }
 
+    //To get the starting points of the last 5 expired sessions
     function getRecentFiveSessions(userId) {
         console.log('User ID: ', userId);
         console.log('Fetching 5 Session Start Climbs....');
@@ -136,17 +140,7 @@ function TapsApi() {
             .get();
     }
 
-    function getTapsAfterSessionStart(userId) {
-        console.log('User ID: ', userId);
-        console.log('Fetching 5 Session Start Climbs....');
-        return ref
-            .where('user', '==', userId)
-            .where('isSessionStart', '==', true)
-            .orderBy("expiryTime", "desc")
-            .limit(5)
-            .get();
-    }
-
+    //To get all expired taps to build Expired sessions
     function getExpiredTaps(userId) {
         console.log('User ID: ', userId);
         console.log('Fetching Expired Climbs....');
@@ -156,8 +150,6 @@ function TapsApi() {
             .orderBy("expiryTime", "desc")
             .get();
     }
-    
-    
 
     return {
         addTap,
