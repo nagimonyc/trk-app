@@ -5,14 +5,21 @@ import readClimb from '../../../../NfcUtils/readClimb';
 import Image from '../../../../Components/Image';
 import { AuthContext } from '../../../../Utils/AuthContext';
 import analytics from '@react-native-firebase/analytics';
+import ClimbsApi from '../../../../api/ClimbsApi';
+import TapsApi from '../../../../api/TapsApi';
 import { useFocusEffect } from '@react-navigation/native';
-
 import { useDispatch } from 'react-redux';
 import { addClimb } from '../../../../Actions/tapActions';
-import tapMessage from '../../../../../assets/tagMessages.json'
-
+import tapMessage from '../../../../../assets/tagMessages.json';
 import NetInfo from '@react-native-community/netinfo';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+import ClimbItem from '../../../../Components/ClimbItem';
+import { LayoutAnimation, UIManager} from 'react-native'; //For smoother animations
+import { IconButton } from 'react-native-paper';
+import Svg, { Path } from 'react-native-svg';
+
 
 export const useHomeScreenLogic = (props) => {
     // Animation
@@ -29,7 +36,21 @@ export const useHomeScreenLogic = (props) => {
     // user check
     const { currentUser, role } = useContext(AuthContext);
 
+    //Storing the newly added tap data for creation of ClimbItem and future tasks.
+    const [tapId, setTapId] = useState(null);
+    const [climb, setClimb] = useState(null);
+    const [tapObj, setTapObj] = useState(null);
+
+    const fadeAnim = React.useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0 (Animation Value)
+
     const dispatch = useDispatch();
+
+    //Right Arrow for UI (Check it out Button to match Profile)
+    const RightArrow = () => (
+        <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <Path d="M9 18l6-6-6-6" stroke="#FFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </Svg>
+    );
 
     //Next PR these will actually be calculated rather than hardcoded (set the true value to the option with the most messages in JSON file)
     
@@ -118,14 +139,137 @@ export const useHomeScreenLogic = (props) => {
             console.log("Is connected?", state.isConnected);
             if (state.isConnected) {
                 console.log('Navigating');
-                navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
+                //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true});
+                addClimbWithNetwork(climbId[0]); //No Navigation to Climb Detail, done in record itself
             } else {
                 dispatch(addClimb(climbId[0], currentUser, role));
-                Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]);
+                Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]); //Offline Processing done as usual
             }
         });
     };
 
+    const addClimbWithNetwork = async (climbId) => {
+        try {
+          const climbDataResult = await ClimbsApi().getClimb(climbId);
+          if (climbDataResult && climbDataResult._data) {
+            if (currentUser.uid !== climbDataResult._data.setter && role !== "setter") {
+              const { addTap } = TapsApi();
+              const tap = {
+                climb: climbId,
+                user: currentUser.uid,
+                timestamp: new Date(),
+                completion: 0,
+                attempts: '',
+                witness1: '',
+                witness2: '',
+              };
+      
+              const documentReference =  await addTap(tap);
+              const tapDataResult = await TapsApi().getTap(documentReference.id);
+              setClimb(climbDataResult._data);
+              setTapObj(tapDataResult._data); //All relevant data is collected and set.
+              setTapId(documentReference.id);
+              console.log('Climb was processed!');
+              console.log('Tap ID: ', documentReference.id);
+              console.log('Climb: ', climbDataResult._data);
+              console.log('Tap: ', tapDataResult._data);
+            } else {
+              console.log('The Setter is the user or this a Setter Account. Tap was not added');
+              //Toasts are shown for non-recorded logic (Tap not created).
+              Toast.show({
+                type: 'success',
+                text1: 'You are a Setter! View in Profile.',
+            });
+            }
+          } else {
+            console.error('Climb data not found');
+            Toast.show({
+                type: 'error',
+                text1: 'Tap Processed. No climb data.',
+            });
+          }
+        } catch (error) {
+          console.error('Error processing climbId (possibly Firebase error):', error);
+          Toast.show({
+            type: 'error',
+            text1: 'Tap Processed. Error.',
+        });
+        }
+      }; 
+
+      //FADE-IN AND OUT ANIMATION HANDLER
+      useEffect(() => {
+        if (tapId) {
+          // Immediate fade-in animation
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+          }).start();
+      
+          // Start the flashing after 10 seconds
+          const timeoutId = setTimeout(() => {
+            let flashes = 0;
+            const intervalId = setInterval(() => {
+              // Define the flashing animation within the interval callback
+              const flashingAnimation = Animated.sequence([
+                Animated.timing(fadeAnim, {
+                  toValue: 0.3,
+                  duration: 250,
+                  useNativeDriver: true,
+                }),
+                Animated.timing(fadeAnim, {
+                  toValue: 1,
+                  duration: 250,
+                  useNativeDriver: true,
+                }),
+              ]);
+      
+              flashingAnimation.start();
+      
+              flashes++;
+              if (flashes >= 10) { // 10 flashes in 5 seconds
+                clearInterval(intervalId);
+      
+                // Proceed to fade out after flashing
+                Animated.timing(fadeAnim, {
+                  toValue: 0,
+                  duration: 1000,
+                  useNativeDriver: true,
+                }).start(() => {
+                  LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                  setTapId(null);
+                  setClimb(null);
+                  setTapObj(null);
+                });
+              }
+            }, 500); // Flash every 500ms
+      
+            return () => {
+              clearInterval(intervalId);
+            };
+          }, 10000); // Start flashing after 10 seconds
+      
+          return () => {
+            clearTimeout(timeoutId);
+          };
+        }
+      }, [tapId, fadeAnim]);
+                 
+    //Timestamp formatting for future ClimbItem call
+    const timeStampFormatting = (timestamp) => {
+        let tempTimestamp = null;
+        if (timestamp.toDate) { // Convert Firebase Timestamp to JavaScript Date
+            tempTimestamp = timestamp.toDate().toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true,
+              timeZone: 'America/New_York' // NEW YORK TIME
+            });
+        }
+        return tempTimestamp;
+    };
+      
     useEffect(() => {
         console.log('[TEST] HomeScreen useEffect called');
         async function checkNfc() {
@@ -212,13 +356,43 @@ export const useHomeScreenLogic = (props) => {
                 </>
             );
         } else {
+            if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+                UIManager.setLayoutAnimationEnabledExperimental(true);
+            }
 
             const messageComponent = selectedMessage.split(/(?<=[.,!?  ])\s/).map((sentence, index) => (
                 <Text key={index} style={index === 0 ? styles.tapText : styles.sentence}>{sentence}</Text>
             ));
 
             return (
-                <View style={{ flex: 1 }}>
+                <View style={{flex: 1, margin: 0, padding: 0, justifyContent: 'center', width: '100%'}}>
+                    {tapId !== null && climb !== null && tapObj !== null && ( //Animated Top View
+                        <Animated.View
+                            style={{
+                            ...styles.tapIdContainer, 
+                            opacity: fadeAnim, // Bind opacity to animated value
+                            }}
+                        >
+                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 20}}>
+                            <Text style={{ color: 'black', fontSize: 15 }}>That's a tap!</Text>
+                            <IconButton
+                                icon="camera-timer"
+                                iconColor="black"
+                                size={20}
+                                style={{ position: 'absolute', end: 0 }}
+                            />
+                        </View>
+
+                        <ClimbItem climb={climb} tapId={tapId} tapTimestamp={timeStampFormatting(tapObj.timestamp)} fromHome={true}/>
+                        <TouchableOpacity style={styles.navigate}
+                            onPress={() => navigation.navigate('ProfileTab')}>
+                           <Text style={styles.buttonText}>Check it out</Text>
+                           <RightArrow style={{ width: '100%', height: '100%' }} />
+                        </TouchableOpacity>
+
+                        </Animated.View>
+                    )}
+                    <View style={{paddingVertical: 20, flex: 1}}>
                     {messageComponent}
                     <TouchableOpacity style={styles.button} onPress={identifyClimb}>
                         <Animated.Image
@@ -227,6 +401,7 @@ export const useHomeScreenLogic = (props) => {
                             resizeMode="contain"
                         />
                     </TouchableOpacity>
+                    </View>
                 </View>
             );
         };
@@ -245,31 +420,28 @@ const styles = StyleSheet.create({
     image: {
         width: 180,
         height: 180,
-        marginBottom: 60,
+        marginBottom: 20,
         marginTop: 15,
     },
     tapText: {
-        marginTop: 100,
         textAlign: 'center',
         color: 'black',
         fontSize: 25,
-        marginBottom: 10,
         fontWeight: '600',
     },
-    celebration: {
-        marginTop: 20,
+  celebration: {
+        marginTop: 10,
         textAlign: 'center',
         color: 'black',
         fontSize: 20,
-        marginBottom: 10,
     },
-    instructions: {
-        marginTop: 30,
+
+  instructions: {
+        marginTop: 10,
         textAlign: 'center',
         color: 'black',
         fontSize: 20,
-        marginBottom: 10,
-        marginHorizontal: 40,
+        paddingHorizontal: 40,
     },
     button: {
         alignItems: 'center',
@@ -277,7 +449,29 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         color: 'black',
-        marginTop: 50,
+        marginTop: 30,
+    },
+    tapIdContainer: {
+        padding: 20,
+        width: '100%',
+        flex: 1,
+    },
+    navigate: {
+        backgroundColor: '#3498db', // or any color of your choice
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        marginTop: 10,
+        borderRadius: 50,  // This will give it a pill shape
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        display: 'flex',
+        flexDirection: 'row',
+        width: '50%',
+        alignSelf: 'center',
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 15
     },
     sentence: {
         textAlign: 'center',
@@ -287,7 +481,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginTop: 20,
     },
-
 });
 
 export default useHomeScreenLogic;

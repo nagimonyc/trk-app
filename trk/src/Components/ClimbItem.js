@@ -33,7 +33,6 @@ const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp}) => {
     }, []);
 
 
-
     const navigateToDetail = async () => {
         try {
             const tapDocument = await TapsApi().getTap(tapId);
@@ -66,11 +65,13 @@ const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp}) => {
         );
     }
     else {
+        //Added the timestamp to the Profile ClimbItem for better understanding of which tap was logged. Current pattern makes it difficult to find the most recent tap on navigation.
         return (
             <TouchableOpacity onPress={role === 'climber' ? navigateToDetail : navigateToSet}>
                 <ListItemContainer dotStyle={styles.climbDot} grade={climb.grade}>
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.setterDot}>
+                        <Text style={{color: 'black', paddingRight: 10}}>{tapTimestamp}</Text>
                         <RightArrow style={{ width: '100%', height: '100%' }} />
                     </View>
                 </ListItemContainer>
@@ -104,14 +105,14 @@ const styles = StyleSheet.create({
 
     },
     setterDot: {
-        width: 30,
-        height: 30,
         borderRadius: 15,
         backgroundColor: 'white',
         marginRight: 5,
         marginLeft: 60,
         alignItems: 'center',
         justifyContent: 'center',
+        display: 'flex', //Some CSS changes for the time addition
+        flexDirection: 'row',
     },
     timerInfo: {
         borderRadius: 15,
