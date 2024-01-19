@@ -1,6 +1,7 @@
 import firebase from "@react-native-firebase/app";
 import "@react-native-firebase/firestore";
 import moment from "moment-timezone";
+import { firebase as firebaseFunctions } from "@react-native-firebase/functions";
 
 function TapsApi() {
 
@@ -44,7 +45,43 @@ function TapsApi() {
 
     async function updateTap(tapId, updatedTap) {
         const tapRef = firebase.firestore().collection("taps").doc(tapId);
+        if (updatedTap && updatedTap.archived === true) {
+            //update the current tap
+            //find next tap and make that session start
+            await tapRef.update(updatedTap);
+            const oldTap = await getTap(tapId);
+            console.log('The old tap is: ', oldTap);
 
+            //If the tap being archived marks the start of a session, then we find the oldest tap in that session to mark as the beginning of the session (still expires at the older time)
+            if (oldTap._data.isSessionStart) {
+                    const nextTaps = await ref
+                    .where('user', '==', oldTap._data.user)
+                    .where('archived', '!=', true)
+                    .orderBy('archived')
+                    .where('expiryTime', '==', oldTap._data.expiryTime)
+                    .orderBy('timestamp', 'asc')
+                    .limit(5)
+                    .get();
+
+                if (!nextTaps.empty) {
+                    console.log('Updating the next one! ', nextTaps.docs[0]);
+                    const nextTapRef = firebase.firestore().collection("taps").doc(nextTaps.docs[0].id);
+                    await nextTapRef.update({ isSessionStart: true });
+
+                    const scheduleFunction = firebaseFunctions.functions().httpsCallable('scheduleFunction');
+                    scheduleFunction({tapId: nextTaps.docs[0].id, expiryTime: oldTap._data.expiryTime.toDate()})
+                        .then((result) => {
+                            // Read result of the Cloud Function.
+                            console.log('Function result:', result.data);
+                        }).catch((error) => {
+                            // Getting the Error details.
+                            console.error('Error calling function:', error);
+                        });
+
+                }
+            }
+            return;
+        }
         return await tapRef.update(updatedTap);
     }
 
@@ -57,6 +94,17 @@ function TapsApi() {
                 .get();
     }
 
+    function getLastUserTap(userId) {
+        console.log('User ID: ', userId);
+        return ref
+            .where('user', '==', userId)
+            .where('archived', '!=', true)
+            .orderBy('archived')
+            .orderBy('timestamp', 'desc')
+            .limit(1)
+            .get();
+    }
+    
 
     return {
         addTap,
@@ -67,7 +115,8 @@ function TapsApi() {
         getTopTenTaps,
         updateTap,
         onLatestFourTapsUpdate,
-        getTapsByClimbAndDate
+        getTapsByClimbAndDate, 
+        getLastUserTap,
     };
 }
 

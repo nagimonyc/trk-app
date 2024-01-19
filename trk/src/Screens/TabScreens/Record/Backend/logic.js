@@ -17,6 +17,7 @@ import ClimbItem from '../../../../Components/ClimbItem';
 import { LayoutAnimation, UIManager} from 'react-native'; //For smoother animations
 import { IconButton } from 'react-native-paper';
 import Svg, { Path } from 'react-native-svg';
+import { firebase } from '@react-native-firebase/functions';
 
 
 //Only altered CSS with the integration of the dynamic text (UI impact only)
@@ -39,6 +40,8 @@ export const useHomeScreenLogic = (props) => {
     const [tapId, setTapId] = useState(null);
     const [climb, setClimb] = useState(null);
     const [tapObj, setTapObj] = useState(null);
+
+    const scheduleFunction = firebase.functions().httpsCallable('scheduleFunction');
 
     const fadeAnim = React.useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0 (Animation Value)
 
@@ -124,19 +127,62 @@ export const useHomeScreenLogic = (props) => {
           const climbDataResult = await ClimbsApi().getClimb(climbId);
           if (climbDataResult && climbDataResult._data) {
             if (currentUser.uid !== climbDataResult._data.setter && role !== "setter") {
-              const { addTap } = TapsApi();
+              const { addTap, getLastUserTap} = TapsApi();
+
+              //Checking if it marks the start of a session. If not it is marked as the session start
+              let isSessionStart = false;
+              const lastTapSnapshot = await getLastUserTap(currentUser.uid);
+              let lastUserTap = null;
+              console.log('Snapshot: ', lastTapSnapshot.docs);
+              if (!lastTapSnapshot.empty) {
+                lastUserTap = lastTapSnapshot.docs[0].data();
+                console.log('Last Tap Data:', lastUserTap);
+              }
+              const currentTime = new Date();
+              const sixHoursLater = new Date(currentTime.getTime() + (6 * 60 * 60 * 1000)); // Add 6 hours in milliseconds
+            if (!lastUserTap || !lastUserTap.expiryTime) {
+                // No last tap or no data in last tap, start a new session
+                isSessionStart = true;
+            } else {
+                const lastExpiryTime = lastUserTap.expiryTime ? lastUserTap.expiryTime.toDate() : null;
+                if (!lastExpiryTime || currentTime > lastExpiryTime) {
+                    // If expiry time is not set or current time is past the expiry time
+                    console.log('Here');
+                    isSessionStart = true;
+                } else {
+                    // Current time is within the expiry time of the last session
+                    isSessionStart = false;
+                }
+            }            
+
               const tap = {
+                archived: false,
                 climb: climbId,
                 user: currentUser.uid,
-                timestamp: new Date(),
+                timestamp: currentTime,
                 completion: 0,
                 attempts: '',
                 witness1: '',
                 witness2: '',
-              };
-      
-              const documentReference =  await addTap(tap);
-              const tapDataResult = await TapsApi().getTap(documentReference.id);
+                isSessionStart: isSessionStart,
+                expiryTime: isSessionStart ? sixHoursLater : (lastUserTap?.expiryTime || null),
+            };
+
+              console.log('Tap: ', tap);
+
+            const documentReference =  await addTap(tap);
+            const tapDataResult = await TapsApi().getTap(documentReference.id);
+              //Notifications only sent is it marks the start of a session
+              if (isSessionStart) {
+                    scheduleFunction({tapId: documentReference.id, expiryTime: tap.expiryTime})
+                            .then((result) => {
+                                // Read result of the Cloud Function.
+                                console.log('Function result:', result.data);
+                            }).catch((error) => {
+                                // Getting the Error details.
+                                console.error('Error calling function:', error);
+                            });
+                }
               setClimb(climbDataResult._data);
               setTapObj(tapDataResult._data); //All relevant data is collected and set.
               setTapId(documentReference.id);
