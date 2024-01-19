@@ -17,7 +17,10 @@ import ClimbItem from '../../../../Components/ClimbItem';
 import { LayoutAnimation, UIManager} from 'react-native'; //For smoother animations
 import { IconButton } from 'react-native-paper';
 import Svg, { Path } from 'react-native-svg';
+import { firebase } from '@react-native-firebase/functions';
 
+
+//Only altered CSS with the integration of the dynamic text (UI impact only)
 export const useHomeScreenLogic = (props) => {
     // Animation
     const logoScale = useRef(new Animated.Value(1)).current;
@@ -37,6 +40,8 @@ export const useHomeScreenLogic = (props) => {
     const [tapId, setTapId] = useState(null);
     const [climb, setClimb] = useState(null);
     const [tapObj, setTapObj] = useState(null);
+
+    const scheduleFunction = firebase.functions().httpsCallable('scheduleFunction');
 
     const fadeAnim = React.useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0 (Animation Value)
 
@@ -90,7 +95,7 @@ export const useHomeScreenLogic = (props) => {
         Animated.loop(
             Animated.sequence([
                 Animated.timing(logoScale, {
-                    toValue: 1.05, // Slightly larger
+                    toValue: 1.15, // Slightly larger
                     duration: 1750,
                     useNativeDriver: true,
                 }),
@@ -122,19 +127,61 @@ export const useHomeScreenLogic = (props) => {
           const climbDataResult = await ClimbsApi().getClimb(climbId);
           if (climbDataResult && climbDataResult._data) {
             if (currentUser.uid !== climbDataResult._data.setter && role !== "setter") {
-              const { addTap } = TapsApi();
+              const { addTap, getLastUserTap} = TapsApi();
+
+              //Checking if it marks the start of a session. If not it is marked as the session start
+              let isSessionStart = false;
+              const lastTapSnapshot = await getLastUserTap(currentUser.uid);
+              let lastUserTap = null;
+              //console.log('Snapshot: ', lastTapSnapshot.docs);
+              if (!lastTapSnapshot.empty) {
+                lastUserTap = lastTapSnapshot.docs[0].data();
+                console.log('Last Tap Data:', lastUserTap);
+              }
+              const currentTime = new Date();
+              const sixHoursLater = new Date(currentTime.getTime() + (6 * 60 * 60 * 1000)); // Add 6 hours in milliseconds
+            if (!lastUserTap || !lastUserTap.expiryTime) {
+                // No last tap or no data in last tap, start a new session
+                isSessionStart = true;
+            } else {
+                const lastExpiryTime = lastUserTap.expiryTime ? lastUserTap.expiryTime.toDate() : null;
+                if (!lastExpiryTime || currentTime > lastExpiryTime) {
+                    // If expiry time is not set or current time is past the expiry time
+                    isSessionStart = true;
+                } else {
+                    // Current time is within the expiry time of the last session
+                    isSessionStart = false;
+                }
+            }            
+
               const tap = {
+                archived: false,
                 climb: climbId,
                 user: currentUser.uid,
-                timestamp: new Date(),
+                timestamp: currentTime,
                 completion: 0,
                 attempts: '',
                 witness1: '',
                 witness2: '',
-              };
-      
-              const documentReference =  await addTap(tap);
-              const tapDataResult = await TapsApi().getTap(documentReference.id);
+                isSessionStart: isSessionStart,
+                expiryTime: isSessionStart ? sixHoursLater : (lastUserTap?.expiryTime || null),
+            };
+
+            console.log('Tap: ', tap);
+            const documentReference =  await addTap(tap);
+            const tapDataResult = await TapsApi().getTap(documentReference.id);
+              //Notifications only sent is it marks the start of a session
+              if (isSessionStart) {
+                    const expiryTimeForFunction = tap.expiryTime instanceof Date ? tap.expiryTime.toISOString() : tap.expiryTime;
+                    scheduleFunction({tapId: documentReference.id, expiryTime: expiryTimeForFunction})
+                            .then((result) => {
+                                // Read result of the Cloud Function.
+                                console.log('Function result:', result.data);
+                            }).catch((error) => {
+                                // Getting the Error details.
+                                console.error('Error calling function:', error);
+                            });
+                }
               setClimb(climbDataResult._data);
               setTapObj(tapDataResult._data); //All relevant data is collected and set.
               setTapId(documentReference.id);
@@ -334,7 +381,7 @@ export const useHomeScreenLogic = (props) => {
             ));
 
             return (
-                <View style={{flex: 1, margin: 0, padding: 0, justifyContent: 'center', width: '100%'}}>
+                <View style={{display: 'flex', flexDirection: 'column', margin: 0, padding: 0, justifyContent: (tapId? 'flex-start': 'center'), width: '100%', height: '100%'}}>
                     {tapId !== null && climb !== null && tapObj !== null && ( //Animated Top View
                         <Animated.View
                             style={{
@@ -361,7 +408,7 @@ export const useHomeScreenLogic = (props) => {
 
                         </Animated.View>
                     )}
-                    <View style={{paddingVertical: 20, flex: 1}}>
+                    <View style={{paddingBottom: 20, justifyContent: 'center', paddingTop: 20}}>
                     {messageComponent}
                     <TouchableOpacity style={styles.button} onPress={identifyClimb}>
                         <Animated.Image
@@ -390,13 +437,13 @@ const styles = StyleSheet.create({
         width: 180,
         height: 180,
         marginBottom: 20,
-        marginTop: 15,
+        marginTop: 0,
     },
     tapText: {
         textAlign: 'center',
         color: 'black',
-        fontSize: 25,
-        fontWeight: '600',
+        fontSize: 20,
+        fontWeight: '400'
     },
   celebration: {
         marginTop: 10,
@@ -415,7 +462,7 @@ const styles = StyleSheet.create({
     button: {
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 10,
+        padding: 20,
         borderRadius: 5,
         color: 'black',
         marginTop: 30,
@@ -423,7 +470,7 @@ const styles = StyleSheet.create({
     tapIdContainer: {
         padding: 20,
         width: '100%',
-        flex: 1,
+        alignSelf: 'flex-start',
     },
     navigate: {
         backgroundColor: '#3498db', // or any color of your choice
@@ -443,12 +490,11 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
     sentence: {
+        marginTop: 10,
         textAlign: 'center',
         color: 'black',
-        fontSize: 25,
-        marginBottom: 10,
-        fontWeight: '600',
-        marginTop: 20,
+        fontSize: 20,
+        fontWeight: '400'
     },
 });
 
