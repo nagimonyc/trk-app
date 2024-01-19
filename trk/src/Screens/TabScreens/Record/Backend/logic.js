@@ -12,6 +12,7 @@ import { addClimb } from '../../../../Actions/tapActions';
 import tapMessage from '../../../../../assets/tagMessages.json'
 
 import NetInfo from '@react-native-community/netinfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const useHomeScreenLogic = (props) => {
     // Animation
@@ -31,11 +32,15 @@ export const useHomeScreenLogic = (props) => {
     const dispatch = useDispatch();
 
     //Next PR these will actually be calculated rather than hardcoded (set the true value to the option with the most messages in JSON file)
-    let isFirstTimeUser = false;
-    let isFTUNotFirstClimb = false;
-    let isReturningUserFirstClimbOfDay = false;
-    let isReturningUserFirstClimbOfAnotherSession = true;
-    let isReturningUserNotFirstClimb = false;
+    
+    
+    const [isFirstTimeUser, setIsFirstTimeUser] = useState(false);
+    // const [isFirstClimbOfDay] = useState(false);
+    let isFirstClimbOfDay = false;
+    // const [isFirstClimbOfAnotherSession] = useState(false)
+    let isFirstClimbOfAnotherSession = true;
+    // const [isNotFirstClimb] = useState(false)
+    let isNotFirstClimb = false;
 
 
     const [selectedMessage, setSelectedMessage] = useState('');
@@ -45,24 +50,48 @@ export const useHomeScreenLogic = (props) => {
         return Math.floor(Math.random() * array.length);
     }
 
+    //This sets a flag in local storage (avaible without wifi) to define if someone is FTU -> we can reuse this elsewhere if FTU/returning user needs to be checked
+    const checkFirstTimeUser = async () => {
+        try {
+          const isFirstTime = await AsyncStorage.getItem('isFirstTimeUser');
+          if (isFirstTime === null) {
+            // It's the first time, set the flag
+            await AsyncStorage.setItem('isFirstTimeUser', 'true');
+            setIsFirstTimeUser(true); // Set state to true
+          } else {
+            setIsFirstTimeUser(false); // Set state to false if not first time
+          }
+        } catch (error) {
+          console.error('Error checking first-time user status:', error);
+          setIsFirstTimeUser(false); // Default to false in case of error
+        }
+      };
+  
+      useFocusEffect(
+        useCallback(() => {
+            checkFirstTimeUser();
+        }, [])
+    );
     const selectRandomMessage = useCallback(() => {
         let message;
         if (isFirstTimeUser) {
-            message = tapMessage.FTUFirstClimb[randomIndex(tapMessage.FTUFirstClimb)];
-        } else if (isFTUNotFirstClimb) {
-            message = tapMessage.FTUNotFirstClimb[randomIndex(tapMessage.FTUNotFirstClimb)];
-        } else if (isReturningUserFirstClimbOfDay) {
-            message = tapMessage.ReturningUserFirstClimbOfDay[randomIndex(tapMessage.ReturningUserFirstClimbOfDay)];
-        } else if (isReturningUserFirstClimbOfAnotherSession) {
-            message = tapMessage.ReturningUserFirstClimbOfAnotherSession[randomIndex(tapMessage.ReturningUserFirstClimbOfAnotherSession)];
-        } else if (isReturningUserNotFirstClimb) {
-            message = tapMessage.ReturningUserNotFirstClimb[randomIndex(tapMessage.ReturningUserNotFirstClimb)];
+            message = tapMessage.FTU[randomIndex(tapMessage.FTU)];
+        } else if (isFirstClimbOfDay) {
+            message = tapMessage.FirstClimbOfDay[randomIndex(tapMessage.FirstClimbOfDay)];
+        } else if (isFirstClimbOfAnotherSession) {
+            message = tapMessage.FirstClimbOfAnotherSession[randomIndex(tapMessage.FirstClimbOfAnotherSession)];
+        } else if (isNotFirstClimb) {
+            message = tapMessage.NotFirstClimb[randomIndex(tapMessage.NotFirstClimb)];
         } else {
             // Default message or other logic
             message = "Completed a climb? 🎉🎉🎉  Tap below to save your achievement";
         }
         setSelectedMessage(message);
-    }, [isFirstTimeUser, isFTUNotFirstClimb, isReturningUserFirstClimbOfDay]);
+    }, [isFirstTimeUser, isFirstClimbOfDay]);
+
+    useEffect(() => {
+        selectRandomMessage();
+    }, [isFirstTimeUser]);
 
     useFocusEffect(selectRandomMessage);
   
