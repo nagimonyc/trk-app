@@ -69,12 +69,22 @@ function TapsApi() {
                     await nextTapRef.update({ isSessionStart: true });
 
                     const scheduleFunction = firebaseFunctions.functions().httpsCallable('scheduleFunction');
-                    scheduleFunction({tapId: nextTaps.docs[0].id, expiryTime: oldTap._data.expiryTime.toDate()})
+                    let expiryTimeForFunction;
+                    if (oldTap._data.expiryTime instanceof firebase.firestore.Timestamp) {
+                        // Convert Firebase Timestamp to JavaScript Date object
+                        expiryTimeForFunction = oldTap._data.expiryTime.toDate().toISOString();
+                    } else if (oldTap._data.expiryTime instanceof Date) {
+                        // Already a JavaScript Date object
+                        expiryTimeForFunction = oldTap._data.expiryTime.toISOString();
+                    } else {
+                        // If it's not a Firebase Timestamp or JavaScript Date, use it as is
+                        expiryTimeForFunction = oldTap._data.expiryTime;
+                    }
+
+                    scheduleFunction({ tapId: nextTaps.docs[0].id, expiryTime: expiryTimeForFunction })
                         .then((result) => {
-                            // Read result of the Cloud Function.
                             console.log('Function result:', result.data);
                         }).catch((error) => {
-                            // Getting the Error details.
                             console.error('Error calling function:', error);
                         });
 
@@ -104,6 +114,15 @@ function TapsApi() {
             .limit(1)
             .get();
     }
+
+    function getActiveSessionTaps(userId) {
+        console.log('User ID: ', userId);
+        console.log('Fetching Active Session Climbs....');
+        return ref
+            .where('user', '==', userId)
+            .where("expiryTime", ">", firebase.firestore.Timestamp.now())
+            .orderBy("expiryTime", "desc").get();
+    }
     
 
     return {
@@ -117,6 +136,7 @@ function TapsApi() {
         onLatestFourTapsUpdate,
         getTapsByClimbAndDate, 
         getLastUserTap,
+        getActiveSessionTaps,
     };
 }
 

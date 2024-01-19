@@ -60,7 +60,8 @@ export const processClimbId = (climbId, currentUser, role) => {
                   const documentReference =  await addTap(tap);
                   const tapDataResult = await TapsApi().getTap(documentReference.id);
                   const scheduleFunction = firebase.functions().httpsCallable('scheduleFunction');
-                  scheduleFunction({tapId: documentReference.id, expiryTime: tap.expiryTime})
+                  const expiryTimeForFunction = tap.expiryTime instanceof Date ? tap.expiryTime.toISOString() : tap.expiryTime;
+                  scheduleFunction({tapId: documentReference.id, expiryTime: expiryTimeForFunction})
                     .then((result) => {
                         // Read result of the Cloud Function.
                         console.log('Function result:', result.data);

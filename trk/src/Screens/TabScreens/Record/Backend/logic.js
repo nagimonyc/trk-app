@@ -167,13 +167,13 @@ export const useHomeScreenLogic = (props) => {
                 expiryTime: isSessionStart ? sixHoursLater : (lastUserTap?.expiryTime || null),
             };
 
-              console.log('Tap: ', tap);
-
+            console.log('Tap: ', tap);
             const documentReference =  await addTap(tap);
             const tapDataResult = await TapsApi().getTap(documentReference.id);
               //Notifications only sent is it marks the start of a session
               if (isSessionStart) {
-                    scheduleFunction({tapId: documentReference.id, expiryTime: tap.expiryTime})
+                    const expiryTimeForFunction = tap.expiryTime instanceof Date ? tap.expiryTime.toISOString() : tap.expiryTime;
+                    scheduleFunction({tapId: documentReference.id, expiryTime: expiryTimeForFunction})
                             .then((result) => {
                                 // Read result of the Cloud Function.
                                 console.log('Function result:', result.data);

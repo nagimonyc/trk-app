@@ -34,7 +34,7 @@ const ClimberProfile = ({ navigation }) => {
     );
 
     const handleTapHistory = async () => {
-        const { getTapsBySomeField } = TapsApi();
+        const { getTapsBySomeField, getActiveSessionTaps} = TapsApi();
         const { getClimb } = ClimbsApi();
         try {
             const tapsSnapshot = await getTapsBySomeField('user', currentUser.uid);
@@ -62,6 +62,12 @@ const ClimberProfile = ({ navigation }) => {
             //console.log('Current Session: ', activeSession);
             //console.log('Old Sessions: ', sessionsOld);
             //groupClimbsByTimestampDynamic(newClimbsHistory);
+            
+            const activeSessionSnapshot = (await getActiveSessionTaps(currentUser.uid)).docs.map(doc => doc.data()).filter(tap => tap.archived !== true);
+            console.log(activeSessionSnapshot.length);
+            //Active Climbs Collected
+
+
             setClimbsHistory(newClimbsHistory);
             setSessionsHistory(expiredSessions); //Updating sessions on fetching a new climbHistory
             setCurrentSession(activeSession); // Storing Active Climbs in a new session

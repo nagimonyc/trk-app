@@ -107,6 +107,7 @@ exports.decrementUserTapCounter = functions.firestore
 
     // GCP Job (Queued), to call the notification function after 6 hours (when a session is started ONLY), on deletion of the starting tap of the session, we shift to the next most recent tap (scheduled for the same time as original with difference)
     exports.scheduleFunction = functions.https.onCall(async (data, context) => {
+        console.log('Function called.....');
         const projectId = 'trk-app-505a1';
         const queue = 'sessionNotifications';
         const location = 'us-central1'; // e.g., 'us-central1'
@@ -118,22 +119,33 @@ exports.decrementUserTapCounter = functions.firestore
         // Convert payload to base64 encoded string.
         const convertedPayload = Buffer.from(JSON.stringify(payload)).toString('base64');
 
-        const task = {
-            httpRequest: {
-                httpMethod: 'POST',
-                url: url,
-                headers: {
-                    'Content-Type': 'application/json',
+        const expiryTime = data.expiryTime ? new Date(data.expiryTime) : null;
+        const convertedDate = new Date(expiryTime);
+        const currentDate = new Date();
+        const date_diff_in_seconds = (convertedDate - currentDate) / 1000;
+        console.log('Time diff: ', date_diff_in_seconds);
+        if (date_diff_in_seconds > 0) {
+            const task = {
+                httpRequest: {
+                    httpMethod: 'POST',
+                    url: url,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: convertedPayload,
                 },
-                body: convertedPayload,
-            },
-            scheduleTime: {
-                seconds: ((data.expiryTime !== null)? data.expiryTime: (Math.floor(Date.now() / 1000) + 6 * 60 * 60)) // Scheduled  for the Session Expiration Time
-            },
-        };
+                scheduleTime: {
+                    seconds: expiryTime !== null 
+                        ? Math.floor(Date.now() / 1000) + date_diff_in_seconds  // Convert Date object to seconds
+                        : Math.floor(Date.now() / 1000) + 6 * 60 * 60  // 6 hours from now in seconds
+                },
+            };
+            await client.createTask({parent, task});
+            console.log(`Task created: ${task.name}`);
+        } else {
+            console.log(`Task skipped`);
+        }
 
-        await client.createTask({parent, task});
-        console.log(`Task created: ${task.name}`);
     });
 
     //Notification styling and packaging
