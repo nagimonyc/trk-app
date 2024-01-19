@@ -66,6 +66,7 @@ const SessionTapHistory = (props) => {
     });
     
     const groupedClimbs = props.currentSession;
+    //Changes in display for active session (not empty), active session (empty), and the remaining sessions (Session class created in next PR).
     return (
         <ScrollView style={{paddingVertical: 10}}>
             {Object.entries(groupedClimbs).reverse().map(([key, climbs]) => (
@@ -96,6 +97,7 @@ const SessionTapHistory = (props) => {
                     <ListHistory
                         data={climbs}
                         renderItem={(item, index, isHighlighted) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={timeStampFormatting(item.tapTimestamp)} fromHome={props.fromHome} isHighlighted={(index == 0 && isHighlighted)}/>}
+                        //highlighted variable passed for index 0, only if it is an active session
                         keyExtractor={(item, index) => index.toString()}
                         isHighlighted = {props.isCurrent}
                     />

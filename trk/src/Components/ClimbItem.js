@@ -66,9 +66,10 @@ const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp, isHighlighted 
     }
     else {
         //Added the timestamp to the Profile ClimbItem for better understanding of which tap was logged. Current pattern makes it difficult to find the most recent tap on navigation.
+        //Highlighted the first climb of the active session (for clarity on which climb was logged)
         return (
             <TouchableOpacity onPress={role === 'climber' ? navigateToDetail : navigateToSet}>
-                <ListItemContainer dotStyle={styles.climbDot} grade={climb.grade} isHighlighted={isHighlighted}>
+                <ListItemContainer dotStyle={styles.climbDot} grade={climb.grade} isHighlighted={isHighlighted}> 
                     <Text style={styles.climbName}>{climb.name}</Text>
                     <View style={styles.setterDot}>
                         <Text style={{color: 'black', paddingRight: 10}}>{tapTimestamp}</Text>

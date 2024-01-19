@@ -3,8 +3,9 @@ import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 
 const ListItemContainer = ({ children, showDot = true, dotStyle = {}, grade, isHighlighted = false}) => {
+    //CSS changes to highlight the first item of the list (most recent tap)
     return (
-        <View style={(isHighlighted? styles.firstItemShadow: styles.container)}>
+        <View style={(isHighlighted? styles.firstItemShadow: styles.container)}> 
             {showDot && <Text style={[styles.defaultDot, dotStyle]}>{grade}</Text>}
             {children}
         </View>

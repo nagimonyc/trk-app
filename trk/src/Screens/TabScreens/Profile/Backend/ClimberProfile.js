@@ -27,7 +27,7 @@ const ClimberProfile = ({ navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            console.log('Loading Profile...');
+            console.log('Loading Profile...'); //Loading icon on initial loads (was confusing, and seemed like data was missing otherwise)
             setRefreshing(true);
             handleTapHistory().then(() => setRefreshing(false));
         }, [])
@@ -64,7 +64,7 @@ const ClimberProfile = ({ navigation }) => {
             //groupClimbsByTimestampDynamic(newClimbsHistory);
             setClimbsHistory(newClimbsHistory);
             setSessionsHistory(expiredSessions); //Updating sessions on fetching a new climbHistory
-            setCurrentSession(activeSession);
+            setCurrentSession(activeSession); // Storing Active Climbs in a new session
             //console.log(sessions);
             setHistoryCount(newClimbsHistory.length);
             setSessionCount(Object.keys(expiredSessions).length + (activeSession[sessionKey]? 1: 0)); //Session count updated
@@ -106,37 +106,7 @@ const ClimberProfile = ({ navigation }) => {
         return new Date(timestamp.seconds * 1000 + Math.round(timestamp.nanoseconds / 1000000));
     };
 
-    //CREATION OF SESSIONS WITH 4 HOUR GROUPS (Will alter in the next PR to make dynamic)
-    const groupClimbsByTimestamp = (climbs) => {
-        const grouped = {};
-        climbs.forEach(climb => {
-            const dateObject = convertTimestampToDate(climb.tapTimestamp);
-            console.log('Date Object:', dateObject);
-            if (!dateObject) {
-                // Handle the error or skip this climb
-                console.error('Skipping climb due to invalid date:', climb);
-                return;
-            }
-            // Convert the timestamp to a standard JavaScript Date object
-            const date = moment(dateObject).tz('America/New_York');
-            
-            // Round down the timestamp to the nearest 4 hours
-            const hours = date.hours();
-            const roundedHours = hours - (hours % 4);
-            const roundedDate = date.clone().hours(roundedHours).minutes(0).seconds(0).milliseconds(0);
-
-            const key = roundedDate.format('YYYY-MM-DD HH:mm'); // Formatted key
-            console.log(key); // Debugging
-            //console.log(climb.tapId);
-            if (!grouped[key]) {
-                grouped[key] = [];
-            }
-            grouped[key].push(climb);
-        });
-        return grouped;
-    };
-
-    //NEW SESSION CREATION (6 hour dynamic sessions)
+    //NEW SESSION CREATION (6 hour dynamic sessions)- PARTITIONED INTO OLDER SESSIONS AND CLIMBS IN THE CURRENT SESSION
     const groupClimbsByTimestampDynamic = (climbs) => {
         const expiredSessions = {}; // Object to store expired sessions with keys
         let currentSessionClimbs = []; // To store the current session climbs
@@ -251,6 +221,7 @@ const ClimberProfile = ({ navigation }) => {
     );
 }
 //Sessions are now passed to SessionTapHistory (displaying logic only now)
+//Two session histories for active session, and older sessions.
 
 const styles = StyleSheet.create({
     container: {

@@ -18,5 +18,5 @@ const ListHistory = ({ data, renderItem, keyExtractor, isHighlighted}) => {
         </ScrollView>
     );
 }
-
+//Just passing the highlighted variable for rendering in ClimbItem
 export default ListHistory;

@@ -18,6 +18,8 @@ import { LayoutAnimation, UIManager} from 'react-native'; //For smoother animati
 import { IconButton } from 'react-native-paper';
 import Svg, { Path } from 'react-native-svg';
 
+
+//Only altered CSS with the integration of the dynamic text (UI impact only)
 export const useHomeScreenLogic = (props) => {
     // Animation
     const logoScale = useRef(new Animated.Value(1)).current;
