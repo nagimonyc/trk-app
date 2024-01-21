@@ -72,7 +72,7 @@ const SessionTapHistory = (props) => {
             {Object.entries(groupedClimbs).reverse().map(([key, climbs]) => (
                 <View key={key}>
                     <View style={{paddingVertical: 5, paddingHorizontal: 20}}>
-                        {(props.isCurrent && climbs) && (
+                        {(props.isCurrent && climbs && climbs.length > 0) && (
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                                 <Text style={{color: 'black', fontWeight: 'bold'}}>Climbs in Current Session</Text>
                                 <View style={{padding: 5, borderRadius: 5, borderWidth: 1, borderColor: '#fe8100'}}>
@@ -80,7 +80,7 @@ const SessionTapHistory = (props) => {
                                 </View>
                             </View>
                         )}
-                        {(props.isCurrent && !climbs) && (
+                        {(props.isCurrent && climbs && climbs.length == 0) && (
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                                 <Text style={{color: 'black', fontWeight: 'bold'}}>No active session</Text>
                                 <View style={{padding: 5, borderRadius: 5, borderWidth: 1, borderColor: '#fe8100'}}>

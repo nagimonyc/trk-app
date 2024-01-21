@@ -127,18 +127,25 @@ function TapsApi() {
             .orderBy("expiryTime", "desc").get();
     }
 
-    //To get the starting points of the last 5 expired sessions
-    function getRecentFiveSessions(userId) {
+    // To get the starting points of the last sessions with pagination
+    function getRecentFiveSessions(userId, startAfterDoc = null) {
         console.log('User ID: ', userId);
-        console.log('Fetching 5 Session Start Climbs....');
-        return ref
+        console.log('Fetching Session Start Climbs with Pagination....');
+        let query = ref
             .where('user', '==', userId)
             .where('isSessionStart', '==', true)
             .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
             .orderBy("expiryTime", "desc")
-            .limit(5)
-            .get();
+            .limit(5);
+
+        if (startAfterDoc) {
+            console.log('Starting after: ', startAfterDoc);
+            query = query.startAfter(startAfterDoc);
+        }
+
+        return query.get();
     }
+
 
     //To get all expired taps to build Expired sessions
     function getExpiredTaps(userId) {
@@ -148,6 +155,18 @@ function TapsApi() {
             .where('user', '==', userId)
             .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
             .orderBy("expiryTime", "desc")
+            .get();
+    }
+
+    //To get all sessions quicker (display count)
+    function getTotalSessionCount(userId) {
+        console.log('User ID: ', userId);
+        console.log('Fetching Expired Climbs....');
+        return ref
+            .where('user', '==', userId)
+            .where('isSessionStart', '==', true)
+            .where('archived', '==', false)
+            .count()
             .get();
     }
 
@@ -165,6 +184,7 @@ function TapsApi() {
         getActiveSessionTaps,
         getRecentFiveSessions,
         getExpiredTaps,
+        getTotalSessionCount,
     };
 }
 
