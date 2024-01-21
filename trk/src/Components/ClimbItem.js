@@ -13,7 +13,7 @@ const RightArrow = () => (
   </Svg>
 );
 
-const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp, isHighlighted = false}) => {
+const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp, isHighlighted = false, sessionPick = false, tapIdRef = null, setSelectedTapId = null}) => {
     console.log('[TEST] ClimbItem called');
     const [imageURL, setImageURL] = useState(null);
     const navigation = useNavigation();
@@ -32,6 +32,17 @@ const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp, isHighlighted 
         fetchImageURL();
     }, []);
 
+
+    //To hanndle selection of the item within Edit Session (change in useRef variable)
+    const handleSelection = (id) => {
+        if (tapIdRef === null) {
+            console.log('No selection made!');
+        } else {
+            tapIdRef.current = id;
+            setSelectedTapId(tapIdRef.current);
+            console.log('Selection made: ', tapIdRef.current);
+        }
+    }
 
     const navigateToDetail = async () => {
         try {
@@ -63,8 +74,19 @@ const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp, isHighlighted 
                 </ListItemContainer>
             </View>
         );
-    }
-    else {
+    } else if (sessionPick) {
+        //Different formatting for SessionDetailLook
+        return (
+            <TouchableOpacity onPress={() => {handleSelection(climb.tapId)}}>
+                <ListItemContainer dotStyle={styles.climbDot} grade={climb.grade} isHighlighted={isHighlighted}> 
+                    <Text style={styles.climbName}>{climb.name}</Text>
+                    <View style={styles.setterDot}>
+                        <Text style={{color: 'black', paddingRight: 10}}>{tapTimestamp}</Text>
+                    </View>
+                </ListItemContainer>
+            </TouchableOpacity>
+        );
+    } else {
         //Added the timestamp to the Profile ClimbItem for better understanding of which tap was logged. Current pattern makes it difficult to find the most recent tap on navigation.
         //Highlighted the first climb of the active session (for clarity on which climb was logged)
         return (

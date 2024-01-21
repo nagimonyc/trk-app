@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 5,
+        backgroundColor: 'white',
     },
     defaultDot: {
         borderRadius: 5,
@@ -35,6 +36,7 @@ const styles = StyleSheet.create({
         borderColor: '#fe8100',
         borderWidth: 1,
         padding: 5,
+        backgroundColor: 'white',
         
     },
 });

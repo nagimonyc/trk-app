@@ -64,10 +64,10 @@ function TapsApi() {
                     .get();
 
                 if (!nextTaps.empty) {
-                    console.log('Updating the next one! ', nextTaps.docs[0]);
-                    const nextTapRef = firebase.firestore().collection("taps").doc(nextTaps.docs[0].id);
-                    await nextTapRef.update({ isSessionStart: true });
-
+                    console.log('Updating the next one! ', nextTaps.docs[0].id);
+                    
+                    //To handle the case where it doesn't exist
+                    await updateTap(nextTaps.docs[0].id, { isSessionStart: true, sessionImages: (oldTap._data.sessionImages !== undefined? oldTap._data.sessionImages: []), isSelected: (oldTap._data.isSelected !== undefined? oldTap._data.isSelected: true), sessionTitle: (oldTap._data.sessionTitle!== undefined? oldTap._data.sessionTitle: '')});
                     const scheduleFunction = firebaseFunctions.functions().httpsCallable('scheduleFunction');
                     let expiryTimeForFunction;
                     if (oldTap._data.expiryTime instanceof firebase.firestore.Timestamp) {
@@ -134,6 +134,7 @@ function TapsApi() {
         let query = ref
             .where('user', '==', userId)
             .where('isSessionStart', '==', true)
+            .where('archived', '==', false) //This was causing a minor issue in session loading (limit included archived so session taps were being excluded)
             .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
             .orderBy("expiryTime", "desc")
             .limit(5);
@@ -155,6 +156,7 @@ function TapsApi() {
             .where('user', '==', userId)
             .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
             .orderBy("expiryTime", "desc")
+            .orderBy('timestamp', 'desc') //For corrrect ordering
             .get();
     }
 

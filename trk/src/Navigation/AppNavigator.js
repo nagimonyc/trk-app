@@ -25,6 +25,8 @@ import LiveClimbTracker from '../Screens/LiveClimbTracker';
 import RecordScreen from '../Screens/TabScreens/Record/Frontend';
 import messaging from '@react-native-firebase/messaging';
 import Toast from 'react-native-toast-message';
+import SessionDetail from '../Components/SessionDetail';
+import EditSession from '../Components/Edit_Session';
 
 
 const Stack = createStackNavigator();
@@ -217,6 +219,24 @@ function ProfileStack() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Session_Detail"
+        component={SessionDetail}
+        options={({ navigation }) => ({ title: 'Session', headerTitleAlign: 'center', headerRight: () => (
+          <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+          />) })}
+      />
+      <Stack.Screen
+        name="Edit_Session"
+        component={EditSession}
+        options={({ navigation }) => ({ title: 'Edit Session', headerTitleAlign: 'center', headerRight: () => (
+          <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+          />) })}
       />
       <Stack.Screen
         name="Detail"
