@@ -59,9 +59,9 @@ export const useHomeScreenLogic = (props) => {
     // const [isFirstClimbOfDay] = useState(false);
     let isFirstClimbOfDay = false;
     // const [isFirstClimbOfAnotherSession] = useState(false)
-    let isFirstClimbOfAnotherSession = true;
+    let isFirstClimbOfAnotherSession = false;
     // const [isNotFirstClimb] = useState(false)
-    let isNotFirstClimb = false;
+    let isNotFirstClimb = true;
 
 
     const [selectedMessage, setSelectedMessage] = useState('');
