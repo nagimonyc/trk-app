@@ -86,7 +86,7 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted}) =>
     
             // If there is climb data and images are available, use the latest image
             if (data[0] && data[0].images && data[0].images.length > 0) {
-              const latestImageRef = data[0].images[data[0].images.length - 1];
+              const latestImageRef = data[0].images[0]; //Fetches the first Image, useful when the user sets a new look for the session
               climbImageURL = latestImageRef.path;
             }
     
