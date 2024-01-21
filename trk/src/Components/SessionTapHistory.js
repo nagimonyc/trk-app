@@ -4,6 +4,7 @@ import ClimbItem from './ClimbItem';
 import { ScrollView, Text, View } from 'react-native';
 import moment from 'moment-timezone';
 import { StyleSheet } from 'react-native';
+import SessionItem from './SessionItem';
 
 //Removed all session creation code, moving it to ClimberProfile's backend. This allows for calculation of number of sessions, and future session tasks.
 //ONLY DISPLAYING IS DONE HERE NOW
@@ -39,7 +40,36 @@ const SessionTapHistory = (props) => {
             return 'Unknown Date';
         }
         return formattedDate;
-    };    
+    };
+
+    // Helper function to format timestamp
+    const sessionTimestamp = (timestamp) => {
+        const date = moment(timestamp).tz('America/New_York');
+        
+        // Round down to the nearest half hour
+        const minutes = date.minutes();
+        const roundedMinutes = minutes < 30 ? 0 : 30;
+        date.minutes(roundedMinutes);
+        date.seconds(0);
+        date.milliseconds(0);
+    
+        let formatString;
+        let formatStringHeader;
+        formatStringHeader = 'Do MMM';
+        if (roundedMinutes === 0) {
+            // Format without minutes for times on the hour
+            formatString = 'dddd, h A';
+        } else {
+            // Format with minutes for times on the half hour
+            formatString = 'dddd, h:mm A';
+        }
+        const formattedDate = date.format(formatString);
+        const formattedDateSubtext = date.format(formatStringHeader);
+        if (formattedDate === 'Invalid date' || formattedDateSubtext === 'Invalid date') {
+            return ['Unknown Time', 'Unknown Date'];
+        }
+        return [formattedDate, formattedDateSubtext];
+    }; 
     
     //Time stamp formatting like Home Page for clarity (Altered ClimbItem to match)
     const timeStampFormatting = (timestamp) => {
@@ -68,7 +98,7 @@ const SessionTapHistory = (props) => {
     const groupedClimbs = props.currentSession;
     //Changes in display for active session (not empty), active session (empty), and the remaining sessions (Session class created in next PR).
     return (
-        <ScrollView style={{paddingVertical: 10}}>
+        <ScrollView>
             {Object.entries(groupedClimbs).reverse().map(([key, climbs]) => (
                 <View key={key}>
                     <View style={{paddingVertical: 5, paddingHorizontal: 20}}>
@@ -88,19 +118,22 @@ const SessionTapHistory = (props) => {
                                 </View>
                             </View>
                         )}
-                        {!props.isCurrent && (
-                            <Text style={{color: 'black', fontWeight: 'bold'}}>
-                                {`Session on ${formatTimestamp(key)}`}
-                            </Text>
-                        )}
                     </View>
-                    <ListHistory
+                    {props.isCurrent && 
+                        (<ListHistory
                         data={climbs}
                         renderItem={(item, index, isHighlighted) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={timeStampFormatting(item.tapTimestamp)} fromHome={props.fromHome} isHighlighted={(index == 0 && isHighlighted)}/>}
                         //highlighted variable passed for index 0, only if it is an active session
                         keyExtractor={(item, index) => index.toString()}
                         isHighlighted = {props.isCurrent}
-                    />
+                        />)
+                    }
+                    {!props.isCurrent && 
+                        (<SessionItem
+                        data={climbs}
+                        title={sessionTimestamp(key)}
+                        />)
+                    }
                 </View>
             ))}
         </ScrollView>

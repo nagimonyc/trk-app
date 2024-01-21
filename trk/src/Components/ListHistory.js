@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 
 const ListHistory = ({ data, renderItem, keyExtractor, isHighlighted}) => {
     console.log('[TEST] ListHistory called');
-    if (!data) {
+    if (!data || (data && data.length == 0)) {
         return;
     }
     const styles = StyleSheet.create({
