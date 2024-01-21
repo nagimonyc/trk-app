@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore'; // <-- Add this line
+import messaging from '@react-native-firebase/messaging';
 
 // Create a context object
 export const AuthContext = createContext();
@@ -13,8 +14,18 @@ export const AuthProvider = ({ children }) => {
     const [role, setRole] = useState(null);
     const [tapCount, setTapCount] = useState(0);
 
-    // Handle user state changes
-    function onAuthStateChanged(user) {
+    async function onAuthStateChanged(user) {
+        if (user) {
+            try {
+                const token = await messaging().getToken();
+                // Store the token in Firestore
+                const userRef = firestore().collection('users').doc(user.uid);
+                await userRef.set({ fcmToken: token }, { merge: true });
+            } catch (error) {
+                console.error('Error updating FCM token:', error); //Storing FCM token for push notifications, on login
+            }
+        }
+    
         setCurrentUser(user);
         if (initializing) setInitializing(false);
     }

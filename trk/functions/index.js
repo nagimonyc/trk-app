@@ -20,6 +20,8 @@ const logger = require("firebase-functions/logger");
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const {CloudTasksClient} = require('@google-cloud/tasks');
+const client = new CloudTasksClient();
 admin.initializeApp();
 
 exports.incrementUserTapCounter = functions.firestore
@@ -65,4 +67,119 @@ exports.decrementUserTapCounter = functions.firestore
             }
         });
     });
+
+    //New function to send FMC notifications to the user's last accessed device
+    exports.sessionNotificationFunction = functions.https.onRequest(async (req, res) => {
+        const tapId = req.body.tapId;
+        try {
+            const tapRef = admin.firestore().collection('taps').doc(tapId);
+            const tapDoc = await tapRef.get();
+
+            if (!tapDoc.exists) {
+                return res.status(404).send('Tap not found');
+            }
+
+            const tapData = tapDoc.data();
+            if (tapData.archived === undefined || tapData.archived === false) {
+                // Retrieve user's FCM token
+                const userRef = admin.firestore().collection('users').doc(tapData.user);
+                const userDoc = await userRef.get();
+
+                if (!userDoc.exists) {
+                    return res.status(404).send('User not found');
+                }
+                const userData = userDoc.data();
+                if (userData.fcmToken) {
+                    // Send a notification
+                    await sendNotificationToUser(userData.fcmToken, tapId, tapData.user);
+                    res.send(`Notification sent for tapId: ${tapId}`);
+                } else {
+                    res.status(500).send('FCM token not found for user');
+                }
+            } else {
+                res.send(`No notification sent for archived tapId: ${tapId}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            res.status(500).send('Error processing request');
+        }
+    });
+
+    // GCP Job (Queued), to call the notification function after 6 hours (when a session is started ONLY), on deletion of the starting tap of the session, we shift to the next most recent tap (scheduled for the same time as original with difference)
+    exports.scheduleFunction = functions.https.onCall(async (data, context) => {
+        console.log('Function called.....');
+        const projectId = 'trk-app-505a1';
+        const queue = 'sessionNotifications';
+        const location = 'us-central1'; // e.g., 'us-central1'
+        const url = 'https://us-central1-trk-app-505a1.cloudfunctions.net/sessionNotificationFunction';
+        const payload = {tapId: data.tapId};
+        // Construct the fully qualified queue name.
+        const parent = client.queuePath(projectId, location, queue);
+
+        // Convert payload to base64 encoded string.
+        const convertedPayload = Buffer.from(JSON.stringify(payload)).toString('base64');
+
+        const expiryTime = data.expiryTime ? new Date(data.expiryTime) : null;
+        const convertedDate = new Date(expiryTime);
+        const currentDate = new Date();
+        const date_diff_in_seconds = (convertedDate - currentDate) / 1000;
+        console.log('Time diff: ', date_diff_in_seconds);
+        if (date_diff_in_seconds > 0) {
+            const task = {
+                httpRequest: {
+                    httpMethod: 'POST',
+                    url: url,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: convertedPayload,
+                },
+                scheduleTime: {
+                    seconds: expiryTime !== null 
+                        ? Math.floor(Date.now() / 1000) + date_diff_in_seconds  // Convert Date object to seconds
+                        : Math.floor(Date.now() / 1000) + 6 * 60 * 60  // 6 hours from now in seconds
+                },
+            };
+            await client.createTask({parent, task});
+            console.log(`Task created: ${task.name}`);
+        } else {
+            console.log(`Task skipped`);
+        }
+
+    });
+
+    //Notification styling and packaging
+    async function sendNotificationToUser(fcmToken, tapId, userId) {
+        const message = {
+            token: fcmToken,
+            notification: {
+                title: 'Check out your Session',
+                body: `View your recent session in Profile!`,
+            },
+            data: {
+                tapId: tapId,
+                targetScreen: 'ProfileTab',
+                userId: userId,
+            },
+            android: {
+                priority: 'high',
+                notification: {
+                    sound: 'default',
+                    channelId: "nagimo",
+                },
+            },
+            apns: {
+                headers: {
+                    'apns-priority': '10', // High priority
+                },
+                payload: {
+                    aps: {
+                        sound: 'default',
+                    },
+                },
+            },
+        };
+    
+        await admin.messaging().send(message);
+    }
     

@@ -13,12 +13,14 @@ import moment from 'moment-timezone';
 import { RefreshControl, ScrollView} from 'react-native';
 
 
+//Revamped how sessions are created (Only last 5 sessions are fetched as of now)- Next PR will implement pagination
 const ClimberProfile = ({ navigation }) => {
 
     //We now store sessions and session count here, as well as the refreshing state for reloads.
     const { tapCount, currentUser } = useContext(AuthContext);
     const [climbsHistory, setClimbsHistory] = useState([]);
     const [sessionsHistory, setSessionsHistory] = useState([]);
+    const [currentSession, setCurrentSession] = useState([]); //to store climbs in the current session
     const [historyCount, setHistoryCount] = useState(0);
     const [sessionCount, setSessionCount] = useState(0);
     const [refreshing, setRefreshing] = useState(false);
@@ -26,26 +28,56 @@ const ClimberProfile = ({ navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            handleTapHistory();
+            console.log('Loading Profile...'); //Loading icon on initial loads (was confusing, and seemed like data was missing otherwise)
+            setRefreshing(true);
+            handleTapHistory().then(() => setRefreshing(false));
         }, [])
     );
 
     const handleTapHistory = async () => {
-        const { getTapsBySomeField } = TapsApi();
+        const { getTapsBySomeField, getActiveSessionTaps, getRecentFiveSessions, getExpiredTaps} = TapsApi();
         const { getClimb } = ClimbsApi();
         try {
-            const tapsSnapshot = await getTapsBySomeField('user', currentUser.uid);
+            let recentSession = (await getRecentFiveSessions(currentUser.uid)) // Does not include the current session, gets the starting points of the last 5 sessions
+            //Filtering the recent session starts
+            const recentSessionStartsFiltered = recentSession.docs.map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
+                .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
 
+            const promise = recentSessionStartsFiltered.map(tap => getClimb(tap.climb));
+            // Resolve all promises to get climb details
+            const recentSnapshot = await Promise.all(promise);
+
+            // Combine climb details with tap data
+            const recentSessionStarts = recentSnapshot.map((climbSnapshot, index) => {
+                if (!climbSnapshot.exists) return null;
+                return { ...climbSnapshot.data(), tapId: recentSessionStartsFiltered[index].id, tapTimestamp: recentSessionStartsFiltered[index].timestamp};
+            }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
+
+            //Getting climbs for the Active Session
+            const activeSessionSnapshot = (await getActiveSessionTaps(currentUser.uid));
+            const tapsSnapshot = await getExpiredTaps(currentUser.uid);
             // Filter taps
             const filteredTaps = tapsSnapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
                 .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
 
+            //Filtering active session taps
+            const filteredActiveTaps = activeSessionSnapshot.docs
+                .map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
+                .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
+
+            
             // Fetch climb details for each filtered tap
             const climbsPromises = filteredTaps.map(tap => getClimb(tap.climb));
 
+            //Fetching climb details for active taps
+            const activeClimbPromises = filteredActiveTaps.map(tap => getClimb(tap.climb));
+
             // Resolve all promises to get climb details
             const climbsSnapshots = await Promise.all(climbsPromises);
+
+            //Resolve active promises to get active session climb details
+            const activeClimbsSnapshots = await Promise.all(activeClimbPromises);
 
             // Combine climb details with tap data
             const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
@@ -53,12 +85,32 @@ const ClimberProfile = ({ navigation }) => {
                 return { ...climbSnapshot.data(), tapId: filteredTaps[index].id, tapTimestamp: filteredTaps[index].timestamp};
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
 
-            const sessions = groupClimbsByTimestamp(newClimbsHistory);
-            setClimbsHistory(newClimbsHistory);
-            setSessionsHistory(sessions); //Updating sessions on fetching a new climbHistory
+
+            //Combine active session climb details with tap data
+            const activeClimbsHistory = activeClimbsSnapshots.map((climbSnapshot, index) => {
+                if (!climbSnapshot.exists) return null;
+                return { ...climbSnapshot.data(), tapId: filteredActiveTaps[index].id, tapTimestamp: filteredActiveTaps[index].timestamp};
+            }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
+
+            //To allow for pagination of sessions
+            let sessionLogStart = null;
+            if (recentSessionStarts.length > 0) {
+                sessionLogStart = recentSessionStarts[recentSessionStarts.length-1]; // for a constant endpoint for the for-loop, enables a top-down approach
+            }
+            //This is the last session to be fetched
+            console.log('Session start is: ', sessionLogStart);
+            //All expired sessions are stored here
+            console.log('Recent, non-active sessions are: ', recentSessionStarts.length);
+            //const sessionsOld = groupClimbsByTimestamp(newClimbsHistory);
+            const {expiredSessions, activeSession, activeSessionTimestamp} = groupClimbsByTimestampNew(newClimbsHistory, activeClimbsHistory, sessionLogStart);
+
+            setClimbsHistory(newClimbsHistory); //Irrelevant value as of NOW (WILL REMOVE IN NEXT PR)- SESSION OBJECT REVAMP
+            setSessionsHistory(expiredSessions); //Updating sessions on fetching a new climbHistory, expired sessions
+            setCurrentSession(activeSession); // Storing Active Climbs in a new session, active session
             //console.log(sessions);
-            setHistoryCount(newClimbsHistory.length);
-            setSessionCount(Object.keys(sessions).length); //Session count updated
+            setHistoryCount(newClimbsHistory.length + activeClimbsHistory.length); //Summing up current and expired taps
+            console.log('The typeof the list is: ', typeof activeSession[activeSessionTimestamp]);
+            setSessionCount(Object.keys(expiredSessions).length + (activeSession[activeSessionTimestamp][0]? 1: 0)); //Session count updated, based on expired and current
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
@@ -97,35 +149,49 @@ const ClimberProfile = ({ navigation }) => {
         return new Date(timestamp.seconds * 1000 + Math.round(timestamp.nanoseconds / 1000000));
     };
 
-    //CREATION OF SESSIONS WITH 4 HOUR GROUPS (Will alter in the next PR to make dynamic)
-    const groupClimbsByTimestamp = (climbs) => {
-        const grouped = {};
-        climbs.forEach(climb => {
-            const dateObject = convertTimestampToDate(climb.tapTimestamp);
-            console.log('Date Object:', dateObject);
-            if (!dateObject) {
-                // Handle the error or skip this climb
-                console.error('Skipping climb due to invalid date:', climb);
-                return;
-            }
-            // Convert the timestamp to a standard JavaScript Date object
-            const date = moment(dateObject).tz('America/New_York');
-            
-            // Round down the timestamp to the nearest 4 hours
-            const hours = date.hours();
-            const roundedHours = hours - (hours % 4);
-            const roundedDate = date.clone().hours(roundedHours).minutes(0).seconds(0).milliseconds(0);
+    const groupClimbsByTimestampNew = (climbs, activeClimbs, startingClimb) => {
+        console.log('Expired Climbs Are: ', climbs);
+        const expiredSessions = {}; // Object to store expired sessions with keys
+        let currentSessionClimbs = []; // To store the current session climbs
+        let sessionKey = null;
 
-            const key = roundedDate.format('YYYY-MM-DD HH:mm'); // Formatted key
-            console.log(key); // Debugging
-            //console.log(climb.tapId);
-            if (!grouped[key]) {
-                grouped[key] = [];
-            }
-            grouped[key].push(climb);
-        });
-        return grouped;
+        //Active session calculation, now wholly reliant on the firebase call
+        const activeSessionStart = (activeClimbs.length > 0? activeClimbs[activeClimbs.length - 1]: {tapTimestamp: firebase.firestore.Timestamp.now()});
+        const activeSessionTimestamp = moment(convertTimestampToDate(activeSessionStart.tapTimestamp)).tz('America/New_York').format('YYYY-MM-DD HH:mm');
+
+        // Iterate from the oldest to the newest climb
+        for (let i = 0; i < climbs.length; i++) { //Can iterate through
+                const climb = climbs[i];
+                const climbDate = convertTimestampToDate(climb.tapTimestamp);
+        
+                if (!climbDate) {
+                    console.error('Skipping climb due to invalid date:', climb);
+                    continue;
+                }
+                currentSessionClimbs.push(climb);
+
+                // When a climb marks the start of a session or is the startingClimb
+                if (climb.isSessionStart || climb.tapId === startingClimb.tapId) {
+                    // Use the timestamp of the current climb to create a session key
+                    sessionKey = moment(climbDate).tz('America/New_York').format('YYYY-MM-DD HH:mm');
+                    expiredSessions[sessionKey] = [...currentSessionClimbs];
+                    currentSessionClimbs = [];
+                    //Stop after the last paginated tap is encountered, helps reduce loading time
+                    if (climb.tapId === startingClimb.tapId) {
+                        break;
+                    }
+                }
+        }
+
+        //console.log('Session Timestamp: ', sessionKey);
+        const activeSession = {};
+        activeSession[activeSessionTimestamp] = activeClimbs;
+        console.log('Expired Session is: ', expiredSessions);
+        console.log('Active Session is: ', activeSession);
+        return {expiredSessions, activeSession, activeSessionTimestamp};
+        //Returns expired sessions, active sessions, and the current session's timestamp
     };
+
 
     //Scroll View Added for Drag Down Refresh
     return (
@@ -171,7 +237,8 @@ const ClimberProfile = ({ navigation }) => {
                 </View>
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={[styles.effortHistoryList]}>
-                        <SessionTapHistory climbsHistory={climbsHistory} sessions={sessionsHistory}/>
+                        <SessionTapHistory climbsHistory={climbsHistory} currentSession={currentSession} isCurrent={true}/>
+                        <SessionTapHistory climbsHistory={climbsHistory} currentSession={sessionsHistory} isCurrent={false}/>
                     </View>
                 </View>
             </View>
@@ -180,6 +247,7 @@ const ClimberProfile = ({ navigation }) => {
     );
 }
 //Sessions are now passed to SessionTapHistory (displaying logic only now)
+//Two session histories for active session, and older sessions.
 
 const styles = StyleSheet.create({
     container: {
@@ -189,7 +257,7 @@ const styles = StyleSheet.create({
     },
     innerContainer: {
         flex: 1,
-        paddingVertical: 5,
+        paddingTop: 5,
         width: '100%',
         margin: 0,
     },
@@ -199,7 +267,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-        paddingVertical: 20,
+        paddingTop: 20,
     },
     any_text: {
         color: 'black',
@@ -209,6 +277,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'black',
         paddingTop: 10,
+        paddingBottom: 0,
     },
     effortRecapGraph: {
         flex: 3,
@@ -235,7 +304,7 @@ const styles = StyleSheet.create({
         color: 'black',
         backgroundColor: 'transparent',
         paddingHorizontal: 0,
-        paddingVertical: 5,
+        paddingVertical: 10,
     },
     pillButton: {
         backgroundColor: '#3498db', // or any color of your choice

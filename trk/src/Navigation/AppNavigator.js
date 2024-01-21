@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -23,6 +23,8 @@ import GlossaryDefinition from '../Screens/NavScreens/GlossaryDefinition/Fronten
 import GymDaily from '../Screens/TabScreens/GymAnalytics/GymDaily/Frontend';
 import LiveClimbTracker from '../Screens/LiveClimbTracker';
 import RecordScreen from '../Screens/TabScreens/Record/Frontend';
+import messaging from '@react-native-firebase/messaging';
+import Toast from 'react-native-toast-message';
 
 
 const Stack = createStackNavigator();
@@ -407,11 +409,60 @@ function AppTabs() {
   );
 }
 
+async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled = 
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+  }
+}
+
+
 function AppNav(props) {
   console.log('[TEST] AppNav called');
+
+  const navigationRef = useRef();
+
+  //Notification Management in the Foreground and Background
+  useEffect(() => {
+    // Request permission and setup handlers
+    requestUserPermission();
+
+    // Foreground notification handler
+    const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
+      Toast.show({
+        type: 'success',
+        text1: 'Check out your new session in Profile!'
+      });
+    });
+
+    // Background and quit state notification handler
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('Notification clicked!');
+      if (remoteMessage.data.targetScreen) {
+        navigationRef.current?.navigate(remoteMessage.data.targetScreen);
+      }
+    });
+
+    messaging().getInitialNotification().then(remoteMessage => {
+      console.log('Notification clicked!');
+      if (remoteMessage && remoteMessage.data.targetScreen) {
+        navigationRef.current?.navigate(remoteMessage.data.targetScreen);
+      }
+    });
+
+    return () => {
+      unsubscribeForeground();
+    };
+  }, []);
+
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <AppTabs></AppTabs>
+      <Toast/>
     </NavigationContainer>
   );
 }
