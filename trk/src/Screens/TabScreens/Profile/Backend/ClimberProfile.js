@@ -238,6 +238,7 @@ const ClimberProfile = ({ navigation }) => {
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={[styles.effortHistoryList]}>
                         <SessionTapHistory climbsHistory={climbsHistory} currentSession={currentSession} isCurrent={true}/>
+                        {sessionsHistory && Object.keys(sessionsHistory).length > 0 && <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold'}}>Past Sessions</Text>}
                         <SessionTapHistory climbsHistory={climbsHistory} currentSession={sessionsHistory} isCurrent={false}/>
                     </View>
                 </View>
