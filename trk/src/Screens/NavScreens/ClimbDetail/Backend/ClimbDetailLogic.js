@@ -140,7 +140,8 @@ export const archiveTap = async (navigation, tapId) => {
           try {
             await TapsApi().updateTap(tapId, { archived: true });
             Alert.alert("Tap Deleted", "The tap has been successfully deleted.");
-            navigation.goBack();
+            //To reach the top of the stack (for refreshing of sessions)
+            navigation.popToTop();
           } catch (error) {
             console.error("Error deleting tap:", error);
             Alert.alert("Error", "Could not delete tap.");

@@ -10,7 +10,7 @@ import { AuthContext } from '../Utils/AuthContext';
 import ClimbItem from './ClimbItem';
 import ListItemSessions from './ListItemSessions';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
     climbDot: {
@@ -45,10 +45,36 @@ const styles = StyleSheet.create({
 
 const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted}) => {
     console.log('[TEST] ListHistory called');
-    if (!data) {
+    if (!data || (data && data.length == 0)) {
         return;
     }   
     console.log('Data in the Session is: ', data);
+        
+    //Session Edits implemented
+        let initallySelected = null;
+        let initialText = null;
+        let selectedData = null;
+        console.log(data);
+        //Selected Item Set
+        if (data.length>0) {
+            selectedData = data.filter(obj => obj.isSelected == true);
+            console.log('The selected Data is: ', selectedData);
+            if (selectedData.length == 0) {
+                initallySelected = data[0].tapId;
+                selectedData = [data[0]];
+                console.log('Initially selected value is: ', initallySelected);
+            } else {
+                initallySelected = selectedData[0].tapId;
+                console.log('Initially selected value is: ', initallySelected);
+            }
+            if (data[data.length-1].sessionTitle === undefined || (data[data.length-1].sessionTitle && data[data.length-1].sessionTitle === '')) {
+                initialText = 'Session on '+title[1];
+            }
+            else {
+                initialText = data[data.length-1].sessionTitle;
+            }
+            console.log('Initial session text: ', initialText);
+        }
 
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const {currentUser} = useContext(AuthContext);
@@ -85,8 +111,8 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted}) =>
             let climbImageURL = 'climb photos/the_crag.png';
     
             // If there is climb data and images are available, use the latest image
-            if (data[0] && data[0].images && data[0].images.length > 0) {
-              const latestImageRef = data[0].images[0]; //Fetches the first Image, useful when the user sets a new look for the session
+            if (data[data.length-1] && data[data.length-1].sessionImages && data[data.length-1].sessionImages.length > 0) {
+              const latestImageRef = data[data.length-1].sessionImages[0]; //Fetches the first Image, useful when the user sets a new look for the session
               climbImageURL = latestImageRef.path;
             }
     
@@ -100,17 +126,20 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted}) =>
         loadImages();
     }, [data]);
 
+    const navigation = useNavigation();
+
     return (
         <ScrollView contentContainerStyle={{ padding: 10}}>
-            <TouchableOpacity onPress={() => {console.log('Session Clicked: ', data)}}>
+            <TouchableOpacity onPress={() => {navigation.navigate('Session_Detail', {data: data, title: title})}}>
             <View style={{height: 150, width: '100%', backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection: 'row'}}>
                 <View style={{width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10}}>
                 {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%', borderRadius: 5}} /> : <Text style={{color: 'black', fontSize: 8}}>Loading...</Text>}
                 </View>
                 <View style={{width: '70%', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', paddingRight: 10, paddingVertical: 10}}>
                     <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'flex-start'}}>
-                        <Text style={{color: 'black', fontSize: 15, fontWeight: '500'}}>Session on {title[1]}</Text>
+                        <Text style={{color: 'black', fontSize: 15, fontWeight: '500'}}>{initialText}</Text>
                         <Text style={{color: 'black', fontSize: 12}}>{title[0]}</Text>
+                        <Text style={{color: 'black', fontSize: 12}}>{title[1]}</Text>
                     </View>
                     <View style={{width: '100%', height: '70%', display: 'flex', flexDirection: 'row', paddingTop: 10}}>
                     <View style={{width: '50%', padding: 10, display:'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -119,11 +148,11 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted}) =>
                     </View>
                     <View style={{width: '50%', display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
                         <View style={{marginRight: 10}}>
-                            <ListItemSessions dotStyle={styles.climbDot} grade={data[0].grade}>
-                                <Text style={styles.climbName}>{data[0].name}</Text>
+                            <ListItemSessions dotStyle={styles.climbDot} grade={selectedData[0].grade}>
+                                <Text style={styles.climbName}>{selectedData[0].name}</Text>
                                 <View>
                                 <Text style={styles.timerInfo}>
-                                    {timeStampFormatting(data[0].tapTimestamp).replace(/AM|PM/i, '').trim()}
+                                    {timeStampFormatting(selectedData[0].tapTimestamp).replace(/AM|PM/i, '').trim()}
                                 </Text>
                                 </View>
                             </ListItemSessions>

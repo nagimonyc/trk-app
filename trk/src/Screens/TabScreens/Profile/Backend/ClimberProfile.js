@@ -61,7 +61,7 @@ const ClimberProfile = ({ navigation }) => {
             const tapsSnapshot = await getExpiredTaps(currentUser.uid);
             // Filter taps
             const filteredTaps = tapsSnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
+                .map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects,
                 .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
 
             //Filtering active session taps
@@ -83,9 +83,10 @@ const ClimberProfile = ({ navigation }) => {
             const activeClimbsSnapshots = await Promise.all(activeClimbPromises);
 
             // Combine climb details with tap data
+            //Added session info to expired climbs
             const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
-                return { ...climbSnapshot.data(), tapId: filteredTaps[index].id, tapTimestamp: filteredTaps[index].timestamp};
+                return { ...climbSnapshot.data(), tapId: filteredTaps[index].id, tapTimestamp: filteredTaps[index].timestamp, isSelected: filteredTaps[index].isSelected, sessionTitle: filteredTaps[index].sessionTitle, sessionImages: filteredTaps[index].sessionImages, isSessionStart: filteredTaps[index].isSessionStart};
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
 
 
@@ -176,7 +177,7 @@ const ClimberProfile = ({ navigation }) => {
             console.log('I starts at: ', i);
         }
         else {
-            console.log('I starts at: ', i);
+            console.log('I is: ', i); //To document pagination
         }
         // Iterate from the oldest to the newest climb
         for (; i < climbs.length; i++) { //Can iterate through
@@ -190,7 +191,7 @@ const ClimberProfile = ({ navigation }) => {
                 currentSessionClimbs.push(climb);
 
                 // When a climb marks the start of a session or is the startingClimb
-                if (climb.isSessionStart || (startingClimb && climb.tapId === startingClimb.tapId)) {
+                if (climb.isSessionStart == true|| (startingClimb && climb.tapId === startingClimb.tapId)) {
                     // Use the timestamp of the current climb to create a session key
                     sessionKey = moment(climbDate).tz('America/New_York').format('YYYY-MM-DD HH:mm');
                     expiredSessions[sessionKey] = [...currentSessionClimbs];
@@ -204,7 +205,7 @@ const ClimberProfile = ({ navigation }) => {
 
         //console.log('Session Timestamp: ', sessionKey);
         const activeSession = {};
-        activeSession[activeSessionTimestamp] = activeClimbs;
+        activeSession[activeSessionTimestamp] = activeClimbs.reverse(); //For desc ordering of active session taps
         console.log('Expired Session is: ', expiredSessions);
         console.log('Active Session is: ', activeSession);
         return {expiredSessions, activeSession, activeSessionTimestamp};
