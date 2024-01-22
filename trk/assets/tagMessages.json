@@ -1,25 +1,23 @@
 {
-  "FTUFirstClimb": [
+  "FTU": [
       "Completed a climb 🧗‍♂️  Tap below to save it "
   ],
-  "FTUNotFirstClimb": [
-      "Keep climbing, keep tapping 👊",
-      "Every climb deserves a tap  🌟🌟"
-  ],
-  "ReturningUserFirstClimbOfDay": [
+  "FirstClimbOfDay": [
       "Ready for more 💪  Tap your first climb!",
       "Here for another session? That's dedication 🏆"
   ],
-  "ReturningUserFirstClimbOfAnotherSession": [
+  "FirstClimbOfAnotherSession": [
       "Nice to see you again 🤟",
       "Back again so soon!",
       "Fancy seeing you here  🚀🚀",
       "Twice in 1 day  🔄🔄🔄  you know what to do"
   ],
-  "ReturningUserNotFirstClimb": [
+  "NotFirstClimb": [
       "Another climb, another tap 👌",
+      "Keep climbing, keep tapping 👊",
       "Make every climb count  🔥🔥🔥",
       "Keep up the momentum  🦌🦌🦌",
+      "Every climb deserves a tap  🌟🌟",
       "Every tap counts ⚡️"
   ]
 }
