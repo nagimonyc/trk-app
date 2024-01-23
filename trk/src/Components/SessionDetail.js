@@ -12,6 +12,7 @@ import { FlatList } from "react-native-gesture-handler";
 import { ActivityIndicator } from "react-native-paper";
 import {Modal} from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Or any other icon family you prefer
+import SessionGraph from "./SessionGraph";
 
 const SessionDetail = ({route}) => {
   const navigation = useNavigation();
@@ -76,8 +77,8 @@ const SessionDetail = ({route}) => {
         }
     
         // Assuming timestamps are in milliseconds
-        const firstTimestamp = data[0].timestamp; // Most recent
-        const lastTimestamp = data[data.length - 1].timestamp; // Oldest
+        const firstTimestamp = data[0].tapTimestamp; // Most recent
+        const lastTimestamp = data[data.length - 1].tapTimestamp; // Oldest
     
         // Calculate the difference in hours
         const differenceInHours = (firstTimestamp - lastTimestamp) / (1000 * 60 * 60);
@@ -185,6 +186,14 @@ const SessionDetail = ({route}) => {
                 <EditButton onPress={() => {navigation.navigate('Edit_Session', {data: data, title: title})}}/>
             </View>
         </View>
+
+        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
+            <Text style={{color: 'black', paddingHorizontal: 20, fontWeight: 'bold'}}>Session Graph</Text>
+        </View>
+        <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 10}}>
+            <SessionGraph data={data}/>
+        </View>
+
         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
             <Text style={{color: 'black', paddingHorizontal: 20, fontWeight: 'bold'}}>{allImages.length>0? 'All Media': 'No Media'}</Text>
         </View>

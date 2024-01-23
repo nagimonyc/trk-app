@@ -205,7 +205,7 @@ const ClimberProfile = ({ navigation }) => {
 
         //console.log('Session Timestamp: ', sessionKey);
         const activeSession = {};
-        activeSession[activeSessionTimestamp] = activeClimbs.reverse(); //For desc ordering of active session taps
+        activeSession[activeSessionTimestamp] = activeClimbs; //For desc ordering of active session taps
         console.log('Expired Session is: ', expiredSessions);
         console.log('Active Session is: ', activeSession);
         return {expiredSessions, activeSession, activeSessionTimestamp};
