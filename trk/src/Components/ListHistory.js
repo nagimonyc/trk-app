@@ -14,7 +14,7 @@ const ListHistory = ({ data, renderItem, keyExtractor, isHighlighted}) => {
     });    
     return (
         <ScrollView contentContainerStyle={{ padding: 10 }}>
-            {data.map((item, index) => React.cloneElement(renderItem(item, index, isHighlighted), { key: keyExtractor(item, index)}))}
+            {data.reverse().map((item, index) => React.cloneElement(renderItem(item, index, isHighlighted), { key: keyExtractor(item, index)}))}
         </ScrollView>
     );
 }
