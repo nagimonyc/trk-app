@@ -121,15 +121,15 @@ function HomeStack() {
           ) : null,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              {Platform.OS !== 'ios' &&  
-              <TrackerButton
-              title="Tracker"
-              navigation={navigation} />
-            }
-            <FeedbackButton
-            title="Feedback"
-            navigation={navigation}
-          />
+              {Platform.OS !== 'ios' &&
+                <TrackerButton
+                  title="Tracker"
+                  navigation={navigation} />
+              }
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
             </View>
           ),
         })}
@@ -223,20 +223,24 @@ function ProfileStack() {
       <Stack.Screen
         name="Session_Detail"
         component={SessionDetail}
-        options={({ navigation }) => ({ title: 'Session', headerTitleAlign: 'center', headerRight: () => (
-          <FeedbackButton
-                title="Feedback"
-                navigation={navigation}
-          />) })}
+        options={({ navigation }) => ({
+          title: 'Session', headerTitleAlign: 'center', headerRight: () => (
+            <FeedbackButton
+              title="Feedback"
+              navigation={navigation}
+            />)
+        })}
       />
       <Stack.Screen
         name="Edit_Session"
         component={EditSession}
-        options={({ navigation }) => ({ title: 'Edit Session', headerTitleAlign: 'center', headerRight: () => (
-          <FeedbackButton
-                title="Feedback"
-                navigation={navigation}
-          />) })}
+        options={({ navigation }) => ({
+          title: 'Edit Session', headerTitleAlign: 'center', headerRight: () => (
+            <FeedbackButton
+              title="Feedback"
+              navigation={navigation}
+            />)
+        })}
       />
       <Stack.Screen
         name="Detail"
@@ -301,9 +305,9 @@ function AnalyticsStack() {
         options={{ title: 'Climber Performance', headerBackTitle: 'Ranking', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-      name="Data Detail"
-      component={DataDetail}
-      options={{title: 'Data Detail', headerBackTitle:'Daily Summary', headerTitleAlign: 'center' }} 
+        name="Data Detail"
+        component={DataDetail}
+        options={{ title: 'Data Detail', headerBackTitle: 'Daily Summary', headerTitleAlign: 'center' }}
       />
 
     </Stack.Navigator>
@@ -343,7 +347,7 @@ function AppTabs() {
   const { role } = useContext(AuthContext);
 
   return (
-    <Tab.Navigator>
+    <Tab.Navigator initialRouteName="Record">
       <Tab.Screen
         name="Home"
         component={HomeStack}
@@ -384,14 +388,14 @@ function AppTabs() {
           title: 'Record',
           headerShown: false,
           // To be completed by @abhipi or @redpepper-nag
-           tabBarIcon: ({ size, focused, color }) => {
-             return (
-               <Image
-                 style={{ width: size, height: size }}
-                 source={require('../../assets/record.png')}
-               />
-             );
-           },
+          tabBarIcon: ({ size, focused, color }) => {
+            return (
+              <Image
+                style={{ width: size, height: size }}
+                source={require('../../assets/record.png')}
+              />
+            );
+          },
         }}
       />
       <Tab.Screen
@@ -431,14 +435,23 @@ function AppTabs() {
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
-  const enabled = 
+  const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
+    // Now fetch the FCM token
+    const fcmToken = await messaging().getToken();
+    if (fcmToken) {
+      console.log('FCM Token:', fcmToken);
+      // Perform any additional setup with the FCM token, like sending it to your server
+    } else {
+      console.log('Failed to fetch FCM token');
+    }
   }
 }
+
 
 
 function AppNav(props) {
@@ -482,7 +495,7 @@ function AppNav(props) {
   return (
     <NavigationContainer ref={navigationRef}>
       <AppTabs></AppTabs>
-      <Toast/>
+      <Toast />
     </NavigationContainer>
   );
 }
