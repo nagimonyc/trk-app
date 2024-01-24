@@ -32,6 +32,7 @@ const SignUp = ({ role, nyuComp }) => {
                         taps: 0, // number of taps
                         nyuComp: nyuComp, // whether the user is a part of the NYU climbing competition
                         timestamp: new Date(),
+                        username: user.email.split('@')[0], //ADDING AN INITIAL USERNAME
                     })
                     .then(() => {
                         console.log('User added to Firestore');

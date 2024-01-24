@@ -10,9 +10,15 @@ function UsersApi() {
     function getUsersBySomeField(field, value) {
         return ref.where(field, '==', value).get();
     }
+    //To update the user collection (usernames, etc)
+    async function updateUser(userId, updatedUser) {
+        const userRef = ref.doc(userId);
+        return await userRef.update(updatedUser);
+    }
 
     return {
-        getUsersBySomeField
+        getUsersBySomeField,
+        updateUser,
     };
 }
 

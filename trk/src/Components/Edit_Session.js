@@ -189,8 +189,9 @@ const EditSession = ({route}) => {
             }
             try {
                 const { updateTap } = TapsApi();
-                await updateTap(data[data.length-1].tapId, {sessionTitle: sessionTitle});
-                initialText = sessionTitle;
+                //Minor fix to trim the name of the session (NOT UNIQUE EVER, SO TRIVIAL FIX)
+                await updateTap(data[data.length-1].tapId, {sessionTitle: sessionTitle.trim()});
+                initialText = sessionTitle.trim();
             } catch (error) {
                 console.error(error);
                 Alert.alert("Error", "Couldn't update session.");
