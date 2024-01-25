@@ -77,8 +77,8 @@ const SessionDetail = ({route}) => {
         }
     
         // Assuming timestamps are in milliseconds
-        const firstTimestamp = data[0].tapTimestamp; // Most recent
-        const lastTimestamp = data[data.length - 1].tapTimestamp; // Oldest
+        const firstTimestamp = data[0].tapTimestamp.toDate(); // Most recent
+        const lastTimestamp = data[data.length - 1].tapTimestamp.toDate(); // Oldest
     
         // Calculate the difference in hours
         const differenceInHours = (firstTimestamp - lastTimestamp) / (1000 * 60 * 60);
