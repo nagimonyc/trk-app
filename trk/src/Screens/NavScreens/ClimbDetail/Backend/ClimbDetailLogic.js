@@ -2,7 +2,7 @@ import TapsApi from '../../../../api/TapsApi';
 import ClimbsApi from '../../../../api/ClimbsApi';
 import storage from '@react-native-firebase/storage';
 import { Alert } from 'react-native';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 import moment from 'moment-timezone';
 
 export const fetchClimbData = async (climbId, currentUser, role) => {
@@ -90,39 +90,6 @@ export const handleUpdate = async (completion, attempts, witness1, witness2, tap
     Alert.alert("Error", "Couldn't update tap");
   }
 }
-
-export const onShare = async (climbData) => {
-  console.log('Sharing');
-  try {
-    // Gather climb information
-    const climbName = climbData.name;
-    const climbGrade = climbData.grade;
-
-    // Format the share message
-    const message = `Check out this climb I did on Nagimo.\n\n` +
-      `Name: ${climbName}\n` +
-      `Grade: ${climbGrade}\n` +
-      `Location: Palladium\n\n`;
-
-    // Share the message
-    const result = await Share.share({
-      message: message,
-    });
-
-    // Additional logic based on the share result
-    if (result.action === Share.sharedAction) {
-      if (result.activityType) {
-        // shared with activity type of result.activityType
-      } else {
-        // shared
-      }
-    } else if (result.action === Share.dismissedAction) {
-      // dismissed
-    }
-  } catch (error) {
-    Alert.alert(error.message);
-  }
-};
 
 export const archiveTap = async (navigation, tapId) => {
   Alert.alert(
