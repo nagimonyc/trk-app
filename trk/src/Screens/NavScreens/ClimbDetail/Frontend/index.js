@@ -3,17 +3,17 @@ import { Alert } from 'react-native';
 import TapsApi from '../../../../api/TapsApi';
 import ClimbsApi from '../../../../api/ClimbsApi';
 
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, Share, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { AuthContext } from '../../../../Utils/AuthContext';
-import { fetchClimbData, getTapDetails, loadImageUrl, updateTap, archiveTap, handleUpdate, onShare, onFeedback, onDefinition, getSelectedIndex } from '../Backend/ClimbDetailLogic';
+import { fetchClimbData, getTapDetails, loadImageUrl, updateTap, archiveTap, handleUpdate, onFeedback, onDefinition, getSelectedIndex } from '../Backend/ClimbDetailLogic';
 
 function ClimbDetail(props) {
   console.log('[TEST] ClimbDetail called');
 
-  const { climbId, isFromHome} = props.route.params;
+  const { climbId, isFromHome } = props.route.params;
   const [climbData, setClimbData] = useState(props.route.params.climbData || null);
   const [isLoading, setIsLoading] = useState(isFromHome);
   const [climbImageUrl, setClimbImageUrl] = useState(null);
@@ -126,7 +126,7 @@ function ClimbDetail(props) {
   if (isLoading || !climbData) {
     return (
       <View style={styles.loading}>
-        <Text style={{color: 'black'}}>Fetching climb information...</Text>
+        <Text style={{ color: 'black' }}>Fetching climb information...</Text>
       </View>
     );
     //  the reason i put this here is because we will eventually display name and grade here when we encode it onto the nfc tags 
@@ -261,9 +261,6 @@ function ClimbDetail(props) {
               <View style={{ marginTop: 20 }}>
                 <View style={styles.button}>
                   <Button title='Review this climb' onPress={() => onFeedback(navigation, climbData, climbId)} />
-                </View>
-                <View style={styles.button}>
-                  <Button title='Share' onPress={() => onShare(climbData)} />
                 </View>
               </View>
               {climbData.info && (
