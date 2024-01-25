@@ -2,8 +2,8 @@ import DescriptorsApi from "../../../../api/DescriptorsApi";
 import storage from '@react-native-firebase/storage';
 
 const fetchGlossaryData = async (descriptor, setDefinition, setPhotoUrl) => {
-  const api = DescriptorsApi();
   try {
+    const api = DescriptorsApi();
     const querySnapshot = await api.getDescriptorsBySomeField('descriptor', descriptor);
     if (!querySnapshot.empty) {
       const doc = querySnapshot.docs[0];

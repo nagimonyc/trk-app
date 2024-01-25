@@ -11,15 +11,24 @@ import { useFocusEffect } from '@react-navigation/native';
 import SessionTapHistory from "../../../../Components/SessionTapHistory";
 import moment from 'moment-timezone';
 import { RefreshControl, ScrollView} from 'react-native';
+import UsersApi from "../../../../api/UsersApi";
+import storage from '@react-native-firebase/storage';
 
-
+//MADE CHANGES TO NOW SHOW USERNAME AND PROFILE PIC (WITH EDIT BUTTON TO LEAD TO EDITING PAGE)
 //Revamped how sessions are created (Only last 5 sessions are fetched as of now)- Next PR will implement pagination
 const ClimberProfile = ({ navigation }) => {
 
     //We now store sessions and session count here, as well as the refreshing state for reloads.
     const { tapCount, currentUser } = useContext(AuthContext);
+
+    const [user, setUser] = useState(null);
+
     const [climbsHistory, setClimbsHistory] = useState([]);
     const [sessionsHistory, setSessionsHistory] = useState([]);
+
+    const [climbImageUrl, setClimbImageUrl] = useState(null);
+
+
     const [currentSession, setCurrentSession] = useState([]); //to store climbs in the current session
     const [historyCount, setHistoryCount] = useState(0);
     const [sessionCount, setSessionCount] = useState(0);
@@ -38,9 +47,14 @@ const ClimberProfile = ({ navigation }) => {
     );
 
     const handleTapHistory = async () => {
-        const { getTapsBySomeField, getActiveSessionTaps, getRecentFiveSessions, getExpiredTaps, getTotalSessionCount} = TapsApi();
-        const { getClimb } = ClimbsApi();
         try {
+            const { getTapsBySomeField, getActiveSessionTaps, getRecentFiveSessions, getExpiredTaps, getTotalSessionCount} = TapsApi();
+            const { getClimb } = ClimbsApi();
+            const {getUsersBySomeField} = UsersApi();
+            let user = (await getUsersBySomeField('uid', currentUser.uid));
+            if (user) {
+                setUser(user.docs[0].data());
+            }
             let recentSession = (await getRecentFiveSessions(currentUser.uid)) // Does not include the current session, gets the starting points of the last 5 sessions
             //Filtering the recent session starts
             const recentSessionStartsFiltered = recentSession.docs.map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
@@ -266,6 +280,37 @@ const ClimberProfile = ({ navigation }) => {
     };
 
 
+    useEffect(() => {
+        const loadImages = async () => {
+          try {
+            // Default image path
+            let climbImageURL = 'climb photos/the_crag.png';
+            if (user && user.image && user.image.length > 0) {
+                //Implement image fetch logic
+                climbImageURL = user.image[0].path;
+            }
+            const loadedClimbImageUrl = await loadImageUrl(climbImageURL);
+            setClimbImageUrl(loadedClimbImageUrl);
+          } catch (error) {
+            console.error("Error loading images: ", error);
+          }
+        };
+       loadImages();
+    }, [user]);
+
+
+    //To fetch the climb image of the latest climb
+    const loadImageUrl = async (imagePath) => {
+        try {
+          const url = await storage().ref(imagePath).getDownloadURL();
+          return url;
+        } catch (error) {
+          console.error("Error getting image URL: ", error);
+          throw error;
+        }
+    };
+
+
     //Scroll View Added for Drag Down Refresh
     return (
         <SafeAreaView style={styles.container}>
@@ -280,9 +325,13 @@ const ClimberProfile = ({ navigation }) => {
             <View style={styles.innerContainer}>
                 <View style={styles.profileTop}>
                     <View style={styles.topLine}>
-                        <View style={styles.initialCircle}>
-                            <Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>
-                        </View>
+                        <TouchableOpacity style={styles.initialCircle} onPress={()=> {navigation.navigate('Edit_User', {user: user})}}>
+                            {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{borderRadius: 50, height: '100%', width: '100%'}} />)}
+                            {!climbImageUrl &&  (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
+                            <View style={{ position: 'absolute', bottom: 0, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor:'black'}}>
+                                <Icon name="edit" size={10} color="black" />
+                            </View>
+                        </TouchableOpacity>
                         <View style={styles.recapData}>
                             <Text style={styles.recapNumber}>{historyCount}</Text>
                             <Text style={styles.any_text}>Climbs</Text>
@@ -302,7 +351,9 @@ const ClimberProfile = ({ navigation }) => {
                     </View>
                     <View style={styles.greeting}>
                         <Text style={styles.greeting_text}>
-                            Hi <Text style={{ color: 'black' }}>{currentUser && currentUser.email ? currentUser.email.split('@')[0] : ''}</Text> 🖖
+                            Hi <Text style={{ color: 'black' }}>
+                                {user && user.username? user.username: ''}
+                            </Text> 🖖
                         </Text>
                     </View>
                 </View>

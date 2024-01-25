@@ -103,14 +103,13 @@ export const fetchTapsAndCalculateAscents = async (yourClimbs) => {
 };
 
 export const fetchCommentsAndCalculateFeedback = async (yourClimbs) => {
-  const { getClimb } = ClimbsApi();
-  const { getCommentsBySomeField } = CommentsApi();
-
   let comments = [];
   let highestRatedClimbDetails = null;
   let latestFeedbackDetails = null;
 
   try {
+    const { getClimb } = ClimbsApi();
+    const { getCommentsBySomeField } = CommentsApi(); 
     const commentsPromises = yourClimbs.map(climb =>
       getCommentsBySomeField('climb', climb.id)
     );

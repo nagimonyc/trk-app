@@ -27,6 +27,7 @@ import messaging from '@react-native-firebase/messaging';
 import Toast from 'react-native-toast-message';
 import SessionDetail from '../Components/SessionDetail';
 import EditSession from '../Components/Edit_Session';
+import UserEdit from '../Components/UserEdit';
 
 
 const Stack = createStackNavigator();
@@ -236,6 +237,17 @@ function ProfileStack() {
         component={EditSession}
         options={({ navigation }) => ({
           title: 'Edit Session', headerTitleAlign: 'center', headerRight: () => (
+            <FeedbackButton
+              title="Feedback"
+              navigation={navigation}
+            />)
+        })}
+      />
+      <Stack.Screen
+        name="Edit_User"
+        component={UserEdit}
+        options={({ navigation }) => ({
+          title: 'Edit Profile', headerTitleAlign: 'center', headerRight: () => (
             <FeedbackButton
               title="Feedback"
               navigation={navigation}

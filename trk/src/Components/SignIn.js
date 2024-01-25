@@ -58,6 +58,7 @@ const SignIn = ({ onForgotPassword, role, nyuComp }) => {
                         taps: 0,
                         nyuComp: nyuComp, // set default or desired value
                         timestamp: new Date(),
+                        username: user.email.split('@')[0], //ADDING AN INITIAL USERNAME
                     })
                     .then(() => {
                         console.log('New user added to Firestore');

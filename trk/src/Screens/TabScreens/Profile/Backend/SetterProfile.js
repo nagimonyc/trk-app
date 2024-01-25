@@ -19,8 +19,8 @@ const SetterProfile = ({ navigation }) => {
     }, []);
 
     const handleSetHistory = async () => {
-        const { getClimbsBySomeField } = ClimbsApi();
         try {
+            const { getClimbsBySomeField } = ClimbsApi();
             const setSnapshot = await getClimbsBySomeField('setter', currentUser.uid);
             console.log('setSnapshot:', setSnapshot);  // Log the snapshot here
             const newSetHistory = setSnapshot.docs.map(doc => {
