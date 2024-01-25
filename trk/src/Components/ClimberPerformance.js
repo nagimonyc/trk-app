@@ -10,11 +10,10 @@ const ClimberPerformance = () => {
     const [climbData, setClimbData] = React.useState([]);
 
     const fetchData = async () => {
-        const { getTapsBySomeField } = TapsApi();
-        const { getClimb } = ClimbsApi();
-        console.log("userData.userId:", userData.userId);
-
         try {
+            const { getTapsBySomeField } = TapsApi();
+            const { getClimb } = ClimbsApi();
+            console.log("userData.userId:", userData.userId);
             const tapsSnapshot = await getTapsBySomeField('user', userData.userId);
             const climbsPromises = tapsSnapshot.docs.map(async (tapDoc) => {
                 const climbSnapshot = await getClimb(tapDoc.data().climb);

@@ -10,10 +10,10 @@ const CompRanking = () => {
     console.log("rankingHistory:", rankingHistory);
 
     const handleRankingHistory = async () => {
-        const { getUsersBySomeField } = UsersApi();
-        const { getTapsBySomeField } = TapsApi();
-        const { getClimb } = ClimbsApi();
         try {
+            const { getUsersBySomeField } = UsersApi();
+            const { getTapsBySomeField } = TapsApi();
+            const { getClimb } = ClimbsApi();
             const userSnapshot = await getUsersBySomeField('nyuComp', true);
 
             const allUserData = await Promise.all(

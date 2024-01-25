@@ -24,8 +24,6 @@ const UserEdit = ({route}) => {
     const {currentUser, role} = useContext(AuthContext);
     const [user, setUser] = useState(route.params.user);
 
-    const {getUsersBySomeField} = UsersApi();
-
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const [initialImagePath, setInitialImagePath] = useState(null);
     const [initialUsername, setInitialUsername] = useState((currentUser.username? currentUser.username: currentUser.email.split('@')[0]));
@@ -122,44 +120,47 @@ const UserEdit = ({route}) => {
         console.log('Initial image path: ', initialImagePath);
         console.log('Updated image path: ', climbImageUrl);
         console.log('Updating Profile for user: ', currentUser.uid);
-        // Logic to update the session
-        if (initialUsername !== username) {
-            //Simple rules for username
-            if (username.trim() === '' || username.trim().indexOf(' ') >= 0) {
-                Alert.alert("Error", "Username cannot be empty or have a whitespace!");
-                return;
+        try {
+            // Logic to update the session
+            if (initialUsername !== username) {
+                //Simple rules for username
+                if (username.trim() === '' || username.trim().indexOf(' ') >= 0) {
+                    Alert.alert("Error", "Username cannot be empty or have a whitespace!");
+                    return;
+                }
+                let snapshot = (await UsersApi().getUsersBySomeField('username', username.trim()));
+                if (snapshot.docs.length > 0) {
+                    Alert.alert("Error", "Username already in use!");
+                    return;
+                }
+                try {
+                    await UsersApi().updateUser(currentUser.uid, {username: username.trim()});
+                    setInitialUsername(username);
+                } catch (error) {
+                    console.error(error);
+                    Alert.alert("Error", "Couldn't update profile.");
+                    return;
+                }
             }
-            let snapshot = (await getUsersBySomeField('username', username.trim()));
-            if (snapshot.docs.length > 0) {
-                Alert.alert("Error", "Username already in use!");
-                return;
+            if (initialImagePath !== '' && initialImagePath !== climbImageUrl) {
+                try {
+                    const uploadedImage = await uploadImage(climbImageUrl);
+                    await UsersApi().updateUser(currentUser.uid, {image: [uploadedImage]});
+                    console.log('Profile Pic updated for: ', currentUser.id);
+                    setInitialImagePath(climbImageUrl);
+                } catch (error) {
+                    console.error(error);
+                    Alert.alert("Error", "Couldn't update profile picture.");
+                    return;
+                }
             }
-            try {
-                const { updateUser } = UsersApi();
-                await updateUser(currentUser.uid, {username: username.trim()});
-                setInitialUsername(username);
-            } catch (error) {
-                console.error(error);
-                Alert.alert("Error", "Couldn't update profile.");
-                return;
-            }
+            Alert.alert("Success", "Profile updated!");
+            console.log("Session updated");
+            navigation.popToTop();
+        } catch (error) {
+            console.log('Error: ', error);
+            Alert.alert("Error", "Profile could not be updated!");
         }
-        if (initialImagePath !== '' && initialImagePath !== climbImageUrl) {
-            try {
-                const uploadedImage = await uploadImage(climbImageUrl);
-                const { updateUser } = UsersApi();
-                await updateUser(currentUser.uid, {image: [uploadedImage]});
-                console.log('Profile Pic updated for: ', currentUser.id);
-                setInitialImagePath(climbImageUrl);
-            } catch (error) {
-                console.error(error);
-                Alert.alert("Error", "Couldn't update profile picture.");
-                return;
-            }
-        }
-        Alert.alert("Success", "Profile updated!");
-        console.log("Session updated");
-        navigation.popToTop();
     };
 
 

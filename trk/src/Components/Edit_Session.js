@@ -188,9 +188,8 @@ const EditSession = ({route}) => {
                 return;
             }
             try {
-                const { updateTap } = TapsApi();
                 //Minor fix to trim the name of the session (NOT UNIQUE EVER, SO TRIVIAL FIX)
-                await updateTap(data[data.length-1].tapId, {sessionTitle: sessionTitle.trim()});
+                await TapsApi().updateTap(data[data.length-1].tapId, {sessionTitle: sessionTitle.trim()});
                 initialText = sessionTitle.trim();
             } catch (error) {
                 console.error(error);
@@ -200,9 +199,8 @@ const EditSession = ({route}) => {
         }
         if (initallySelected !== selectedTapId) {
             try {
-                const { updateTap } = TapsApi();
-                await updateTap(selectedTapId, {isSelected: true});
-                await updateTap(initallySelected, {isSelected: false});
+                await TapsApi().updateTap(selectedTapId, {isSelected: true});
+                await TapsApi().updateTap(initallySelected, {isSelected: false});
                 initallySelected = selectedTapId;
             } catch (error) {
                 console.error(error);

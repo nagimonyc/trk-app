@@ -47,10 +47,10 @@ const ClimberProfile = ({ navigation }) => {
     );
 
     const handleTapHistory = async () => {
-        const { getTapsBySomeField, getActiveSessionTaps, getRecentFiveSessions, getExpiredTaps, getTotalSessionCount} = TapsApi();
-        const { getClimb } = ClimbsApi();
-        const {getUsersBySomeField} = UsersApi();
         try {
+            const { getTapsBySomeField, getActiveSessionTaps, getRecentFiveSessions, getExpiredTaps, getTotalSessionCount} = TapsApi();
+            const { getClimb } = ClimbsApi();
+            const {getUsersBySomeField} = UsersApi();
             let user = (await getUsersBySomeField('uid', currentUser.uid));
             if (user) {
                 setUser(user.docs[0].data());
