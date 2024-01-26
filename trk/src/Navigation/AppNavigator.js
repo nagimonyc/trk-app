@@ -16,7 +16,7 @@ import ClimberPerformance from '../Components/ClimberPerformance';
 import SetDetail from '../Screens/NavScreens/Set/Frontend';
 import Settings from '../Components/Settings';
 import DataDetail from '../Screens/NavScreens/DataDetail/Frontend';
-
+import { useCameraPermission } from 'react-native-vision-camera';
 import FeedbackForm from '../Screens/NavScreens/FeedbackForm/Frontend';
 import DeveloperFeedbackForm from '../Screens/NavScreens/DeveloperFeedbackForm/Frontend';
 import GlossaryDefinition from '../Screens/NavScreens/GlossaryDefinition/Frontend';
@@ -470,12 +470,11 @@ function AppNav(props) {
   console.log('[TEST] AppNav called');
 
   const navigationRef = useRef();
-
+  const { hasPermission, requestPermission } = useCameraPermission();
   //Notification Management in the Foreground and Background
   useEffect(() => {
     // Request permission and setup handlers
     requestUserPermission();
-
     // Foreground notification handler
     const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
       Toast.show({
