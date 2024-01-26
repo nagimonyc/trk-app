@@ -28,6 +28,7 @@ import Toast from 'react-native-toast-message';
 import SessionDetail from '../Components/SessionDetail';
 import EditSession from '../Components/Edit_Session';
 import UserEdit from '../Components/UserEdit';
+import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 
 
 const Stack = createStackNavigator();
@@ -280,6 +281,11 @@ function ProfileStack() {
         name="Definition"
         component={GlossaryDefinition}
         options={{ title: 'Definition', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Share_Session"
+        component={ShareView}
+        options={{ title: 'Share Session', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
       />
     </Stack.Navigator>
   );

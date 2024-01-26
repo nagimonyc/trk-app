@@ -11,6 +11,7 @@ import ClimbItem from './ClimbItem';
 import ListItemSessions from './ListItemSessions';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 
 const styles = StyleSheet.create({
     climbDot: {
@@ -174,7 +175,7 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
                     <View style={{ width: '70%', flexDirection: 'row', height: '100%' }}>
                         <View style={{ justifyContent: 'center', width: '60%', alignItems: 'center' }}><Text>PLACEHOLDER</Text></View>
                         <View style={{ width: 0.5, backgroundColor: '#BBBBBB', alignSelf: 'stretch', marginVertical: 5 }}></View>
-                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { }}></Button></View>
+                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { navigation.navigate('Share_Session') }}></Button></View>
                     </View>
 
                 </View>
