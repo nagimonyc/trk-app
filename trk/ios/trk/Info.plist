@@ -70,5 +70,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>Share climb performance image</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Share climb performance image for sports</string>
 </dict>
 </plist>
