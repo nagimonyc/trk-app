@@ -13,10 +13,14 @@ import { ActivityIndicator } from "react-native-paper";
 import {Modal} from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Or any other icon family you prefer
 import SessionGraph from "./SessionGraph";
+import UsersApi from "../api/UsersApi";
 
 const SessionDetail = ({route}) => {
   const navigation = useNavigation();
   let data = route.params.data;
+  if (!data || (data && data.length == 0)) {
+    return;
+  }
   const title = route.params.title;
   //data[0].images = [{path: 'climb photos/the_crag.png'},{path: 'climb photos/the_crag.png'},{path: 'climb photos/the_crag.png'},{path: 'climb photos/the_crag.png'}];
   const allImages = useMemo(() => {
@@ -53,6 +57,47 @@ const SessionDetail = ({route}) => {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  let tagged = (data[data.length-1].tagged? data[data.length-1].tagged: []);
+  const [taggedWithImages, setTaggedWithImages] = useState(null);
+
+  const handleImageFetch = async () => {
+    let combinedUsers = [];
+    for (const searchQuery of tagged) {
+        // Assuming you have separate API functions for fetching by username and email
+        const querySnapshotByUsername = await UsersApi().getUsersByForSearch(searchQuery);
+        const usersByUsername = querySnapshotByUsername.docs.map(doc => doc.data());
+        const querySnapshotByEmail = await UsersApi().getUsersByForSearchEmail(searchQuery);
+        const usersByEmail = querySnapshotByEmail.docs.map(doc => doc.data());
+        // Combine and deduplicate users
+        combinedUsers = [...combinedUsers, ...usersByUsername, ...usersByEmail];
+    }
+    let uniqueUsers = Array.from(new Set(combinedUsers.map(user => user.uid)))
+        .map(uid => {
+            return combinedUsers.find(user => user.uid === uid);
+    });
+    //Fetching Images
+    const userPromises = uniqueUsers.map(async user => {
+        // Assuming user.image[0].path exists and loadImageUrl is the function to get the URL
+        if (user.image && user.image.length > 0 && loadImageUrl) {
+            try {
+                const imageUrl = await loadImageUrl(user.image[0].path);
+                return { ...user, imageUrl }; // Add imageUrl to the user object
+            } catch (error) {
+                console.error("Error fetching image URL for user:", user, error);
+                // If there's an error, set imageUrl to null
+                return { ...user, imageUrl: null };
+            }
+        } else {
+            // If no image is available, set imageUrl to null
+            return { ...user, imageUrl: null };
+        }
+    });
+    const usersWithImages = await Promise.all(userPromises);
+    console.log('Images Fetched for Tagged Users!');
+    setTaggedWithImages(usersWithImages);
+};
+
+
   
   const handleImagePress = useCallback((imageUrl) => {
         setSelectedImage(imageUrl);
@@ -131,6 +176,7 @@ const SessionDetail = ({route}) => {
           }
         };
         loadImages();
+        handleImageFetch();
     }, [data]);
 
 
@@ -186,7 +232,17 @@ const SessionDetail = ({route}) => {
                 <EditButton onPress={() => {navigation.navigate('Edit_Session', {data: data, title: title})}}/>
             </View>
         </View>
-
+        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingVertical: 10, paddingLeft: 10, paddingRight: 20}}>
+            <Text style={{color: 'black', paddingRight: 10, paddingLeft: 10}}><Icon name="supervisor-account" size={25} color="#000"/></Text>
+            <View style={{display:'flex', flexDirection:'row'}}>
+            {taggedWithImages && taggedWithImages.map((user, index) => (
+                <View key={index} style={{ alignItems: 'center', marginRight: -20}}>
+                    {user.imageUrl? <Image source={{ uri: user.imageUrl }} style={{ width: 50, height: 50, borderRadius: 25, borderColor: '#f2f2f2', borderWidth: 2}} />: <Text style={{color: 'black', fontSize: 10, display: 'flex', height: 50, width: 50, backgroundColor: '#D9D9D9', borderRadius: 30, textAlign: 'center', textAlignVertical: 'center', borderWidth: 2, borderColor: '#f2f2f2'}}>{user.email.charAt(0).toUpperCase()}</Text>}
+                </View>
+            ))}
+            </View>
+            <Text style={{color: 'black', paddingHorizontal: 40}}>{tagged.length == 1? '1 Tag': tagged.length + ' Tags'}</Text>
+        </View>
         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
             <Text style={{color: 'black', paddingHorizontal: 20, fontWeight: 'bold'}}>Session Graph</Text>
         </View>
