@@ -299,7 +299,7 @@ const EditSession = ({route}) => {
                 return;
             }
         }
-        if (!(tagged.length === lastTagged.length && tagged.slice().sort().every((value, index) => value === setLastTagged.slice().sort()[index]))) {
+        if (!(tagged.length === lastTagged.length && tagged.slice().sort().every((value, index) => value === lastTagged.slice().sort()[index]))) {
             try {
                 console.log('Updating Tagged Users!');
                 await TapsApi().updateTap(data[data.length-1].tapId, {tagged: tagged});
