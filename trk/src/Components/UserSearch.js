@@ -3,9 +3,16 @@ import { TextInput, View, Text, TouchableOpacity } from 'react-native';
 import UsersApi from '../api/UsersApi';
 import { ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Or any other icon family you prefer
+import { ActivityIndicator } from 'react-native-paper';
+import { useContext } from 'react';
+import { AuthContext } from '../Utils/AuthContext';
+
+//Removed currentuser from search results, and added text when there are no results
 const UserSearch = ({onTag}) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const {currentUser, role} = useContext(AuthContext);
 
     const handleSearch = async () => {
         if (!searchQuery.trim()) {
@@ -19,7 +26,7 @@ const UserSearch = ({onTag}) => {
         const usersEmail = querySnapshotEmail.docs.map(doc => doc.data());
         console.log('By email: ', usersEmail);
         let combinedUsers = [...users, ...usersEmail];
-        let uniqueUsers = Array.from(new Set(combinedUsers.map(user => user.uid)))
+        let uniqueUsers = Array.from(new Set(combinedUsers.filter(user => user.uid !== currentUser.uid).map(user => user.uid)))
             .map(uid => {
                 return combinedUsers.find(user => user.uid === uid);
         });
@@ -33,13 +40,17 @@ const UserSearch = ({onTag}) => {
                 placeholder="Search for users..."
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                onSubmitEditing={handleSearch}
+                onSubmitEditing={() => {
+                    setRefreshing(true);
+                    handleSearch().then(setRefreshing(false));
+                }}
                 color="black"
                 placeholderTextColor="black"
                 style={{backgroundColor: 'white', borderRadius: 10, padding: 10, marginBottom: 20, borderColor:'black', borderWidth: 1.5}}
             />
-            <ScrollView style={{width: '100%', display:'flex', flexDirection:'column'}}>
-            {searchResults.map((user, index) => (
+            <ScrollView contentContainerStyle={{width: '100%', display:'flex', flexDirection:'column', justifyContent: 'flex-start', alignItems:'center'}}>
+            {!refreshing && searchResults.length === 0 && (<View style={{display:'flex', flexDirection: 'column', justifyContent: 'center', alignItems:'center'}}><Text style={{color:'black', padding: 10}}>No users found!</Text><Text style={{color:'black', padding: 10}}>Try another username ✍️</Text></View>)}
+            {!refreshing && searchResults.length > 0 && searchResults.map((user, index) => (
                 <TouchableOpacity 
                 key={index} 
                 onPress={() => { onTag(user.uid); }} 
@@ -52,8 +63,8 @@ const UserSearch = ({onTag}) => {
                     flexDirection: 'row', 
                     justifyContent: 'space-between', // This will push children to both ends
                     alignItems: 'center', // Align items vertically in the center,
-                    borderWidth: 1,
-                    borderColor:'#fe8100',
+                    //borderWidth: 1,
+                    //borderColor:'#fe8100',
                 }}
             >
                 <Text 
@@ -63,9 +74,10 @@ const UserSearch = ({onTag}) => {
                 >
                     {user.username ? user.username : user.email.split('@')[0]}
                 </Text>
-                <Icon name="add" size={20} color="black"/>
+                <Icon name="add" size={20} color="#fe8100"/>
             </TouchableOpacity>                        
             ))}
+            {refreshing && (<ActivityIndicator color="#3498db"/>)}
             </ScrollView>
         </View>
     );
