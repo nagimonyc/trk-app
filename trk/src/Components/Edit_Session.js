@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView, Dimensions } from "react-native";
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from "../Utils/AuthContext";
 import { useNavigation } from '@react-navigation/native';
@@ -10,10 +10,13 @@ import ClimbItem from "./ClimbItem";
 import ListHistory from "./ListHistory";
 import { FlatList } from "react-native-gesture-handler";
 import { ActivityIndicator } from "react-native-paper";
-import {Modal} from "react-native-paper";
+import {Modal, Portal} from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Or any other icon family you prefer
 import TapsApi from "../api/TapsApi";
 import ImagePicker from 'react-native-image-crop-picker';
+import UsersApi from "../api/UsersApi";
+import { Camera, useCameraDevice, useCodeScanner } from "react-native-vision-camera";
+import UserSearch from "./UserSearch";
 
 const EditSession = ({route}) => {
   const navigation = useNavigation();
@@ -51,19 +54,49 @@ const EditSession = ({route}) => {
   const [selectedTapId, setSelectedTapId] = useState(tapIdRef.current);
   const [sessionTitle, setSessionTitle] = useState(initialText);
 
+
   const [climbImageUrl, setClimbImageUrl] = useState(null);
   const [initialImagePath, setInitialImagePath] = useState('');
   const { currentUser } = useContext(AuthContext);
 
+  const [user, setUser] = useState(null);
+
   const [selectedImage, setSelectedImage] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
   
-  const handleImagePress = (imageUrl) => {
-    setSelectedImage(imageUrl);
-    setModalVisible(true);
+  // State for modal visibility
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleText, setIsModalVisibleText] = useState(false);
+
+  const [activeQR, setActiveQR] = useState(null);
+  const lastScannedCodeRef = useRef(null);
+
+  const [tagged, updateTagged]  = useState((data[data.length-1].tagged && data[data.length-1].tagged.length>0? data[data.length-1].tagged: []));
+  const [lastTagged, setLastTagged] = useState((data[data.length-1].tagged && data[data.length-1].tagged.length>0? data[data.length-1].tagged: []));
+  const device = useCameraDevice('back');
+
+  // Function to open the modal
+  const openModal = () => {
+        console.log('Modal Opened!');
+      setIsModalVisible(true);
   };
 
-    //To fetch the climb image of the latest climb
+  // Function to close the modal
+  const closeModal = () => {
+      setIsModalVisible(false);
+  };
+
+
+  const openModalText = () => {
+    //console.log('Modal Opened!');
+    setIsModalVisibleText(true);
+    };
+
+    // Function to close the modal
+    const closeModalText = () => {
+    setIsModalVisibleText(false);
+    };
+    
+  //To fetch the climb image of the latest climb
     const loadImageUrl = async (imagePath) => {
         try {
           const url = await storage().ref(imagePath).getDownloadURL();
@@ -95,17 +128,19 @@ const EditSession = ({route}) => {
           try {
             // Default image path
             let climbImageURL = 'climb photos/the_crag.png';
-    
+            const {getUsersBySomeField} = UsersApi();
+            let user = (await getUsersBySomeField('uid', currentUser.uid));
+            if (user) {
+                setUser(user.docs[0].data());
+            }
             // If there is climb data and images are available, use the latest image
             if (data[data.length-1] && data[data.length-1].sessionImages && data[data.length-1].sessionImages.length > 0) {
-
               const latestImageRef = data[data.length-1].sessionImages[0]; //Fetches the first Image, useful when the user sets a new look for the session
               climbImageURL = latestImageRef.path;
             }
             // Load climb image
             const loadedClimbImageUrl = await loadImageUrl(climbImageURL);
             setClimbImageUrl(loadedClimbImageUrl);
-            setInitialImagePath(loadedClimbImageUrl);
           } catch (error) {
             console.error("Error loading images: ", error);
           }
@@ -123,14 +158,30 @@ const EditSession = ({route}) => {
         );
     };
 
-    const UpdateButton = ({ onPress }) => {
+    const UpdateButton = ({ onPress, text}) => {
         return (
             <TouchableOpacity style={{width: '100%', backgroundColor: '#3498db', borderRadius: 10, display: 'flex', flexDirection: 'row', paddingVertical: 12, paddingHorizontal: 20, justifyContent: 'center', alignItems: 'center'}} onPress={onPress}>
-                <Text style={{color: 'white', fontSize: 15, textAlign: 'center'}}>Update Session</Text>
+                <Text style={{color: 'white', fontSize: 15, textAlign: 'center'}}>{text}</Text>
             </TouchableOpacity>
         );
     };
 
+    const TagButton = ({onPress}) => {
+        return (
+            <TouchableOpacity style={{width: '100%', backgroundColor: '#3498db', borderRadius: 10, display: 'flex', flexDirection: 'row', padding: 10, justifyContent: 'center', alignItems: 'center'}} onPress={onPress}>
+                <Icon name="camera-alt" color="white" size={20}/>
+            </TouchableOpacity>
+        );
+    };
+
+
+    const TagButtonType = ({onPress}) => {
+        return (
+            <TouchableOpacity style={{width: '100%', backgroundColor: '#3498db', borderRadius: 10, display: 'flex', flexDirection: 'row', padding: 10, justifyContent: 'center', alignItems: 'center'}} onPress={onPress}>
+                <Icon name="short-text" color="white" size={20}/>
+            </TouchableOpacity>
+        );
+    };
 
     //DropDown for Featured Climbs
     const CollapsibleItem = ({ children }) => {
@@ -141,7 +192,7 @@ const EditSession = ({route}) => {
         };
     
         return (
-            <View style={{width: '100%', paddingVertical: 20}}>
+            <View style={{width: '100%'}}>
                 <TouchableOpacity style={styles.header} onPress={toggleOpen}>
                     <View style={{display: 'flex', flexDirection :'row'}}>
                     <Icon name="star-border" size={20} color="#000"/>
@@ -157,6 +208,33 @@ const EditSession = ({route}) => {
             </View>
         );
     };    
+
+    const AddUserCollapsibleItem = ({ children }) => {
+        const [isOpen, setIsOpen] = useState(false);
+    
+        const toggleOpen = () => {
+            setIsOpen(!isOpen);
+        };
+    
+        return (
+            <View style={{width: '100%'}}>
+                <TouchableOpacity style={styles.header} onPress={toggleOpen}>
+                    <View style={{display: 'flex', flexDirection :'row'}}>
+                    <Icon name="supervisor-account" size={20} color="#000"/>
+                    <Text style={styles.headerText}>Tagged Partners</Text>
+                    </View>
+                    <Icon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color="#000"/>
+                </TouchableOpacity>
+                {isOpen && (
+                    <View style={styles.content}>
+                        {children}
+                    </View>
+                )}
+            </View>
+        );
+    };
+
+
 
 
     const handleUpdateSession = () => {
@@ -221,6 +299,17 @@ const EditSession = ({route}) => {
                 return;
             }
         }
+        if (!(tagged.length === lastTagged.length && tagged.slice().sort().every((value, index) => value === lastTagged.slice().sort()[index]))) {
+            try {
+                console.log('Updating Tagged Users!');
+                await TapsApi().updateTap(data[data.length-1].tapId, {tagged: tagged});
+                setLastTagged(tagged);
+            } catch (error) {
+                console.error(error);
+                Alert.alert("Error", "Couldn't update tagged users.");
+                return;
+            }
+        } 
         Alert.alert("Success", "Session updated!");
         console.log("Session updated");
         navigation.popToTop();
@@ -255,6 +344,81 @@ const EditSession = ({route}) => {
         }
     };
 
+
+    const codeScanner = useCodeScanner({
+        codeTypes: ['qr', 'ean-13'],
+        onCodeScanned: (codes) => {
+            if (codes.length > 0) {
+                let code_read = codes[0].value;
+                console.log('QR Value Read: ', code_read);
+                // Check if the new code is different from the last scanned code
+                if (code_read && lastScannedCodeRef.current !== code_read) {
+                    lastScannedCodeRef.current = code_read; // Update the ref with the new code
+                    setActiveQR(code_read.trim());
+                }
+            }
+        }
+    });
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (activeQR !== null && !activeQR.startsWith('http://') && !activeQR.startsWith('https://')) {
+                try {
+                    const { getUsersBySomeField } = UsersApi();
+                    const snapshot = await getUsersBySomeField('uid', activeQR);
+                    if (snapshot && snapshot.docs) {
+                        if (snapshot.docs.length === 0) {
+                            console.log(snapshot.docs);
+                            throw new Error("No user found!");
+                        } else if (snapshot.docs.length > 1) {
+                            throw new Error("Multiple users found!");
+                        } else {
+                            let user = snapshot.docs[0].data(); // Assuming you want the first document
+                            console.log('User: ', user);
+                            if (currentUser.uid === user.uid.trim()) {
+                                throw new Error("Cannot tag yourself!");
+                            }
+                            let check_val = (user.username?user.username.trim(): user.email.split('@')[0].trim());
+                            // Add to local tagged variable
+                            if (!tagged.includes(check_val)) {
+                                // Add user.uid to the top of the array
+                                const newTagged = [check_val, ...tagged];
+                                updateTagged(newTagged);
+                                console.log('User tagged!: ', newTagged); 
+                            } else {
+                                throw new Error("User already added!");
+                            }
+                        }
+                    } else {
+                        throw new Error("Invalid snapshot data!");
+                    }
+                } catch (error) {
+                    console.log('Could not tag user: ', error);
+                    Alert.alert("Error", error.message);
+                } finally {
+                    closeModal();
+                    closeModalText();
+                }
+            }
+        };
+        fetchData();
+    }, [activeQR]);    
+
+
+    const removeTag = (index) => {
+        updateTagged(currentTagged => currentTagged.filter((_, i) => i !== index));
+        setActiveQR(null);
+        lastScannedCodeRef.current = null;
+    }
+
+
+    const handleTag = (code_read) => {
+        if (code_read && lastScannedCodeRef.current !== code_read) {
+            lastScannedCodeRef.current = code_read; // Update the ref with the new code
+            setActiveQR(code_read.trim());
+        }
+    };
+
   return (
     <SafeAreaView style={{flex: 1}}>
     <View style={{display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', flex: 1}}>
@@ -270,7 +434,7 @@ const EditSession = ({route}) => {
                 <EditButton onPress={selectImageLogic}/>
             </View>
         </View>
-        <View style={{display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+        <View style={{display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
             <CollapsibleItem>
                 <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row'}}>
                 <ListHistory
@@ -283,11 +447,56 @@ const EditSession = ({route}) => {
                 </View>
             </CollapsibleItem>
         </View>
+        <View style={{display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+            <AddUserCollapsibleItem>
+                <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'column'}}>
+                <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 10}}>
+                    <View style={{display:'flex', width:'50%', paddingHorizontal: 10}}>
+                    <TagButtonType onPress={openModalText} />
+                    </View>
+                    <View style={{display:'flex', width:'50%', paddingHorizontal: 10}}>
+                    <TagButton onPress={openModal} />
+                    </View>
+                </View>
+                <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row'}}>
+                <View style={{width: '100%', display: 'flex', flexDirection: 'column', paddingTop: 10, paddingBottom: 40, paddingHorizontal: 10}}>
+                        {tagged.map((tag, index) => (
+                            <View key={index} style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', padding: 15, borderRadius: 10, marginBottom: 15}}>
+                                <Text style={{color: 'black'}}>{tag}</Text>
+                                <TouchableOpacity onPress={() => removeTag(index)}>
+                                    <Icon name="cancel" size={24} color="black" />
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                </View>
+                </View>
+                </View>
+            </AddUserCollapsibleItem>
+        </View>
       </ScrollView>
         <View style={{justifyContent: 'center', alignItems: 'center', padding: 10, width: '100%', paddingHorizontal: 10, backgroundColor: 'white'}}>
-            <UpdateButton onPress={handleUpdateSession}/>
+            <UpdateButton onPress={handleUpdateSession} text={'Update Session'}/>
         </View>
         </View>
+        <Portal>
+                <Modal visible={isModalVisible} onDismiss={closeModal} contentContainerStyle={{width: '90%', height: '40%', alignSelf:'center', display: 'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+                    <View style={{width: '100%', height:'100%', overflow:'hidden', borderRadius: 20}}>
+                    {device == undefined || device == null?<></>: <Camera
+                        style={{width:'100%', height:'100%'}}
+                        device={device}
+                        isActive={isModalVisible}
+                        codeScanner={codeScanner}
+                    />
+                    }
+                    </View>
+                
+                </Modal>
+                <Modal visible={isModalVisibleText} onDismiss={closeModalText} contentContainerStyle={{width: '90%', height: '80%', alignSelf:'center', display: 'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+                    <View style={{width: '100%', height:'100%', borderRadius: 20, backgroundColor: '#F2F2F2', display:'flex', flexDirection:'column', justifyContent:'flex-start', alignItems:'center', padding: 20}}>
+                        <UserSearch onTag={handleTag}/>
+                    </View>
+                </Modal>
+        </Portal>
     </SafeAreaView>
   );
 };
@@ -366,7 +575,7 @@ content: {
     color: 'black',
     borderRadius: 10,
     // Add additional styling for the content area
-}
+},
 });
 
 export default EditSession;
