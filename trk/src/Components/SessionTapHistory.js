@@ -121,12 +121,9 @@ const SessionTapHistory = (props) => {
                         )}
                     </View>
                     {props.isCurrent && 
-                        (<ListHistory
-                        data={climbs.reverse()}
-                        renderItem={(item, index, isHighlighted) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={timeStampFormatting(item.tapTimestamp)} fromHome={props.fromHome} isHighlighted={(index == 0 && isHighlighted)}/>}
-                        //highlighted variable passed for index 0, only if it is an active session
-                        keyExtractor={(item, index) => index.toString()}
-                        isHighlighted = {props.isCurrent}
+                        (<SessionItem
+                        data={climbs}
+                        title={sessionTimestamp(key)}
                         />)
                     }
                     {!props.isCurrent && 
