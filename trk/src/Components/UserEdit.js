@@ -18,6 +18,7 @@ import { Line, Svg } from "react-native-svg";
 import UsersApi from "../api/UsersApi";
 import QRCodeStyled, { useQRCodeData } from 'react-native-qrcode-styled';
 
+//Generated Custom QR for Tagging task
 const UserEdit = ({route}) => {
     const navigation = useNavigation();
     //let data = route.params.data;
