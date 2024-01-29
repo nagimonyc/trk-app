@@ -30,7 +30,7 @@ const UserEdit = ({route}) => {
     const [initialImagePath, setInitialImagePath] = useState(null);
     const [initialUsername, setInitialUsername] = useState((currentUser.username? currentUser.username: currentUser.email.split('@')[0]));
     const [username, setUsername] = useState((currentUser.username? currentUser.username: currentUser.email.split('@')[0]));
-    console.log('The initial username is: ', initialUsername);
+    //console.log('The initial username is: ', initialUsername);
 
     //To fetch the climb image of the latest climb
     const loadImageUrl = async (imagePath) => {
@@ -79,7 +79,7 @@ const UserEdit = ({route}) => {
     };
 
     const selectImageLogic = async () => {
-        console.log("handleImagePick called");
+        //console.log("handleImagePick called");
         try {
         const pickedImage = await ImagePicker.openPicker({
             width: 200,
@@ -119,9 +119,9 @@ const UserEdit = ({route}) => {
     };
     
     const updateProfile = async () => {
-        console.log('Initial image path: ', initialImagePath);
-        console.log('Updated image path: ', climbImageUrl);
-        console.log('Updating Profile for user: ', currentUser.uid);
+        //console.log('Initial image path: ', initialImagePath);
+        //console.log('Updated image path: ', climbImageUrl);
+        //console.log('Updating Profile for user: ', currentUser.uid);
         try {
             // Logic to update the session
             if (initialUsername !== username) {
@@ -148,7 +148,7 @@ const UserEdit = ({route}) => {
                 try {
                     const uploadedImage = await uploadImage(climbImageUrl);
                     await UsersApi().updateUser(currentUser.uid, {image: [uploadedImage]});
-                    console.log('Profile Pic updated for: ', currentUser.id);
+                    //console.log('Profile Pic updated for: ', currentUser.id);
                     setInitialImagePath(climbImageUrl);
                 } catch (error) {
                     console.error(error);
@@ -157,10 +157,10 @@ const UserEdit = ({route}) => {
                 }
             }
             Alert.alert("Success", "Profile updated!");
-            console.log("Session updated");
+            //console.log("Session updated");
             navigation.popToTop();
         } catch (error) {
-            console.log('Error: ', error);
+            //console.log('Error: ', error);
             Alert.alert("Error", "Profile could not be updated!");
         }
     };

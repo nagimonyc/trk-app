@@ -43,7 +43,7 @@ const SignIn = ({ onForgotPassword, role, nyuComp }) => {
             const { idToken } = await GoogleSignin.signIn();
             const googleCredential = auth.GoogleAuthProvider.credential(idToken);
             const userCredential = await auth().signInWithCredential(googleCredential);
-            console.log('Signed in with Google!');
+            //console.log('Signed in with Google!');
             // Check if the user is new
             if (userCredential.additionalUserInfo.isNewUser) {
                 const user = userCredential.user;

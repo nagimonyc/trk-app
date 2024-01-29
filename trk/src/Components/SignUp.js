@@ -19,7 +19,7 @@ const SignUp = ({ role, nyuComp }) => {
             .then((userCredential) => {
                 // Get the user object
                 const user = userCredential.user;
-                console.log('User signed up:', userCredential.user);
+                //console.log('User signed up:', userCredential.user);
 
                 // Create a new document in Firestore 'Users' collection
                 firestore()
@@ -41,7 +41,7 @@ const SignUp = ({ role, nyuComp }) => {
                         console.log('Error adding user to Firestore: ', error);
                     });
 
-                console.log('User account created & signed in!');
+                //console.log('User account created & signed in!');
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {

@@ -8,7 +8,7 @@ import store from './reduxStore';
 import Toast from 'react-native-toast-message';
 
 function AppWrapper() {
-  console.log('[TEST] AppWrapper called');
+  //console.log('[TEST] AppWrapper called');
   return (
     <AuthProvider>
       <Provider store={store}>
@@ -20,7 +20,7 @@ function AppWrapper() {
 
 
 function App(props) {
-  console.log('[TEST] App called');
+  //console.log('[TEST] App called');
 
   const { currentUser } = useContext(AuthContext);
 

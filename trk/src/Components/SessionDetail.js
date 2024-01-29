@@ -22,22 +22,22 @@ const SessionDetail = ({route}) => {
   const allImages = useMemo(() => {
     return data.flatMap(item => item.sessionImages ? item.sessionImages : []);
   }, [data]);  
-  console.log('All Images: ', allImages);
+  //console.log('All Images: ', allImages);
   let initallySelected = null;
   let initialText = null;
   let selectedData = null;
-  console.log(data);
+  //console.log(data);
   //Selected Item Set
   if (data.length>0) {
       selectedData = data.filter(obj => obj.isSelected == true);
-      console.log('The selected Data is: ', selectedData);
+      //console.log('The selected Data is: ', selectedData);
       if (selectedData.length == 0) {
           initallySelected = data[0].tapId;
           selectedData = [data[0]];
-          console.log('Initially selected value is: ', initallySelected);
+          //console.log('Initially selected value is: ', initallySelected);
       } else {
           initallySelected = selectedData[0].tapId;
-          console.log('Initially selected value is: ', initallySelected);
+          //console.log('Initially selected value is: ', initallySelected);
       }
       if (data[data.length-1].sessionTitle === undefined || (data[data.length-1].sessionTitle && data[data.length-1].sessionTitle === '')) {
           initialText = 'Session on '+title[1];
@@ -45,7 +45,7 @@ const SessionDetail = ({route}) => {
       else {
           initialText = data[data.length-1].sessionTitle;
       }
-      console.log('Initial session text: ', initialText);
+      //console.log('Initial session text: ', initialText);
   }
 
   const [climbImageUrl, setClimbImageUrl] = useState(null);

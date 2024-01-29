@@ -17,13 +17,13 @@ const UserSearch = ({onTag}) => {
         const users = querySnapshot.docs.map(doc => doc.data());
         const querySnapshotEmail = await UsersApi().getUsersByForSearchEmail(searchQuery);
         const usersEmail = querySnapshotEmail.docs.map(doc => doc.data());
-        console.log('By email: ', usersEmail);
+        //console.log('By email: ', usersEmail);
         let combinedUsers = [...users, ...usersEmail];
         let uniqueUsers = Array.from(new Set(combinedUsers.map(user => user.uid)))
             .map(uid => {
                 return combinedUsers.find(user => user.uid === uid);
         });
-        console.log('Results: ', uniqueUsers);
+        //console.log('Results: ', uniqueUsers);
         setSearchResults(uniqueUsers);
     };
 

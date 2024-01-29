@@ -36,11 +36,11 @@ const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp, isHighlighted 
     //To hanndle selection of the item within Edit Session (change in useRef variable)
     const handleSelection = (id) => {
         if (tapIdRef === null) {
-            console.log('No selection made!');
+            //console.log('No selection made!');
         } else {
             tapIdRef.current = id;
             setSelectedTapId(tapIdRef.current);
-            console.log('Selection made: ', tapIdRef.current);
+            //console.log('Selection made: ', tapIdRef.current);
         }
     }
 
@@ -50,7 +50,7 @@ const ClimbItem = ({climb, tapId, fromHome = false, tapTimestamp, isHighlighted 
             const tapData = tapDocument.data();
 
             const climbId = tapData.climb;
-            console.log(`This is: ${climbId}`);
+            //console.log(`This is: ${climbId}`);
 
             navigation.navigate('Detail', { climbData: climb, tapId: tapId, climbId: climbId, profileCheck: 1 });
         }
