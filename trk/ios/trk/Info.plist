@@ -70,6 +70,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>Share climb performance image</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Share climb performance image for sports</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Nagimo needs access to your Camera.</string>
 

@@ -11,6 +11,7 @@ import ClimbItem from './ClimbItem';
 import ListItemSessions from './ListItemSessions';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Or any other icon family you prefer
 import UsersApi from "../api/UsersApi";
 
@@ -230,7 +231,7 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
                         </View>
                         </View>
                         <View style={{ width: 0.5, backgroundColor: '#BBBBBB', alignSelf: 'stretch', marginVertical: 5 }}></View>
-                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { }}></Button></View>
+                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { navigation.navigate('Share_Session', { climbData: { imageUrl: climbImageUrl, climbCount: data.length, grade: selectedData[0].grade } }) }}></Button></View>
                     </View>
 
                 </View>

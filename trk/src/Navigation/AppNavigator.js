@@ -28,6 +28,7 @@ import Toast from 'react-native-toast-message';
 import SessionDetail from '../Components/SessionDetail';
 import EditSession from '../Components/Edit_Session';
 import UserEdit from '../Components/UserEdit';
+import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 import FollowScreen from '../Screens/TabScreens/Follow';
 
 //Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
@@ -369,6 +370,11 @@ function ProfileStack() {
         name="Definition"
         component={GlossaryDefinition}
         options={{ title: 'Definition', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Share_Session"
+        component={ShareView}
+        options={{ title: 'Share Session', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Climbs_Tracker"
