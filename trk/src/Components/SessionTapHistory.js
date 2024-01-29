@@ -2,7 +2,7 @@ import React, { useContext, useCallback } from 'react';
 import { useState, useRef, useEffect} from 'react';
 import ListHistory from './ListHistory';
 import ClimbItem from './ClimbItem';
-import { ScrollView, Text, View, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native';
 import moment from 'moment-timezone';
 import { StyleSheet } from 'react-native';
 import SessionItem from './SessionItem';
