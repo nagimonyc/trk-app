@@ -14,7 +14,7 @@ function ShareView({ route }) {
     const { imageUrl, climbCount, grade } = climbData;
 
     // Create a ref for the view you want to capture
-    // const viewRef = useRef();
+    const viewRef = useRef();
 
     return (
         <View style={styles.container}>
@@ -34,17 +34,16 @@ function ShareView({ route }) {
                         <Text style={styles.overlayTextBig}>{climbCount}</Text>
                     </View>
                     <View style={{ flex: 1, alignSelf: 'flex-end' }}>
-                        <Text style={styles.overlayText}>Time</Text>
-                        <Text style={styles.overlayTextBig}>34m 52s</Text>
+                        {/* <Text style={styles.overlayText}>Time</Text> */}
+                        {/* <Text style={styles.overlayTextBig}>34m 52s</Text> */}
                     </View>
                     <View style={{ flex: 1, alignSelf: 'flex-end', marginRight: 10 }}>
                         <Text style={styles.overlayText}>Last Climb</Text>
                         <Text style={styles.overlayTextBig}>{grade}</Text>
                     </View>
-
-
                 </LinearGradient>
             </View>
+            <View style={{ marginTop: 15 }}><Text>Feature in progress ... updates next week!</Text></View>
         </View>
     );
 }
