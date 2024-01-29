@@ -567,7 +567,7 @@ async function requestUserPermission() {
     // Now fetch the FCM token
     const fcmToken = await messaging().getToken();
     if (fcmToken) {
-      console.log('FCM Token:', fcmToken);
+      //console.log('FCM Token:', fcmToken);
       // Perform any additional setup with the FCM token, like sending it to your server
     } else {
       console.log('Failed to fetch FCM token');
@@ -596,14 +596,14 @@ function AppNav(props) {
 
     // Background and quit state notification handler
     messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Notification clicked!');
+      //console.log('Notification clicked!');
       if (remoteMessage.data.targetScreen) {
         navigationRef.current?.navigate(remoteMessage.data.targetScreen);
       }
     });
 
     messaging().getInitialNotification().then(remoteMessage => {
-      console.log('Notification clicked!');
+      //console.log('Notification clicked!');
       if (remoteMessage && remoteMessage.data.targetScreen) {
         navigationRef.current?.navigate(remoteMessage.data.targetScreen);
       }

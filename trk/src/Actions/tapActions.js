@@ -8,9 +8,9 @@ import { firebase } from '@react-native-firebase/functions';
 export const processClimbId = (climbId, currentUser, role) => {
     return new Promise(async(resolve, reject) => {
       // To process the climbId
-      console.log('Processing climbId:', climbId);
-      console.log('Current User: ', currentUser);
-      console.log('Current Role: ', role);
+      //console.log('Processing climbId:', climbId);
+      //console.log('Current User: ', currentUser);
+      //console.log('Current Role: ', role);
       try {
         const climbDataResult = await ClimbsApi().getClimb(climbId);
         if (climbDataResult && climbDataResult._data) {
@@ -23,7 +23,7 @@ export const processClimbId = (climbId, currentUser, role) => {
               //console.log('Snapshot: ', lastTapSnapshot.docs);
               if (!lastTapSnapshot.empty) {
                 lastUserTap = lastTapSnapshot.docs[0].data();
-                console.log('Last Tap Data:', lastUserTap);
+                //console.log('Last Tap Data:', lastUserTap);
               }
               const currentTime = new Date();
               const sixHoursLater = new Date(currentTime.getTime() + (6 * 60 * 60 * 1000)); // Add 6 hours in milliseconds
@@ -54,7 +54,7 @@ export const processClimbId = (climbId, currentUser, role) => {
                 expiryTime: isSessionStart ? sixHoursLater : (lastUserTap?.expiryTime || null),
             };
 
-              console.log('Tap: ', tap);
+              //console.log('Tap: ', tap);
 
               if (isSessionStart) {
                   const documentReference =  await addTap(tap);
@@ -64,7 +64,7 @@ export const processClimbId = (climbId, currentUser, role) => {
                   scheduleFunction({tapId: documentReference.id, expiryTime: expiryTimeForFunction})
                     .then((result) => {
                         // Read result of the Cloud Function.
-                        console.log('Function result:', result.data);
+                        //console.log('Function result:', result.data);
                     }).catch((error) => {
                         // Getting the Error details.
                         console.error('Error calling function:', error);
@@ -72,14 +72,14 @@ export const processClimbId = (climbId, currentUser, role) => {
               }
             resolve('Success'); 
             //Show an alert Here
-            console.log('Climb was processed!');
+            //console.log('Climb was processed!');
             Toast.show({
                 type: 'success',
                 text1: 'Offline Tap Processed!',
             });
           } else {
             // Handle the case where currentUser.uid === climbDataResult._data.setter
-            console.log('The Setter is the user or this a Setter Account. Tap was not added');
+            //console.log('The Setter is the user or this a Setter Account. Tap was not added');
             reject(new Error('User cannot log their own climb')); 
             Toast.show({
                 type: 'success',
