@@ -50,24 +50,24 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
     if (!data || (data && data.length == 0)) {
         return;
     }
-    console.log('Data in the Session is: ', data);
+    //console.log('Data in the Session is: ', data);
 
     //Session Edits implemented
     let initallySelected = null;
     let initialText = null;
     let selectedData = null;
-    console.log(data);
+    //console.log(data);
     //Selected Item Set
     if (data.length > 0) {
         selectedData = data.filter(obj => obj.isSelected == true);
-        console.log('The selected Data is: ', selectedData);
+        //console.log('The selected Data is: ', selectedData);
         if (selectedData.length == 0) {
             initallySelected = data[0].tapId;
             selectedData = [data[0]];
-            console.log('Initially selected value is: ', initallySelected);
+            //console.log('Initially selected value is: ', initallySelected);
         } else {
             initallySelected = selectedData[0].tapId;
-            console.log('Initially selected value is: ', initallySelected);
+            //console.log('Initially selected value is: ', initallySelected);
         }
         if (data[data.length - 1].sessionTitle === undefined || (data[data.length - 1].sessionTitle && data[data.length - 1].sessionTitle === '')) {
             initialText = 'Session on ' + title[1];
@@ -75,7 +75,7 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
         else {
             initialText = data[data.length - 1].sessionTitle;
         }
-        console.log('Initial session text: ', initialText);
+        //console.log('Initial session text: ', initialText);
     }
 
     const [climbImageUrl, setClimbImageUrl] = useState(null);
@@ -118,7 +118,7 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
                 }
             });
             const usersWithImages = await Promise.all(userPromises);
-            console.log('Images Fetched for Tagged Users!');
+            //console.log('Images Fetched for Tagged Users!');
             setTaggedWithImages(usersWithImages);
     };
 
