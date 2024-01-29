@@ -107,7 +107,7 @@ const ClimberProfile = ({ navigation }) => {
             //Combine active session climb details with tap data
             const activeClimbsHistory = activeClimbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
-                return { ...climbSnapshot.data(), tapId: filteredActiveTaps[index].id, tapTimestamp: filteredActiveTaps[index].timestamp};
+                return { ...climbSnapshot.data(), tapId: filteredActiveTaps[index].id, tapTimestamp: filteredActiveTaps[index].timestamp, isSessionStart: filteredActiveTaps[index].isSessionStart, tagged: filteredActiveTaps[index].tagged};
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
 
             //To allow for pagination of sessions
@@ -219,7 +219,7 @@ const ClimberProfile = ({ navigation }) => {
 
         //console.log('Session Timestamp: ', sessionKey);
         const activeSession = {};
-        activeSession[activeSessionTimestamp] = activeClimbs; //For desc ordering of active session taps
+        activeSession[activeSessionTimestamp] = (activeClimbs && activeClimbs.length > 0 ? activeClimbs.reverse(): []); //For desc ordering of active session taps
         console.log('Expired Session is: ', expiredSessions);
         console.log('Active Session is: ', activeSession);
         return {expiredSessions, activeSession, activeSessionTimestamp};

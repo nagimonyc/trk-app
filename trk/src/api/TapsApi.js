@@ -67,7 +67,7 @@ function TapsApi() {
                     console.log('Updating the next one! ', nextTaps.docs[0].id);
                     
                     //To handle the case where it doesn't exist
-                    await updateTap(nextTaps.docs[0].id, { isSessionStart: true, sessionImages: (oldTap._data.sessionImages !== undefined? oldTap._data.sessionImages: []), isSelected: (oldTap._data.isSelected !== undefined? oldTap._data.isSelected: true), sessionTitle: (oldTap._data.sessionTitle!== undefined? oldTap._data.sessionTitle: '')});
+                    await updateTap(nextTaps.docs[0].id, { isSessionStart: true, sessionImages: (oldTap._data.sessionImages !== undefined? oldTap._data.sessionImages: []), isSelected: (oldTap._data.isSelected !== undefined? oldTap._data.isSelected: true), sessionTitle: (oldTap._data.sessionTitle!== undefined? oldTap._data.sessionTitle: ''), tagged: (oldTap._data.tagged!== undefined? oldTap._data.tagged: [])});
                     const scheduleFunction = firebaseFunctions.functions().httpsCallable('scheduleFunction');
                     let expiryTimeForFunction;
                     if (oldTap._data.expiryTime instanceof firebase.firestore.Timestamp) {
@@ -123,6 +123,7 @@ function TapsApi() {
         console.log('Fetching Active Session Climbs....');
         return ref
             .where('user', '==', userId)
+            .where('archived', '==', false)
             .where("expiryTime", ">", firebase.firestore.Timestamp.now())
             .orderBy("expiryTime", "desc").get();
     }
