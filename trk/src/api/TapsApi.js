@@ -50,7 +50,7 @@ function TapsApi() {
             //find next tap and make that session start
             await tapRef.update(updatedTap);
             const oldTap = await getTap(tapId);
-            console.log('The old tap is: ', oldTap);
+            //console.log('The old tap is: ', oldTap);
 
             //If the tap being archived marks the start of a session, then we find the oldest tap in that session to mark as the beginning of the session (still expires at the older time)
             if (oldTap._data.isSessionStart) {
@@ -64,7 +64,7 @@ function TapsApi() {
                     .get();
 
                 if (!nextTaps.empty) {
-                    console.log('Updating the next one! ', nextTaps.docs[0].id);
+                    //console.log('Updating the next one! ', nextTaps.docs[0].id);
                     
                     //To handle the case where it doesn't exist
                     await updateTap(nextTaps.docs[0].id, { isSessionStart: true, sessionImages: (oldTap._data.sessionImages !== undefined? oldTap._data.sessionImages: []), isSelected: (oldTap._data.isSelected !== undefined? oldTap._data.isSelected: true), sessionTitle: (oldTap._data.sessionTitle!== undefined? oldTap._data.sessionTitle: '')});
@@ -83,7 +83,7 @@ function TapsApi() {
 
                     scheduleFunction({ tapId: nextTaps.docs[0].id, expiryTime: expiryTimeForFunction })
                         .then((result) => {
-                            console.log('Function result:', result.data);
+                            //console.log('Function result:', result.data);
                         }).catch((error) => {
                             console.error('Error calling function:', error);
                         });
@@ -107,7 +107,7 @@ function TapsApi() {
 
     //To get the last Tap made by a user
     function getLastUserTap(userId) {
-        console.log('User ID: ', userId);
+        //console.log('User ID: ', userId);
         return ref
             .where('user', '==', userId)
             .where('archived', '!=', true)
@@ -119,8 +119,8 @@ function TapsApi() {
 
     //To get all the taps in the current session
     function getActiveSessionTaps(userId) {
-        console.log('User ID: ', userId);
-        console.log('Fetching Active Session Climbs....');
+        //console.log('User ID: ', userId);
+        //console.log('Fetching Active Session Climbs....');
         return ref
             .where('user', '==', userId)
             .where("expiryTime", ">", firebase.firestore.Timestamp.now())
@@ -129,8 +129,8 @@ function TapsApi() {
 
     // To get the starting points of the last sessions with pagination
     function getRecentFiveSessions(userId, startAfterDoc = null) {
-        console.log('User ID: ', userId);
-        console.log('Fetching Session Start Climbs with Pagination....');
+        //console.log('User ID: ', userId);
+        //console.log('Fetching Session Start Climbs with Pagination....');
         let query = ref
             .where('user', '==', userId)
             .where('isSessionStart', '==', true)
@@ -140,7 +140,7 @@ function TapsApi() {
             .limit(5);
 
         if (startAfterDoc) {
-            console.log('Starting after: ', startAfterDoc);
+            //console.log('Starting after: ', startAfterDoc);
             query = query.startAfter(startAfterDoc);
         }
 
@@ -150,8 +150,8 @@ function TapsApi() {
 
     //To get all expired taps to build Expired sessions
     function getExpiredTaps(userId) {
-        console.log('User ID: ', userId);
-        console.log('Fetching Expired Climbs....');
+        //console.log('User ID: ', userId);
+        //console.log('Fetching Expired Climbs....');
         return ref
             .where('user', '==', userId)
             .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
@@ -162,8 +162,8 @@ function TapsApi() {
 
     //To get all sessions quicker (display count)
     function getTotalSessionCount(userId) {
-        console.log('User ID: ', userId);
-        console.log('Fetching Expired Climbs....');
+        //console.log('User ID: ', userId);
+        //console.log('Fetching Expired Climbs....');
         return ref
             .where('user', '==', userId)
             .where('isSessionStart', '==', true)

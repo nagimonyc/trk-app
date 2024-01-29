@@ -10,10 +10,10 @@ const effect = (effect, _action) => {
 };
 
 const discard = (error, action, retries) => {
-    console.log('In discard');
+    //console.log('In discard');
     if (error.message === 'User cannot log their own climb' || error.message === 'Climb data not found' || error.message === 'Firebase error') {
       // Don't retry these specific errors
-      console.log('Here');
+      //console.log('Here');
       return true;
     }
     if (retries > 5) {

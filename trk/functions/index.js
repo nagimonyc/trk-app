@@ -107,7 +107,7 @@ exports.decrementUserTapCounter = functions.firestore
 
     // GCP Job (Queued), to call the notification function after 6 hours (when a session is started ONLY), on deletion of the starting tap of the session, we shift to the next most recent tap (scheduled for the same time as original with difference)
     exports.scheduleFunction = functions.https.onCall(async (data, context) => {
-        console.log('Function called.....');
+        //console.log('Function called.....');
         const projectId = 'trk-app-505a1';
         const queue = 'sessionNotifications';
         const location = 'us-central1'; // e.g., 'us-central1'
@@ -123,7 +123,7 @@ exports.decrementUserTapCounter = functions.firestore
         const convertedDate = new Date(expiryTime);
         const currentDate = new Date();
         const date_diff_in_seconds = (convertedDate - currentDate) / 1000;
-        console.log('Time diff: ', date_diff_in_seconds);
+        //console.log('Time diff: ', date_diff_in_seconds);
         if (date_diff_in_seconds > 0) {
             const task = {
                 httpRequest: {
@@ -141,9 +141,9 @@ exports.decrementUserTapCounter = functions.firestore
                 },
             };
             await client.createTask({parent, task});
-            console.log(`Task created: ${task.name}`);
+            //console.log(`Task created: ${task.name}`);
         } else {
-            console.log(`Task skipped`);
+            //console.log(`Task skipped`);
         }
 
     });
