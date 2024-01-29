@@ -122,7 +122,6 @@ const FollowPage = () => {
                 color="#767676"
                 placeholderTextColor="#767676"
                 style={{backgroundColor: '#D9D9D9', borderRadius: 10, padding: 8, marginBottom: 20}}
-                autoFocus={true}
             />
             <ScrollView contentContainerStyle={{width: '100%', display:'flex', flexDirection:'column', justifyContent: 'flex-start', alignItems:'center'}}>
             {!refreshing && searchResults.length === 0 && (<View style={{display:'flex', flexDirection: 'column', justifyContent: 'center', alignItems:'center'}}><Text style={{color:'black', padding: 10}}>No users found!</Text><Text style={{color:'black', padding: 10}}>Try another username ✍️</Text></View>)}
