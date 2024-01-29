@@ -169,7 +169,7 @@ const EditSession = ({route}) => {
     const TagButton = ({onPress}) => {
         return (
             <TouchableOpacity style={{width: '100%', backgroundColor: '#3498db', borderRadius: 10, display: 'flex', flexDirection: 'row', padding: 10, justifyContent: 'center', alignItems: 'center'}} onPress={onPress}>
-                <Icon name="camera-alt" color="white" size={20}/>
+                <Image source={require('./../../assets/camera.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
             </TouchableOpacity>
         );
     };
@@ -178,7 +178,7 @@ const EditSession = ({route}) => {
     const TagButtonType = ({onPress}) => {
         return (
             <TouchableOpacity style={{width: '100%', backgroundColor: '#3498db', borderRadius: 10, display: 'flex', flexDirection: 'row', padding: 10, justifyContent: 'center', alignItems: 'center'}} onPress={onPress}>
-                <Icon name="short-text" color="white" size={20}/>
+                <Image source={require('./../../assets/short-text.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
             </TouchableOpacity>
         );
     };
@@ -195,7 +195,7 @@ const EditSession = ({route}) => {
             <View style={{width: '100%'}}>
                 <TouchableOpacity style={styles.header} onPress={toggleOpen}>
                     <View style={{display: 'flex', flexDirection :'row'}}>
-                    <Icon name="star-border" size={20} color="#000"/>
+                    <Image source={require('./../../assets/featured.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                     <Text style={styles.headerText}>Featured Climb</Text>
                     </View>
                     <Icon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color="#000"/>
@@ -220,7 +220,7 @@ const EditSession = ({route}) => {
             <View style={{width: '100%'}}>
                 <TouchableOpacity style={styles.header} onPress={toggleOpen}>
                     <View style={{display: 'flex', flexDirection :'row'}}>
-                    <Icon name="supervisor-account" size={20} color="#000"/>
+                    <Image source={require('./../../assets/tag.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                     <Text style={styles.headerText}>Tagged Partners</Text>
                     </View>
                     <Icon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color="#000"/>

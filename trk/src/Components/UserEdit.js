@@ -228,7 +228,7 @@ const UserEdit = ({route}) => {
                                 <TouchableOpacity onPress={selectImageLogic}>
                                     <Image source={{ uri: climbImageUrl }} style={{ width: 75, height: 75, borderRadius: 50}} />
                                     <View style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor:'black' }}>
-                                    <Icon name="edit" size={20} color="black" />
+                                    <Image source={require('./../../assets/editPen.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                                     </View>
                                 </TouchableOpacity>
                             </View>

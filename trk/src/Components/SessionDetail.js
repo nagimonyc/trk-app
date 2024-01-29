@@ -183,7 +183,7 @@ const SessionDetail = ({route}) => {
     const EditButton = ({ onPress }) => {
         return (
             <TouchableOpacity style={styles.button} onPress={onPress}>
-                <Icon name="more-horiz" size={20} color="black" />
+                <Image source={require('./../../assets/edit.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
             </TouchableOpacity>
         );
     };

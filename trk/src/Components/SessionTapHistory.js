@@ -134,7 +134,7 @@ const SessionTapHistory = (props) => {
     const TagButton = ({onPress}) => {
         return (
             <TouchableOpacity style={{width: '100%', backgroundColor: '#3498db', borderRadius: 10, display: 'flex', flexDirection: 'row', padding: 10, justifyContent: 'center', alignItems: 'center'}} onPress={onPress}>
-                <Icon name="camera-alt" color="white" size={20}/>
+                <Image source={require('./../../assets/camera.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
             </TouchableOpacity>
         );
     };
@@ -142,7 +142,7 @@ const SessionTapHistory = (props) => {
     const TagButtonType = ({onPress}) => {
         return (
             <TouchableOpacity style={{width: '100%', backgroundColor: '#3498db', borderRadius: 10, display: 'flex', flexDirection: 'row', padding: 10, justifyContent: 'center', alignItems: 'center'}} onPress={onPress}>
-                <Icon name="short-text" color="white" size={20}/>
+                <Image source={require('./../../assets/short-text.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
             </TouchableOpacity>
         );
     };
