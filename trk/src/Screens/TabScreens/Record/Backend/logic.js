@@ -139,9 +139,9 @@ export const useHomeScreenLogic = (props) => {
 
     const checkConnectivity = (climbId) => {
         NetInfo.fetch().then(state => {
-            console.log("Is connected?", state.isConnected);
+            //console.log("Is connected?", state.isConnected);
             if (state.isConnected) {
-                console.log('Navigating');
+                //console.log('Navigating');
                 //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true});
                 addClimbWithNetwork(climbId[0]); //No Navigation to Climb Detail, done in record itself
             } else {
@@ -165,7 +165,7 @@ export const useHomeScreenLogic = (props) => {
               //console.log('Snapshot: ', lastTapSnapshot.docs);
               if (!lastTapSnapshot.empty) {
                 lastUserTap = lastTapSnapshot.docs[0].data();
-                console.log('Last Tap Data:', lastUserTap);
+                //console.log('Last Tap Data:', lastUserTap);
               }
               const currentTime = new Date();
               const sixHoursLater = new Date(currentTime.getTime() + (6 * 60 * 60 * 1000)); // Add 6 hours in milliseconds
@@ -196,7 +196,7 @@ export const useHomeScreenLogic = (props) => {
                 expiryTime: isSessionStart ? sixHoursLater : (lastUserTap?.expiryTime || null),
             };
 
-            console.log('Tap: ', tap);
+            //console.log('Tap: ', tap);
             const documentReference =  await addTap(tap);
             const tapDataResult = await TapsApi().getTap(documentReference.id);
               //Notifications only sent is it marks the start of a session
@@ -205,7 +205,7 @@ export const useHomeScreenLogic = (props) => {
                     scheduleFunction({tapId: documentReference.id, expiryTime: expiryTimeForFunction})
                             .then((result) => {
                                 // Read result of the Cloud Function.
-                                console.log('Function result:', result.data);
+                                //console.log('Function result:', result.data);
                             }).catch((error) => {
                                 // Getting the Error details.
                                 console.error('Error calling function:', error);
@@ -214,12 +214,12 @@ export const useHomeScreenLogic = (props) => {
               setClimb(climbDataResult._data);
               setTapObj(tapDataResult._data); //All relevant data is collected and set.
               setTapId(documentReference.id);
-              console.log('Climb was processed!');
-              console.log('Tap ID: ', documentReference.id);
-              console.log('Climb: ', climbDataResult._data);
-              console.log('Tap: ', tapDataResult._data);
+              //console.log('Climb was processed!');
+              //console.log('Tap ID: ', documentReference.id);
+              //console.log('Climb: ', climbDataResult._data);
+              //console.log('Tap: ', tapDataResult._data);
             } else {
-              console.log('The Setter is the user or this a Setter Account. Tap was not added');
+              //console.log('The Setter is the user or this a Setter Account. Tap was not added');
               //Toasts are shown for non-recorded logic (Tap not created).
               Toast.show({
                 type: 'success',
@@ -342,8 +342,8 @@ export const useHomeScreenLogic = (props) => {
             isReading = false;  // Clear the flag on successful read
 
             if (climbId && climbId[0]) {
-                console.log(climbId[0]);
-                console.log('Climb ID worked');
+                //console.log(climbId[0]);
+                //console.log('Climb ID worked');
                 //Better way to verify climb_id
                 checkConnectivity(climbId);
                 //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });

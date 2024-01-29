@@ -34,9 +34,9 @@ async function readClimb() {
   //Reconstructed name string
   const name = String.fromCharCode.apply(null, nameBytes).trim();
 
-  console.log('The grade is: ', grade);
-  console.log('The name is: ', name);
-  console.log('Proceeding...');
+  //console.log('The grade is: ', grade);
+  //console.log('The name is: ', name);
+  //console.log('Proceeding...');
   return [climbId, climbIdBytes, grade, name];
 }
 

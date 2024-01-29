@@ -4,11 +4,11 @@ import { Svg, Line, Circle, Text as SVGText } from 'react-native-svg';
 
 const SessionGraph = ({ data }) => {
 
-    console.log('Session Graph called');
+    //console.log('Session Graph called');
     if (!data || (data && data.length == 0)) {
         return '';
     }   
-    console.log('Data in the Session is: ', data);
+    //console.log('Data in the Session is: ', data);
     const screenWidth = Dimensions.get('window').width;
     const margin = 30;
     const svgWidth = screenWidth - margin;

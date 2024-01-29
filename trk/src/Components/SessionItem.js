@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 });
 
 const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) => {
-    console.log('[TEST] ListHistory called');
+    //console.log('[TEST] ListHistory called');
     if (!data || (data && data.length == 0)) {
         return;
     }

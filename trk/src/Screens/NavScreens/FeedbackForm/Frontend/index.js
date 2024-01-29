@@ -34,7 +34,7 @@ const FeedbackForm = ({ route }) => {
           climb: climbId,
           timestamp: new Date(),
         });
-      console.log('Feedback submitted!');
+      //console.log('Feedback submitted!');
       navigation.goBack();
     } catch (error) {
       console.error("Error writing document: ", error);

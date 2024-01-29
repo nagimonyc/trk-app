@@ -29,19 +29,19 @@ const EditSession = ({route}) => {
 
   let initallySelected = null;
   let initialText = null;
-  console.log(data);
+  //console.log(data);
   //Selected Item Set
   if (data.length>0) {
     const selectedData = data.filter(obj => obj.isSelected == true);
-    console.log('The selected Data is: ', selectedData);
+    //console.log('The selected Data is: ', selectedData);
     if (selectedData.length == 0) {
         tapIdRef.current = data[0].tapId;
         initallySelected = data[0].tapId;
-        console.log('Initially selected value is: ', tapIdRef.current);
+        //console.log('Initially selected value is: ', tapIdRef.current);
     } else {
         tapIdRef.current = selectedData[0].tapId;
         initallySelected = selectedData[0].tapId;
-        console.log('Initially selected value is: ', tapIdRef.current);
+        //console.log('Initially selected value is: ', tapIdRef.current);
     }
     if (data[data.length-1].sessionTitle === undefined || (data[data.length-1].sessionTitle && data[data.length-1].sessionTitle === '')) {
         initialText = 'Session on '+title[1];
@@ -49,7 +49,7 @@ const EditSession = ({route}) => {
     else {
         initialText = data[data.length-1].sessionTitle;
     }
-    console.log('Initial session text: ', initialText);
+    //console.log('Initial session text: ', initialText);
   }
   const [selectedTapId, setSelectedTapId] = useState(tapIdRef.current);
   const [sessionTitle, setSessionTitle] = useState(initialText);
@@ -76,7 +76,7 @@ const EditSession = ({route}) => {
 
   // Function to open the modal
   const openModal = () => {
-        console.log('Modal Opened!');
+        //console.log('Modal Opened!');
       setIsModalVisible(true);
   };
 
@@ -257,8 +257,8 @@ const EditSession = ({route}) => {
     };
 
     const updateSession = async () => {
-        console.log('Initial image path: ', initialImagePath);
-        console.log('Updated image path: ', climbImageUrl);
+        //console.log('Initial image path: ', initialImagePath);
+        //console.log('Updated image path: ', climbImageUrl);
         // Logic to update the session
         if (initialText !== sessionTitle) {
             if (sessionTitle.trim() === '') {
@@ -291,7 +291,7 @@ const EditSession = ({route}) => {
                 const uploadedImage = await uploadImage(climbImageUrl);
                 const { updateTap } = TapsApi();
                 await updateTap(data[data.length-1].tapId, {sessionImages: [uploadedImage].concat((data[data.length-1].sessionImages? data[data.length-1].sessionImages: []))});
-                console.log('Image updated for: ', data[data.length-1].tapId);
+                //console.log('Image updated for: ', data[data.length-1].tapId);
                 setInitialImagePath(climbImageUrl);
             } catch (error) {
                 console.error(error);
@@ -301,7 +301,7 @@ const EditSession = ({route}) => {
         }
         if (!(tagged.length === lastTagged.length && tagged.slice().sort().every((value, index) => value === lastTagged.slice().sort()[index]))) {
             try {
-                console.log('Updating Tagged Users!');
+                //console.log('Updating Tagged Users!');
                 await TapsApi().updateTap(data[data.length-1].tapId, {tagged: tagged});
                 setLastTagged(tagged);
             } catch (error) {
@@ -311,7 +311,7 @@ const EditSession = ({route}) => {
             }
         } 
         Alert.alert("Success", "Session updated!");
-        console.log("Session updated");
+        //console.log("Session updated");
         navigation.popToTop();
     };
 
@@ -325,7 +325,7 @@ const EditSession = ({route}) => {
 
 
     const selectImageLogic = async () => {
-        console.log("handleImagePick called");
+        //console.log("handleImagePick called");
         try {
         const pickedImage = await ImagePicker.openPicker({
             width: 300,
@@ -350,7 +350,7 @@ const EditSession = ({route}) => {
         onCodeScanned: (codes) => {
             if (codes.length > 0) {
                 let code_read = codes[0].value;
-                console.log('QR Value Read: ', code_read);
+                //console.log('QR Value Read: ', code_read);
                 // Check if the new code is different from the last scanned code
                 if (code_read && lastScannedCodeRef.current !== code_read) {
                     lastScannedCodeRef.current = code_read; // Update the ref with the new code
@@ -368,13 +368,13 @@ const EditSession = ({route}) => {
                     const snapshot = await getUsersBySomeField('uid', activeQR);
                     if (snapshot && snapshot.docs) {
                         if (snapshot.docs.length === 0) {
-                            console.log(snapshot.docs);
+                            //console.log(snapshot.docs);
                             throw new Error("No user found!");
                         } else if (snapshot.docs.length > 1) {
                             throw new Error("Multiple users found!");
                         } else {
                             let user = snapshot.docs[0].data(); // Assuming you want the first document
-                            console.log('User: ', user);
+                            //console.log('User: ', user);
                             if (currentUser.uid === user.uid.trim()) {
                                 throw new Error("Cannot tag yourself!");
                             }
@@ -384,7 +384,7 @@ const EditSession = ({route}) => {
                                 // Add user.uid to the top of the array
                                 const newTagged = [check_val, ...tagged];
                                 updateTagged(newTagged);
-                                console.log('User tagged!: ', newTagged); 
+                                //console.log('User tagged!: ', newTagged); 
                             } else {
                                 throw new Error("User already added!");
                             }
@@ -393,7 +393,7 @@ const EditSession = ({route}) => {
                         throw new Error("Invalid snapshot data!");
                     }
                 } catch (error) {
-                    console.log('Could not tag user: ', error);
+                    //console.log('Could not tag user: ', error);
                     Alert.alert("Error", error.message);
                 } finally {
                     closeModal();

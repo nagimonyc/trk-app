@@ -12,7 +12,7 @@ import {PermissionsAndroid} from 'react-native';
 PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-    console.log('Message handled in the background!', remoteMessage);
+    //console.log('Message handled in the background!', remoteMessage);
     // Perform background task or prepare data for foreground handling
 });
 

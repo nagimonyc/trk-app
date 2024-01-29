@@ -7,7 +7,7 @@ import RankHistory from "../../../../../Components/RankHistory";
 
 const CompRanking = () => {
     const [rankingHistory, setRankingHistory] = React.useState([]);
-    console.log("rankingHistory:", rankingHistory);
+    //console.log("rankingHistory:", rankingHistory);
 
     const handleRankingHistory = async () => {
         try {
@@ -56,7 +56,7 @@ const CompRanking = () => {
                 return bScore - aScore;
             });
 
-            console.log("Sorted data:", sortedUserData);
+            //console.log("Sorted data:", sortedUserData);
 
             setRankingHistory(sortedUserData);
 
