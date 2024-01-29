@@ -100,7 +100,7 @@ const ClimberProfile = ({ navigation }) => {
             //Added session info to expired climbs
             const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
-                return { ...climbSnapshot.data(), tapId: filteredTaps[index].id, tapTimestamp: filteredTaps[index].timestamp, isSelected: filteredTaps[index].isSelected, sessionTitle: filteredTaps[index].sessionTitle, sessionImages: filteredTaps[index].sessionImages, isSessionStart: filteredTaps[index].isSessionStart};
+                return { ...climbSnapshot.data(), tapId: filteredTaps[index].id, tapTimestamp: filteredTaps[index].timestamp, isSelected: filteredTaps[index].isSelected, sessionTitle: filteredTaps[index].sessionTitle, sessionImages: filteredTaps[index].sessionImages, isSessionStart: filteredTaps[index].isSessionStart, tagged: filteredTaps[index].tagged};
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
 
 
