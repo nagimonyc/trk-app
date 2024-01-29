@@ -16,7 +16,7 @@ const UserSearch = ({onTag}) => {
     const loadImageUrl = async (imagePath) => {
         try {
           const url = await storage().ref(imagePath).getDownloadURL();
-          console.log('Image Path: ', url);
+          //console.log('Image Path: ', url);
           return url;
         } catch (error) {
           console.error("Error getting image URL: ", error);
@@ -34,7 +34,7 @@ const UserSearch = ({onTag}) => {
         const users = querySnapshot.docs.map(doc => doc.data());
         const querySnapshotEmail = await UsersApi().getUsersByForSearchEmail(searchQuery);
         const usersEmail = querySnapshotEmail.docs.map(doc => doc.data());
-        console.log('By email: ', usersEmail);
+        //console.log('By email: ', usersEmail);
         let combinedUsers = [...users, ...usersEmail];
         let uniqueUsers = Array.from(new Set(combinedUsers.map(user => user.uid)))
             .map(uid => {
