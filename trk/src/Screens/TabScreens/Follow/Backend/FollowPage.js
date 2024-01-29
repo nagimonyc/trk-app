@@ -36,7 +36,7 @@ const FollowPage = () => {
         const updateFollowStatus = async () => {
             try {
                 await UsersApi().updateUser(currentUser.uid, {following: Array.from(followedUsers)});
-                console.log("Updated follow status for users:", Array.from(followedUsers));
+                //console.log("Updated follow status for users:", Array.from(followedUsers));
             } catch (error) {
                 console.error("Failed to update follow status:", error);
             }
@@ -52,7 +52,7 @@ const FollowPage = () => {
                 if (userFetched.docs.length > 0) {
                     setUserObj(userFetched.docs[0].data());
                     setFollowedUsers(new Set(userFetched.docs[0].data().following))
-                    console.log('User data fetched: ', currentUser.uid);
+                    //console.log('User data fetched: ', currentUser.uid);
                 }
             } catch (error) {
                 console.error("Failed to fetch User Data:", error);
@@ -66,7 +66,7 @@ const FollowPage = () => {
     const loadImageUrl = async (imagePath) => {
         try {
           const url = await storage().ref(imagePath).getDownloadURL();
-          console.log('Image Path: ', url);
+          //console.log('Image Path: ', url);
           return url;
         } catch (error) {
           console.error("Error getting image URL: ", error);
@@ -82,7 +82,7 @@ const FollowPage = () => {
         const users = querySnapshot.docs.map(doc => doc.data());
         const querySnapshotEmail = await UsersApi().getUsersByForSearchEmail(searchQuery);
         const usersEmail = querySnapshotEmail.docs.map(doc => doc.data());
-        console.log('By email: ', usersEmail);
+        //console.log('By email: ', usersEmail);
         let combinedUsers = [...users, ...usersEmail];
         let uniqueUsers = Array.from(new Set(combinedUsers.map(user => user.uid)))
             .map(uid => {
