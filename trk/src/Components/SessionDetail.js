@@ -233,7 +233,7 @@ const SessionDetail = ({route}) => {
             </View>
         </View>
         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingVertical: 10, paddingLeft: 10, paddingRight: 20}}>
-            <Text style={{color: 'black', paddingRight: 10, paddingLeft: 10}}><Icon name="supervisor-account" size={25} color="#000"/></Text>
+            <Text style={{color: 'black', paddingRight: 10, paddingLeft: 10}}> <Image source={require('./../../assets/tag.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" /></Text>
             <View style={{display:'flex', flexDirection:'row'}}>
             {taggedWithImages && taggedWithImages.map((user, index) => (
                 <View key={index} style={{ alignItems: 'center', marginRight: -20}}>
