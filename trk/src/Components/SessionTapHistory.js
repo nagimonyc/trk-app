@@ -29,10 +29,6 @@ const SessionTapHistory = (props) => {
     const data = (keys && keys.length >0 && activeSessionObject[keys[0]]? activeSessionObject[keys[0]].filter(obj => obj.isSessionStart == true): null);
     const {currentUser, role} = useContext(AuthContext);
 
-    if (props.isCurrent) {
-        console.log ('The data were working with is: ', data);
-    }
-
     const device = useCameraDevice('back');
     // State for modal visibility
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -165,7 +161,7 @@ const SessionTapHistory = (props) => {
         }, []);
 
         const openModal = useCallback(() => {
-            console.log('Modal Opened!');
+            //console.log('Modal Opened!');
             setIsModalVisible(true);
         }, []);
 
@@ -186,7 +182,7 @@ const SessionTapHistory = (props) => {
             onCodeScanned: (codes) => {
                 if (codes.length > 0) {
                     let code_read = codes[0].value;
-                    console.log('QR Value Read: ', code_read);
+                    //console.log('QR Value Read: ', code_read);
                     // Check if the new code is different from the last scanned code
                     if (code_read && lastScannedCodeRef.current !== code_read) {
                         lastScannedCodeRef.current = code_read; // Update the ref with the new code
@@ -204,13 +200,13 @@ const SessionTapHistory = (props) => {
                         const snapshot = await getUsersBySomeField('uid', activeQR);
                         if (snapshot && snapshot.docs) {
                             if (snapshot.docs.length === 0) {
-                                console.log(snapshot.docs);
+                                //console.log(snapshot.docs);
                                 throw new Error("No user found!");
                             } else if (snapshot.docs.length > 1) {
                                 throw new Error("Multiple users found!");
                             } else {
                                 let user = snapshot.docs[0].data(); // Assuming you want the first document
-                                console.log('User: ', user);
+                                //console.log('User: ', user);
                                 if (currentUser.uid === user.uid.trim()) {
                                     throw new Error("Cannot tag yourself!");
                                 }
@@ -220,7 +216,7 @@ const SessionTapHistory = (props) => {
                                     // Add user.uid to the top of the array
                                     const newTagged = [check_val, ...tagged];
                                     updateTagged(newTagged);
-                                    console.log('User tagged!: ', newTagged); 
+                                    //console.log('User tagged!: ', newTagged); 
                                 } else {
                                     throw new Error("User already added!");
                                 }
@@ -229,7 +225,7 @@ const SessionTapHistory = (props) => {
                             throw new Error("Invalid snapshot data!");
                         }
                     } catch (error) {
-                        console.log('Could not tag user: ', error);
+                        //console.log('Could not tag user: ', error);
                         Alert.alert("Error", error.message);
                     } finally {
                         closeModal();
@@ -244,9 +240,9 @@ const SessionTapHistory = (props) => {
                 if (data && data.length >0) {
                     try {
                         await TapsApi().updateTap(data[data.length-1].tapId, {tagged: tagged});
-                        console.log('Tagged users updated!');
+                        //console.log('Tagged users updated!');
                     } catch (error) {
-                        console.log('Could not tag users: ', error);
+                        //console.log('Could not tag users: ', error);
                         Alert.alert("Error", error.message);
                     }
                 }
