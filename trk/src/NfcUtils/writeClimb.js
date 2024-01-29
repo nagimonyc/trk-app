@@ -99,7 +99,7 @@ async function writeClimb(climbID, grade, name) {
       throw new Error(`Failed to write block ${startBlock + i}`);
     }
   }
-  console.log('Write successful! The last used block was: ' , (startBlock + blocks.length - 1));
+  //console.log('Write successful! The last used block was: ' , (startBlock + blocks.length - 1));
 
   return allBytes;
 }

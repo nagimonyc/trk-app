@@ -61,7 +61,7 @@ const LiveClimbTracker = () => {
 
     //Logic for the live line position and text. The quartiles are calculated, and the taps are fetched for the previous hour. Based on quartile value, the taps are assigned a text block. Updates every minute, with pre-existing data.
     const updateLiveLinePosition = () => {
-        console.log('Live Line Updated!');
+        //console.log('Live Line Updated!');
         const currentTime = moment().tz('America/New_York');
         setCurrentTime(currentTime);
         if (currentTime.isBetween(chartStartTime, chartEndTime)) {
@@ -104,7 +104,7 @@ const LiveClimbTracker = () => {
 
     //To change based on calendar strip date.
     const fetchGraph = (date) => {
-        console.log('Fetching: ', date);
+        //console.log('Fetching: ', date);
         setActiveDate(moment(date)); // Set the new date
         handleReload(); // Trigger a reload
     };

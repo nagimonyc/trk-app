@@ -85,7 +85,7 @@ const ClimbInputData = (props) => {
 
 
   const handleImagePick = async () => {
-    console.log("handleImagePick called");
+    //console.log("handleImagePick called");
     try {
       const pickedImage = await ImagePicker.openPicker({
         width: 300,
@@ -200,7 +200,7 @@ const ClimbInputData = (props) => {
             imagesArray.push(newImageRef);
           }
           else {
-            console.log("no image");
+            //console.log("no image");
           }
           await writeSignature(climbBytes);
         }

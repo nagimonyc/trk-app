@@ -39,7 +39,7 @@ function ClimbDetail(props) {
             Alert.alert('Success', 'Climb saved to Profile.', [{ text: 'OK' }]);
           }
         } catch (error) {
-          console.log('Error caught:', error);
+          //console.log('Error caught:', error);
           Alert.alert(
             "Error",
             error.message,

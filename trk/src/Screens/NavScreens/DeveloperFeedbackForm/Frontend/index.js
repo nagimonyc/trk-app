@@ -27,7 +27,7 @@ const DeveloperFeedbackForm = () => {
           canContact: canContact,
           type: 'developerFeedback'
         });
-      console.log('Feedback submitted!');
+      //console.log('Feedback submitted!');
       Alert.alert("Feedback Submitted", "Thanks for taking the time to provide feedback, we value your thoughts on how to improve the app!");
       navigation.goBack(); // Navigate back after submission
     } catch (error) {

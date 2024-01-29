@@ -12,6 +12,8 @@ import ListItemSessions from './ListItemSessions';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Or any other icon family you prefer
+import UsersApi from "../api/UsersApi";
 
 const styles = StyleSheet.create({
     climbDot: {
@@ -45,28 +47,28 @@ const styles = StyleSheet.create({
 });
 
 const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) => {
-    console.log('[TEST] ListHistory called');
+    //console.log('[TEST] ListHistory called');
     if (!data || (data && data.length == 0)) {
         return;
     }
-    console.log('Data in the Session is: ', data);
+    //console.log('Data in the Session is: ', data);
 
     //Session Edits implemented
     let initallySelected = null;
     let initialText = null;
     let selectedData = null;
-    console.log(data);
+    //console.log(data);
     //Selected Item Set
     if (data.length > 0) {
         selectedData = data.filter(obj => obj.isSelected == true);
-        console.log('The selected Data is: ', selectedData);
+        //console.log('The selected Data is: ', selectedData);
         if (selectedData.length == 0) {
             initallySelected = data[0].tapId;
             selectedData = [data[0]];
-            console.log('Initially selected value is: ', initallySelected);
+            //console.log('Initially selected value is: ', initallySelected);
         } else {
             initallySelected = selectedData[0].tapId;
-            console.log('Initially selected value is: ', initallySelected);
+            //console.log('Initially selected value is: ', initallySelected);
         }
         if (data[data.length - 1].sessionTitle === undefined || (data[data.length - 1].sessionTitle && data[data.length - 1].sessionTitle === '')) {
             initialText = 'Session on ' + title[1];
@@ -74,11 +76,53 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
         else {
             initialText = data[data.length - 1].sessionTitle;
         }
-        console.log('Initial session text: ', initialText);
+        //console.log('Initial session text: ', initialText);
     }
 
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const { currentUser } = useContext(AuthContext);
+
+
+    let tagged = (data[data.length-1].tagged? data[data.length-1].tagged: []);
+    const [taggedWithImages, setTaggedWithImages] = useState(null);
+
+  const handleImageFetch = async () => {
+        let combinedUsers = [];
+        for (const searchQuery of tagged) {
+            // Assuming you have separate API functions for fetching by username and email
+            const querySnapshotByUsername = await UsersApi().getUsersByForSearch(searchQuery);
+            const usersByUsername = querySnapshotByUsername.docs.map(doc => doc.data());
+            const querySnapshotByEmail = await UsersApi().getUsersByForSearchEmail(searchQuery);
+            const usersByEmail = querySnapshotByEmail.docs.map(doc => doc.data());
+            // Combine and deduplicate users
+            combinedUsers = [...combinedUsers, ...usersByUsername, ...usersByEmail];
+        }
+        let uniqueUsers = Array.from(new Set(combinedUsers.map(user => user.uid)))
+            .map(uid => {
+                return combinedUsers.find(user => user.uid === uid);
+        });
+        //Fetching Images
+        const userPromises = uniqueUsers.map(async user => {
+                // Assuming user.image[0].path exists and loadImageUrl is the function to get the URL
+                if (user.image && user.image.length > 0 && loadImageUrl) {
+                    try {
+                        const imageUrl = await loadImageUrl(user.image[0].path);
+                        return { ...user, imageUrl }; // Add imageUrl to the user object
+                    } catch (error) {
+                        console.error("Error fetching image URL for user:", user, error);
+                        // If there's an error, set imageUrl to null
+                        return { ...user, imageUrl: null };
+                    }
+                } else {
+                    // If no image is available, set imageUrl to null
+                    return { ...user, imageUrl: null };
+                }
+            });
+            const usersWithImages = await Promise.all(userPromises);
+            //console.log('Images Fetched for Tagged Users!');
+            setTaggedWithImages(usersWithImages);
+    };
+
     //To fetch the climb image of the latest climb
     const loadImageUrl = async (imagePath) => {
         try {
@@ -125,6 +169,7 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
             }
         };
         loadImages();
+        handleImageFetch();
     }, [data]);
 
     const navigation = useNavigation();
@@ -169,11 +214,22 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
                     </View>
 
                 </TouchableOpacity>
-                <View style={{ height: 40, flexDirection: 'row', marginTop: -5 }}>
+                <View style={{ height: 45, flexDirection: 'row', marginTop: -5 }}>
                     <View style={{ width: '30%' }}>
                     </View>
                     <View style={{ width: '70%', flexDirection: 'row', height: '100%' }}>
-                        <View style={{ justifyContent: 'center', width: '60%', alignItems: 'center' }}><Text>PLACEHOLDER</Text></View>
+                        <View style={{ justifyContent: 'flex-start', width: '60%', alignItems: 'center', padding: 0}}>
+                        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingLeft: 10, paddingRight: 20}}>
+                            <Text style={{color: 'black', paddingRight: 10}}><Icon name="supervisor-account" size={20} color="#000"/></Text>
+                            <ScrollView contentContainerStyle={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center', height:'100%'}}>
+                            {taggedWithImages && taggedWithImages.map((user, index) => (
+                                <View key={index} style={{ alignItems: 'center', marginRight: -12}}>
+                                    {user.imageUrl? <Image source={{ uri: user.imageUrl }} style={{ width: 27, height: 27, borderRadius: 25, borderColor: '#f2f2f2', borderWidth: 1}} />: <Text style={{color: 'black', fontSize: 10, display: 'flex', height: 27, width: 27, backgroundColor: '#D9D9D9', borderRadius: 30, textAlign: 'center', textAlignVertical: 'center', borderWidth: 1, borderColor: '#f2f2f2'}}>{user.email.charAt(0).toUpperCase()}</Text>}
+                                </View>
+                            ))}
+                            </ScrollView>
+                        </View>
+                        </View>
                         <View style={{ width: 0.5, backgroundColor: '#BBBBBB', alignSelf: 'stretch', marginVertical: 5 }}></View>
                         <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { navigation.navigate('Share_Session', { climbData: { imageUrl: climbImageUrl, climbCount: data.length, grade: selectedData[0].grade } }) }}></Button></View>
                     </View>

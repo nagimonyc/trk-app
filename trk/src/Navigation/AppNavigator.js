@@ -29,8 +29,10 @@ import SessionDetail from '../Components/SessionDetail';
 import EditSession from '../Components/Edit_Session';
 import UserEdit from '../Components/UserEdit';
 import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
+import FollowScreen from '../Screens/TabScreens/Follow';
 
-
+//Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
+//Added live tracker to other components
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const GymTopTab = createMaterialTopTabNavigator();
@@ -44,7 +46,7 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
 
 const TrackerButton = ({ onPress, title, navigation }) => (
   <TouchableOpacity onPress={() => navigation.navigate('Climbs_Tracker')} style={styles.button_tracker}>
-    <Text style={styles.text_tracker}>{title}</Text>
+    <Text style={styles.text_tracker}>Live Taps</Text>
   </TouchableOpacity>
 );
 
@@ -165,11 +167,25 @@ function RecordStack() {
         options={({ navigation }) => ({
           title: 'Record',
           headerBackTitleVisible: null,
+          headerLeft: Platform.OS === 'ios' ? () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <TrackerButton
+                title="Tracker"
+                navigation={navigation} />
+            </View>
+          ) : null,
           headerRight: () => (
-            <FeedbackButton
-              title="Feedback"
-              navigation={navigation}
-            />
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              {Platform.OS !== 'ios' &&
+                <TrackerButton
+                  title="Tracker"
+                  navigation={navigation} />
+              }
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
+            </View>
           ),
         })}
       />
@@ -193,6 +209,67 @@ function RecordStack() {
         component={GlossaryDefinition}
         options={{ title: 'Definition', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
       />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function FollowStack() {
+  console.log('[TEST] FollowStack called');
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="FollowPage_stack"
+        component={FollowScreen}
+        options={({ navigation }) => ({
+          title: 'Follow',
+          headerBackTitleVisible: null,
+          headerLeft: Platform.OS === 'ios' ? () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <TrackerButton
+                title="Tracker"
+                navigation={navigation} />
+            </View>
+          ) : null,
+          headerRight: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              {Platform.OS !== 'ios' &&
+                <TrackerButton
+                  title="Tracker"
+                  navigation={navigation} />
+              }
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
+            </View>
+          ),
+        })}
+      />
+      <Stack.Screen
+        name="Developer_Feedback"
+        component={DeveloperFeedbackForm}
+        options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Feedback"
+        component={FeedbackForm}
+        options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Definition"
+        component={GlossaryDefinition}
+        options={{ title: 'Definition', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
+      />
     </Stack.Navigator>
   );
 }
@@ -207,8 +284,20 @@ function ProfileStack() {
         options={({ navigation }) => ({
           title: 'Profile',
           headerBackTitleVisible: false,
+          headerLeft: Platform.OS === 'ios' ? () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <TrackerButton
+                title="Tracker"
+                navigation={navigation} />
+            </View>
+          ) : null,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
+              {Platform.OS !== 'ios' &&
+                <TrackerButton
+                  title="Tracker"
+                  navigation={navigation} />
+              }
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
@@ -286,6 +375,11 @@ function ProfileStack() {
         name="Share_Session"
         component={ShareView}
         options={{ title: 'Share Session', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
       />
     </Stack.Navigator>
   );
@@ -417,6 +511,23 @@ function AppTabs() {
         }}
       />
       <Tab.Screen
+        name="Follow"
+        component={FollowStack}
+        options={{
+          title: 'Follow',
+          headerShown: false,
+          // To be completed by @abhipi or @redpepper-nag
+          tabBarIcon: ({ size, focused, color }) => {
+            return (
+              <Image
+                style={{ width: size, height: size }}
+                source={require('../../assets/follow.png')}
+              />
+            );
+          },
+        }}
+      />
+      <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
         options={{
@@ -462,7 +573,7 @@ async function requestUserPermission() {
     // Now fetch the FCM token
     const fcmToken = await messaging().getToken();
     if (fcmToken) {
-      console.log('FCM Token:', fcmToken);
+      //console.log('FCM Token:', fcmToken);
       // Perform any additional setup with the FCM token, like sending it to your server
     } else {
       console.log('Failed to fetch FCM token');
@@ -491,14 +602,14 @@ function AppNav(props) {
 
     // Background and quit state notification handler
     messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Notification clicked!');
+      //console.log('Notification clicked!');
       if (remoteMessage.data.targetScreen) {
         navigationRef.current?.navigate(remoteMessage.data.targetScreen);
       }
     });
 
     messaging().getInitialNotification().then(remoteMessage => {
-      console.log('Notification clicked!');
+      //console.log('Notification clicked!');
       if (remoteMessage && remoteMessage.data.targetScreen) {
         navigationRef.current?.navigate(remoteMessage.data.targetScreen);
       }

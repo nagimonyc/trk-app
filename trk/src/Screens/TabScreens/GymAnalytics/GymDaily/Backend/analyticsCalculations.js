@@ -42,7 +42,7 @@ export const fetchTapsAndCalculateAscents = async (yourClimbs) => {
       const taps = tapsSnapshot.docs.map(doc => {
         const tap = doc.data();
         tap.timestamp = tap.timestamp.toDate();
-        console.log(`Tap Timestamp: ${tap.timestamp}`);
+        //console.log(`Tap Timestamp: ${tap.timestamp}`);
         return tap;
       });
       totalTaps += taps.length;

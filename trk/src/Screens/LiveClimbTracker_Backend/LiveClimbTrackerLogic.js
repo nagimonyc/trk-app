@@ -43,7 +43,7 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
                     const formattedClimbs = climbsData.docs.map(doc => {return doc.exists ? { value: doc.id, label: doc.data().name, ...doc.data() } : null;}).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
                     setClimbs(formattedClimbs);
                 } catch (error) {
-                    console.log("Error: ", error);
+                    //console.log("Error: ", error);
                     Alert.alert("Error", "Data could not be fetched!");
                 }
             }
@@ -57,7 +57,7 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
         setLoading(true);
         async function fetchTapsForClimbs() {
             let allTaps = [];
-            console.log('Reloading taps...');
+            //console.log('Reloading taps...');
             for (const climb of climbs) {
                 const tapsData = await TapsApi().getTapsByClimbAndDate(climb.value, selectedDate); //Selecing data with timestamp (Firebase query makes it faster)
                 //const tapsData = await getTapsBySomeField('climb', climb.value);
@@ -68,7 +68,7 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
             }
             setTaps(allTaps);
             // Processing for selected date
-            console.log('Filtering taps.');
+            //console.log('Filtering taps.');
             const hours = new Array(17).fill(1);
             if (allTaps.length > 0) {
                 allTaps.forEach(tap => {
@@ -85,14 +85,14 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
                 labels: ["6a", "", "", "9a", "", "", "12p", "", "", "3p", "", "", "6p", "", "", "9p", ""],
                 datasets: [{ data: hours }]
             });
-            console.log('Filtering completed.');
+            //console.log('Filtering completed.');
             setLoading(false);
         }
         if (climbs && climbs.length > 0) {
             try {
                 fetchTapsForClimbs();
             } catch (error) {
-                console.log("Error: ", error);
+                //console.log("Error: ", error);
                 Alert.alert("Error", "Data could not be fetched!");
             }
         } else {

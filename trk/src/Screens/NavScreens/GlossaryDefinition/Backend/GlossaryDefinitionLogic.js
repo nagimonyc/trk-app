@@ -20,7 +20,7 @@ const fetchGlossaryData = async (descriptor, setDefinition, setPhotoUrl) => {
           console.error("Error getting photo URL: ", error);
         });
     } else {
-      console.log('No matching document found');
+      //console.log('No matching document found');
     }
   } catch (error) {
     console.error('Error fetching descriptor:', error);

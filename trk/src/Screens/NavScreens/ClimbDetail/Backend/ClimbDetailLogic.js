@@ -11,7 +11,7 @@ export const fetchClimbData = async (climbId, currentUser, role) => {
     let tapId = null;
     if (climbDataResult && climbDataResult._data) {
       //setClimbData(climbDataResult._data);
-      console.log("Fetched climb data:", climbDataResult._data);
+      //console.log("Fetched climb data:", climbDataResult._data);
       if (currentUser.uid !== climbDataResult._data.setter && role !== "setter") { //case for climbers (tap should log), else should not
         const { addTap } = TapsApi();
         const tap = {
@@ -25,7 +25,7 @@ export const fetchClimbData = async (climbId, currentUser, role) => {
           witness2: '',
         };
         const documentReference = await addTap(tap);
-        console.log('Tap created!');
+        //console.log('Tap created!');
         //setTapId(documentReference.id); // Set tapId only when navigating from home
         tapId = documentReference.id;
       }
