@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert, Platform } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Button, TouchableWithoutFeedback, Keyboard, Alert, Platform, Image } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import firestore from '@react-native-firebase/firestore';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 GoogleSignin.configure({
     webClientId: '786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com',
@@ -98,12 +99,13 @@ const SignIn = ({ onForgotPassword, role, nyuComp }) => {
                     {
                         Platform.OS !== 'ios' && (
                             <View>
-                                <GoogleSigninButton
-                                    size={GoogleSigninButton.Size.Standard}
-                                    color={GoogleSigninButton.Color.Dark}
+                                <TouchableOpacity
+                                    style={{display: 'flex', flexDirection: 'row', paddingVertical: 10, justifyContent:'center', alignItems:'center', borderWidth: 1, borderColor: 'rgba(0,0,0,0.54)', borderRadius: 10}}
                                     onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
-                                    disabled={false}
-                                />
+                                >
+                                <Image source={require('../../assets/google.png')} style={{width: 25, height: 25, marginLeft: 10}}/>
+                                <Text style={{color: 'rgba(0,0,0,0.54)', fontWeight:'500', paddingHorizontal: 20}}>Continue with Google</Text>
+                                </TouchableOpacity>
                             </View>
                         )
                     }
