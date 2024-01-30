@@ -111,7 +111,7 @@ const UserSearch = ({onTag}) => {
                     {user.username ? user.username : user.email.split('@')[0]}
                 </Text>
                 </View>
-                <Icon name="add" size={20} color="#fe8100"/>
+                <Image source={require('../../assets/plus.png')} style={{ width: 18, height: 18 }}   resizeMode="contain" />
             </TouchableOpacity>                        
             ))}
             {refreshing && (<ActivityIndicator color="#3498db"/>)}

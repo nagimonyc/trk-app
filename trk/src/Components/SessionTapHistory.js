@@ -332,7 +332,7 @@ const SessionTapHistory = (props) => {
                                     <View key={index} style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', padding: 8, borderRadius: 10, marginBottom: 10, width:'100%'}}>
                                         <Text style={{color: 'black'}}>{tag}</Text>
                                         <TouchableOpacity onPress={() => removeTag(index)}>
-                                            <Icon name="cancel" size={24} color="black" />
+                                        <Image source={require('./../../assets/cancel.png')} style={{ width: 24, height: 24 }}   resizeMode="contain" />
                                         </TouchableOpacity>
                                     </View>
                                 ))}
