@@ -73,7 +73,7 @@ const FollowPage = () => {
           throw error;
         }
     };
-    const handleSearch = async () => {
+    const handleSearch = async (searchQuery) => {
         if (!searchQuery.trim()) {
             setSearchResults([]);
             return;
@@ -114,10 +114,10 @@ const FollowPage = () => {
             <TextInput
                 placeholder="Search for users..."
                 value={searchQuery}
-                onChangeText={setSearchQuery}
-                onSubmitEditing={() => {
+                onChangeText={(text) => {
+                    setSearchQuery(text);
                     setRefreshing(true);
-                    handleSearch().then(setRefreshing(false));
+                    handleSearch(text).then(setRefreshing(false));
                 }}
                 color="#767676"
                 placeholderTextColor="#767676"
