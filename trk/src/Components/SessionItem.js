@@ -220,7 +220,7 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
                     <View style={{ width: '70%', flexDirection: 'row', height: '100%' }}>
                         <View style={{ justifyContent: 'flex-start', width: '60%', alignItems: 'center', padding: 0}}>
                         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingLeft: 10, paddingRight: 20}}>
-                            <Text style={{color: 'black', paddingRight: 10}}><Icon name="supervisor-account" size={20} color="#000"/></Text>
+                            <Text style={{color: 'black', paddingRight: 10}}><Image source={require('./../../assets/tag.png')} style={{ width: 20, height: 20 }}  resizeMode="contain" /></Text>
                             <ScrollView contentContainerStyle={{display:'flex', flexDirection:'row', justifyContent:'flex-start', alignItems:'center', height:'100%'}}>
                             {taggedWithImages && taggedWithImages.map((user, index) => (
                                 <View key={index} style={{ alignItems: 'center', marginRight: -12}}>

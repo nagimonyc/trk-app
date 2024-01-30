@@ -329,7 +329,7 @@ const ClimberProfile = ({ navigation }) => {
                             {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{borderRadius: 50, height: '100%', width: '100%'}} />)}
                             {!climbImageUrl &&  (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
                             <View style={{ position: 'absolute', bottom: 0, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor:'black'}}>
-                                <Icon name="edit" size={10} color="black" />
+                            <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }}   resizeMode="contain" />
                             </View>
                         </TouchableOpacity>
                         <View style={styles.recapData}>
