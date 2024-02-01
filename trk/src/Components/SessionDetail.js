@@ -237,7 +237,7 @@ const SessionDetail = ({route}) => {
             <View style={{display:'flex', flexDirection:'row'}}>
             {taggedWithImages && taggedWithImages.map((user, index) => (
                 <View key={index} style={{ alignItems: 'center', marginRight: -20}}>
-                    {user.imageUrl? <Image source={{ uri: user.imageUrl }} style={{ width: 50, height: 50, borderRadius: 25, borderColor: '#f2f2f2', borderWidth: 2}} />: <Text style={{color: 'black', fontSize: 10, display: 'flex', height: 50, width: 50, backgroundColor: '#D9D9D9', borderRadius: 30, textAlign: 'center', textAlignVertical: 'center', borderWidth: 2, borderColor: '#f2f2f2'}}>{user.email.charAt(0).toUpperCase()}</Text>}
+                    {user.imageUrl? <Image source={{ uri: user.imageUrl }} style={{ width: 50, height: 50, borderRadius: 25, borderColor: '#f2f2f2', borderWidth: 2}} />: <View style={{display: 'flex', height: 50, width: 50, backgroundColor: '#D9D9D9', borderRadius: 30, borderWidth: 1, borderColor: '#f2f2f2', justifyContent: 'center', alignItems: 'center'}}><Text style={{color: 'black', fontSize: 15}}>{user.email.charAt(0).toUpperCase()}</Text></View>}
                 </View>
             ))}
             </View>
