@@ -152,7 +152,7 @@ const EditSession = ({route}) => {
     const EditButton = ({ onPress }) => {
         return (
             <TouchableOpacity style={styles.button} onPress={onPress}>
-                <Icon name="add-photo-alternate" size={20} color="black" />
+                <Image source={require('./../../assets/add-photo.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                 <Text style={{color: 'black', padding: 5, fontSize: 12}}>Add Photos</Text>
             </TouchableOpacity>
         );
@@ -198,7 +198,7 @@ const EditSession = ({route}) => {
                     <Image source={require('./../../assets/featured.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                     <Text style={styles.headerText}>Featured Climb</Text>
                     </View>
-                    <Icon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color="#000"/>
+                    <Image source={isOpen ? require('./../../assets/keyboard-up.png') : require('./../../assets/keyboard-down.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                 </TouchableOpacity>
                 {isOpen && (
                     <View style={styles.content}>
@@ -223,7 +223,7 @@ const EditSession = ({route}) => {
                     <Image source={require('./../../assets/tag.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                     <Text style={styles.headerText}>Tagged Partners</Text>
                     </View>
-                    <Icon name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color="#000"/>
+                    <Image source={isOpen ? require('./../../assets/keyboard-up.png') : require('./../../assets/keyboard-down.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                 </TouchableOpacity>
                 {isOpen && (
                     <View style={styles.content}>
@@ -464,7 +464,7 @@ const EditSession = ({route}) => {
                             <View key={index} style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', padding: 15, borderRadius: 10, marginBottom: 15}}>
                                 <Text style={{color: 'black'}}>{tag}</Text>
                                 <TouchableOpacity onPress={() => removeTag(index)}>
-                                    <Icon name="cancel" size={24} color="black" />
+                                <Image source={require('./../../assets/cancel.png')} style={{ width: 24, height: 24 }}   resizeMode="contain" />
                                 </TouchableOpacity>
                             </View>
                         ))}
