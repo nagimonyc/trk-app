@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Animated,
+  Image
 } from 'react-native';
 
 function AndroidPrompt(props, ref) {
@@ -72,14 +73,14 @@ function AndroidPrompt(props, ref) {
 
         <Animated.View style={[styles.prompt, promptAnimStyle]}>
           <Text style={styles.hint}>{hintText || 'Ready to Scan NFC'}</Text>
-
+          <Image source={require('../../assets/nfc.gif')} style={{width: 100, height: 100, marginBottom: 20}}/>
           <TouchableOpacity
             style={styles.btn}
             onPress={() => {
               onCancelPress();
               _setVisible(false);
             }}>
-            <Text>CANCEL</Text>
+            <Text style={{color: '#fe8100'}}>Cancel</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>
@@ -100,21 +101,27 @@ const styles = StyleSheet.create({
     left: 20,
     width: Dimensions.get('window').width - 2 * 20,
     backgroundColor: 'white',
-    borderRadius: 8,
-    paddingVertical: 60,
+    borderRadius: 20,
+    paddingVertical: 50,
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   hint: {
-    fontSize: 24,
+    fontSize: 20,
     marginBottom: 20,
+    color: 'black',
   },
   btn: {
-    borderWidth: 1,
-    borderColor: '#ccc',
+    borderWidth: 1.5,
+    borderColor: '#fe8100',
     borderRadius: 8,
-    padding: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    width: '40%',
+    display:'flex',
+    justifyContent:'center',
+    alignItems:'center'  
   },
 });
 
