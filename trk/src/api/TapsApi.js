@@ -2,7 +2,9 @@ import firebase from "@react-native-firebase/app";
 import "@react-native-firebase/firestore";
 import moment from "moment-timezone";
 import { firebase as firebaseFunctions } from "@react-native-firebase/functions";
+import SessionsApi from "./SessionsApi";
 
+//REMOVED UNNECESSARY API FUNCTIONS
 function TapsApi() {
 
     const ref = firebase.firestore().collection("taps");
@@ -16,16 +18,6 @@ function TapsApi() {
     // Get a tap by its ID
     function getTap(id) {
         return ref.doc(id).get();
-    }
-
-    // Get all taps
-    function getAllTaps() {
-        return ref.get();
-    }
-
-    // Get taps with real-time updates
-    function onTapsUpdate(callback) {
-        return ref.onSnapshot(callback);
     }
 
     // Get taps with some specific field value
@@ -44,50 +36,34 @@ function TapsApi() {
     }
 
     async function updateTap(tapId, updatedTap) {
+        //REMOVED ALL PROCESSING OF THE CURRENT AND PREVIOUS TAPS IN THE SESSION
+        //NOW DEAL ONLY WITH THE SESSION OBJECT
         const tapRef = firebase.firestore().collection("taps").doc(tapId);
         if (updatedTap && updatedTap.archived === true) {
             //update the current tap
-            //find next tap and make that session start
+            //remove that tap from its Session Climbs, and featured
             await tapRef.update(updatedTap);
-            const oldTap = await getTap(tapId);
-            //console.log('The old tap is: ', oldTap);
 
-            //If the tap being archived marks the start of a session, then we find the oldest tap in that session to mark as the beginning of the session (still expires at the older time)
-            if (oldTap._data.isSessionStart) {
-                    const nextTaps = await ref
-                    .where('user', '==', oldTap._data.user)
-                    .where('archived', '!=', true)
-                    .orderBy('archived')
-                    .where('expiryTime', '==', oldTap._data.expiryTime)
-                    .orderBy('timestamp', 'asc')
-                    .limit(5)
-                    .get();
-
-                if (!nextTaps.empty) {
-                    //console.log('Updating the next one! ', nextTaps.docs[0].id);
-                    
-                    //To handle the case where it doesn't exist
-                    await updateTap(nextTaps.docs[0].id, { isSessionStart: true, sessionImages: (oldTap._data.sessionImages !== undefined? oldTap._data.sessionImages: []), isSelected: (oldTap._data.isSelected !== undefined? oldTap._data.isSelected: true), sessionTitle: (oldTap._data.sessionTitle!== undefined? oldTap._data.sessionTitle: ''), tagged: (oldTap._data.tagged!== undefined? oldTap._data.tagged: [])});
-                    const scheduleFunction = firebaseFunctions.functions().httpsCallable('scheduleFunction');
-                    let expiryTimeForFunction;
-                    if (oldTap._data.expiryTime instanceof firebase.firestore.Timestamp) {
-                        // Convert Firebase Timestamp to JavaScript Date object
-                        expiryTimeForFunction = oldTap._data.expiryTime.toDate().toISOString();
-                    } else if (oldTap._data.expiryTime instanceof Date) {
-                        // Already a JavaScript Date object
-                        expiryTimeForFunction = oldTap._data.expiryTime.toISOString();
-                    } else {
-                        // If it's not a Firebase Timestamp or JavaScript Date, use it as is
-                        expiryTimeForFunction = oldTap._data.expiryTime;
-                    }
-
-                    scheduleFunction({ tapId: nextTaps.docs[0].id, expiryTime: expiryTimeForFunction })
-                        .then((result) => {
-                            //console.log('Function result:', result.data);
-                        }).catch((error) => {
-                            console.error('Error calling function:', error);
-                        });
-
+            //get the session that contained the tap
+            const sessionSnapshot = await SessionsApi().getSessionByTap(tapId);
+            console.log('The fetched session is: ', sessionSnapshot.docs);
+            if (!sessionSnapshot.empty) {
+                const sessionObject = sessionSnapshot.docs[0].data();
+                let climbsArray = sessionObject.climbs;
+                let featuredClimbCopy = sessionObject.featuredClimb;
+                const tapIdIndex = climbsArray.indexOf(tapId);
+                if (tapIdIndex > -1) {
+                    climbsArray.splice(tapIdIndex, 1);
+                }
+                if (featuredClimbCopy === tapId) {
+                    featuredClimbCopy = climbsArray.length > 0 ? climbsArray[0] : ''; // Set to first element or null if climbsArray is empty
+                }
+                if (climbsArray.length == 0) {
+                    //session is empty, archive it
+                    await SessionsApi().updateSession(sessionSnapshot.docs[0].id, {archived: true});
+                } else {
+                    //update session with the new climbsarray and featuredClimb
+                    await SessionsApi().updateSession(sessionSnapshot.docs[0].id, {climbs: climbsArray, featuredClimb: featuredClimbCopy});
                 }
             }
             return;
@@ -125,39 +101,8 @@ function TapsApi() {
             .where('user', '==', userId)
             .where('archived', '==', false)
             .where("expiryTime", ">", firebase.firestore.Timestamp.now())
-            .orderBy("expiryTime", "desc").get();
-    }
-
-    // To get the starting points of the last sessions with pagination
-    function getRecentFiveSessions(userId, startAfterDoc = null) {
-        //console.log('User ID: ', userId);
-        //console.log('Fetching Session Start Climbs with Pagination....');
-        let query = ref
-            .where('user', '==', userId)
-            .where('isSessionStart', '==', true)
-            .where('archived', '==', false) //This was causing a minor issue in session loading (limit included archived so session taps were being excluded)
-            .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
-            .orderBy("expiryTime", "desc")
-            .limit(5);
-
-        if (startAfterDoc) {
-            //console.log('Starting after: ', startAfterDoc);
-            query = query.startAfter(startAfterDoc);
-        }
-
-        return query.get();
-    }
-
-
-    //To get all expired taps to build Expired sessions
-    function getExpiredTaps(userId) {
-        //console.log('User ID: ', userId);
-        //console.log('Fetching Expired Climbs....');
-        return ref
-            .where('user', '==', userId)
-            .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
-            .orderBy("expiryTime", "desc")
-            .orderBy('timestamp', 'desc') //For corrrect ordering
+            .orderBy("expiryTime")
+            .orderBy('timestamp', 'desc') //To avoid rerendering on reversing the climb list
             .get();
     }
 
@@ -172,12 +117,18 @@ function TapsApi() {
             .count()
             .get();
     }
+    //To get all the taps made by a user
+    function getTotalTapCount(userId) {
+        return ref
+            .where('user', '==', userId)
+            .where('archived', '==', false)
+            .count()
+            .get();
+    }
 
     return {
         addTap,
         getTap,
-        getAllTaps,
-        onTapsUpdate,
         getTapsBySomeField,
         getTopTenTaps,
         updateTap,
@@ -185,9 +136,8 @@ function TapsApi() {
         getTapsByClimbAndDate, 
         getLastUserTap,
         getActiveSessionTaps,
-        getRecentFiveSessions,
-        getExpiredTaps,
         getTotalSessionCount,
+        getTotalTapCount,
     };
 }
 

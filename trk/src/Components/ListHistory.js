@@ -12,9 +12,10 @@ const ListHistory = ({ data, renderItem, keyExtractor, isHighlighted}) => {
             backgroundColor: 'yellow',
         },
     });    
+    //No reversing needed when data is ordered
     return (
         <ScrollView contentContainerStyle={{ padding: 10 }}>
-            {data.reverse().map((item, index) => React.cloneElement(renderItem(item, index, isHighlighted), { key: keyExtractor(item, index)}))}
+            {data.map((item, index) => React.cloneElement(renderItem(item, index, isHighlighted), { key: keyExtractor(item, index)}))}
         </ScrollView>
     );
 }

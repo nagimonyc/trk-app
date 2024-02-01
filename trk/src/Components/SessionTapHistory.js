@@ -14,20 +14,17 @@ import UsersApi from '../api/UsersApi';
 import { Alert } from 'react-native';
 import { AuthContext } from '../Utils/AuthContext';
 import TapsApi from '../api/TapsApi';
+import SessionsApi from '../api/SessionsApi';
 
 //Removed all session creation code, moving it to ClimberProfile's backend. This allows for calculation of number of sessions, and future session tasks.
 //ONLY DISPLAYING IS DONE HERE NOW
-
+//Tagging for Active Session is Handled.
 const SessionTapHistory = (props) => {
     console.log('[TEST] SessionTapHistory called');
-    // Group climbs by timestamp
-    //console.log(props.climbsHistory);
-    //console.log('Current Session: ', props.currentSession);
 
-    const activeSessionObject = props.currentSession;
-    const keys = (activeSessionObject? Object.keys(activeSessionObject): null);
-    const data = (keys && keys.length >0 && activeSessionObject[keys[0]]? activeSessionObject[keys[0]].filter(obj => obj.isSessionStart == true): null);
     const {currentUser, role} = useContext(AuthContext);
+    const data = (props.isCurrent && props.currentSessionObject? props.currentSessionObject.data() : null);
+    const sessionId = (props.isCurrent && props.currentSessionObject? props.currentSessionObject.id : null)
 
     const device = useCameraDevice('back');
     // State for modal visibility
@@ -40,71 +37,13 @@ const SessionTapHistory = (props) => {
 
 
     const [tagged, updateTagged]  = useState([]);
-    const [isTaggedInitialized, setIsTaggedInitialized] = useState(false);
-
 
     useEffect(() => {
-        if (!isTaggedInitialized && data && data.length > 0 && data[data.length - 1].tagged) {
-            updateTagged(data[data.length - 1].tagged);
-            setIsTaggedInitialized(true); // Set to true after the first initialization
+        if (data && data.taggedUsers) {
+            updateTagged(data.taggedUsers);
+            //console.log('Tagged Users Updated!');
         }
     }, [data]);
-
-    // Helper function to format timestamp
-    const formatTimestamp = (timestamp) => {
-        const date = moment(timestamp).tz('America/New_York');
-        
-        // Round down to the nearest half hour
-        const minutes = date.minutes();
-        const roundedMinutes = minutes < 30 ? 0 : 30;
-        date.minutes(roundedMinutes);
-        date.seconds(0);
-        date.milliseconds(0);
-    
-        let formatString;
-        if (roundedMinutes === 0) {
-            // Format without minutes for times on the hour
-            formatString = 'Do MMM [starting at] h A';
-        } else {
-            // Format with minutes for times on the half hour
-            formatString = 'Do MMM [starting at] h:mm A';
-        }
-    
-        const formattedDate = date.format(formatString);
-        if (formattedDate === 'Invalid date') {
-            return 'Unknown Date';
-        }
-        return formattedDate;
-    };
-
-    // Helper function to format timestamp
-    const sessionTimestamp = (timestamp) => {
-        const date = moment(timestamp).tz('America/New_York');
-        
-        // Round down to the nearest half hour
-        const minutes = date.minutes();
-        const roundedMinutes = minutes < 30 ? 0 : 30;
-        date.minutes(roundedMinutes);
-        date.seconds(0);
-        date.milliseconds(0);
-    
-        let formatString;
-        let formatStringHeader;
-        formatStringHeader = 'Do MMM';
-        if (roundedMinutes === 0) {
-            // Format without minutes for times on the hour
-            formatString = 'dddd, h A';
-        } else {
-            // Format with minutes for times on the half hour
-            formatString = 'dddd, h:mm A';
-        }
-        const formattedDate = date.format(formatString);
-        const formattedDateSubtext = date.format(formatStringHeader);
-        if (formattedDate === 'Invalid date' || formattedDateSubtext === 'Invalid date') {
-            return ['Unknown Time', 'Unknown Date'];
-        }
-        return [formattedDate, formattedDateSubtext];
-    }; 
     
     //Time stamp formatting like Home Page for clarity (Altered ClimbItem to match)
     const timeStampFormatting = (timestamp) => {
@@ -237,9 +176,9 @@ const SessionTapHistory = (props) => {
 
         useEffect(() => {
             const updateTaggedDatabase = async () => {
-                if (data && data.length >0) {
+                if (sessionId) {
                     try {
-                        await TapsApi().updateTap(data[data.length-1].tapId, {tagged: tagged});
+                        await SessionsApi().updateSession(sessionId, {taggedUsers: tagged});
                         //console.log('Tagged users updated!');
                     } catch (error) {
                         //console.log('Could not tag users: ', error);
@@ -301,7 +240,6 @@ const SessionTapHistory = (props) => {
                     {!props.isCurrent && 
                         (<SessionItem
                         data={climbs}
-                        title={sessionTimestamp(key)}
                         />)
                     }
                 </View>

@@ -17,76 +17,60 @@ import ImagePicker from 'react-native-image-crop-picker';
 import UsersApi from "../api/UsersApi";
 import { Camera, useCameraDevice, useCodeScanner } from "react-native-vision-camera";
 import UserSearch from "./UserSearch";
+import ClimbsApi from "../api/ClimbsApi";
+import SessionsApi from "../api/SessionsApi";
 
+//UPDATED TO MAKE CHANGES TO THE SESSION OBJECT INSTEAD OF TAP OBJECTS
 const EditSession = ({route}) => {
-  const navigation = useNavigation();
-  let data = route.params.data;
-  const title = route.params.title;
-  //data[0].images = [{path: 'climb photos/the_crag.png'},{path: 'climb photos/the_crag.png'},{path: 'climb photos/the_crag.png'},{path: 'climb photos/the_crag.png'}];
+    const navigation = useNavigation();
+    let data = route.params.data;
+    let climbs = route.params.climbs;
+    if (!data || !climbs || (climbs && climbs.length == 0)) {
+      return;
+    }
+    const tapIdRef = useRef(null);
+    const allImages = (data.sessionImages? data.sessionImages: []);
+    const [initialText, setInitialText] = useState('');
+
+    const [selectedData, setSelectedData] = useState(null); //The tap object of the featured Climb (UNUSED)
+    
+    const [climbImageUrl, setClimbImageUrl] = useState(null);
+    const { currentUser } = useContext(AuthContext);
+   
+    const [taggedWithImages, setTaggedWithImages] = useState(null); //UNUSED FOR NOW
+    
+    const [tagged, setTagged] = useState(null);
   
-  //Setting selected tapId
-  const tapIdRef = useRef(null);
+    const [selectedTapId, setSelectedTapId] = useState(tapIdRef.current);
+    const [initallySelected, setInitiallySelected] = useState(tapIdRef.current);
 
-  let initallySelected = null;
-  let initialText = null;
-  //console.log(data);
-  //Selected Item Set
-  if (data.length>0) {
-    const selectedData = data.filter(obj => obj.isSelected == true);
-    //console.log('The selected Data is: ', selectedData);
-    if (selectedData.length == 0) {
-        tapIdRef.current = data[0].tapId;
-        initallySelected = data[0].tapId;
-        //console.log('Initially selected value is: ', tapIdRef.current);
-    } else {
-        tapIdRef.current = selectedData[0].tapId;
-        initallySelected = selectedData[0].tapId;
-        //console.log('Initially selected value is: ', tapIdRef.current);
-    }
-    if (data[data.length-1].sessionTitle === undefined || (data[data.length-1].sessionTitle && data[data.length-1].sessionTitle === '')) {
-        initialText = 'Session on '+title[1];
-    }
-    else {
-        initialText = data[data.length-1].sessionTitle;
-    }
-    //console.log('Initial session text: ', initialText);
-  }
-  const [selectedTapId, setSelectedTapId] = useState(tapIdRef.current);
-  const [sessionTitle, setSessionTitle] = useState(initialText);
+    const [sessionTitle, setSessionTitle] = useState(initialText);
 
-
-  const [climbImageUrl, setClimbImageUrl] = useState(null);
-  const [initialImagePath, setInitialImagePath] = useState('');
-  const { currentUser } = useContext(AuthContext);
-
-  const [user, setUser] = useState(null);
-
-  const [selectedImage, setSelectedImage] = useState(null);
+    const [initialImagePath, setInitialImagePath] = useState('');
+    const [user, setUser] = useState(null);
   
-  // State for modal visibility
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isModalVisibleText, setIsModalVisibleText] = useState(false);
+    // State for modal visibility
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalVisibleText, setIsModalVisibleText] = useState(false);
 
-  const [activeQR, setActiveQR] = useState(null);
-  const lastScannedCodeRef = useRef(null);
+    const [activeQR, setActiveQR] = useState(null);
+    const lastScannedCodeRef = useRef(null);
 
-  const [tagged, updateTagged]  = useState((data[data.length-1].tagged && data[data.length-1].tagged.length>0? data[data.length-1].tagged: []));
-  const [lastTagged, setLastTagged] = useState((data[data.length-1].tagged && data[data.length-1].tagged.length>0? data[data.length-1].tagged: []));
-  const device = useCameraDevice('back');
+    const device = useCameraDevice('back');
 
-  // Function to open the modal
-  const openModal = () => {
-        //console.log('Modal Opened!');
-      setIsModalVisible(true);
-  };
+    // Function to open the modal
+    const openModal = () => {
+            //console.log('Modal Opened!');
+        setIsModalVisible(true);
+    };
 
-  // Function to close the modal
-  const closeModal = () => {
-      setIsModalVisible(false);
-  };
+    // Function to close the modal
+    const closeModal = () => {
+        setIsModalVisible(false);
+    };
 
 
-  const openModalText = () => {
+    const openModalText = () => {
     //console.log('Modal Opened!');
     setIsModalVisibleText(true);
     };
@@ -122,10 +106,68 @@ const EditSession = ({route}) => {
         return tempTimestamp;
     };
 
+    const handleImageFetch = async () => {
+        if (data.name && data.name.trim() !== '') {
+            setInitialText(data.name);
+            setSessionTitle(data.name);
+        }
+        const tagged = (data.taggedUsers? data.taggedUsers: []);
+        let combinedUsers = [];
+        for (const searchQuery of tagged) {
+            // Assuming you have separate API functions for fetching by username and email
+            const querySnapshotByUsername = await UsersApi().getUsersByForSearch(searchQuery);
+            const usersByUsername = querySnapshotByUsername.docs.map(doc => doc.data());
+            const querySnapshotByEmail = await UsersApi().getUsersByForSearchEmail(searchQuery);
+            const usersByEmail = querySnapshotByEmail.docs.map(doc => doc.data());
+            // Combine and deduplicate users
+            combinedUsers = [...combinedUsers, ...usersByUsername, ...usersByEmail];
+        }
+        let uniqueUsers = Array.from(new Set(combinedUsers.map(user => user.uid)))
+            .map(uid => {
+                return combinedUsers.find(user => user.uid === uid);
+        });
+        //Fetching Images
+        const userPromises = uniqueUsers.map(async user => {
+                // Assuming user.image[0].path exists and loadImageUrl is the function to get the URL
+                if (user.image && user.image.length > 0 && loadImageUrl) {
+                    try {
+                        const imageUrl = await loadImageUrl(user.image[0].path);
+                        return { ...user, imageUrl }; // Add imageUrl to the user object
+                    } catch (error) {
+                        console.error("Error fetching image URL for user:", user, error);
+                        // If there's an error, set imageUrl to null
+                        return { ...user, imageUrl: null };
+                    }
+                } else {
+                    // If no image is available, set imageUrl to null
+                    return { ...user, imageUrl: null };
+                }
+            });
+            const usersWithImages = await Promise.all(userPromises);
+            //setTaggedWithImages(usersWithImages);
+            setTagged(usersWithImages.map(tag => (tag.username?tag.username:tag.email.split('@')[0])));
+    };
+
     //When the data loads, fetches the image of the latest climb to display for the session
     useEffect(() => {
         const loadImages = async () => {
           try {
+                const selected = (data.featuredClimb?data.featuredClimb: (data.climbs?data.climbs[0]:null));
+                //Fetch the Featured Tap Object
+                if (selected) {
+                    const tapsSnapshot = (await TapsApi().getTap(selected));
+                    const filteredTap = {id: tapsSnapshot.id, ...tapsSnapshot.data()}; // Convert to a Tap Object
+                    const climbSnapshot = (await ClimbsApi().getClimb(filteredTap.climb));
+                    let combinedTap = null
+                    if (climbSnapshot.exists) {
+                        combinedTap = { ...climbSnapshot.data(), tapId: filteredTap.id, tapTimestamp: filteredTap.timestamp}
+                    }
+                    //console.log('Combined Tap is: ', combinedTap);
+                    //setSelectedData(combinedTap);
+                    setSelectedTapId(combinedTap.tapId);
+                    setInitiallySelected(combinedTap.tapId);
+            }
+
             // Default image path
             let climbImageURL = 'climb photos/the_crag.png';
             const {getUsersBySomeField} = UsersApi();
@@ -134,18 +176,20 @@ const EditSession = ({route}) => {
                 setUser(user.docs[0].data());
             }
             // If there is climb data and images are available, use the latest image
-            if (data[data.length-1] && data[data.length-1].sessionImages && data[data.length-1].sessionImages.length > 0) {
-              const latestImageRef = data[data.length-1].sessionImages[0]; //Fetches the first Image, useful when the user sets a new look for the session
+            if (data && data.sessionImages && data.sessionImages.length > 0) {
+              const latestImageRef = data.sessionImages[0]; //Fetches the first Image, useful when the user sets a new look for the session
               climbImageURL = latestImageRef.path;
             }
             // Load climb image
             const loadedClimbImageUrl = await loadImageUrl(climbImageURL);
             setClimbImageUrl(loadedClimbImageUrl);
+            setInitialImagePath(loadedClimbImageUrl);
           } catch (error) {
             console.error("Error loading images: ", error);
           }
         };
         loadImages();
+        handleImageFetch();
     }, [data]);
 
 
@@ -234,9 +278,6 @@ const EditSession = ({route}) => {
         );
     };
 
-
-
-
     const handleUpdateSession = () => {
         Alert.alert(
             "Confirm Update",
@@ -257,9 +298,6 @@ const EditSession = ({route}) => {
     };
 
     const updateSession = async () => {
-        //console.log('Initial image path: ', initialImagePath);
-        //console.log('Updated image path: ', climbImageUrl);
-        // Logic to update the session
         if (initialText !== sessionTitle) {
             if (sessionTitle.trim() === '') {
                 Alert.alert("Error", "Session title cannot be empty!");
@@ -267,8 +305,9 @@ const EditSession = ({route}) => {
             }
             try {
                 //Minor fix to trim the name of the session (NOT UNIQUE EVER, SO TRIVIAL FIX)
-                await TapsApi().updateTap(data[data.length-1].tapId, {sessionTitle: sessionTitle.trim()});
-                initialText = sessionTitle.trim();
+                await SessionsApi().updateSession(data.id, {name: sessionTitle.trim()});
+                //console.log('Title Updated!');
+                setInitialText(sessionTitle.trim());
             } catch (error) {
                 console.error(error);
                 Alert.alert("Error", "Couldn't update session.");
@@ -277,9 +316,9 @@ const EditSession = ({route}) => {
         }
         if (initallySelected !== selectedTapId) {
             try {
-                await TapsApi().updateTap(selectedTapId, {isSelected: true});
-                await TapsApi().updateTap(initallySelected, {isSelected: false});
-                initallySelected = selectedTapId;
+                await SessionsApi().updateSession(data.id, {featuredClimb: selectedTapId});
+                //console.log('Featured Tap Updated!');
+                setInitiallySelected(selectedTapId);
             } catch (error) {
                 console.error(error);
                 Alert.alert("Error", "Couldn't update selection.");
@@ -289,9 +328,8 @@ const EditSession = ({route}) => {
         if (initialImagePath !== '' && initialImagePath !== climbImageUrl) {
             try {
                 const uploadedImage = await uploadImage(climbImageUrl);
-                const { updateTap } = TapsApi();
-                await updateTap(data[data.length-1].tapId, {sessionImages: [uploadedImage].concat((data[data.length-1].sessionImages? data[data.length-1].sessionImages: []))});
-                //console.log('Image updated for: ', data[data.length-1].tapId);
+                await SessionsApi().updateSession(data.id, {sessionImages: [uploadedImage].concat(data.sessionImages)});
+                //console.log('Image Updated!');
                 setInitialImagePath(climbImageUrl);
             } catch (error) {
                 console.error(error);
@@ -299,11 +337,9 @@ const EditSession = ({route}) => {
                 return;
             }
         }
-        if (!(tagged.length === lastTagged.length && tagged.slice().sort().every((value, index) => value === lastTagged.slice().sort()[index]))) {
+        if (tagged) {
             try {
-                //console.log('Updating Tagged Users!');
-                await TapsApi().updateTap(data[data.length-1].tapId, {tagged: tagged});
-                setLastTagged(tagged);
+                await SessionsApi().updateSession(data.id, {taggedUsers: tagged});            
             } catch (error) {
                 console.error(error);
                 Alert.alert("Error", "Couldn't update tagged users.");
@@ -350,7 +386,6 @@ const EditSession = ({route}) => {
         onCodeScanned: (codes) => {
             if (codes.length > 0) {
                 let code_read = codes[0].value;
-                //console.log('QR Value Read: ', code_read);
                 // Check if the new code is different from the last scanned code
                 if (code_read && lastScannedCodeRef.current !== code_read) {
                     lastScannedCodeRef.current = code_read; // Update the ref with the new code
@@ -383,7 +418,7 @@ const EditSession = ({route}) => {
                             if (!tagged.includes(check_val)) {
                                 // Add user.uid to the top of the array
                                 const newTagged = [check_val, ...tagged];
-                                updateTagged(newTagged);
+                                setTagged(newTagged);
                                 //console.log('User tagged!: ', newTagged); 
                             } else {
                                 throw new Error("User already added!");
@@ -406,7 +441,7 @@ const EditSession = ({route}) => {
 
 
     const removeTag = (index) => {
-        updateTagged(currentTagged => currentTagged.filter((_, i) => i !== index));
+        setTagged(currentTagged => currentTagged.filter((_, i) => i !== index));
         setActiveQR(null);
         lastScannedCodeRef.current = null;
     }
@@ -438,7 +473,7 @@ const EditSession = ({route}) => {
             <CollapsibleItem>
                 <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row'}}>
                 <ListHistory
-                data={data}
+                data={climbs}
                 renderItem={(item, index, isHighlighted) => <ClimbItem climb={item} tapId={item.tapId} tapTimestamp={timeStampFormatting(item.tapTimestamp)} fromHome={false} isHighlighted={(item.tapId === selectedTapId && isHighlighted)} sessionPick={true} tapIdRef={tapIdRef} setSelectedTapId={setSelectedTapId}/>}
                 //highlighted variable passed for index 0, only if it is an active session
                 keyExtractor={(item, index) => index.toString()}
@@ -460,7 +495,7 @@ const EditSession = ({route}) => {
                 </View>
                 <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row'}}>
                 <View style={{width: '100%', display: 'flex', flexDirection: 'column', paddingTop: 10, paddingBottom: 40, paddingHorizontal: 10}}>
-                        {tagged.map((tag, index) => (
+                        {tagged && tagged.map((tag, index) => (
                             <View key={index} style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', padding: 15, borderRadius: 10, marginBottom: 15}}>
                                 <Text style={{color: 'black'}}>{tag}</Text>
                                 <TouchableOpacity onPress={() => removeTag(index)}>

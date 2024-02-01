@@ -14,7 +14,9 @@ import { useNavigation } from '@react-navigation/native';
 import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Or any other icon family you prefer
 import UsersApi from "../api/UsersApi";
+import moment from 'moment-timezone';
 
+//FIXED SHARE TO PASS IN CLIMB DATA!
 const styles = StyleSheet.create({
     climbDot: {
         width: 'auto',
@@ -46,47 +48,58 @@ const styles = StyleSheet.create({
     },
 });
 
-const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) => {
+//Only Session Item relevant data is calculated here now, rest of the data is passed into Detail and Edit.
+const SessionItem = ({data}) => {
     //console.log('[TEST] ListHistory called');
-    if (!data || (data && data.length == 0)) {
+    if (!data) {
         return;
     }
-    //console.log('Data in the Session is: ', data);
-
-    //Session Edits implemented
-    let initallySelected = null;
-    let initialText = null;
-    let selectedData = null;
     //console.log(data);
-    //Selected Item Set
-    if (data.length > 0) {
-        selectedData = data.filter(obj => obj.isSelected == true);
-        //console.log('The selected Data is: ', selectedData);
-        if (selectedData.length == 0) {
-            initallySelected = data[0].tapId;
-            selectedData = [data[0]];
-            //console.log('Initially selected value is: ', initallySelected);
-        } else {
-            initallySelected = selectedData[0].tapId;
-            //console.log('Initially selected value is: ', initallySelected);
-        }
-        if (data[data.length - 1].sessionTitle === undefined || (data[data.length - 1].sessionTitle && data[data.length - 1].sessionTitle === '')) {
-            initialText = 'Session on ' + title[1];
-        }
-        else {
-            initialText = data[data.length - 1].sessionTitle;
-        }
-        //console.log('Initial session text: ', initialText);
-    }
-
+    const [initialText, setInitialText] = useState('');
+    const [selectedData, setSelectedData] = useState(null); //The tap object of the featured Climb
+    const [title, setTitle] = useState(['','']);
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const { currentUser } = useContext(AuthContext);
-
-
-    let tagged = (data[data.length-1].tagged? data[data.length-1].tagged: []);
     const [taggedWithImages, setTaggedWithImages] = useState(null);
+    
+    // Helper function to format timestamp
+    const sessionTimestamp = (timestamp) => {
+        const date = moment(timestamp).tz('America/New_York');
+        
+        // Round down to the nearest half hour
+        const minutes = date.minutes();
+        const roundedMinutes = minutes < 30 ? 0 : 30;
+        date.minutes(roundedMinutes);
+        date.seconds(0);
+        date.milliseconds(0);
+    
+        let formatString;
+        let formatStringHeader;
+        formatStringHeader = 'Do MMM';
+        if (roundedMinutes === 0) {
+            // Format without minutes for times on the hour
+            formatString = 'dddd, h A';
+        } else {
+            // Format with minutes for times on the half hour
+            formatString = 'dddd, h:mm A';
+        }
+        const formattedDate = date.format(formatString);
+        const formattedDateSubtext = date.format(formatStringHeader);
+        if (formattedDate === 'Invalid date' || formattedDateSubtext === 'Invalid date') {
+            return ['Unknown Time', 'Unknown Date'];
+        }
+        return [formattedDate, formattedDateSubtext];
+    };
 
-  const handleImageFetch = async () => {
+    const handleImageFetch = async () => {
+        if (data.timestamp && data.timestamp.toDate) {
+            const tempTitle = sessionTimestamp(data.timestamp.toDate());
+            setTitle([tempTitle[0], tempTitle[1]]);
+        }
+        if (data.name && data.name.trim() !== '') {
+            setInitialText(data.name);
+        }
+        const tagged = (data.taggedUsers? data.taggedUsers: []);
         let combinedUsers = [];
         for (const searchQuery of tagged) {
             // Assuming you have separate API functions for fetching by username and email
@@ -152,15 +165,27 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
     useEffect(() => {
         const loadImages = async () => {
             try {
+
+                const selected = (data.featuredClimb?data.featuredClimb: (data.climbs?data.climbs[0]:null));
+                //Fetch the Featured Tap Object
+                if (selected) {
+                    const tapsSnapshot = (await TapsApi().getTap(selected));
+                    const filteredTap = {id: tapsSnapshot.id, ...tapsSnapshot.data()}; // Convert to a Tap Object
+                    const climbSnapshot = (await ClimbsApi().getClimb(filteredTap.climb));
+                    let combinedTap = null
+                    if (climbSnapshot.exists) {
+                        combinedTap = { ...climbSnapshot.data(), tapId: filteredTap.id, tapTimestamp: filteredTap.timestamp}
+                    }
+                    //console.log('Combined Tap is: ', combinedTap);
+                    setSelectedData(combinedTap);
+                }
                 // Default image path
                 let climbImageURL = 'climb photos/the_crag.png';
-
                 // If there is climb data and images are available, use the latest image
-                if (data[data.length - 1] && data[data.length - 1].sessionImages && data[data.length - 1].sessionImages.length > 0) {
-                    const latestImageRef = data[data.length - 1].sessionImages[0]; //Fetches the first Image, useful when the user sets a new look for the session
+                if (data && data.sessionImages && data.sessionImages.length > 0) {
+                    const latestImageRef = data.sessionImages[0]; //Fetches the first Image, useful when the user sets a new look for the session
                     climbImageURL = latestImageRef.path;
                 }
-
                 // Load climb image
                 const loadedClimbImageUrl = await loadImageUrl(climbImageURL);
                 setClimbImageUrl(loadedClimbImageUrl);
@@ -173,11 +198,10 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
     }, [data]);
 
     const navigation = useNavigation();
-
     return (
         <ScrollView contentContainerStyle={{ padding: 10 }}>
             <View style={{ borderRadius: 10, backgroundColor: 'white' }}>
-                <TouchableOpacity onPress={() => { navigation.navigate('Session_Detail', { data: data, title: title }) }}>
+                <TouchableOpacity onPress={() => { navigation.navigate('Session_Detail', {data: data}) }}>
                     <View style={{ height: 150, width: '100%', backgroundColor: 'white', display: 'flex', flexDirection: 'row', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
                         <View style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
                             {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%', borderRadius: 5 }} /> : <Text style={{ color: 'black', fontSize: 8 }}>Loading...</Text>}
@@ -191,16 +215,16 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
                                 </View>
                                 <View style={{ width: '100%', height: '70%', display: 'flex', flexDirection: 'row' }}>
                                     <View style={{ width: '50%', padding: 10, alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={{ color: 'black', fontSize: 32, fontWeight: '500' }}>{data.length}</Text>
+                                        <Text style={{ color: 'black', fontSize: 32, fontWeight: '500' }}>{data.climbs.length}</Text>
                                         <Text style={{ color: 'black', fontSize: 12 }}>Total Climbs</Text>
                                     </View>
                                     <View style={{ width: '50%', justifyContent: 'center', alignItems: 'center' }}>
                                         <View style={{ marginRight: 10 }}>
-                                            <ListItemSessions dotStyle={styles.climbDot} grade={selectedData[0].grade}>
-                                                <Text style={styles.climbName}>{selectedData[0].name}</Text>
+                                            <ListItemSessions dotStyle={styles.climbDot} grade={(selectedData? selectedData.grade: '')}>
+                                                <Text style={styles.climbName}>{(selectedData? selectedData.name: '')}</Text>
                                                 <View>
                                                     <Text style={styles.timerInfo}>
-                                                        {timeStampFormatting(selectedData[0].tapTimestamp).replace(/AM|PM/i, '').trim()}
+                                                        {(selectedData && selectedData.tapTimestamp)? (timeStampFormatting(selectedData.tapTimestamp).replace(/AM|PM/i, '').trim()): ''}
                                                     </Text>
                                                 </View>
                                             </ListItemSessions>
@@ -212,7 +236,6 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
                             <View style={{ height: 0.5, backgroundColor: '#BBBBBB', width: '90%', alignSelf: 'center' }} />
                         </View>
                     </View>
-
                 </TouchableOpacity>
                 <View style={{ height: 45, flexDirection: 'row', marginTop: -5 }}>
                     <View style={{ width: '30%' }}>
@@ -231,7 +254,7 @@ const SessionItem = ({ data, title, renderItem, keyExtractor, isHighlighted }) =
                         </View>
                         </View>
                         <View style={{ width: 0.5, backgroundColor: '#BBBBBB', alignSelf: 'stretch', marginVertical: 5 }}></View>
-                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { navigation.navigate('Share_Session', { climbData: { imageUrl: climbImageUrl, climbCount: data.length, grade: selectedData[0].grade } }) }}></Button></View>
+                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { navigation.navigate('Share_Session', { climbData: { imageUrl: climbImageUrl, climbCount: (data.climbs?data.climbs.length: 0), grade: selectedData.grade } }) }}></Button></View>
                     </View>
 
                 </View>
