@@ -35,7 +35,7 @@ function SessionsApi() {
         let query = ref
             .where('user', '==', userId)
             .where('archived', '==', false)
-            //.where("expiryTime", '<=', firebase.firestore.Timestamp.now())
+            .where("expiryTime", '<=', firebase.firestore.Timestamp.now())
             .orderBy("expiryTime", "desc")
             .limit(5);
 
