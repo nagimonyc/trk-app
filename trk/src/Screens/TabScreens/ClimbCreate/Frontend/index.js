@@ -25,6 +25,10 @@ const ClimbInputData = (props) => {
   const climbData = route.params?.climbData;
   const isEditMode = route.params?.editMode;
 
+  //To handle NFC state change
+  const [isNfcRequestActive, setIsNfcRequestActive] = useState(false);
+
+
   useEffect(() => {
     if (isEditMode && climbData) {
       // Set your state here based on climbData
@@ -59,6 +63,7 @@ const ClimbInputData = (props) => {
   const [open, setOpen] = useState(false);
 
   const yourCancelFunction = () => {
+    NfcManager.cancelTechnologyRequest()
     console.log('Cancel button was pressed in AndroidPrompt');
   };
 
@@ -157,66 +162,39 @@ const ClimbInputData = (props) => {
       );
   }
 
-
-
-
   async function handleAddClimb() {
     if (!validateInput()) return;
-    let imagesArray = [];
-    if (image && image.path) {
-      const newImageRef = await uploadImage(image.path);
-      imagesArray.push(newImageRef);
-    }
-
-    const climb = {
-      name,
-      grade,
-      gym,
-      type,
-      set,
-      ifsc,
-      info,
-      images: imagesArray, // include the images array
-      setter: setter.uid,
-      timestamp: new Date(),
-    };
-
-
-
-
-    const { addClimb } = ClimbsApi();
-    addClimb(climb)
-      .then(async (newClimbId) => {
-
-        androidPromptRef ? androidPromptRef.current.setVisible(true) : null;
-
-        try {
-          await NfcManager.requestTechnology(NfcTech.NfcA);
-          await ensurePasswordProtection();
-          const climbBytes = await writeClimb(newClimbId._documentPath._parts[1], grade, name);
-          let imagesArray = [];
-          if (image) {
+    let isReading = true;
+    androidPromptRef.current?.setVisible(true);
+    try {
+        await NfcManager.requestTechnology(NfcTech.NfcA);
+        isReading = false;
+        await ensurePasswordProtection();
+        let imagesArray = [];
+        if (image && image.path) {
             const newImageRef = await uploadImage(image.path);
             imagesArray.push(newImageRef);
-          }
-          else {
-            //console.log("no image");
-          }
-          await writeSignature(climbBytes);
         }
-        catch (ex) {
-          console.error('Error: ', ex);
-          //Errors show up as writeSignature fails sometimes.
-          //NEED TO SOLVE
-        }
+        const climb = {
+          name,
+          grade,
+          gym,
+          type,
+          set,
+          ifsc,
+          info,
+          images: imagesArray,
+          setter: setter.uid,
+          timestamp: new Date(),
+      };
 
-        finally {
-          NfcManager.cancelTechnologyRequest();
-        }
+        const { addClimb } = ClimbsApi();
+        const newClimbId = await addClimb(climb); //Adding the climb to firebase
+        const climbBytes = await writeClimb(newClimbId._documentPath._parts[1], grade, name);
 
-        androidPromptRef ? androidPromptRef.current.setVisible(false) : null;
+        //await writeSignature(climbBytes); For now, always fails
 
-        // Reset form
+        // Reset form values here since NFC and addClimb were successful
         setName("");
         setGrade("");
         setGym(null);
@@ -225,14 +203,18 @@ const ClimbInputData = (props) => {
         setInfo('');
         setSet("Commercial");
         setIfsc("");
-      })
-      .catch((err) => {
-        Alert.alert("Error saving climb");
-        console.error(err);
-      });
-  }
 
-
+    } catch (ex) {
+        if (isReading) {
+            Alert.alert('Action', 'Climb tagging cancelled.', [{ text: 'OK' }]);
+        } else {
+            Alert.alert('Error', ex.message || 'An error occurred', [{ text: 'OK' }]);
+        }
+    } finally {
+        NfcManager.cancelTechnologyRequest().catch(() => 0);
+        androidPromptRef.current?.setVisible(false);
+    }
+}
 
   const confirmDelete = () => {
     Alert.alert(
