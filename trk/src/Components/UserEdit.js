@@ -218,7 +218,7 @@ const UserEdit = ({route}) => {
                     children={() => {return (<View style={{width: '100%', height: '100%', display:'flex', justifyContent: 'center', alignItems: 'center', padding: 20}}>{climbImageUrl? <Image source={{ uri: climbImageUrl }} width={70} height={70} borderRadius={10}/>:<ActivityIndicator color="#3498db"/>}</View>);}}
                     />
                     <View style={{display:'flex', flexDirection:'column', width:'100%', justifyContent:'center', alignItems:'center'}}>
-                    <Text style={{color: 'black', paddingTop: 20, fontWeight:'500', paddingHorizontal: 20, paddingBottom: 10, fontSize: 15}}>{username? username: currentUser.email}</Text>
+                    <Text style={{color: 'black', paddingTop: 20, fontWeight:'500', paddingHorizontal: 20, paddingBottom: 10, fontSize: 15}}>{(user && user.username? user.username: '')}</Text>
                     </View>
                 </View>
                 <View style={{ width: '95%', height: 250, display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderRadius: 10, padding: 10, marginBottom: 50}}>
