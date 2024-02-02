@@ -44,11 +44,7 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
   </TouchableOpacity>
 );
 
-const TrackerButton = ({ onPress, title, navigation }) => (
-  <TouchableOpacity onPress={() => navigation.navigate('Climbs_Tracker')} style={styles.button_tracker}>
-    <Text style={styles.text_tracker}>Live Taps</Text>
-  </TouchableOpacity>
-);
+
 
 const styles = StyleSheet.create({
   button: {
@@ -116,20 +112,8 @@ function HomeStack() {
           title: 'Home',
           headerBackTitleVisible: null,
           headerTitle: 'Home',
-          headerLeft: Platform.OS === 'ios' ? () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <TrackerButton
-                title="Tracker"
-                navigation={navigation} />
-            </View>
-          ) : null,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              {Platform.OS !== 'ios' &&
-                <TrackerButton
-                  title="Tracker"
-                  navigation={navigation} />
-              }
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
@@ -167,20 +151,8 @@ function RecordStack() {
         options={({ navigation }) => ({
           title: 'Record',
           headerBackTitleVisible: null,
-          headerLeft: Platform.OS === 'ios' ? () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <TrackerButton
-                title="Tracker"
-                navigation={navigation} />
-            </View>
-          ) : null,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              {Platform.OS !== 'ios' &&
-                <TrackerButton
-                  title="Tracker"
-                  navigation={navigation} />
-              }
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
@@ -228,20 +200,8 @@ function FollowStack() {
         options={({ navigation }) => ({
           title: 'Follow',
           headerBackTitleVisible: null,
-          headerLeft: Platform.OS === 'ios' ? () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <TrackerButton
-                title="Tracker"
-                navigation={navigation} />
-            </View>
-          ) : null,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              {Platform.OS !== 'ios' &&
-                <TrackerButton
-                  title="Tracker"
-                  navigation={navigation} />
-              }
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
@@ -284,20 +244,8 @@ function ProfileStack() {
         options={({ navigation }) => ({
           title: 'Profile',
           headerBackTitleVisible: false,
-          headerLeft: Platform.OS === 'ios' ? () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <TrackerButton
-                title="Tracker"
-                navigation={navigation} />
-            </View>
-          ) : null,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              {Platform.OS !== 'ios' &&
-                <TrackerButton
-                  title="Tracker"
-                  navigation={navigation} />
-              }
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
