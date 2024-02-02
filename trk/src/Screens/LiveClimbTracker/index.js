@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView, Platform } from "react-native";
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from "../../Utils/AuthContext";
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -190,7 +190,7 @@ const LiveClimbTracker = () => {
                                 left: liveLinePosition+8,
                                 height: '100%',
                                 borderLeftColor: 'rgba(254, 129, 0, 0.5)',
-                                borderStyle: 'dashed',
+                                borderStyle: Platform.OS === 'android' ? 'dashed' : 'solid',
                                 borderLeftWidth: 2,
                                 alignItems: 'center',
                                 top: 40
