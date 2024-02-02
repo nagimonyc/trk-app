@@ -20,7 +20,10 @@ import { LayoutAnimation, UIManager} from 'react-native'; //For smoother animati
 import { IconButton } from 'react-native-paper';
 import Svg, { Path } from 'react-native-svg';
 import { firebase } from '@react-native-firebase/functions';
+import SessionsApi from '../../../../api/SessionsApi';
+import moment from 'moment-timezone';
 
+//Same changes as TapActions to allow for session creation and updates on tapping.
 //Only altered CSS with the integration of the dynamic text (UI impact only)
 export const useHomeScreenLogic = (props) => {
     // Animation
@@ -151,6 +154,28 @@ export const useHomeScreenLogic = (props) => {
         });
     };
 
+
+
+    const formatTimestamp = (timestamp) => {
+        const date = moment(timestamp).tz('America/New_York');
+        
+        // Round down to the nearest half hour
+        const minutes = date.minutes();
+        const roundedMinutes = minutes < 30 ? 0 : 30;
+        date.minutes(roundedMinutes);
+        date.seconds(0);
+        date.milliseconds(0);
+    
+        let formatString;
+        formatString = 'Do MMM';
+    
+        const formattedDate = date.format(formatString);
+        if (formattedDate === 'Invalid date') {
+            return 'Unknown Date';
+        }
+        return formattedDate;
+    };
+
     const addClimbWithNetwork = async (climbId) => {
         try {
           const climbDataResult = await ClimbsApi().getClimb(climbId);
@@ -160,7 +185,7 @@ export const useHomeScreenLogic = (props) => {
 
               //Checking if it marks the start of a session. If not it is marked as the session start
               let isSessionStart = false;
-              const lastTapSnapshot = await getLastUserTap(currentUser.uid);
+              const lastTapSnapshot = await getLastUserTap(currentUser.uid); //Using the last tap to retain user data, CAN CHANGE WHEN REPUBLISHING
               let lastUserTap = null;
               //console.log('Snapshot: ', lastTapSnapshot.docs);
               if (!lastTapSnapshot.empty) {
@@ -201,6 +226,20 @@ export const useHomeScreenLogic = (props) => {
             const tapDataResult = await TapsApi().getTap(documentReference.id);
               //Notifications only sent is it marks the start of a session
               if (isSessionStart) {
+
+                    //Make a session object with climbs, featured_climb, name, images, tagged_users, expiryTime, archived
+                    const session = {
+                        archived: false,
+                        climbs: [documentReference.id],
+                        featuredClimb: documentReference.id,
+                        user: currentUser.uid,
+                        name: 'Session on '+formatTimestamp(currentTime),
+                        sessionImages: [],
+                        taggedUsers: [],
+                        expiryTime: sixHoursLater,
+                        timestamp: currentTime,                    
+                    }
+                    await SessionsApi().addSession(session);
                     const expiryTimeForFunction = tap.expiryTime instanceof Date ? tap.expiryTime.toISOString() : tap.expiryTime;
                     scheduleFunction({tapId: documentReference.id, expiryTime: expiryTimeForFunction})
                             .then((result) => {
@@ -210,7 +249,22 @@ export const useHomeScreenLogic = (props) => {
                                 // Getting the Error details.
                                 console.error('Error calling function:', error);
                             });
-                }
+              } else {
+                    //If the tap is not the start of a session, place it in climbs of that session (fetch by expiryTime)
+                    const lastSessionSnapshot = await SessionsApi().getLastUserSession(currentUser.uid);
+                    if (lastSessionSnapshot.empty) {
+                        //Error, if it is not the start of a session, there should be data here
+                        console.error("Session doesn't exist, but current tap is not the start of the session.");
+                    } else {
+                        const lastSession = lastSessionSnapshot.docs[0];
+                        const updatedSession = {
+                            climbs: [documentReference.id].concat(lastSession.data().climbs),
+                            featuredClimb: documentReference.id,                    
+                        }
+                        console.log('Last Session Fetched: ', lastSession.data());
+                        await SessionsApi().updateSession(lastSession.id, updatedSession);
+                    }
+              }
               setClimb(climbDataResult._data);
               setTapObj(tapDataResult._data); //All relevant data is collected and set.
               setTapId(documentReference.id);

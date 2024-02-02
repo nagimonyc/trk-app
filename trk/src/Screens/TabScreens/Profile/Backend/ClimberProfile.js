@@ -13,6 +13,7 @@ import moment from 'moment-timezone';
 import { RefreshControl, ScrollView} from 'react-native';
 import UsersApi from "../../../../api/UsersApi";
 import storage from '@react-native-firebase/storage';
+import SessionsApi from "../../../../api/SessionsApi";
 
 //MADE CHANGES TO NOW SHOW USERNAME AND PROFILE PIC (WITH EDIT BUTTON TO LEAD TO EDITING PAGE)
 //Revamped how sessions are created (Only last 5 sessions are fetched as of now)- Next PR will implement pagination
@@ -23,13 +24,15 @@ const ClimberProfile = ({ navigation }) => {
 
     const [user, setUser] = useState(null);
 
-    const [climbsHistory, setClimbsHistory] = useState([]);
     const [sessionsHistory, setSessionsHistory] = useState([]);
 
     const [climbImageUrl, setClimbImageUrl] = useState(null);
 
 
     const [currentSession, setCurrentSession] = useState([]); //to store climbs in the current session
+
+    const [currentSessionObject, setCurrentSessionObject] = useState(null);
+
     const [historyCount, setHistoryCount] = useState(0);
     const [sessionCount, setSessionCount] = useState(0);
     const [refreshing, setRefreshing] = useState(false);
@@ -46,96 +49,67 @@ const ClimberProfile = ({ navigation }) => {
         }, [])
     );
 
+
+    //Get active sessions in the same manner. Fetch sessions through the session object (order by timestamp and fetch last 5)- for pagination
     const handleTapHistory = async () => {
         try {
-            const { getTapsBySomeField, getActiveSessionTaps, getRecentFiveSessions, getExpiredTaps, getTotalSessionCount} = TapsApi();
+            const {getActiveSessionTaps, getTotalTapCount} = TapsApi();
             const { getClimb } = ClimbsApi();
+            
+            //To get User information, retained as is
             const {getUsersBySomeField} = UsersApi();
             let user = (await getUsersBySomeField('uid', currentUser.uid));
             if (user) {
                 setUser(user.docs[0].data());
             }
-            let recentSession = (await getRecentFiveSessions(currentUser.uid)) // Does not include the current session, gets the starting points of the last 5 sessions
-            //Filtering the recent session starts
-            const recentSessionStartsFiltered = recentSession.docs.map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
-                .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
 
-            const promise = recentSessionStartsFiltered.map(tap => getClimb(tap.climb));
-            // Resolve all promises to get climb details
-            const recentSnapshot = await Promise.all(promise);
-
-            // Combine climb details with tap data
-            const recentSessionStarts = recentSnapshot.map((climbSnapshot, index) => {
-                if (!climbSnapshot.exists) return null;
-                return { ...climbSnapshot.data(), tapId: recentSessionStartsFiltered[index].id, tapTimestamp: recentSessionStartsFiltered[index].timestamp};
-            }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
-
-            //Getting climbs for the Active Session
+            //Gets all expired sessions as Session Objects
+            let recentSessionObjects = (await SessionsApi().getRecentFiveSessionsObjects(currentUser.uid));
+            const recentSessionObjectsFiltered = recentSessionObjects.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            //No need to fetch Climb data, can be done in Session Detail
+            
+            //Getting Current Session Object
+            const lastUserSession = (await SessionsApi().getLastUserSession(currentUser.uid));
+            if (!lastUserSession.empty) {
+                setCurrentSessionObject(lastUserSession.docs[0]);
+            }
+            //Getting climbs for the Active Session, retain as it is faster- tagging can be updated to most recent session
             const activeSessionSnapshot = (await getActiveSessionTaps(currentUser.uid));
-            const tapsSnapshot = await getExpiredTaps(currentUser.uid);
-            // Filter taps
-            const filteredTaps = tapsSnapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects,
-                .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
-
             //Filtering active session taps
             const filteredActiveTaps = activeSessionSnapshot.docs
                 .map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
                 .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
 
-            
-            // Fetch climb details for each filtered tap
-            const climbsPromises = filteredTaps.map(tap => getClimb(tap.climb));
-
             //Fetching climb details for active taps
             const activeClimbPromises = filteredActiveTaps.map(tap => getClimb(tap.climb));
-
-            // Resolve all promises to get climb details
-            const climbsSnapshots = await Promise.all(climbsPromises);
-
             //Resolve active promises to get active session climb details
             const activeClimbsSnapshots = await Promise.all(activeClimbPromises);
-
-            // Combine climb details with tap data
-            //Added session info to expired climbs
-            const newClimbsHistory = climbsSnapshots.map((climbSnapshot, index) => {
-                if (!climbSnapshot.exists) return null;
-                return { ...climbSnapshot.data(), tapId: filteredTaps[index].id, tapTimestamp: filteredTaps[index].timestamp, isSelected: filteredTaps[index].isSelected, sessionTitle: filteredTaps[index].sessionTitle, sessionImages: filteredTaps[index].sessionImages, isSessionStart: filteredTaps[index].isSessionStart, tagged: filteredTaps[index].tagged};
-            }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
-
-
             //Combine active session climb details with tap data
             const activeClimbsHistory = activeClimbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
                 return { ...climbSnapshot.data(), tapId: filteredActiveTaps[index].id, tapTimestamp: filteredActiveTaps[index].timestamp, isSessionStart: filteredActiveTaps[index].isSessionStart, tagged: filteredActiveTaps[index].tagged};
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
 
-            //To allow for pagination of sessions
-            let sessionLogStart = null;
-            if (recentSessionStarts.length > 0) {
-                sessionLogStart = recentSessionStarts[recentSessionStarts.length-1]; // for a constant endpoint for the for-loop, enables a top-down approach
-            }
-            //This is the last session to be fetched
-            //console.log('Session start is: ', sessionLogStart);
-            //All expired sessions are stored here
-            //console.log('Recent, non-active sessions are: ', recentSessionStarts.length);
-            //const sessionsOld = groupClimbsByTimestamp(newClimbsHistory);
-            const {expiredSessions, activeSession, activeSessionTimestamp} = groupClimbsByTimestampNew(newClimbsHistory, activeClimbsHistory, sessionLogStart);
 
-            if (recentSession.docs.at(-1)) {
+            //To allow for pagination of sessions
+
+            //For the Firebase Query
+            if (recentSessionObjects.docs.at(-1)) {
                 //console.log('Last loaded climb set: ', recentSession.docs.at(-1));
-                setLastLoadedClimb(recentSession.docs.at(-1)); 
+                setLastLoadedClimb(recentSessionObjects.docs.at(-1)); 
             }
-            setClimbsHistory(newClimbsHistory); //Irrelevant value as of NOW (WILL REMOVE IN NEXT PR)- SESSION OBJECT REVAMP
-            setSessionsHistory(expiredSessions); //Updating sessions on fetching a new climbHistory, expired sessions
-            setCurrentSession(activeSession); // Storing Active Climbs in a new session, active session
-            //console.log('The typeof the list is: ', typeof activeSession[activeSessionTimestamp]);
+
+            const {activeSession, activeSessionTimestamp} = groupBySessions(activeClimbsHistory);
+
+            setSessionsHistory(recentSessionObjectsFiltered); //Updating sessions on fetching a new climbHistory, expired sessions
+            setCurrentSession(activeSession); // Storing Active Climbs in a new session, active session (REMAINS THE SAME)
 
             //To accurately calculate session count
-            const sessionCount = (await (getTotalSessionCount(currentUser.uid))).data().count;
-            //console.log('Session Count Fetched: ', sessionCount);
+            const sessionCount = (await (SessionsApi().getTotalSessionCount(currentUser.uid))).data().count;
+            const tapCount = (await (getTotalTapCount(currentUser.uid))).data().count;
+            console.log('The session count is: ', sessionCount);
             setSessionCount(sessionCount); //Session count updated, based on expired and current
-            setHistoryCount(newClimbsHistory.length + activeClimbsHistory.length); //Summing up current and expired taps
+            setHistoryCount(tapCount); //Total tap Count updated
         
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
@@ -148,10 +122,6 @@ const ClimberProfile = ({ navigation }) => {
         setRefreshing(true);
         handleTapHistory().then(() => setRefreshing(false));
       }, []);
-      
-
-    //The following are SessionTapHistory formatting functions to deal with the creation of sessions
-    //MIGRATED CODE
 
     // Helper function to format timestamp
     const formatTimestamp = (timestamp) => {
@@ -163,8 +133,6 @@ const ClimberProfile = ({ navigation }) => {
         }
         return formattedDate;
     };
-
-
     const convertTimestampToDate = (timestamp) => {
         //console.log("Received timestamp:", timestamp);
         if (!timestamp || typeof timestamp.seconds !== 'number' || typeof timestamp.nanoseconds !== 'number') {
@@ -174,57 +142,18 @@ const ClimberProfile = ({ navigation }) => {
         // Convert to milliseconds and create a new Date object
         return new Date(timestamp.seconds * 1000 + Math.round(timestamp.nanoseconds / 1000000));
     };
-
-    const groupClimbsByTimestampNew = (climbs, activeClimbs, startingClimb, start = null) => {
-        //console.log('Expired Climbs Are: ', climbs);
-        const expiredSessions = {}; // Object to store expired sessions with keys
-        let currentSessionClimbs = []; // To store the current session climbs
-        let sessionKey = null;
-
-        //Active session calculation, now wholly reliant on the firebase call
+    
+    //Starting climb is the session start of the last session you want to fetch, and start is the last session you fetched previously
+    const groupBySessions = (activeClimbs, start = null) => {
+        //Active session calculation REMAINS THE SAME, now wholly reliant on the firebase call
         const activeSessionStart = (activeClimbs && activeClimbs.length > 0? activeClimbs[activeClimbs.length - 1]: {tapTimestamp: firebase.firestore.Timestamp.now()});
         const activeSessionTimestamp = moment(convertTimestampToDate(activeSessionStart.tapTimestamp)).tz('America/New_York').format('YYYY-MM-DD HH:mm');
-        //console.log('Last Tap Was: ', start);
-        let i = 0;
-        if (start !== null && start.id) {
-            i = climbs.findIndex(climb => climb.tapId === start.id) + 1;
-            //console.log('I starts at: ', i);
-        }
-        else {
-            //console.log('I is: ', i); //To document pagination
-        }
-        // Iterate from the oldest to the newest climb
-        for (; i < climbs.length; i++) { //Can iterate through
-                const climb = climbs[i];
-                const climbDate = convertTimestampToDate(climb.tapTimestamp);
-        
-                if (!climbDate) {
-                    console.error('Skipping climb due to invalid date:', climb);
-                    continue;
-                }
-                currentSessionClimbs.push(climb);
-
-                // When a climb marks the start of a session or is the startingClimb
-                if (climb.isSessionStart == true|| (startingClimb && climb.tapId === startingClimb.tapId)) {
-                    // Use the timestamp of the current climb to create a session key
-                    sessionKey = moment(climbDate).tz('America/New_York').format('YYYY-MM-DD HH:mm');
-                    expiredSessions[sessionKey] = [...currentSessionClimbs];
-                    currentSessionClimbs = [];
-                    //Stop after the last paginated tap is encountered, helps reduce loading time
-                    if (climb.tapId === startingClimb.tapId) {
-                        break;
-                    }
-                }
-        }
-
-        //console.log('Session Timestamp: ', sessionKey);
         const activeSession = {};
-        activeSession[activeSessionTimestamp] = (activeClimbs && activeClimbs.length > 0 ? activeClimbs.reverse(): []); //For desc ordering of active session taps
-        //console.log('Expired Session is: ', expiredSessions);
-        //console.log('Active Session is: ', activeSession);
-        return {expiredSessions, activeSession, activeSessionTimestamp};
+        activeSession[activeSessionTimestamp] = (activeClimbs && activeClimbs.length > 0 ? activeClimbs: []); //For desc ordering of active session taps
+        return {activeSession, activeSessionTimestamp};
         //Returns expired sessions, active sessions, and the current session's timestamp
     };
+
 
     //Pagination Logic for scrolling down
     //We have the initally last loaded climb
@@ -232,35 +161,18 @@ const ClimberProfile = ({ navigation }) => {
         if (lastLoadedClimb && !loadingMore) {
             setLoadingMore(true);
             //console.log('Loading more at the Bottom!');
-            const newSessions = (await TapsApi().getRecentFiveSessions(currentUser.uid, lastLoadedClimb)); //Change to lastLoadedClimb 
+            const newSessions = (await SessionsApi().getRecentFiveSessionsObjects(currentUser.uid, lastLoadedClimb)); //Change to lastLoadedClimb 
             const newSessionsFiltered = newSessions.docs.map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
-            .filter(tap => tap !== null && (tap.archived === undefined || tap.archived === false)); // Apply the filter
-
-            const promise = newSessionsFiltered.map(tap => ClimbsApi().getClimb(tap.climb));
-            // Resolve all promises to get climb details
-            const snapshot = await Promise.all(promise);
-
-             // Combine climb details with tap data
-             const newSessionsHistory = snapshot.map((climbSnapshot, index) => {
-                 if (!climbSnapshot.exists) return null;
-                 return { ...climbSnapshot.data(), tapId: newSessionsFiltered[index].id, tapTimestamp: newSessionsFiltered[index].timestamp};
-             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
-
-            if (newSessionsHistory.length == 0) {
-                //console.log('No new climbs!');
+        
+            if (newSessionsFiltered.length == 0) {
+                console.log('No new climbs!');
                 setLoadingMore(false);
                 return;
             }
-
-            const sessionLogStart = newSessionsHistory[newSessionsHistory.length-1]; // for a constant endpoint for the for-loop, enables a top-down approach
-            const {expiredSessions, activeSession, activeSessionTimestamp} = groupClimbsByTimestampNew(climbsHistory, null, sessionLogStart, lastLoadedClimb);
             if (newSessions.docs.at(-1)) {
-                //console.log('Last loaded climb set: ', newSessions.docs.at(-1));
                 setLastLoadedClimb(newSessions.docs.at(-1));
             }
-            //console.log('Previous Sessions History: ', sessionsHistory);
-            //console.log('New Sessions History', expiredSessions)
-            setSessionsHistory(prevSessions => ({ ...prevSessions, ...expiredSessions}));
+            setSessionsHistory(prevSessions => ({ ...prevSessions, ...newSessionsFiltered}));
             setLoadingMore(false);
             return;
         }
@@ -268,7 +180,6 @@ const ClimberProfile = ({ navigation }) => {
             //console.log('Loading Issue: ', loadingMore);
         }
     };
-
 
     //Scrolling handler for when the user reaches the bottom of the page
     const onScroll = ({ nativeEvent }) => {
@@ -362,9 +273,9 @@ const ClimberProfile = ({ navigation }) => {
                 </View>
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={[styles.effortHistoryList]}>
-                        <SessionTapHistory climbsHistory={climbsHistory} currentSession={currentSession} isCurrent={true}/>
+                        <SessionTapHistory currentSession={currentSession} isCurrent={true} currentSessionObject={currentSessionObject}/>
                         {sessionsHistory && Object.keys(sessionsHistory).length > 0 && <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold'}}>Past Sessions</Text>}
-                        <SessionTapHistory climbsHistory={climbsHistory} currentSession={sessionsHistory} isCurrent={false}/>
+                        <SessionTapHistory currentSession={sessionsHistory} isCurrent={false}/>
                     </View>
                 </View>
             </View>
