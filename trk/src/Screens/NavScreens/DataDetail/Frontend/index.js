@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, ScrollView, SafeAreaView, StyleSheet, Image } from "react-native";
+import LiveClimbTracker from "../../../LiveClimbTracker";
 
 const DataDetail = ({ route }) => {
 
@@ -13,7 +14,11 @@ const DataDetail = ({ route }) => {
             <Text style={styles.title}>{title}</Text>
           </View>
           <View style={styles.main}>
-          <Text>This feature is coming soon 🔥</Text>
+          {title === 'Heatmap' ? (
+              <LiveClimbTracker />
+            ) : (
+              <Text>This feature is coming soon 🔥</Text>
+            )}
           </View>
         </View>
       </SafeAreaView>
