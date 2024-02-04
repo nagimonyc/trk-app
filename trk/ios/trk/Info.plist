@@ -80,5 +80,11 @@
 	<!-- optionally, if you want to record audio: -->
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Nagimo needs access to your Microphone.</string>
+	
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Nagimo requires access to the photo library to save images.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Nagimo requires access to the photo library to share images.</string>
+
 </dict>
 </plist>
