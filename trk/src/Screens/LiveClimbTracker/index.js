@@ -17,6 +17,10 @@ const LiveClimbTracker = () => {
 
     const [openGymPicker, setOpenGymPicker] = useState(false);
     const [openClimbPicker, setOpenClimbPicker] = useState(false);
+
+    //For Set Dropdown
+    const [openSetPicker, setOpenSetPicker] = useState(false);
+
     const currentDate = moment().tz('America/New_York');
     const [activeDate, setActiveDate] = useState(currentDate);
     
@@ -27,7 +31,11 @@ const LiveClimbTracker = () => {
 
     const [selectedGymId, setSelectedGymId] = useState(null);
     const [selectedClimbId, setSelectedClimbId] = useState(null);
-    const { gyms, climbs, taps, loading, formattedTaps, defaultSelected} = usePopularTimesData(selectedGymId, selectedClimbId, reloadTrigger, activeDate);
+    
+    //For sets
+    const [selectedSetId, setSelectedSetId] = useState(null);
+
+    const { gyms, climbs, taps, loading, formattedTaps, defaultSelected, sets, defaultSet} = usePopularTimesData(selectedGymId, selectedClimbId, reloadTrigger, activeDate, selectedSetId);
 
     // Logic for the live line position
     const chartWidth = Dimensions.get('window').width - 60;
@@ -102,6 +110,13 @@ const LiveClimbTracker = () => {
         setSelectedGymId(defaultSelected);
     }, [defaultSelected]);
 
+
+    //For sets
+    useEffect(() => {
+        setSelectedSetId(defaultSet);
+    }, [defaultSet]);
+
+
     //To change based on calendar strip date.
     const fetchGraph = (date) => {
         //console.log('Fetching: ', date);
@@ -113,6 +128,7 @@ const LiveClimbTracker = () => {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingVertical: 20, paddingHorizontal: 20}}>
             <Text style={{ fontSize: 20, marginBottom: 20, color: 'black'}}>Popular Times</Text>
             <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, width: '100%', marginBottom: 40}}>
+            <View style={{display: 'flex', flexDirection:'column', width: '80%', marginRight: 30}}>
             <DropDownPicker
                 open={openGymPicker}
                 value={defaultSelected}
@@ -121,8 +137,21 @@ const LiveClimbTracker = () => {
                 setValue={setSelectedGymId}
                 placeholder="Movement LIC"
                 style={{ height: 40}}
-                containerStyle={{width: '80%', marginRight: 30}}
+                //containerStyle={{width: '80%', marginRight: 30}}
+                zIndex={30}
             />
+            <DropDownPicker
+                open={openSetPicker}
+                value={selectedSetId}
+                items={sets}
+                setOpen={setOpenSetPicker}
+                setValue={setSelectedSetId}
+                placeholder="Commercial"
+                style={{height: 40}}
+                containerStyle={{marginTop: 30}}
+                zIndex={10}
+            />
+            </View>
             <TouchableOpacity onPress={handleReload} style={{height: 40, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#3498db', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 50}}>
                 <Text style={{color: 'white', textAlign: 'center'}}>Reload</Text>
             </TouchableOpacity>

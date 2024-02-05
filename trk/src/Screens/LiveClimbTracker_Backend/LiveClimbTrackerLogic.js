@@ -6,12 +6,16 @@ import { title } from "process";
 import moment from "moment-timezone";
 import { Alert } from "react-native";
 
-function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selectedDate) {
+function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selectedDate, selectedSetId) {
     const [defaultSelected, setdefaultSelected] = useState(null);
 
+    //Default Set
+    const [defaultSet, setDefaultSet] = useState(null);
+    
     const [gyms, setGyms] = useState([]);
     const [climbs, setClimbs] = useState([]);
     const [taps, setTaps] = useState([]);
+    const [sets, setSets] = useState([])
     const [formattedTaps, setFormattedTaps]= useState({labels: ["6a", "", "", "9a", "", 
     "", "12p", "", "", "3p", 
     "", "", "6p", "", "", 
@@ -41,6 +45,11 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
                 try {
                     const climbsData = await ClimbsApi().getClimbsBySomeField('gym', selectedGymId);
                     const formattedClimbs = climbsData.docs.map(doc => {return doc.exists ? { value: doc.id, label: doc.data().name, ...doc.data() } : null;}).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
+                    const uniqueSets = Array.from(new Set(formattedClimbs.map(climb => climb.set))).filter(set => set !== null && set !== undefined).map((doc, index) => ({label: doc, value: index}));
+                    if (uniqueSets && uniqueSets.length > 0) {
+                        setSets(uniqueSets);
+                        setDefaultSet(uniqueSets[uniqueSets.length-1].value);
+                    }
                     setClimbs(formattedClimbs);
                 } catch (error) {
                     //console.log("Error: ", error);
@@ -55,9 +64,10 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
     //To fetch day-specific taps, building the graph points (RELATIVE SCALE)
     useEffect(() => {
         setLoading(true);
-        async function fetchTapsForClimbs() {
+        async function fetchTapsForClimbs(climbs) {
             let allTaps = [];
             //console.log('Reloading taps...');
+
             for (const climb of climbs) {
                 const tapsData = await TapsApi().getTapsByClimbAndDate(climb.value, selectedDate); //Selecing data with timestamp (Firebase query makes it faster)
                 //const tapsData = await getTapsBySomeField('climb', climb.value);
@@ -88,21 +98,29 @@ function usePopularTimesData(selectedGymId, selectedClimbId, reloadFlag, selecte
             //console.log('Filtering completed.');
             setLoading(false);
         }
-        if (climbs && climbs.length > 0) {
-            try {
-                fetchTapsForClimbs();
-            } catch (error) {
-                //console.log("Error: ", error);
-                Alert.alert("Error", "Data could not be fetched!");
+        if (climbs && climbs.length > 0 && selectedSetId !== null) {
+            const climbsForSet = climbs.filter(climb => climb.set === sets[selectedSetId].label);
+            if (climbsForSet.length > 0) { 
+                try {
+                    fetchTapsForClimbs(climbsForSet);
+                } catch (error) {
+                    //console.log("Error: ", error);
+                    Alert.alert("Error", "Data could not be fetched!");
+                }
+            } else {
+                setFormattedTaps({labels: ["6a", "", "", "9a", "", "", "12p", "", "", "3p", "", "", "6p", "", "", "9p", ""], datasets: [{data: new Array(17).fill(1)}]});
+                setTaps([]);
+                setLoading(false);
             }
         } else {
+            console.log('here');
             setFormattedTaps({labels: ["6a", "", "", "9a", "", "", "12p", "", "", "3p", "", "", "6p", "", "", "9p", ""], datasets: [{data: new Array(17).fill(1)}]});
             setTaps([]);
             setLoading(false);
         }
-    }, [climbs, reloadFlag, selectedDate]);  //Also run when date changes
+    }, [climbs, reloadFlag, selectedDate, selectedSetId]);  //Also run when date changes
     
-    return { gyms, climbs, taps, loading, formattedTaps, defaultSelected};
+    return { gyms, climbs, taps, loading, formattedTaps, defaultSelected, sets, defaultSet};
 }
 
 export default usePopularTimesData;
