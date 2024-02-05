@@ -19,8 +19,9 @@ function ClimbsApi() {
         return ref.where(field, '==', value).orderBy('timestamp','desc').get();
     }
 
-    function updateClimb(climbId, updatedClimb) {
-        return ref.doc(climbId).update(updatedClimb);
+    async function updateClimb(climbId, updatedClimb) {
+        await ref.doc(climbId).update(updatedClimb);
+        return climbId;
     }
 
     return {

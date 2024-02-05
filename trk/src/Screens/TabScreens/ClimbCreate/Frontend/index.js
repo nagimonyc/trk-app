@@ -15,6 +15,7 @@ import { AuthContext } from '../../../../Utils/AuthContext';
 import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import GymsApi from "../../../../api/GymsApi";
+import SetsApi from "../../../../api/SetsApi";
 
 
 const ClimbInputData = (props) => {
@@ -30,17 +31,29 @@ const ClimbInputData = (props) => {
 
 
   useEffect(() => {
-    if (isEditMode && climbData) {
-      // Set your state here based on climbData
-      setName(climbData.name);
-      setGrade(climbData.grade);
-      setGym(climbData.gym);
-      setType(climbData.type);
-      setSet(climbData.set);
-      setIfsc(climbData.ifsc);
-      setInfo(climbData.info);
-    }
-  }, [isEditMode, climbData]);
+    const fetchData = async () => {
+      if (isEditMode && climbData) {
+        // Assuming SetsApi().getSetByName is an async function that fetches the set ID
+        let setId = null;
+        if (climbData.set) {
+          setId = await SetsApi().getSetByName(climbData.set);
+        }
+        setName(climbData.name);
+        setGrade(climbData.grade);
+        setGym(climbData.gym);
+        setType(climbData.type);
+        if (setId && !setId.empty) {
+          setSet(setId.docs[0].id); // Assuming this sets the ID for dropdown selection
+          setSelectedValue(climbData.set); // Additional state update for selected value, if necessary
+        }
+        setIfsc(climbData.ifsc);
+        setInfo(climbData.info);
+      }
+    };
+  
+    fetchData();
+  }, [isEditMode, climbData]); // Dependencies
+  
 
 
 
@@ -56,11 +69,17 @@ const ClimbInputData = (props) => {
   const [gym, setGym] = useState(null);
   const [image, setImage] = useState("");
   const [type, setType] = useState("Boulder");
-  const [set, setSet] = useState("Commercial");
+  //const [set, setSet] = useState("Commercial");
   const [ifsc, setIfsc] = useState("");
   const [info, setInfo] = useState("");
 
   const [open, setOpen] = useState(false);
+
+  //For the Sets Dropdown
+  const [setsOpen, setSetsOpen] = useState(false);
+  const [set, setSet] = useState(null);
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [reload, setReload] = useState(false); //To reload with new sets
 
   const yourCancelFunction = () => {
     NfcManager.cancelTechnologyRequest()
@@ -88,6 +107,43 @@ const ClimbInputData = (props) => {
     });
   }, []);
 
+
+
+  //For Loading of Existing Sets
+  const [setItems, setSetItems] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [value, setValue] = useState(null);
+
+  useEffect(() => {
+    SetsApi().fetchSets().then(sets => {
+      const formattedSets = sets.map(doc => ({ label: doc.data().name, value: doc.id }));
+      setSetItems(formattedSets);
+    });
+  }, [reload]);
+
+
+  //To create custom sets
+  useEffect(() => {
+    setSetItems(prevItems => {
+      // Check if there's a custom item already
+      const existingCustom = prevItems.find(item => item.value === 'custom');
+      const searchTextLower = searchText.toLowerCase().trim();
+      const exists = prevItems.some(item => item.label.toLowerCase().trim() === searchTextLower);
+  
+      if (searchText && !exists) {
+        // If there's searchText and it does not match any existing item, add "Add custom"
+        if (!existingCustom) {
+          return [...prevItems, { label: `Add "${searchText}"`, value: 'custom', name: searchText.trim()}];
+        } else {
+          // Update the existing custom item label without removing it
+          return prevItems.map(item => item.value === 'custom' ? { ...item, label: `Add "${searchText}"`, name: searchText.trim()} : item);
+        }
+      } else {
+        // If searchText is empty or there's a match, remove "Add custom" option
+        return prevItems.filter(item => item.value !== 'custom');
+      }
+    });
+  }, [searchText]);  
 
   const handleImagePick = async () => {
     //console.log("handleImagePick called");
@@ -133,7 +189,7 @@ const ClimbInputData = (props) => {
       grade,
       gym,
       type,
-      set,
+      set: selectedValue,
       ifsc,
       info,
       images: imagesArray,
@@ -141,27 +197,84 @@ const ClimbInputData = (props) => {
       timestamp: new Date(),
     };
 
-
+    try {
     const { updateClimb } = ClimbsApi();
-    await updateClimb(climbData.id, updatedClimb)
-      .then(async (newClimbId) => {
+    const newClimbId = await updateClimb(climbData.id, updatedClimb);
+    //console.log(newClimbId);
+    if (newClimbId) {
+    //Check if set is a custom set (make), add climb and setter
+        const filteredSets = setItems.filter(set => set.value === 'custom');
+        //console.log(newClimbId);
+
+
+        //Same Logic for deletion
+        if (climbData.set && selectedValue !== climbData.set) {
+          //We need to remove it from its existing set
+          const setObjSnapshot = await SetsApi().getSetByName(climbData.set);
+          if (!setObjSnapshot.empty) {
+            const setObj = setObjSnapshot.docs[0].data();
+            console.log(setObj);
+            const setObjId = setObjSnapshot.docs[0].id;
+            const climbs = setObj.climbs;
+            const setters = setObj.setters;
+            if (climbs.length > 0) {
+              const idx = climbs.indexOf(String(newClimbId));
+              if (idx > -1) {
+                climbs.splice(idx, 1);
+                setters.splice(idx, 1);
+              } else {
+                console.error('Climb has a set, but the set has no record of the climb [ITEMS EXIST]');
+              }
+              await SetsApi().updateSet(setObjId, {climbs: climbs, setters: setters}); //Removing the old climb and setter
+            } else {
+              console.error('Climb has a set, but the set has no record of the climb');
+            }
+          }
+        }
+
+        if (filteredSets.length === 0 && (!climbData || selectedValue !== climbData.set)) { //No need to add if same set
+          //Use the existing setName
+          //console.log('Set already exists!: ', selectedValue);
+          const oldSet = await SetsApi().getSetByName(String(selectedValue).trim());
+          //console.log(oldSet);
+          if (oldSet && oldSet.docs[0]) {
+            const setId = oldSet.docs[0].id;
+            const setData = oldSet.docs[0].data();
+            const newClimbs = [newClimbId].concat((setData.climbs? setData.climbs: [])); //replace with newClimbId
+            const newSetters = [currentUser.uid].concat((setData.setters? setData.setters: []));
+            await SetsApi().updateSet(setId, {climbs: newClimbs, setters: newSetters});
+          } else {
+            console.error('Set Exists But Not Found!');
+          }
+        } else if ((!climbData || selectedValue !== climbData.set)) { //If not a duplicate, then make a custom set
+          const setObj = {
+            archived: false,
+            name: filteredSets[0].name,
+            climbs: [newClimbId], //replace with newClimbId
+            setters: [currentUser.uid]
+          }
+          await SetsApi().addSet(setObj);
+        }
+
         setName("");
         setGrade("");
         setGym(null);
         setImage("");
         setType("Boulder");
         setInfo('');
-        setSet("Commercial");
+        setSet(null);
+        setSelectedValue(null);
         setIfsc("");
 
         Alert.alert("Success", "Climb updated successfully");
-      }).catch((err) => {
+      }
+     } catch (err) {
         Alert.alert("Error updating climb");
         console.error(err);
       }
-      );
   }
 
+  //Altered to include Set Details
   async function handleAddClimb() {
     if (!validateInput()) return;
     let isReading = true;
@@ -180,7 +293,7 @@ const ClimbInputData = (props) => {
           grade,
           gym,
           type,
-          set,
+          set: selectedValue,
           ifsc,
           info,
           images: imagesArray,
@@ -190,6 +303,34 @@ const ClimbInputData = (props) => {
 
         const { addClimb } = ClimbsApi();
         const newClimbId = await addClimb(climb); //Adding the climb to firebase
+        
+        //Check if set is a custom set (make), add climb and setter
+        const filteredSets = setItems.filter(set => set.value === 'custom');
+        if (filteredSets.length === 0) {
+          //Use the existing setName
+          //console.log('Set already exists!: ', selectedValue);
+          const oldSet = await SetsApi().getSetByName(String(selectedValue).trim());
+          console.log(oldSet);
+          if (oldSet && oldSet.docs[0]) {
+            const setId = oldSet.docs[0].id;
+            const setData = oldSet.docs[0].data();
+            const newClimbs = [newClimbId._documentPath._parts[1]].concat((setData.climbs? setData.climbs: [])); //replace with newClimbId
+            const newSetters = [currentUser.uid].concat((setData.setters? setData.setters: []));
+            await SetsApi().updateSet(setId, {climbs: newClimbs, setters: newSetters});
+          } else {
+            console.error('Set Exists But Not Found!');
+          }
+        } else {
+          //console.log('New Set to be Created!');
+          const setObj = {
+            archived: false,
+            name: filteredSets[0].name,
+            climbs: [newClimbId._documentPath._parts[1]], //replace with newClimbId
+            setters: [currentUser.uid]
+          }
+          await SetsApi().addSet(setObj);
+        }
+        
         const climbBytes = await writeClimb(newClimbId._documentPath._parts[1], grade, name);
 
         //await writeSignature(climbBytes); For now, always fails
@@ -201,9 +342,10 @@ const ClimbInputData = (props) => {
         setImage("");
         setType("Boulder");
         setInfo('');
-        setSet("Commercial");
+        setSet(null);
+        setSelectedValue(null);
         setIfsc("");
-
+        setReload(current =>  !current); //To reload sets (with newly created one too!)
     } catch (ex) {
         if (isReading) {
             Alert.alert('Action', 'Climb tagging cancelled.', [{ text: 'OK' }]);
@@ -236,7 +378,29 @@ const ClimbInputData = (props) => {
 
   async function handleDeleteClimb() {
     const { updateClimb } = ClimbsApi();
-    updateClimb(climbData.id, { archived: true })
+    const newClimbId = await updateClimb(climbData.id, { archived: true });
+    if (newClimbId && climbData.set) {
+      const setObjSnapshot = await SetsApi().getSetByName(climbData.set);
+      if (!setObjSnapshot.empty) {
+        const setObj = setObjSnapshot.docs[0].data();
+        //console.log(setObj);
+        const setObjId = setObjSnapshot.docs[0].id;
+        const climbs = setObj.climbs;
+        const setters = setObj.setters;
+        if (climbs.length > 0) {
+          const idx = climbs.indexOf(String(newClimbId));
+          if (idx > -1) {
+            climbs.splice(idx, 1);
+            setters.splice(idx, 1);
+          } else {
+            console.error('Climb has a set, but the set has no record of the climb [ITEMS EXIST]');
+          }
+          await SetsApi().updateSet(setObjId, {climbs: climbs, setters: setters}); //Removing the old climb and setter
+        } else {
+          console.error('Climb has a set, but the set has no record of the climb');
+        }
+      }
+    }
     props.navigation.navigate('User_Profile');
   }
 
@@ -329,6 +493,45 @@ const ClimbInputData = (props) => {
                 />
               </View>
 
+              <Text style={styles.label}>Set</Text>
+
+                <DropDownPicker
+                  listMode="SCROLLVIEW"
+                  open={setsOpen}
+                  maxHeight={2000}
+                  dropDownDirection="BOTTOM"
+                  nestedScrollEnabled={true}
+                  setOpen={setSetsOpen}
+                  value={set}
+                  onSelectItem={(item)=>{
+                    if (item && item.value && item.label) {
+                      setSet(item.value);
+                      if (item.value === 'custom') {
+                        setSelectedValue(item.name);
+                      } else {
+                        setSelectedValue(item.label);
+                      }
+                    }
+                  }}
+                  items={setItems}
+                  containerStyle={{ height: 60, zIndex: 500}}
+                  style={styles.dropdown}
+                  dropDownContainerStyle={{
+                    backgroundColor: '#e0e0e0',
+                    borderColor: '#e0e0e0',
+                    borderWidth: 1,
+                  }}
+                  setItems={setSetItems}
+                  searchable={true}
+                  searchPlaceholder="Search or add..."
+                  searchTextInputProps={{
+                    onChangeText: text => setSearchText(text),
+                    value: searchText,
+                  }}
+                  placeholderStyle={{ color: 'grey', fontSize: 18 }}
+                  textStyle={{ fontSize: 18 }}
+                />
+
               <Text style={styles.label}>More Info</Text>
               <TextInput
                 style={styles.largeInput}
@@ -339,25 +542,6 @@ const ClimbInputData = (props) => {
                 multiline={true}
 
               />
-
-              <Text style={styles.label}>Set</Text>
-              <View style={styles.segmentedControlContainer}>
-                <SegmentedControl
-                  values={['Competition', 'Commercial']}
-                  tintColor="#007AFF"
-                  fontStyle={{ fontSize: 18, color: '#007AFF' }}
-                  activeFontStyle={{ fontSize: 18, color: 'black' }}
-                  style={styles.segmentedControl}
-                  selectedIndex={set === 'Competition' ? 0 : 1}  // Updated this line to set the selectedIndex based on the value of 'set'
-                  onChange={(event) => {
-                    setSet(event.nativeEvent.value);
-                  }}
-                />
-              </View>
-
-
-
-
 
               <Text style={styles.label}>Image</Text>
               <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
@@ -377,9 +561,9 @@ const ClimbInputData = (props) => {
             {
               isEditMode ?
                 (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                  <Button title="Update Climb" onPress={handleUpdateClimb} />
+                  <Button title="Update Climb" onPress={handleUpdateClimb} disabled={!name || !grade || !gym || !set}/>
                 </View>) :
-                <Button title="Add Climb" onPress={handleAddClimb} disabled={!name || !grade || !gym} />
+                <Button title="Add Climb" onPress={handleAddClimb} disabled={!name || !grade || !gym || !set} />
             }
           </SafeAreaView>
         </ScrollView>
