@@ -61,6 +61,7 @@ const SessionItem = ({data}) => {
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const { currentUser } = useContext(AuthContext);
     const [taggedWithImages, setTaggedWithImages] = useState(null);
+    const [duration, setDuration] = useState('0 minutes');
     
     // Helper function to format timestamp
     const sessionTimestamp = (timestamp) => {
@@ -161,6 +162,38 @@ const SessionItem = ({data}) => {
         return tempTimestamp;
     };
 
+
+    //To calculate the session duration for share
+    const calculateDuration = async (data) => {
+        if (data.length < 2) {
+            return;
+        }
+        try {
+            // Assuming timestamps are in milliseconds
+            const firstTap = data[0];
+            const lastTap = data[data.length - 1];
+            const lastTapItem = (await TapsApi().getTap(lastTap)).data();
+            const firstTapItem = (await TapsApi().getTap(firstTap)).data();
+            const firstTimestamp = firstTapItem.timestamp.toDate(); // Most recent
+            const lastTimestamp = lastTapItem.timestamp.toDate(); // Oldest
+        
+            // Calculate the difference in hours
+            const differenceInHours = (firstTimestamp - lastTimestamp) / (1000 * 60 * 60);
+        
+            // If the difference is less than an hour, return in minutes
+            if (differenceInHours < 1) {
+                const differenceInMinutes = Math.round((firstTimestamp - lastTimestamp) / (1000 * 60));
+                setDuration(`${differenceInMinutes} mins`);
+            }
+        
+            // Otherwise, round to the nearest half hour and return in hours
+            const roundedHours = Math.round(differenceInHours * 2) / 2;
+            setDuration(`${roundedHours} hrs`);
+        } catch (error){
+            console.error('Error while calculating duration: ', error.message);
+        }
+    };
+
     //When the data loads, fetches the image of the latest climb to display for the session
     useEffect(() => {
         const loadImages = async () => {
@@ -195,6 +228,9 @@ const SessionItem = ({data}) => {
         };
         loadImages();
         handleImageFetch();
+        if (data.climbs && data.climbs.length > 0) {
+            calculateDuration(data.climbs);
+        }
     }, [data]);
 
     const navigation = useNavigation();
@@ -254,7 +290,7 @@ const SessionItem = ({data}) => {
                         </View>
                         </View>
                         <View style={{ width: 0.5, backgroundColor: '#BBBBBB', alignSelf: 'stretch', marginVertical: 5 }}></View>
-                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { navigation.navigate('Share_Session', { climbData: { imageUrl: climbImageUrl, climbCount: (data.climbs?data.climbs.length: 0), grade: selectedData.grade } }) }}></Button></View>
+                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { navigation.navigate('Share_Session', { climbData: { imageUrl: climbImageUrl, climbCount: (data.climbs?data.climbs.length: 0), grade: selectedData.grade, duration: duration}}) }}></Button></View>
                     </View>
 
                 </View>
