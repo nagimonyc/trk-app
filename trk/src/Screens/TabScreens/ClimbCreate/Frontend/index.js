@@ -493,18 +493,7 @@ const ClimbInputData = (props) => {
                 />
               </View>
 
-              <Text style={styles.label}>More Info</Text>
-              <TextInput
-                style={styles.largeInput}
-                value={info}
-                placeholderTextColor={"#b1b1b3"}
-                onChangeText={setInfo}
-                placeholder="Enter more info"
-                multiline={true}
-
-              />
-
-                <Text style={styles.label}>Set</Text>
+              <Text style={styles.label}>Set</Text>
 
                 <DropDownPicker
                   listMode="SCROLLVIEW"
@@ -525,7 +514,7 @@ const ClimbInputData = (props) => {
                     }
                   }}
                   items={setItems}
-                  containerStyle={{ height: 60, zIndex: 1000 }}
+                  containerStyle={{ height: 60, zIndex: 500}}
                   style={styles.dropdown}
                   dropDownContainerStyle={{
                     backgroundColor: '#e0e0e0',
@@ -542,6 +531,17 @@ const ClimbInputData = (props) => {
                   placeholderStyle={{ color: 'grey', fontSize: 18 }}
                   textStyle={{ fontSize: 18 }}
                 />
+
+              <Text style={styles.label}>More Info</Text>
+              <TextInput
+                style={styles.largeInput}
+                value={info}
+                placeholderTextColor={"#b1b1b3"}
+                onChangeText={setInfo}
+                placeholder="Enter more info"
+                multiline={true}
+
+              />
 
               <Text style={styles.label}>Image</Text>
               <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
