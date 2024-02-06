@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
     const [initializing, setInitializing] = useState(true);
     const [role, setRole] = useState(null);
     const [tapCount, setTapCount] = useState(0);
+    const [isNewUser, setIsNewUser] = useState(false);
 
     async function onAuthStateChanged(user) {
         if (user) {
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
                 console.error('Error updating FCM token:', error); //Storing FCM token for push notifications, on login
             }
         }
-    
+
         setCurrentUser(user);
         if (initializing) setInitializing(false);
     }
@@ -39,12 +40,13 @@ export const AuthProvider = ({ children }) => {
         return subscriber;
     }, []);
 
+
     useEffect(() => {
         console.log('[TEST] use effect called Auth Provider 2');
         if (!currentUser) return;
-    
+
         console.log('[DATABASE] use effect called Auth Provider 2(prime)');
-    
+
         // Fetch the user's role from Firestore when currentUser changes.
         const unsubscribeUser = firestore()
             .collection('users')
@@ -53,9 +55,11 @@ export const AuthProvider = ({ children }) => {
                 const userData = documentSnapshot.data();
                 if (userData) {
                     setRole(userData?.role);
+                    // Check if the user is new and needs to complete onboarding
+                    setIsNewUser(!!userData.isNewUser); // Use double negation to convert to boolean
                 }
             });
-    
+
         // Fetch non-archived taps count
         const unsubscribeTaps = firestore()
             .collection('taps')
@@ -66,17 +70,27 @@ export const AuthProvider = ({ children }) => {
                     .length;
                 setTapCount(nonArchivedCount);
             });
-    
+
         // Detach listeners when the component unmounts
         return () => {
             unsubscribeUser();
             unsubscribeTaps();
         };
-    }, [currentUser]);    
+    }, [currentUser]);
+
+    const completeOnboarding = () => {
+        setIsNewUser(false);
+        // Update the database to reflect that the user has completed onboarding
+        const userRef = firestore().collection('users').doc(currentUser.uid);
+        userRef.update({ isNewUser: false });
+    };
+
 
     // Return the provider component
     return (
-        <AuthContext.Provider value={{ currentUser, initializing, role, tapCount }}>
+        <AuthContext.Provider value={{
+            currentUser, initializing, role, tapCount, isNewUser, completeOnboarding
+        }}>
             {children}
         </AuthContext.Provider>
     );
