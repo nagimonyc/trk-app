@@ -1,18 +1,18 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import SignInUpToggle from '../Components/SignInUpToggle';
+import SignInUp from '../Components/SignInUp';
 
 const AuthStack = createStackNavigator();
 
-function AuthNavigator() {
-    console.log('[TEST] AuthNavigator called');
+function AuthScreen() {
+    console.log('[TEST] AuthScreen called');
     return (
         <NavigationContainer>
-            <AuthStack.Navigator initialRouteName="SignInUpToggle">
+            <AuthStack.Navigator initialRouteName="SignInUp">
                 <AuthStack.Screen
-                    name="SignInUpToggle"
-                    component={SignInUpToggle}
+                    name="SignInUp"
+                    component={SignInUp}
                     options={{ headerShown: false }}
                 />
             </AuthStack.Navigator>
@@ -20,4 +20,4 @@ function AuthNavigator() {
     );
 }
 
-export default AuthNavigator;
+export default AuthScreen;
