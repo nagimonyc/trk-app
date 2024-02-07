@@ -1,22 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Swiper from 'react-native-swiper';
 import { View, Button, Text, StyleSheet } from 'react-native';
 
 // Assuming you have separate components for each slide
-import Slide1 from './Slide1';
-import Slide2 from './Slide2';
-import Slide3 from './Slide3';
-import Slide4 from './Slide4';
+import Slide1 from './slide1';
+import Slide2 from './slide2';
+import Slide3 from './slide3';
+import Slide4 from './slide4';
 import Slide5 from './slide5';
+import { AuthContext } from '../../../../Utils/AuthContext';
 
 const OnboardingScreen = ({ navigation }) => {
+    const {completeOnboarding} = useContext(AuthContext);
     const handleDone = () => {
         // Update the user's state to reflect that onboarding is complete
         // You would have a function to call here that updates the user state in your backend or context
 
         // Then navigate to the main app
         // navigation.replace('App'); // Use 'replace' to prevent going back to onboarding
-        navigation.replace('App')
+        //navigation.replace('RecordPage_stack');
+        completeOnboarding();
     };
 
     return (

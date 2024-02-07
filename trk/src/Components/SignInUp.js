@@ -48,6 +48,7 @@ const SignInUp = () => {
           nyuComp: nyuCompIsEnabled,
           timestamp: new Date(),
           username: user.email.split('@')[0],
+          isNewUser: true,
         })
         .then(() => {
           console.log('User added to Firestore');
@@ -87,6 +88,7 @@ const SignInUp = () => {
           nyuComp: nyuCompIsEnabled,
           timestamp: new Date(),
           username: userCredential.user.email.split('@')[0],
+          isNewUser: true,
         });
       }
     } catch (error) {
