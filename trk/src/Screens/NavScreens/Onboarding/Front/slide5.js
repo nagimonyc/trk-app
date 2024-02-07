@@ -1,7 +1,6 @@
 // Slide1.js
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
-import WelcomeImage from '../assets/welcome-image.png'; // Replace with your actual image path
 
 const Slide5 = () => {
     return (

@@ -30,7 +30,7 @@ function App(props) {
   if (currentUser) {
     content = isNewUser ? <OnboardingNavigator /> : <AppNavigator />;
   } else {
-    content = <AuthNavigator />;
+    content = <AuthScreen/>;
   }
 
   return (
