@@ -55,7 +55,7 @@ const FeedbackForm = ({ route }) => {
               <View style={styles.top}>
                 <View style={styles.topLeft}>
                   <View style={styles.gradeCircle}>
-                    <Text>{climbGrade}</Text>
+                    <Text style={[{color: 'black'}]}>{climbGrade}</Text>
                   </View>
                 </View>
                 <View style={styles.titleContainer}>
@@ -130,10 +130,16 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#C73B3B',
+    backgroundColor: 'white',
+    color: 'black',
+    borderColor: '#fe8100',
+    borderWidth: 1,
+    marginRight: 8,
+    padding: 8, 
+    alignItems: 'center', // Center content horizontally
+    justifyContent: 'center', 
     marginLeft: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
+ 
   },
   titleContainer: {
     flex: 5, // Take up the remaining space

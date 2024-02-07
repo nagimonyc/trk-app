@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
-import TapsApi from '../../../../api/TapsApi';
-import ClimbsApi from '../../../../api/ClimbsApi';
-
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
-
-import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { AuthContext } from '../../../../Utils/AuthContext';
 import { fetchClimbData, getTapDetails, loadImageUrl, updateTap, archiveTap, handleUpdate, onFeedback, onDefinition, getSelectedIndex } from '../Backend/ClimbDetailLogic';
@@ -229,19 +224,37 @@ function ClimbDetail(props) {
           <View style={styles.container}>
             <View style={[styles.wrapper]} >
               <SafeAreaView />
-              <View style={styles.top}>
-                <View style={styles.topLeft}>
-                  <View style={styles.gradeCircle}>
-                    <Text>{climbData.grade}</Text>
-                  </View>
-
-                  <Text style={styles.titleText}>{climbData.name}</Text>
-                </View>
+              <View style={styles.header}>
                 <View style={styles.setterCircle}>
                   {setterImageUrl ? <Image source={{ uri: setterImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
                 </View>
+                <Text style={styles.setText}>Set by Eddie P.</Text>
+                <View style={styles.button}>
+                  <TouchableOpacity  onPress={() => onFeedback(navigation, climbData, climbId)}>
+                    <Text style={[{color: '#007aff', marginLeft: 50, fontSize: 15}]}>Review this climb</Text>
+                    </TouchableOpacity>
+                </View>
+
               </View>
               <View style={styles.line}></View>
+
+              <View style={styles.verticalAlignmentContainer}>
+
+              <View style={styles.top}>
+                <View style={styles.dataPair}>
+                  <Text style={styles.subheading}>Grade</Text>
+                  <View style={styles.gradeCircle}>
+                    <Text style={[{color: 'black', alignSelf: 'center'}]}>{climbData.grade}</Text>
+                  </View>
+                  </View>
+                  <View style={styles.dataPair}>
+                  <Text style={styles.subheading}>Name</Text>
+                  <Text style={styles.titleText}>{climbData.name}</Text>
+                  </View>
+       
+
+              </View>
+
               <View style={styles.descriptorsContainer}>
                 {climbData.descriptors && climbData.descriptors.map((descriptor, index) => (
                   <TouchableOpacity
@@ -254,26 +267,27 @@ function ClimbDetail(props) {
                   </TouchableOpacity>
                 ))}
               </View>
-              <View style={styles.climbPhoto}>
-                {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} /> : <Text>Loading...</Text>}
-              </View>
 
-              <View style={{ marginTop: 20 }}>
-                <View style={styles.button}>
-                  <Button title='Review this climb' onPress={() => onFeedback(navigation, climbData, climbId)} />
-                </View>
-              </View>
+
               {climbData.info && (
                 <View style={styles.infoBox}>
-                  <Text style={styles.subheading}>Climb Info</Text>
+                  <Text style={styles.subheading}>Info</Text>
                   <Text style={styles.info}>{climbData.info}</Text>
                 </View>
               )}
+
+<View style={styles.climbPhoto}>
+                <Text style={styles.subheading}>Photo</Text>
+                {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%', borderRadius: 5 }} /> : <Text>Loading...</Text>}
+              </View>
               {role == 'climber' && <>
-                <View style={styles.button}>
-                  <Button title='Delete Tap' onPress={() => archiveTap(navigation, tapId)} color="red" />
+                <View style={[styles.button, {marginTop: 40, alignItems: 'center', marginRight: 30}]}>
+                  <TouchableOpacity  onPress={() => archiveTap(navigation, tapId)} color="red" >
+                    <Text style={[{color: '#fe0100', fontSize: 15}]}>Delete</Text>
+                  </TouchableOpacity>
                 </View>
               </>}
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -299,6 +313,14 @@ const styles = StyleSheet.create({
     borderColor: '#f2f2f2',
     borderWidth: 1.49,
   },
+  header: {
+    flexDirection: 'row',
+  },
+  verticalAlignmentContainer: {
+    marginLeft: 30,
+    width: '100%',
+
+  },
   top: {
     flexDirection: 'row',
     marginTop: 20,
@@ -309,48 +331,51 @@ const styles = StyleSheet.create({
   titleText: {
     flexShrink: 1, // To prevent text overflow
     fontWeight: 'bold',
-    marginLeft: 15,
-    fontSize: 17.57,
+    fontSize: 20,
     flexWrap: 'wrap',
     maxWidth: '60%',
     color: 'black',
   },
+ dataPair: {
+    alignItems: 'flex-start',
+    alignSelf: 'stretch', 
+    width: '50%',
 
-  topLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   gradeCircle: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#C73B3B', //this color is hardcoded for now, but needs to match the level/grading system of the gym
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: 'white',
+    color: 'black',
+    borderColor: '#fe8100',
+    borderWidth: 1,
+    marginRight: 8,
+    padding: 8, 
+    alignItems: 'center', // Center content horizontally
+    justifyContent: 'center', // Center content vertically
   },
   setterCircle: {
-    width: 90,
-    height: 90,
+    width: 40,
+    height: 40,
     borderRadius: 45,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 50,
     overflow: 'hidden',
+    marginLeft: -10,
   },
   line: {
-    width: 200,
-    height: 1,
-    borderTopWidth: 1,
+    width: '95%',
+    height: 0.5,
+    borderTopWidth: 0.5,
     borderColor: 'rgba(0, 0, 0, 0.26)',
-    marginTop: 30,
+    marginTop: 10,
   },
 
   climbPhoto: {
-    width: 197,
-    height: 287,
-    marginTop: 22,
+    width: '90%',
+    height: 400,
     backgroundColor: 'white',
     borderRadius: 3.88,
   },
@@ -369,20 +394,19 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   infoBox: {
-    paddingVertical: 15,
-    alignSelf: 'center', // Align the box itself to the center
-    paddingHorizontal: 30,
+    paddingBottom: 20,
     width: '100%', // Ensure it takes the full width if you want to center content inside
+
   },
   subheading: {
-    fontWeight: '700',
-    fontSize: 20,
-    textAlign: 'center', // Center the text inside
+    fontWeight: '300',
     color: 'black',
+    fontSize: 10,
+    marginBottom: 3,
   },
   info: {
     fontSize: 16,
-    textAlign: 'center', // Center the text inside
+
     color: 'black',
   },
   descriptorsContainer: {
@@ -402,7 +426,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e7e7e7', // Add border
   },
-
   descriptorText: {
     fontSize: 16,
     fontWeight: '600',
@@ -414,7 +437,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     height: '100%',
-  }
+  }, 
+  setText:{
+    color: 'black', 
+    fontWeight: '400', 
+    marginTop: 10, 
+    marginLeft: 5,
+    fontSize: 13,
+  },
 })
 
 export default ClimbDetail;
