@@ -692,7 +692,7 @@ PODS:
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - FirebaseAppCheckInterop (10.20.0)
+  - FirebaseAppCheckInterop (10.21.0)
   - FirebaseAuth (10.19.0):
     - FirebaseAppCheckInterop (~> 10.17)
     - FirebaseCore (~> 10.0)
@@ -700,21 +700,21 @@ PODS:
     - GoogleUtilities/Environment (~> 7.8)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
     - RecaptchaInterop (~> 100.0)
-  - FirebaseAuthInterop (10.20.0)
+  - FirebaseAuthInterop (10.21.0)
   - FirebaseCore (10.19.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.12)
     - GoogleUtilities/Logger (~> 7.12)
   - FirebaseCoreExtension (10.19.0):
     - FirebaseCore (~> 10.0)
-  - FirebaseCoreInternal (10.20.0):
+  - FirebaseCoreInternal (10.21.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
   - FirebaseFirestore (10.19.0):
     - FirebaseCore (~> 10.0)
     - FirebaseCoreExtension (~> 10.0)
     - FirebaseFirestoreInternal (~> 10.17)
     - FirebaseSharedSwift (~> 10.0)
-  - FirebaseFirestoreInternal (10.20.0):
+  - FirebaseFirestoreInternal (10.21.0):
     - abseil/algorithm (~> 1.20220623.0)
     - abseil/base (~> 1.20220623.0)
     - abseil/container/flat_hash_map (~> 1.20220623.0)
@@ -736,7 +736,7 @@ PODS:
     - FirebaseMessagingInterop (~> 10.0)
     - FirebaseSharedSwift (~> 10.0)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
-  - FirebaseInstallations (10.20.0):
+  - FirebaseInstallations (10.21.0):
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
@@ -750,8 +750,8 @@ PODS:
     - GoogleUtilities/Reachability (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - FirebaseMessagingInterop (10.20.0)
-  - FirebaseSharedSwift (10.20.0)
+  - FirebaseMessagingInterop (10.21.0)
+  - FirebaseSharedSwift (10.21.0)
   - FirebaseStorage (10.19.0):
     - FirebaseAppCheckInterop (~> 10.0)
     - FirebaseAuthInterop (~> 10.0)
@@ -875,7 +875,7 @@ PODS:
   - hermes-engine (0.72.3):
     - hermes-engine/Pre-built (= 0.72.3)
   - hermes-engine/Pre-built (0.72.3)
-  - leveldb-library (1.22.2)
+  - leveldb-library (1.22.3)
   - libevent (2.1.12)
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
@@ -1195,6 +1195,9 @@ PODS:
   - React-jsinspector (0.72.3)
   - React-logger (0.72.3):
     - glog
+  - react-native-cameraroll (7.4.0):
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
   - react-native-netinfo (11.2.1):
     - React-Core
   - react-native-nfc-manager (3.14.8):
@@ -1356,7 +1359,7 @@ PODS:
     - Firebase/Storage (= 10.19.0)
     - React-Core
     - RNFBApp
-  - RNFS (2.20.0):
+  - RNFS (2.19.0):
     - React-Core
   - RNGestureHandler (2.13.1):
     - React-Core
@@ -1452,6 +1455,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
+  - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-nfc-manager (from `../node_modules/react-native-nfc-manager`)
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -1585,6 +1589,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
+  react-native-cameraroll:
+    :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-nfc-manager:
@@ -1687,19 +1693,19 @@ SPEC CHECKSUMS:
   FBReactNativeSpec: c6bd9e179757b3c0ecf815864fae8032377903ef
   Firebase: 63ce8ece0d43743dc28eacac0c6867a2d7fd5a9d
   FirebaseAnalytics: 87513010b13b7c8610164d3602ea10571f76afc1
-  FirebaseAppCheckInterop: e81bdb1cdb82f8e0cef353ba5018a8402682032c
+  FirebaseAppCheckInterop: 69fc7d8f6a1cbfa973efb8d1723651de30d12525
   FirebaseAuth: 2492acdcd1245d841fabdf58a050d6aa07dfce3f
-  FirebaseAuthInterop: 6142981334978f7942ff0e8a6f8966c3b3c8ff37
+  FirebaseAuthInterop: b4161d3e99b05d2d528d6ee2759bc55a01976eba
   FirebaseCore: dc5c7badf99d47613c52b2e3a57a64cd187f8554
   FirebaseCoreExtension: c08d14c7b22e07994e876d837e6f58642f340087
-  FirebaseCoreInternal: efeeb171ac02d623bdaefe121539939821e10811
+  FirebaseCoreInternal: 43c1788eaeee9d1b97caaa751af567ce11010d00
   FirebaseFirestore: 9b9b21120c1a0cb4f2789ffb7fbb9138f94c47eb
-  FirebaseFirestoreInternal: 0dc0762afd68192e9d45c31d3dd3017accc84333
+  FirebaseFirestoreInternal: 7ac1e0c5b4e75aeb898dfe4b1d6d77abbac9eca3
   FirebaseFunctions: 3414721d8c0846b171dc8e388efc1d877caab2c2
-  FirebaseInstallations: 558b1da7d65afeb996fd5c814332f013234ece4e
+  FirebaseInstallations: 390ea1d10a4d02b20c965cbfd527ee9b3b412acb
   FirebaseMessaging: d322bd030a0e97398bf134746e087b88e6ba0074
-  FirebaseMessagingInterop: ffbbd63321f6a1e21dc724d382c22805c95671a0
-  FirebaseSharedSwift: 2fbf73618288b7a36b2014b957745dcdd781389e
+  FirebaseMessagingInterop: bd03eed9a75b75d882bc685f29dcdfcae29e3279
+  FirebaseSharedSwift: 19b3f709993d6fa1d84941d41c01e3c4c11eab93
   FirebaseStorage: 1e0b9c9c18fb73ee3c5728a370c0e7355f8e88e3
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
@@ -1712,7 +1718,7 @@ SPEC CHECKSUMS:
   GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
   GTMSessionFetcher: 8a1b34ad97ebe6f909fb8b9b77fba99943007556
   hermes-engine: 10fbd3f62405c41ea07e71973ea61e1878d07322
-  leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
+  leveldb-library: e74c27d8fbd22854db7cb467968a0b8aa1db7126
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
@@ -1732,6 +1738,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 59d1eb03af7d30b7d66589c410f13151271e8006
   React-jsinspector: b511447170f561157547bc0bef3f169663860be7
   React-logger: c5b527272d5f22eaa09bb3c3a690fee8f237ae95
+  react-native-cameraroll: 4fb78aee9d718d2a3e1d07670262011a88bff160
   react-native-netinfo: 8a7fd3f7130ef4ad2fb4276d5c9f8d3f28d2df3d
   react-native-nfc-manager: 15a9dd22258cb8e1a6bbb71179baf5c9137a933d
   react-native-pager-view: cf96a223846458cc7e932017636b5c6d8cc2c549
@@ -1766,7 +1773,7 @@ SPEC CHECKSUMS:
   RNFBFunctions: ecf9a0311d3f73a98e0ee3bc64118e56e481b553
   RNFBMessaging: c839473d12cbe1b042b29898177033de4214e932
   RNFBStorage: 5e6eeb6cee245301783d4338b0cd5e61002504ec
-  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
+  RNFS: fc610f78fdf8bfc89a9e5cc2f898519f4dba1002
   RNGestureHandler: 38aa38413896620338948fbb5c90579a7b1c3fde
   RNGoogleSignin: fc408799f1990a12497a32f64280c0fe353ffcc1
   RNImageCropPicker: d9616a0cb9b72e8551ff94a7a5021fbd29050aa5

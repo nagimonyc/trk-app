@@ -6,13 +6,14 @@ import { AuthProvider, AuthContext } from './Utils/AuthContext';
 import { Provider } from 'react-redux';
 import store from './reduxStore';
 import Toast from 'react-native-toast-message';
+import OnboardingNavigator from './Navigation/OnboardingNavigator';
 
 function AppWrapper() {
   //console.log('[TEST] AppWrapper called');
   return (
     <AuthProvider>
       <Provider store={store}>
-      <App />
+        <App />
       </Provider>
     </AuthProvider>
   );
@@ -22,12 +23,20 @@ function AppWrapper() {
 function App(props) {
   //console.log('[TEST] App called');
 
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, isNewUser } = useContext(AuthContext);
+
+  // Determine which navigator to show
+  let content;
+  if (currentUser) {
+    content = isNewUser ? <OnboardingNavigator /> : <AppNavigator />;
+  } else {
+    content = <AuthNavigator />;
+  }
 
   return (
     <PaperProvider>
-      {currentUser ? <AppNavigator /> : <AuthScreen />}
-      <Toast/>
+      {content}
+      <Toast />
     </PaperProvider>
   );
 }
