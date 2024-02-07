@@ -408,7 +408,7 @@ function AppTabs() {
 
   return (
     <Tab.Navigator initialRouteName="Record">
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Home"
         component={HomeStack}
         options={{
@@ -424,7 +424,7 @@ function AppTabs() {
           },
         }}
 
-      />
+      /> */}
       {role === 'climber' ? null :
         <Tab.Screen
           name="Create_Climb_Tab"
@@ -458,7 +458,7 @@ function AppTabs() {
           },
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Follow"
         component={FollowStack}
         options={{
@@ -474,7 +474,7 @@ function AppTabs() {
             );
           },
         }}
-      />
+      /> */}
       <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
