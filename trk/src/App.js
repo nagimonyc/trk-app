@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import AppNavigator from './Navigation/AppNavigator';
-import AuthNavigator from './Navigation/AuthNavigator';
+import AuthScreen from './Navigation/AuthScreen';
 import { AuthProvider, AuthContext } from './Utils/AuthContext';
 import { Provider } from 'react-redux';
 import store from './reduxStore';
