@@ -68,11 +68,14 @@ const FeedbackForm = ({ route }) => {
                   values={['1', '2', '3', '4', '5']}
                   selectedIndex={selectedIndex}
                   tintColor="#007AFF"
+                  fontStyle={{color: 'black'}}
+                  activeFontStyle={{color: 'white'}}
                   appearance='light'
                   onChange={(event) => {
                     setRating(event.nativeEvent.value);
                     setSelectedIndex(event.nativeEvent.selectedSegmentIndex);
                   }}
+                  style={{color: 'black'}}
                 />
                 <Text style={styles.subtitle}>Reason for your rating</Text>
                 <TextInput
