@@ -48,6 +48,21 @@ const styles = StyleSheet.create({
         fontSize: 10,
         padding: 5,
     },
+    shadow: {
+        flex: 1,
+        // Shadow properties for iOS
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0, // These values can be adjusted
+          height: 2, // These values can be adjusted
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+    
+        // Elevation property for Android
+        elevation: 4,
+        overflow: 'visible', // This can help ensure shadows are not clipped on Android
+      },
 });
 
 //Only Session Item relevant data is calculated here now, rest of the data is passed into Detail and Edit.
@@ -293,8 +308,8 @@ const SessionItem = ({data}) => {
     //Hardcoded Gym Name for Now
     //UI changes
     return (
-        <ScrollView contentContainerStyle={{ padding: 10 }}>
-            <View style={{ borderRadius: 10, backgroundColor: 'white' }}>
+        <ScrollView contentContainerStyle={{ padding: 10}}>
+            <View style={[styles.shadow, { borderRadius: 10, backgroundColor: 'white'}]}>
                 <TouchableOpacity onPress={() => { navigation.navigate('Session_Detail', {data: data}) }}>
                     <View style={{ height: 500, width: '100%', backgroundColor: 'white', display: 'flex', flexDirection: 'row', borderRadius: 10}}>
                         {/*<View style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
