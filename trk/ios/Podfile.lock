@@ -1359,7 +1359,7 @@ PODS:
     - Firebase/Storage (= 10.19.0)
     - React-Core
     - RNFBApp
-  - RNFS (2.19.0):
+  - RNFS (2.20.0):
     - React-Core
   - RNGestureHandler (2.13.1):
     - React-Core
@@ -1773,7 +1773,7 @@ SPEC CHECKSUMS:
   RNFBFunctions: ecf9a0311d3f73a98e0ee3bc64118e56e481b553
   RNFBMessaging: c839473d12cbe1b042b29898177033de4214e932
   RNFBStorage: 5e6eeb6cee245301783d4338b0cd5e61002504ec
-  RNFS: fc610f78fdf8bfc89a9e5cc2f898519f4dba1002
+  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 38aa38413896620338948fbb5c90579a7b1c3fde
   RNGoogleSignin: fc408799f1990a12497a32f64280c0fe353ffcc1
   RNImageCropPicker: d9616a0cb9b72e8551ff94a7a5021fbd29050aa5

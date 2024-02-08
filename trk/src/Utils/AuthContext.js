@@ -79,10 +79,11 @@ export const AuthProvider = ({ children }) => {
     }, [currentUser]);
 
     const completeOnboarding = () => {
-        setIsNewUser(false);
-        // Update the database to reflect that the user has completed onboarding
-        const userRef = firestore().collection('users').doc(currentUser.uid);
-        userRef.update({ isNewUser: false });
+        setIsNewUser(false); // Update local state
+        if (currentUser) {
+            // Update Firestore document for the current user
+            firestore().collection('users').doc(currentUser.uid).update({ isNewUser: false });
+        }
     };
 
 
