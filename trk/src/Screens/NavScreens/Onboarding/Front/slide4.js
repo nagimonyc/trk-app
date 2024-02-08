@@ -1,40 +1,54 @@
 // Slide1.js
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 
-const Slide4 = () => {
+const Slide1 = ({ onClose }) => {
     return (
-        <View style={styles.slide}>
-            <Image source={require('../../../../../assets/giphy.gif')} style={styles.image} />
-            <Text style={styles.header}>Welcome to Nagimo</Text>
-            <Text style={styles.text}>Join our climbing community and track your progress!</Text>
-        </View>
+        <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ flex: 1 }}>
+            </View >
+            <View style={{ flex: 2 }}>
+                <Image source={require('../../../../../assets/giphy.gif')} style={styles.image} />
+            </View >
+            <View style={{ flex: 1 }}>
+                <Text style={styles.header}>Enjoy our Beta</Text>
+                <Text style={styles.text}>Enjoy all your climbing memories in one place. And some bugs... too.</Text>
+                {/* And some bugs... too. */}
+                <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+                    <TouchableOpacity style={{ backgroundColor: '#FF8100', padding: 10, borderRadius: 5, marginTop: 20 }} onPress={onClose}>
+                        <Text style={{ color: 'white', fontWeight: 'bold' }}>Get Started</Text>
+                    </TouchableOpacity>
+                </View>
+            </View >
+            <View style={{ flex: 1 }}>
+            </View >
+        </SafeAreaView>
     );
 };
 
 // Add styles below
 const styles = StyleSheet.create({
-    slide: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
+    // slide: {
+    //     flex: 1,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    // },
     image: {
-        width: 300,
-        height: 300,
+        width: 250,
+        height: 250,
         marginBottom: 30,
     },
     header: {
-        fontSize: 24,
+        fontSize: 32,
         fontWeight: 'bold',
         marginBottom: 15,
+        textAlign: 'center',
     },
     text: {
-        fontSize: 18,
+        fontSize: 20,
         textAlign: 'center',
-        marginHorizontal: 40,
+        marginHorizontal: 45,
     },
 });
 
-export default Slide4;
+export default Slide1;
