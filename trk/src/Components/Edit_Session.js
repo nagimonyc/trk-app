@@ -79,6 +79,8 @@ const EditSession = ({route}) => {
     const closeModalText = () => {
     setIsModalVisibleText(false);
     };
+
+    const [addedPhotos, setAddedPhotos] = useState([]);
     
   //To fetch the climb image of the latest climb
     const loadImageUrl = async (imagePath) => {
@@ -192,12 +194,12 @@ const EditSession = ({route}) => {
         handleImageFetch();
     }, [data]);
 
-
     const EditButton = ({ onPress }) => {
         return (
             <TouchableOpacity style={styles.button} onPress={onPress}>
                 <Image source={require('./../../assets/add-photo.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                 <Text style={{color: 'black', padding: 5, fontSize: 12}}>Add Photos</Text>
+                <Text style={{color: 'black', padding: 5, fontSize: 12}}>{addedPhotos.length} Added</Text>
             </TouchableOpacity>
         );
     };
@@ -328,7 +330,14 @@ const EditSession = ({route}) => {
         if (initialImagePath !== '' && initialImagePath !== climbImageUrl) {
             try {
                 const uploadedImage = await uploadImage(climbImageUrl);
-                await SessionsApi().updateSession(data.id, {sessionImages: [uploadedImage].concat(data.sessionImages)});
+                //Load all the other images too (addPhotos)
+                let uploadedUrls = [];
+                for (let i = 1; i < addedPhotos.length ; i = i+1) { //Last Image is the uploaded one. But stored first in the array!
+                    let uploadedUrl = await uploadImage(addedPhotos[i]);
+                    console.log(uploadedUrl);
+                    uploadedUrls.push(uploadedUrl);
+                }
+                await SessionsApi().updateSession(data.id, {sessionImages: [uploadedImage].concat(uploadedUrls).concat(data.sessionImages)}); //Adds all uploaded images
                 //console.log('Image Updated!');
                 setInitialImagePath(climbImageUrl);
             } catch (error) {
@@ -352,6 +361,7 @@ const EditSession = ({route}) => {
     };
 
     const uploadImage = async (imagePath) => {
+        console.log(imagePath);
         const filename = imagePath.split('/').pop().replace(/\.jpg/gi, "").replace(/-/g, "");
         const storageRef = storage().ref(`climb_images/${filename}`);
         await storageRef.putFile(imagePath);
@@ -363,17 +373,24 @@ const EditSession = ({route}) => {
     const selectImageLogic = async () => {
         //console.log("handleImagePick called");
         try {
-        const pickedImage = await ImagePicker.openPicker({
+        let pickedImages = await ImagePicker.openPicker({
             width: 300,
             height: 400,
             cropping: true,
+            multiple: true,
         });
 
         // Save the full image path for later uploading
-        const imagePath = pickedImage.path;
+        const imagePath = (pickedImages && pickedImages.length > 0? pickedImages[0].path: null); //Last Image that you pick
 
-        // Set the image state to include the full path
-        setClimbImageUrl(imagePath);
+        if (imagePath) {
+            // Set the image state to include the full path
+            setClimbImageUrl(imagePath);
+        }
+        if (pickedImages && pickedImages.length > 0) {
+            pickedImages = pickedImages.map(obj => obj.path);
+            setAddedPhotos(prev => pickedImages.concat(prev));
+        }
 
         } catch (err) {
         console.error("Error picking image:", err);
@@ -457,7 +474,7 @@ const EditSession = ({route}) => {
   return (
     <SafeAreaView style={{flex: 1}}>
     <View style={{display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', flex: 1}}>
-      <ScrollView style={{display: 'flex', flexDirection: 'column', paddingVertical: 10, flex: 1}}>
+      <ScrollView style={{display: 'flex', flexDirection: 'column', paddingVertical: 10, flex: 1, width: '100%'}}>
         <View style={{display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', paddingVertical: 30}}>
             <TextInput style={styles.textInput} placeholder="" placeholderTextColor='black' defaultValue={initialText} onChangeText={(text) => {setSessionTitle(text.trim())}}/>
         </View>
@@ -482,6 +499,7 @@ const EditSession = ({route}) => {
                 </View>
             </CollapsibleItem>
         </View>
+        {false && (
         <View style={{display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
             <AddUserCollapsibleItem>
                 <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'column'}}>
@@ -507,7 +525,7 @@ const EditSession = ({route}) => {
                 </View>
                 </View>
             </AddUserCollapsibleItem>
-        </View>
+        </View>)}
       </ScrollView>
         <View style={{justifyContent: 'center', alignItems: 'center', padding: 10, width: '100%', paddingHorizontal: 10, backgroundColor: 'white'}}>
             <UpdateButton onPress={handleUpdateSession} text={'Update Session'}/>
