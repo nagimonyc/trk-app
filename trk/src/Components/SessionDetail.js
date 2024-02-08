@@ -21,18 +21,17 @@ import ClimbsApi from "../api/ClimbsApi";
 
 //Session data is passed here, relevant data is fetched and calculated
 const SessionDetail = ({route}) => {
-  const navigation = useNavigation();
-  let data = route.params.data;
-  if (!data) {
-    return;
-  }
-    const allImages = (data.sessionImages? data.sessionImages: []);
+    const navigation = useNavigation();
+    let data = route.params.data;
+    if (!data) {
+        return;
+    }
   
     const [selectedImage, setSelectedImage] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
 
     const [initialText, setInitialText] = useState('');
-    const [duration, setDuration] = useState('');
+
     const [selectedData, setSelectedData] = useState(null); //The tap object of the featured Climb
     const [title, setTitle] = useState(['','']);
     const [climbImageUrl, setClimbImageUrl] = useState(null);
@@ -43,6 +42,11 @@ const SessionDetail = ({route}) => {
     const [descClimbs, setDescClimbs] = useState([]);
     //NEED TO PREPARE CLIMBS FOR THE SESSION GRAPH
     //NEED TO ORDER CLIMBS FOR LISTHISTORY
+
+    //For the Images in SessionItem
+    const [allImages, setAllImages] = useState([]);
+    const [duration, setDuration] = useState('0 mins');
+    
 
     const prepClimbs = async () => {
         try  {
@@ -140,6 +144,34 @@ const SessionDetail = ({route}) => {
             //console.log('Images Fetched for Tagged Users!');
             setTaggedWithImages(usersWithImages);
     };
+
+    //To fetch the Images shown in SessionItem
+    const fetchUrl = async (path) => {
+        const url = await loadImageUrl(path);
+        return url;
+    };
+
+    const imageFetch = async (images, climbs) => {
+        let final_paths = [];
+        let image_paths = [];
+        const preloaded_images = ['climb photos/the_crag.png', 'climb photos/the_cove.gif']
+        if (images && images.length > 0) {
+            for (let i = 0; i < images.length; i++) {
+                image_paths.push(images[i].path);
+            }
+        }
+        if (climbs && climbs.length > 0) {
+            for (let i = 0; i < Math.min(2, climbs.length); i++) {
+                image_paths.push(preloaded_images[i]);
+            }
+        }
+        for (let i = 0; i < image_paths.length; i++) {
+            let path  = image_paths[i];
+            let url = await fetchUrl(path);
+            final_paths.push(url);
+        }
+       setAllImages(final_paths);
+    }
 
   const handleImagePress = useCallback((imageUrl) => {
         setSelectedImage(imageUrl);
@@ -239,6 +271,10 @@ const SessionDetail = ({route}) => {
         loadImages();
         handleImageFetch();
         prepClimbs();
+         //For the call to fetch images
+         if ((data.sessionImages && data.sessionImages.length > 0) || data.climbs && data.climbs.length > 0) {
+            imageFetch(data.sessionImages, data.climbs);
+        }
     }, [data]);
 
     const EditButton = ({ onPress }) => {
@@ -252,47 +288,64 @@ const SessionDetail = ({route}) => {
   return (
     <SafeAreaView style={{margin: 0, padding: 0, width: '100%', height:'100%'}}>
       <ScrollView style={{display: 'flex', flexDirection: 'column', paddingVertical: 10}}>
-      <View style={{height: 150, width: '100%', backgroundColor: 'transparent', borderRadius: 10, display: 'flex', flexDirection: 'row'}}>
-                <View style={{width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10}}>
-                {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%', borderRadius: 5}} /> : <ActivityIndicator color="#3498db"/>}
-                </View>
-                <View style={{width: '70%', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', paddingRight: 10, paddingVertical: 10}}>
-                    <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'flex-start'}}>
-                        <Text style={{color: 'black', fontSize: 15, fontWeight: '500'}}>{initialText}</Text>
-                        <Text style={{color: 'black', fontSize: 12}}>{title[0]}</Text>
-                        <Text style={{color: 'black', fontSize: 12}}>{title[1]}</Text>
-                    </View>
-                    <View style={{width: '100%', height: '70%', display: 'flex', flexDirection: 'row', paddingTop: 10}}>
-                        <View style={{width: '50%', padding: 10, display:'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <Text style={{color: 'black', fontSize: 25, fontWeight: '500'}}>{data.climbs.length}</Text>
-                            <Text style={{color: 'black', fontSize: 12}}>Total Climbs</Text>
-                        </View>
-                        <View style={{width: '50%', display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
-                            <View style={{marginRight: 10}}>
-                                    <ListItemSessions dotStyle={styles.climbDot} grade={(selectedData? selectedData.grade: '')}>
-                                        <Text style={styles.climbName}>{(selectedData? selectedData.name: '')}</Text>
-                                        <View>
-                                            <Text style={styles.timerInfo}>
-                                                {(selectedData && selectedData.tapTimestamp)? (timeStampFormatting(selectedData.tapTimestamp).replace(/AM|PM/i, '').trim()): ''}
-                                            </Text>
-                                        </View>
-                                    </ListItemSessions>
+        <View style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 20}}>
+            <EditButton onPress={() => {navigation.navigate('Edit_Session', {data: data, climbs: descClimbs})}}/>
+        </View>
+                <View style={{ height: 380, width: '100%', display: 'flex', flexDirection: 'row', borderRadius: 10}}>
+                        {/*<View style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+                            {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%', borderRadius: 5 }} /> : <Text style={{ color: 'black', fontSize: 8 }}>Loading...</Text>}
+                        </View> */}
+                        <View style={{ width: '100%', marginBottom:0}}>
+                            <View style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', paddingRight: 10}}>
+                                <View style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', paddingLeft: 20, flexDirection: 'row', paddingRight: 10, paddingTop: 10, height: '20%'}}>
+                                    <View style={{display: 'flex', flexDirection: 'column', paddingBottom: 10, width: '75%'}}>
+                                    <Text style={{ color: 'black', fontSize: 20, fontWeight: '500', paddingBottom: 8}}>{initialText}</Text>
+                                    <View style={{display: 'flex', flexDirection: 'row'}}><Text style={{ color: 'black', fontSize: 13, paddingRight: 10, borderRightWidth: 0.5, borderRightColor: 'black', fontWeight: '300'}}>{title[0]}</Text>
+                                    <Text style={{ color: 'black', fontSize: 13, paddingLeft: 10, paddingRight: 10, borderRightWidth: 0.5, borderRightColor: 'black', fontWeight: '300'}}>{title[1]}</Text>
+                                    <Text style={{ color: 'black', fontSize: 13, paddingLeft: 10, paddingRight: 10, fontWeight: '300'}}>Movement LIC</Text> 
+                                    </View>
+                                    </View>
+                                    <View style={{display: 'flex', flexDirection: 'row', width: '25%', paddingBottom: 5}}>
+                                    <Image source={require('../../assets/movement_rounded.png')} style={{width: '100%', height: 20, borderRadius: 10}} />
+                                    </View>
+                                </View>
+                                <View style={{height: '80%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', alignSelf: 'flex-start', paddingVertical: 10, paddingLeft: 5}}>
+                                    <FlatList
+                                            data={allImages}
+                                            horizontal={true}
+                                            renderItem={({ item }) => (
+                                                <TouchableOpacity onPress={() => {handleImagePress(item)}}>
+                                                <ImageItem imagePath={item} />
+                                                </TouchableOpacity>
+                                            )}
+                                            keyExtractor={(item, index) => index.toString()}
+                                            style={{alignSelf: 'flex-start'}}
+                                        />
+                                </View>
                             </View>
-                            <Text style={{color: 'black', padding: 5, fontSize: 12}}>Last Climb</Text>
                         </View>
                     </View>
-                </View>
-        </View>
-        <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row'}}>
-            <View style={{display: 'flex', width: '30%', height: 10}}></View>
-            <View style={{display: 'flex', width: '40%', justifyContent: 'center', alignItems: 'center', padding: 20}}>
-            <Text style={{color: 'black', fontSize: 25, fontWeight: '500'}}>{duration}</Text>
-            <Text style={{color: 'black', fontSize: 12}}>Session Duration</Text>
+        <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', paddingHorizontal: 10, paddingBottom: 10, paddingTop: 20}}>
+            <View style={{display: 'flex', width: '50%', height: 80,  borderBottomWidth: 0.5, borderBottomColor: 'black', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 15, fontWeight: '300', borderRightWidth: 0.5, borderRightColor: 'black', width: '100%', textAlign:'center'}}>Climbs</Text>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 25, fontWeight: '400', borderRightWidth: 0.5, borderRightColor: 'black', width: '100%', textAlign:'center'}}>{data.climbs.length}</Text>
             </View>
-            <View style={{display: 'flex', width: '30%', justifyContent: 'center', alignItems: 'center', padding: 20}}>
-                <EditButton onPress={() => {navigation.navigate('Edit_Session', {data: data, climbs: descClimbs})}}/>
+            <View style={{display: 'flex', width: '50%', height: 80,  borderBottomWidth: 0.5, borderBottomColor: 'black', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 15, fontWeight: '300', width: '100%', textAlign:'center'}}>Time</Text>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 25, fontWeight: '400', width: '100%', textAlign:'center'}}>{duration}</Text>
             </View>
         </View>
+        <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', paddingHorizontal: 10, paddingBottom: 10}}>
+            <View style={{display: 'flex', width: '50%', height: 80, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 15, fontWeight: '300', borderRightWidth: 0.5, borderRightColor: 'black', width: '100%', textAlign:'center'}}>Elevation</Text>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 25, fontWeight: '400', borderRightWidth: 0.5, borderRightColor: 'black', width: '100%', textAlign:'center'}}>0 m</Text>
+            </View>
+            <View style={{display: 'flex', width: '50%', height: 80, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 15, fontWeight: '300', width: '100%', textAlign:'center'}}>Best Effort</Text>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 25, fontWeight: '400', width: '100%', textAlign:'center'}}>{selectedData && selectedData.grade}</Text>
+            </View>
+        </View>
+        {false && (
         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingVertical: 10, paddingLeft: 10, paddingRight: 20}}>
             <Text style={{color: 'black', paddingRight: 10, paddingLeft: 10}}> <Image source={require('./../../assets/tag.png')} style={{ width: 25, height: 25 }}   resizeMode="contain" /></Text>
             <View style={{display:'flex', flexDirection:'row'}}>
@@ -303,31 +356,21 @@ const SessionDetail = ({route}) => {
             ))}
             </View>
             <Text style={{color: 'black', paddingHorizontal: 40}}>{taggedWithImages && (taggedWithImages.length == 1? '1 Tag': taggedWithImages.length + ' Tags')}</Text>
-        </View>
+        </View>)}
+
+
+        {/* Session Graph Section*/}
+
+        {false && (<>
         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
             <Text style={{color: 'black', paddingHorizontal: 20, fontWeight: 'bold'}}>Session Graph</Text>
         </View>
         <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 10}}>
             <SessionGraph data={climbs}/>
-        </View>
+        </View></>
+        )}
         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
-            <Text style={{color: 'black', paddingHorizontal: 20, fontWeight: 'bold'}}>{allImages.length>0? 'All Media': 'No Media'}</Text>
-        </View>
-        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 10, alignSelf:'flex-start'}}>
-            <FlatList
-                data={allImages}
-                horizontal={true}
-                renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => {handleImagePress(item.path)}}>
-                    <ImageItem imagePath={item.path} />
-                    </TouchableOpacity>
-                )}
-                keyExtractor={(item, index) => index.toString()}
-                style={{alignSelf: 'flex-start'}}
-            />
-        </View>
-        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
-            <Text style={{color: 'black', paddingHorizontal: 20, fontWeight: 'bold'}}>Climb Details</Text>
+            <Text style={{ color: 'black', fontSize: 20, fontWeight: '500', paddingBottom: 8, paddingHorizontal: 20}}>Climb Details</Text>
         </View>
         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row'}}>
             <ListHistory
@@ -355,28 +398,18 @@ const loadImageUrl = async (imagePath) => {
 };
 
 const ImageItem = ({ imagePath, isModal = false}) => {
-    const [imageUrl, setImageUrl] = useState(null);
-
-    useEffect(() => {
-        const fetchImageUrl = async () => {
-            const url = await loadImageUrl(imagePath);
-            setImageUrl(url);
-        };
-
-        fetchImageUrl();
-    }, [imagePath]);
-
+    const imageUrl = imagePath;
     if (!imageUrl) {
         // Show placeholder or spinner
         return <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: 130, height: 180}}><ActivityIndicator color="#3498db"/></View>; // Replace with your spinner or placeholder component
     }
     if (!isModal){
         return (
-            <Image source={{ uri: imageUrl }} style={{ width: 130, height: 180, marginHorizontal: 5, borderRadius: 5}} />
+            <Image source={{ uri: imageUrl }} style={{ width: 200, height: 280, marginHorizontal: 5, borderRadius: 5}} />
         );
     } else {
         return (
-            <Image source={{ uri: imageUrl }} style={{ width: 200, height: 300, borderRadius: 5}} />
+            <Image source={{ uri: imageUrl }} style={{ width: 200, height: 280, borderRadius: 5}} />
         );
     }
 };
