@@ -22,11 +22,6 @@ const Slide5 = () => {
 
 // Add styles below
 const styles = StyleSheet.create({
-    // slide: {
-    //     flex: 1,
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    // },
     image: {
         width: 250,
         height: 250,
@@ -35,7 +30,7 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 32,
         fontWeight: 'bold',
-        marginBottom: 15,
+        marginBottom: 25,
         textAlign: 'center',
     },
     text: {

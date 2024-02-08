@@ -449,7 +449,7 @@ export const useHomeScreenLogic = (props) => {
                     <Text style={styles.tapText}>Your device doesn't support NFC</Text>
                     <Animated.Image
                         source={logo}
-                        style={[styles.image, { transform: [{ scale: logoScale }], marginTop: 30}]}
+                        style={[styles.image, { transform: [{ scale: logoScale }], marginTop: 30 }]}
                         resizeMode="contain"
                     />
                 </>
@@ -458,12 +458,12 @@ export const useHomeScreenLogic = (props) => {
             return (
                 <>
                     <Text style={styles.tapText}>Your NFC is not enabled!</Text>
-                    <Image source={logo} style={styles.image, {marginTop: 30}} resizeMode="contain" />
+                    <Image source={logo} style={[styles.image, { marginTop: 30 }]} resizeMode="contain" />
                     <TouchableOpacity onPress={() => { NfcManager.goToNfcSetting(); }}>
-                        <Text style={{color: 'black'}}>GO TO NFC SETTINGS</Text>
+                        <Text style={{ color: 'black' }}>GO TO NFC SETTINGS</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={async () => { setEnabled(await NfcManager.isEnabled()); }}>
-                        <Text style={{color: 'black'}}>CHECK AGAIN</Text>
+                        <Text style={{ color: 'black' }}>CHECK AGAIN</Text>
                     </TouchableOpacity>
                 </>
             );
@@ -485,28 +485,28 @@ export const useHomeScreenLogic = (props) => {
                                 opacity: fadeAnim, // Bind opacity to animated value
                             }}
                         >
-                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 20}}>
-                            <Text style={{ color: 'black', fontSize: 15 }}>That's a tap!</Text>
-                            <IconButton
-                                icon="camera-timer"
-                                iconColor="black"
-                                size={20}
-                                style={{ position: 'absolute', end: 0 }}
-                            />
-                        </View>
+                            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+                                <Text style={{ color: 'black', fontSize: 15 }}>That's a tap!</Text>
+                                <IconButton
+                                    icon="camera-timer"
+                                    iconColor="black"
+                                    size={20}
+                                    style={{ position: 'absolute', end: 0 }}
+                                />
+                            </View>
 
-                        <ClimbItem climb={climb} tapId={tapId} tapTimestamp={timeStampFormatting(tapObj.timestamp)} fromHome={true}/>
-                        
-                        <View style={{display: 'flex', flexDirection: 'column', paddingVertical: 5}}>
-                        <View style={{ alignSelf: 'center' }}>
-                            {tapObj.isSessionStart && <Text style={{ backgroundColor: 'white', textAlign: 'center', paddingHorizontal: 5, paddingVertical: 3, fontSize: 13, borderRadius: 3, color: 'black'}}>First Tap in Session!</Text>}
-                        </View>
-                        <TouchableOpacity style={styles.navigate}
-                            onPress={() => navigation.navigate('ProfileTab')}>
-                           <Text style={styles.buttonText}>Check it out in Profile</Text>
-                           <RightArrow style={{ width: '100%', height: '100%' }} />
-                        </TouchableOpacity>
-                        </View>
+                            <ClimbItem climb={climb} tapId={tapId} tapTimestamp={timeStampFormatting(tapObj.timestamp)} fromHome={true} />
+
+                            <View style={{ display: 'flex', flexDirection: 'column', paddingVertical: 5 }}>
+                                <View style={{ alignSelf: 'center' }}>
+                                    {tapObj.isSessionStart && <Text style={{ backgroundColor: 'white', textAlign: 'center', paddingHorizontal: 5, paddingVertical: 3, fontSize: 13, borderRadius: 3, color: 'black' }}>First Tap in Session!</Text>}
+                                </View>
+                                <TouchableOpacity style={styles.navigate}
+                                    onPress={() => navigation.navigate('ProfileTab')}>
+                                    <Text style={styles.buttonText}>Check it out in Profile</Text>
+                                    <RightArrow style={{ width: '100%', height: '100%' }} />
+                                </TouchableOpacity>
+                            </View>
                         </Animated.View>
                     )}
                     <View style={{ paddingBottom: 20, justifyContent: 'center', paddingTop: 20 }}>
