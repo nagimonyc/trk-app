@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, Image, Button } from 'react-native';
+import { ScrollView, Text, Image, Button, Dimensions} from 'react-native';
 import { StyleSheet } from 'react-native';
 import { View } from 'react-native';
 import TapsApi from '../api/TapsApi';
@@ -15,6 +15,8 @@ import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Or any other icon family you prefer
 import UsersApi from "../api/UsersApi";
 import moment from 'moment-timezone';
+import { FlatList } from 'react-native-gesture-handler';
+import { ActivityIndicator } from 'react-native-paper';
 
 //FIXED SHARE TO PASS IN CLIMB DATA!
 const styles = StyleSheet.create({
@@ -61,8 +63,10 @@ const SessionItem = ({data}) => {
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const { currentUser } = useContext(AuthContext);
     const [taggedWithImages, setTaggedWithImages] = useState(null);
-    const [duration, setDuration] = useState('0 minutes');
-    
+    const [duration, setDuration] = useState('0 mins');
+
+    //For the Images in SessionItem
+    const [allImages, setAllImages] = useState([]);
     // Helper function to format timestamp
     const sessionTimestamp = (timestamp) => {
         const date = moment(timestamp).tz('America/New_York');
@@ -193,6 +197,35 @@ const SessionItem = ({data}) => {
             console.error('Error while calculating duration: ', error.message);
         }
     };
+    
+    //To fetch the Images shown in SessionItem
+    const fetchUrl = async (path) => {
+        const url = await loadImageUrl(path);
+        return url;
+    };
+
+    const imageFetch = async (images, climbs) => {
+        let final_paths = [];
+        let image_paths = [];
+        const preloaded_images = ['climb photos/the_crag.png', 'climb photos/the_cove.gif']
+        if (images && images.length > 0) {
+            for (let i = 0; i < images.length; i++) {
+                image_paths.push(images[i].path);
+            }
+        }
+        if (climbs && climbs.length > 0) {
+            for (let i = 0; i < Math.min(2, climbs.length); i++) {
+                image_paths.push(preloaded_images[i]);
+            }
+        }
+        for (let i = 0; i < image_paths.length; i++) {
+            let path  = image_paths[i];
+            let url = await fetchUrl(path);
+            final_paths.push(url);
+        }
+       setAllImages(final_paths);
+    }
+    
 
     //When the data loads, fetches the image of the latest climb to display for the session
     useEffect(() => {
@@ -231,30 +264,70 @@ const SessionItem = ({data}) => {
         if (data.climbs && data.climbs.length > 0) {
             calculateDuration(data.climbs);
         }
+        //For the call to fetch images
+        if ((data.sessionImages && data.sessionImages.length > 0) || data.climbs && data.climbs.length > 0) {
+            imageFetch(data.sessionImages, data.climbs);
+        }
     }, [data]);
 
+    //Image Loading for SessionItem
+    const ImageItem = ({ imagePath, isModal = false}) => {
+        const imageUrl = imagePath;
+        if (!imageUrl) {
+            // Show placeholder or spinner
+            return <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: 130, height: 180}}><ActivityIndicator color="#3498db"/></View>; // Replace with your spinner or placeholder component
+        }
+        if (!isModal){
+            return (
+                <Image source={{ uri: imageUrl }} style={{ width: 200, height: 280, marginHorizontal: 5, borderRadius: 5}} />
+            );
+        } else {
+            return (
+                <Image source={{ uri: imageUrl }} style={{ width: 200, height: 280, borderRadius: 5}} />
+            );
+        }
+    };
+
     const navigation = useNavigation();
+
+    //Hardcoded Gym Name for Now
+    //UI changes
     return (
         <ScrollView contentContainerStyle={{ padding: 10 }}>
             <View style={{ borderRadius: 10, backgroundColor: 'white' }}>
                 <TouchableOpacity onPress={() => { navigation.navigate('Session_Detail', {data: data}) }}>
-                    <View style={{ height: 150, width: '100%', backgroundColor: 'white', display: 'flex', flexDirection: 'row', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
-                        <View style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
+                    <View style={{ height: 500, width: '100%', backgroundColor: 'white', display: 'flex', flexDirection: 'row', borderRadius: 10}}>
+                        {/*<View style={{ width: '30%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 10 }}>
                             {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%', borderRadius: 5 }} /> : <Text style={{ color: 'black', fontSize: 8 }}>Loading...</Text>}
-                        </View>
-                        <View style={{ width: '70%', marginBottom: 20 }}>
-                            <View style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', paddingRight: 10, paddingTop: 10 }}>
-                                <View style={{ width: '100%', justifyContent: 'center', alignItems: 'flex-start' }}>
-                                    <Text style={{ color: 'black', fontSize: 15, fontWeight: '500' }}>{initialText}</Text>
-                                    <Text style={{ color: 'black', fontSize: 12 }}>{title[0]}</Text>
-                                    <Text style={{ color: 'black', fontSize: 12 }}>{title[1]}</Text>
-                                </View>
-                                <View style={{ width: '100%', height: '70%', display: 'flex', flexDirection: 'row' }}>
-                                    <View style={{ width: '50%', padding: 10, alignItems: 'center', justifyContent: 'center' }}>
-                                        <Text style={{ color: 'black', fontSize: 32, fontWeight: '500' }}>{data.climbs.length}</Text>
-                                        <Text style={{ color: 'black', fontSize: 12 }}>Total Climbs</Text>
+                        </View> */}
+                        <View style={{ width: '100%', marginBottom:0}}>
+                            <View style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', paddingRight: 10}}>
+                                <View style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', paddingLeft: 20, flexDirection: 'row', paddingRight: 10, paddingTop: 20, height: '15%'}}>
+                                    <View style={{display: 'flex', flexDirection: 'column', paddingBottom: 10, width: '75%'}}>
+                                    <Text style={{ color: 'black', fontSize: 20, fontWeight: '500', paddingBottom: 8}}>{initialText}</Text>
+                                    <View style={{display: 'flex', flexDirection: 'row'}}><Text style={{ color: 'black', fontSize: 13, paddingRight: 10, borderRightWidth: 0.5, borderRightColor: 'black', fontWeight: '300'}}>{title[0]}</Text>
+                                    <Text style={{ color: 'black', fontSize: 13, paddingLeft: 10, paddingRight: 10, borderRightWidth: 0.5, borderRightColor: 'black', fontWeight: '300'}}>{title[1]}</Text>
+                                    <Text style={{ color: 'black', fontSize: 13, paddingLeft: 10, paddingRight: 10, fontWeight: '300'}}>Movement LIC</Text> 
                                     </View>
-                                    <View style={{ width: '50%', justifyContent: 'center', alignItems: 'center' }}>
+                                    </View>
+                                    <View style={{display: 'flex', flexDirection: 'row', width: '25%', paddingBottom: 5}}>
+                                    <Image source={require('../../assets/movement_rounded.png')} style={{width: '100%', height: 20, borderRadius: 10}} />
+                                    </View>
+                                </View>
+                                <View style={{ width: '100%', height: '25%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-start', paddingTop: 40, paddingBottom: 10}}>
+                                    <View style={{ width: '27%', alignItems: 'center', justifyContent: 'center'}}>
+                                        <Text style={{ color: 'black', fontSize: 15, width: '100%', textAlign: 'left', fontWeight: '300', paddingHorizontal: 20}}>Climbs</Text>
+                                        <Text style={{ color: 'black', fontSize: 28, fontWeight: '400', width: '100%', textAlign: 'left', borderRightWidth: 0.5, borderRightColor: 'black', paddingHorizontal: 20}}>{data.climbs.length}</Text>
+                                    </View>
+                                    <View style={{ width: '40%', alignItems: 'center', justifyContent: 'center'}}>
+                                        <Text style={{ color: 'black', fontSize: 15, width: '100%', textAlign: 'left', fontWeight: '300', paddingHorizontal: 20}}>Time</Text>
+                                        <Text style={{ color: 'black', fontSize: 28, fontWeight: '400', width: '100%', textAlign: 'left', borderRightWidth: 0.5, borderRightColor: 'black', paddingHorizontal: 20}}>{duration}</Text>
+                                    </View>
+                                    <View style={{ width: '33%', alignItems: 'center', justifyContent: 'center'}}>
+                                        <Text style={{ color: 'black', fontSize: 15, width: '100%', textAlign: 'left', fontWeight: '300', paddingHorizontal: 20}}>Best Effort</Text>
+                                        <Text style={{ color: 'black', fontSize: 28, fontWeight: '400', width: '100%', textAlign: 'left', paddingHorizontal: 20}}>{selectedData? selectedData.grade: 'V1'}</Text>
+                                    </View>
+                                    {false && (<View style={{ width: '50%', justifyContent: 'center', alignItems: 'center' }}>
                                         <View style={{ marginRight: 10 }}>
                                             <ListItemSessions dotStyle={styles.climbDot} grade={(selectedData? selectedData.grade: '')}>
                                                 <Text style={styles.climbName}>{(selectedData? selectedData.name: '')}</Text>
@@ -266,17 +339,32 @@ const SessionItem = ({data}) => {
                                             </ListItemSessions>
                                         </View>
                                         <Text style={{ color: 'black', padding: 5, fontSize: 12 }}>Last Climb</Text>
-                                    </View>
+                                    </View>)}
+                                </View>
+                                <View style={{height: '60%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', alignSelf: 'flex-start', paddingVertical: 10, paddingLeft: 10}}>
+                                    <FlatList
+                                        data={allImages}
+                                        horizontal={true}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity onPress={() => {/*handleImagePress(item.path)*/}}>
+                                            <ImageItem imagePath={item} />
+                                            </TouchableOpacity>
+                                        )}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        style={{alignSelf: 'flex-start'}}
+                                    />
                                 </View>
                             </View>
-                            <View style={{ height: 0.5, backgroundColor: '#BBBBBB', width: '90%', alignSelf: 'center' }} />
                         </View>
                     </View>
                 </TouchableOpacity>
-                <View style={{ height: 45, flexDirection: 'row', marginTop: -5 }}>
-                    <View style={{ width: '30%' }}>
-                    </View>
-                    <View style={{ width: '70%', flexDirection: 'row', height: '100%' }}>
+                <View style={{ height: 45, flexDirection: 'row'}}>
+                    {false && (<View style={{ width: '30%' }}>
+                    </View>)}
+                    <View style={{ width: '100%', flexDirection: 'row', height: '100%'}}>
+                        
+                        
+                        {false && (<>
                         <View style={{ justifyContent: 'flex-start', width: '60%', alignItems: 'center', padding: 0}}>
                         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingLeft: 10, paddingRight: 20}}>
                             <Text style={{color: 'black', paddingRight: 10}}><Image source={require('./../../assets/tag.png')} style={{ width: 20, height: 20 }}  resizeMode="contain" /></Text>
@@ -289,10 +377,19 @@ const SessionItem = ({data}) => {
                             </ScrollView>
                         </View>
                         </View>
-                        <View style={{ width: 0.5, backgroundColor: '#BBBBBB', alignSelf: 'stretch', marginVertical: 5 }}></View>
-                        <View style={{ justifyContent: 'center', width: '40%', height: '100%', alignItems: 'center' }}><Button title="share" onPress={() => { navigation.navigate('Share_Session', { climbData: { imageUrl: climbImageUrl, climbCount: (data.climbs?data.climbs.length: 0), grade: selectedData.grade, duration: duration}}) }}></Button></View>
-                    </View>
-
+                        <View style={{ width: 0.5, backgroundColor: '#BBBBBB', alignSelf: 'stretch', marginVertical: 5 }}></View></>)}
+                        <View style={{ justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center'}}>
+                        <TouchableOpacity
+                            style={{width: Dimensions.get('window').width-20, height: '100%', borderBottomRightRadius: 10, borderBottomLeftRadius: 10, justifyContent: 'center', alignItems: 'center', backgroundColor: '#e5e5e5'}}
+                            onPress={() => { navigation.navigate('Share_Session', { climbData: { imageUrl: climbImageUrl, climbCount: (data.climbs?data.climbs.length: 0), grade: selectedData.grade, duration: duration}}) }}
+                        >
+                            <Image
+                            source={require('../../assets/share.png')}
+                            style={{height: 30, width: 23.2}}
+                            />
+                        </TouchableOpacity>
+                        </View>
+                        </View>
                 </View>
             </View>
         </ScrollView >
