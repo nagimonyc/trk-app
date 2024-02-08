@@ -436,7 +436,7 @@ export const useHomeScreenLogic = (props) => {
                     <Text style={styles.tapText}>Your device doesn't support NFC</Text>
                     <Animated.Image
                         source={logo}
-                        style={[styles.image, { transform: [{ scale: logoScale }] }]}
+                        style={[styles.image, { transform: [{ scale: logoScale }], marginTop: 30}]}
                         resizeMode="contain"
                     />
                 </>
@@ -445,12 +445,12 @@ export const useHomeScreenLogic = (props) => {
             return (
                 <>
                     <Text style={styles.tapText}>Your NFC is not enabled!</Text>
-                    <Image source={logo} style={styles.image} resizeMode="contain" />
+                    <Image source={logo} style={styles.image, {marginTop: 30}} resizeMode="contain" />
                     <TouchableOpacity onPress={() => { NfcManager.goToNfcSetting(); }}>
-                        <Text>GO TO NFC SETTINGS</Text>
+                        <Text style={{color: 'black'}}>GO TO NFC SETTINGS</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={async () => { setEnabled(await NfcManager.isEnabled()); }}>
-                        <Text>CHECK AGAIN</Text>
+                        <Text style={{color: 'black'}}>CHECK AGAIN</Text>
                     </TouchableOpacity>
                 </>
             );
@@ -490,7 +490,7 @@ export const useHomeScreenLogic = (props) => {
                         </View>
                         <TouchableOpacity style={styles.navigate}
                             onPress={() => navigation.navigate('ProfileTab')}>
-                           <Text style={styles.buttonText}>Check it out</Text>
+                           <Text style={styles.buttonText}>Check it out in Profile</Text>
                            <RightArrow style={{ width: '100%', height: '100%' }} />
                         </TouchableOpacity>
                         </View>
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         display: 'flex',
         flexDirection: 'row',
-        width: '50%',
+        width: '65%',
         alignSelf: 'center',
     },
     buttonText: {
