@@ -205,7 +205,7 @@ const SessionTapHistory = (props) => {
                                 </View>
                             </View>
                         )}
-                        {(props.isCurrent && climbs && climbs.length == 0) && (
+                        {false && (props.isCurrent && climbs && climbs.length == 0) && (
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                                 <Text style={{color: 'black', fontWeight: 'bold'}}>No active session</Text>
                                 <View style={{padding: 5, borderRadius: 5, borderWidth: 1, borderColor: '#fe8100'}}>
@@ -216,7 +216,7 @@ const SessionTapHistory = (props) => {
                     </View>
                     {(props.isCurrent && climbs && climbs.length > 0) && 
                         (<View style={{display:'flex', flexDirection: 'column', width: '100%'}}>
-                        
+                        {false && (
                         <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 10}}>
                             <View style={{display:'flex', width:'20%', paddingHorizontal: 10, justifyContent: 'center', alignItems: 'center'}}>
                                 <Text style={{color: 'black', fontWeight: '400'}}>{tagged.length} Tag{tagged.length!=1? 's': ''}</Text>
@@ -227,7 +227,7 @@ const SessionTapHistory = (props) => {
                             <View style={{display:'flex', width:'40%', paddingHorizontal: 10}}>
                             <TagButton onPress={openModal} />
                             </View>
-                        </View>
+                        </View>)}
                         
                         <ListHistory
                         data={climbs}
