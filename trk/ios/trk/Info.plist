@@ -32,6 +32,14 @@
 				<string>com.nagimo.trk</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.786555738802-njd05j9c61cv8ou41hmcub0p7l711n29</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
@@ -50,6 +58,16 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Nagimo needs access to your Camera.</string>
+	<key>NSFileProviderDomainUsageDescription</key>
+	<string>Share climb performance image</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Nagimo needs access to your Microphone.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Nagimo requires access to the photo library to save images.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Nagimo requires access to the photo library to share images.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>MaterialCommunityIcons.ttf</string>
@@ -60,31 +78,11 @@
 	<array>
 		<string>armv7</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Using photo library capabilities to add user photos to climbs</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Using camera capabilities to capture image of climb to add to climb tag</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSFileProviderDomainUsageDescription</key>
-	<string>Share climb performance image</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Share climb performance image for sports</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Nagimo needs access to your Camera.</string>
-
-	<!-- optionally, if you want to record audio: -->
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Nagimo needs access to your Microphone.</string>
-	
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Nagimo requires access to the photo library to save images.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Nagimo requires access to the photo library to share images.</string>
-
 </dict>
 </plist>
