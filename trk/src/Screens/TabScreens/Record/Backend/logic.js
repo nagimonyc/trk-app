@@ -27,17 +27,6 @@ import moment from 'moment-timezone';
 //Only altered CSS with the integration of the dynamic text (UI impact only)
 export const useHomeScreenLogic = (props) => {
 
-    const { isNewUser, completeOnboarding } = useContext(AuthContext);
-    const [showOnboarding, setShowOnboarding] = useState(isNewUser);
-
-    const handleCloseOnboarding = () => {
-        setShowOnboarding(false);
-        completeOnboarding(); // Call this function to update the user's isNewUser status in your AuthContext and Firestore
-    };
-    const handleHelpPress = () => {
-        setShowOnboarding(true); // Re-open the onboarding modal
-    };
-
 
     // Animation
     const logoScale = useRef(new Animated.Value(1)).current;
@@ -526,9 +515,6 @@ export const useHomeScreenLogic = (props) => {
     return {
         renderNfcButtons,
         androidPromptRef,
-        handleHelpPress,
-        showOnboarding,
-        handleCloseOnboarding
     };
 };
 //Have leveraged the abilities of the new session mock object

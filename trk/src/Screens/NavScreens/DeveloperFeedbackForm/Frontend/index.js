@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView, Touchable } from "react-native";
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from "../../../../Utils/AuthContext";
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,7 @@ const DeveloperFeedbackForm = () => {
   const { currentUser } = useContext(AuthContext);
   const [response, setResponse] = useState('');
   const [canContact, setCanContact] = useState(false);
+  const { resetOnboarding } = useContext(AuthContext);
 
   const handleFeedbackSubmit = async () => {
     // Check if feedback is empty
@@ -40,7 +41,15 @@ const DeveloperFeedbackForm = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <View style={styles.wrapper}>
+        <View style={{ justifyContent: 'center', alignItems: 'center', height: '50%' }}>
+          <TouchableOpacity style={styles.button} onPress={() => {
+            resetOnboarding(); // Optionally reset onboarding state if needed
+            navigation.navigate('RecordPage_stack', { showOnboardingModal: true }); // Adjust the screen name if necessary
+          }}>
+            <Text style={{ fontSize: 20 }}>Rewatch Onboarding Tutorial</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.wrapper]}>
           <TextInput
             style={styles.input}
             multiline
@@ -57,8 +66,8 @@ const DeveloperFeedbackForm = () => {
           </TouchableOpacity>
           <Button title="Submit Feedback" onPress={handleFeedbackSubmit} />
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </ScrollView >
+    </SafeAreaView >
   );
 };
 
@@ -118,6 +127,20 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     fontSize: 16,
     color: 'black', // Checkbox label text color
+  },
+  button: {
+    // Style your button
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 180,
+    borderColor: '#fe8100',
+    display: 'flex',
+    flexDirection: 'column',
+    borderStyle: 'dashed'
   },
 });
 
