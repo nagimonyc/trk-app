@@ -49,12 +49,13 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
 const styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
-    padding: 10,
     borderRadius: 5,
     marginRight: 10,
     marginLeft: 10,
     borderColor: '#4c6a78',
-    borderWidth: 1
+    borderWidth: 1, 
+    height: 24,
+    width: 63,
   },
   button_tracker: {
     backgroundColor: 'white',
@@ -68,6 +69,8 @@ const styles = StyleSheet.create({
   text: {
     color: '#4c6a78',
     textAlign: 'center',
+    fontSize: 10,
+    marginTop: 4,
   },
   text_tracker: {
     color: '#fe8100',
