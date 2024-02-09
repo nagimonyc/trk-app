@@ -122,13 +122,8 @@ const SignInUp = () => {
     const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
 
     const userCredential = await auth().signInWithCredential(appleCredential);
-    if (userCredential.additionalUserInfo.isNewUser) {
-      firestore().collection('users').doc(userCredential.user.uid).set({
-        email: userCredential.user.email,
-        uid: userCredential.user.uid,
-        // Add additional user info as required
-      });
-    }
+    //To handle user object creation
+    manageFirestoreUserData(userCredential);
   }
 
   const handleForgotPassword = () => {
