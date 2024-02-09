@@ -3,7 +3,7 @@ import { View, Dimensions } from 'react-native';
 import { Svg, Path, Circle, Text as SVGText, Defs, LinearGradient, Stop} from 'react-native-svg';
 
 const LineGraphComponent = ({ data }) => {
-    if (!data || data.length === 0) {
+    if (!data || data.length < 2) {
         return null;
     }
 

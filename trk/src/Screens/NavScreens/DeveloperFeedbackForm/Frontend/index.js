@@ -46,7 +46,7 @@ const DeveloperFeedbackForm = () => {
             resetOnboarding(); // Optionally reset onboarding state if needed
             navigation.navigate('RecordPage_stack', { showOnboardingModal: true }); // Adjust the screen name if necessary
           }}>
-            <Text style={{ fontSize: 20 }}>Rewatch Onboarding Tutorial</Text>
+            <Text style={{ fontSize: 20, color: 'black'}}>Rewatch Onboarding Tutorial</Text>
           </TouchableOpacity>
         </View>
         <View style={[styles.wrapper]}>
