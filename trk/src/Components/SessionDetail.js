@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback, useMemo} from "react";
-import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView, Dimensions } from "react-native";
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from "../Utils/AuthContext";
 import { useNavigation } from '@react-navigation/native';
@@ -406,7 +406,7 @@ const ImageItem = ({ imagePath, isModal = false}) => {
         );
     } else {
         return (
-            <Image source={{ uri: imageUrl }} style={{ width: 200, height: 280, borderRadius: 5}} />
+            <Image source={{ uri: imageUrl }} style={{ width: Dimensions.get('window').width - 50, height: Dimensions.get('window').height/1.5, borderRadius: 5}} />
         );
     }
 };
