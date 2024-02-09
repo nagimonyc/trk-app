@@ -5,6 +5,7 @@
 #import <UserNotifications/UserNotifications.h>
 #import <FirebaseMessaging/FirebaseMessaging.h>
 #import <React/RCTBridge.h>
+#import <GoogleSignIn/GoogleSignIn.h>
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 @end
@@ -47,6 +48,11 @@
 
 // Open URLs
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+  // Add the Google Sign-In handler within this method
+  if ([[GIDSignIn sharedInstance] handleURL:url]) {
+    return YES;
+  }
+
   return [RCTLinkingManager application:application openURL:url options:options];
 }
 
