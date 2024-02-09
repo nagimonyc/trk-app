@@ -362,12 +362,20 @@ function AnalyticsStack() {
         options={({ navigation }) => ({
           title: 'My Gym',
           headerBackTitleVisible: false,
+          headerTitleAlign: 'center',
           headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row'}}>
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               />
+            </View>
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}
@@ -400,12 +408,20 @@ function ClimbInputStackScreen() {
         name="Create Climb"
         component={ClimbInputData}
         options={({ navigation }) => ({
+          headerTitleAlign: 'center',
           headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row'}}>
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               />
+            </View>
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}
