@@ -59,6 +59,18 @@ function SessionsApi() {
         .get();
     }
 
+    
+    // To get weekly climbs
+    function getLastWeekSessionsObjects(userId) {
+        const oneWeekAgo = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)); //A week ago
+        let query = ref
+            .where('user', '==', userId)
+            .where('archived', '==', false)
+            .where("timestamp", '>=', oneWeekAgo) // Filter for sessions from the past week
+            .orderBy("timestamp", "desc");
+        return query.get();
+    }    
+
     return {
         addSession,
         getLastUserSession,
@@ -66,6 +78,7 @@ function SessionsApi() {
         getRecentFiveSessionsObjects,
         getTotalSessionCount,
         getSessionByTap,
+        getLastWeekSessionsObjects,
     };
 }
 

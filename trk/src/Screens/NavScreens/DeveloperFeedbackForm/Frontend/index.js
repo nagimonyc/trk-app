@@ -64,7 +64,9 @@ const DeveloperFeedbackForm = () => {
             </View>
             <Text style={styles.checkboxLabel}>I agree to be contacted for further feedback</Text>
           </TouchableOpacity>
-          <Button title="Submit Feedback" onPress={handleFeedbackSubmit} />
+          <TouchableOpacity  onPress={handleFeedbackSubmit}>
+                    <Text style={[{color: '#007aff', fontSize: 15, alignSelf: 'center', paddingTop: 10}]}>Submit Feedback</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView >
     </SafeAreaView >

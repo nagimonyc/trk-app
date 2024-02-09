@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useCallback, useMemo} from "react";
-import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
+import { View, Text, Button, TextInput, StyleSheet, Alert, TouchableOpacity, ScrollView, SafeAreaView, Dimensions } from "react-native";
 import firestore from '@react-native-firebase/firestore';
 import { AuthContext } from "../Utils/AuthContext";
 import { useNavigation } from '@react-navigation/native';
@@ -18,6 +18,7 @@ import moment from "moment-timezone";
 import TapsApi from "../api/TapsApi";
 import SessionsApi from "../api/SessionsApi";
 import ClimbsApi from "../api/ClimbsApi";
+import LineGraphComponent from "./LineGraphComponent";
 
 //Session data is passed here, relevant data is fetched and calculated
 const SessionDetail = ({route}) => {
@@ -102,11 +103,8 @@ const SessionDetail = ({route}) => {
         if (data.name && data.name.trim() !== '') {
             setInitialText(data.name);
         }
-        if (data.climbs) {
-            const value = (await calculateDuration(data.climbs));
-            if (value){
-                setDuration(value);
-            }
+        if (data.climbs && data.climbs.length > 0) {
+            calculateDuration(data.climbs);
         }
         const tagged = (data.taggedUsers? data.taggedUsers: []);
         let combinedUsers = [];
@@ -190,35 +188,36 @@ const SessionDetail = ({route}) => {
         }
     };
 
-    const calculateDuration = async (data) => {
-        if (data.length < 2) {
-            return '0 minutes';
+ //To calculate the session duration for share
+ const calculateDuration = async (data) => {
+    if (data.length < 2) {
+        return;
+    }
+    try {
+        // Assuming timestamps are in milliseconds
+        const firstTap = data[0];
+        const lastTap = data[data.length - 1];
+        const lastTapItem = (await TapsApi().getTap(lastTap)).data();
+        const firstTapItem = (await TapsApi().getTap(firstTap)).data();
+        const firstTimestamp = firstTapItem.timestamp.toDate(); // Most recent
+        const lastTimestamp = lastTapItem.timestamp.toDate(); // Oldest
+    
+        // Calculate the difference in hours
+        const differenceInHours = (firstTimestamp - lastTimestamp) / (1000 * 60 * 60);
+    
+        // If the difference is less than an hour, return in minutes
+        if (differenceInHours < 1) {
+            const differenceInMinutes = Math.round((firstTimestamp - lastTimestamp) / (1000 * 60));
+            setDuration(`${differenceInMinutes} mins`);
         }
-        try {
-            // Assuming timestamps are in milliseconds
-            const firstTap = data[0];
-            const lastTap = data[data.length - 1];
-            const lastTapItem = (await TapsApi().getTap(lastTap)).data();
-            const firstTapItem = (await TapsApi().getTap(firstTap)).data();
-            const firstTimestamp = firstTapItem.timestamp.toDate(); // Most recent
-            const lastTimestamp = lastTapItem.timestamp.toDate(); // Oldest
-        
-            // Calculate the difference in hours
-            const differenceInHours = (firstTimestamp - lastTimestamp) / (1000 * 60 * 60);
-        
-            // If the difference is less than an hour, return in minutes
-            if (differenceInHours < 1) {
-                const differenceInMinutes = Math.round((firstTimestamp - lastTimestamp) / (1000 * 60));
-                return `${differenceInMinutes} mins`;
-            }
-        
-            // Otherwise, round to the nearest half hour and return in hours
-            const roundedHours = Math.round(differenceInHours * 2) / 2;
-            return `${roundedHours} hrs`;
-        } catch (error){
-            console.error('Error while calculating duration: ', error.message);
-        }
-    };
+    
+        // Otherwise, round to the nearest half hour and return in hours
+        const roundedHours = Math.round(differenceInHours * 2) / 2;
+        setDuration(`${roundedHours} hrs`);
+    } catch (error){
+        console.error('Error while calculating duration: ', error.message);
+    }
+};
     
     
     
@@ -360,16 +359,14 @@ const SessionDetail = ({route}) => {
 
 
         {/* Session Graph Section*/}
-
-        {false && (<>
-        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
-            <Text style={{color: 'black', paddingHorizontal: 20, fontWeight: 'bold'}}>Session Graph</Text>
+        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 15}}>
+            <Text style={{ color: 'black', fontSize: 20, fontWeight: '500', paddingBottom: 0, paddingHorizontal: 20}}>Session Progress</Text>
         </View>
-        <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 10}}>
-            <SessionGraph data={climbs}/>
-        </View></>
-        )}
-        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 10}}>
+        <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 15}}>
+            <LineGraphComponent data={climbs}/>
+        </View>
+        
+        <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row', paddingTop: 15}}>
             <Text style={{ color: 'black', fontSize: 20, fontWeight: '500', paddingBottom: 8, paddingHorizontal: 20}}>Climb Details</Text>
         </View>
         <View style={{width: '100%', justifyContent:'flex-start', display:'flex', alignItems: 'center', flexDirection: 'row'}}>
@@ -409,7 +406,7 @@ const ImageItem = ({ imagePath, isModal = false}) => {
         );
     } else {
         return (
-            <Image source={{ uri: imageUrl }} style={{ width: 200, height: 280, borderRadius: 5}} />
+            <Image source={{ uri: imageUrl }} style={{ width: Dimensions.get('window').width - 50, height: Dimensions.get('window').height/1.5, borderRadius: 5}} />
         );
     }
 };

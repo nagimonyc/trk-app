@@ -14,6 +14,7 @@ import { RefreshControl, ScrollView} from 'react-native';
 import UsersApi from "../../../../api/UsersApi";
 import storage from '@react-native-firebase/storage';
 import SessionsApi from "../../../../api/SessionsApi";
+import LineGraphComponent from "../../../../Components/LineGraphComponent";
 
 //MADE CHANGES TO NOW SHOW USERNAME AND PROFILE PIC (WITH EDIT BUTTON TO LEAD TO EDITING PAGE)
 //Revamped how sessions are created (Only last 5 sessions are fetched as of now)- Next PR will implement pagination
@@ -41,6 +42,127 @@ const ClimberProfile = ({ navigation }) => {
     const [lastLoadedClimb, setLastLoadedClimb] = useState(null);
     const [loadingMore, setLoadingMore] = useState(false);
 
+
+    //For Tabs (Activity and Progress)
+    const [activeTab, setActiveTab] = useState('Activity');
+    const [sessionsThisWeek, setSessionsThisWeek] = useState([]);
+    const [climbsThisWeek, setClimbsThisWeek] = useState([]);
+    const [timeThisWeek, setTimeThisWeek] = useState('0m');
+    const [gradeThisWeek, setGradeThisWeek] = useState('V0');
+
+     // Define the tab switcher component
+     const TabSwitcher = () => (
+        <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 30, backgroundColor: 'white'}}>
+            <TouchableOpacity 
+                style={[styles.tabButton, activeTab === 'Activity' ? styles.tabActive : {}]}
+                onPress={() => setActiveTab('Activity')}
+            >
+                <Text style={[activeTab === 'Activity'? styles.activeTabText: styles.tabText]}>ACTIVITY</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                style={[styles.tabButton, activeTab === 'Progress' ? styles.tabActive : {}]}
+                onPress={() => setActiveTab('Progress')}
+            >
+                <Text style={[activeTab === 'Activity'? styles.tabText: styles.activeTabText]}>PROGRESS</Text>
+            </TouchableOpacity>
+        </View>
+    );
+
+    useEffect(() => {
+        if (climbsThisWeek && climbsThisWeek.length > 0) {
+          // Sort the climbs by grade lexicographically in descending order
+          const sorted = climbsThisWeek.slice().sort((a, b) => {
+            // Assuming that the grade property is a string and can be compared lexicographically
+            return b.grade.localeCompare(a.grade);
+          });
+          // Set the highest grade
+          setGradeThisWeek(sorted[0].grade);
+        }
+      }, [climbsThisWeek]);
+
+
+    //To prepare climbs to be displayed (for the week) 
+    const prepClimbs = async (data) => {
+        try  {
+            const tapsPromises = data.climbs.map(tapId => TapsApi().getTap(tapId));
+            const tapsData = await Promise.all(tapsPromises);
+            const promise = tapsData.map(tap => ClimbsApi().getClimb(tap.data().climb));
+            const recentSnapshot = await Promise.all(promise);
+            const recentSessionStarts = recentSnapshot.map((climbSnapshot, index) => {
+                if (!climbSnapshot.exists) return null;
+                return { ...climbSnapshot.data(), tapId: tapsData[index].id, tapTimestamp: tapsData[index].data().timestamp};
+            }).filter(climb => climb !== null);
+            setClimbsThisWeek(prev => prev.concat(recentSessionStarts));
+        } catch (error) {
+            console.error('Error while preparing climbs: ', error.message);
+        }
+    };
+
+    //To calculate the session duration for Progress
+    const calculateDuration = async (data) => {
+        try {
+            // Assuming timestamps are in milliseconds
+            const firstTap = data[0];
+            const lastTap = data[data.length - 1];
+
+            //Timestamp and ExpiryTime Exits in Session Objects!
+            //const lastTapItem = (await TapsApi().getTap(lastTap)).data();
+            //const firstTapItem = (await TapsApi().getTap(firstTap)).data();
+            const lastTimestamp = firstTap.timestamp.toDate(); // Most recent
+            const firstTimestamp = lastTap.expiryTime.toDate(); // Oldest
+        
+            // Calculate the difference in hours
+            const differenceInHours = (firstTimestamp - lastTimestamp) / (1000 * 60 * 60);
+        
+            // If the difference is less than an hour, return in minutes
+            if (differenceInHours < 1) {
+                const differenceInMinutes = Math.round((firstTimestamp - lastTimestamp) / (1000 * 60));
+                setTimeThisWeek(`${differenceInMinutes} mins`);
+            }
+        
+            // Otherwise, round to the nearest half hour and return in hours
+            const roundedHours = Math.round(differenceInHours * 2) / 2;
+            setTimeThisWeek(`${roundedHours} hrs`);
+        } catch (error){
+            console.error('Error while calculating duration: ', error.message);
+        }
+    };
+
+
+    //Display for the Progress Tab
+    const ProgressContent = () => (
+        <View style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingBottom: 20, paddingTop: 10}}>
+            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold'}}>This Week</Text>
+            <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 15}}>
+                <LineGraphComponent data={climbsThisWeek}/>
+            </View>
+            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold'}}>Total</Text>
+            <View style={{ backgroundColor: 'white', paddingHorizontal: 15, display: 'flex', width: '100%', marginTop: 20, paddingVertical: 5}}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
+                            <Text style={{ fontSize: 15, color: 'black' }}>Sessions</Text>
+                            <Text style={{ fontSize: 15, color: 'black' }}>{sessionsThisWeek.length}</Text>
+                        </View>
+                        <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
+                            <Text style={{ fontSize: 15, color: 'black' }}>Climbs</Text>
+                            <Text style={{ fontSize: 15, color: 'black' }}>{climbsThisWeek.length}</Text>
+                        </View>
+                        <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
+                            <Text style={{ fontSize: 15, color: 'black' }}>Time</Text>
+                            <Text style={{ fontSize: 15, color: 'black' }}>{timeThisWeek}</Text>
+                        </View>
+                        <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8 }}>
+                            <Text style={{ fontSize: 15, color: 'black' }}>Best Effort</Text>
+                            <Text style={{ fontSize: 15, color: 'black' }}>{gradeThisWeek}</Text>
+                        </View>
+            </View>
+            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 20, fontWeight: '300', textAlign:'center', width: '100%'}}>More features coming soon.</Text>
+            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 5, fontWeight: '300', textAlign:'center', width: '100%'}}>Any suggestions? Leave them in feedback!</Text>
+        </View>
+    );
+
     useFocusEffect(
         React.useCallback(() => {
             //console.log('Loading Profile...'); //Loading icon on initial loads (was confusing, and seemed like data was missing otherwise)
@@ -67,7 +189,19 @@ const ClimberProfile = ({ navigation }) => {
             let recentSessionObjects = (await SessionsApi().getRecentFiveSessionsObjects(currentUser.uid));
             const recentSessionObjectsFiltered = recentSessionObjects.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             //No need to fetch Climb data, can be done in Session Detail
-            
+
+            //Get Weekly Session Objects (Progress)
+            let weeklySessionObjects = (await SessionsApi().getLastWeekSessionsObjects(currentUser.uid));
+            const weeklySessionObjectsFiltered = weeklySessionObjects.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setClimbsThisWeek([]);
+            for (let i = 0; i <weeklySessionObjectsFiltered.length; i=i+1) {
+                if (weeklySessionObjectsFiltered[i].climbs)
+                prepClimbs(weeklySessionObjectsFiltered[i]);
+            }
+            if (weeklySessionObjectsFiltered && weeklySessionObjectsFiltered.length > 0) {
+                calculateDuration(weeklySessionObjectsFiltered);
+            }
+
             //Getting Current Session Object
             const lastUserSession = (await SessionsApi().getLastUserSession(currentUser.uid));
             if (!lastUserSession.empty) {
@@ -102,6 +236,7 @@ const ClimberProfile = ({ navigation }) => {
             const {activeSession, activeSessionTimestamp} = groupBySessions(activeClimbsHistory);
 
             setSessionsHistory(recentSessionObjectsFiltered); //Updating sessions on fetching a new climbHistory, expired sessions
+            setSessionsThisWeek(weeklySessionObjectsFiltered);
             setCurrentSession(activeSession); // Storing Active Climbs in a new session, active session (REMAINS THE SAME)
 
             //To accurately calculate session count
@@ -158,7 +293,7 @@ const ClimberProfile = ({ navigation }) => {
     //Pagination Logic for scrolling down
     //We have the initally last loaded climb
     const handleLoadMoreSessions = async () => {
-        if (lastLoadedClimb && !loadingMore) {
+        if (lastLoadedClimb && !loadingMore && activeTab === 'Activity') {
             setLoadingMore(true);
             //console.log('Loading more at the Bottom!');
             const newSessions = (await SessionsApi().getRecentFiveSessionsObjects(currentUser.uid, lastLoadedClimb)); //Change to lastLoadedClimb 
@@ -268,16 +403,15 @@ const ClimberProfile = ({ navigation }) => {
                         </Text>
                     </View>
                 </View>
-                <View style={styles.header}>
-                    <Text style={styles.titleText}>Activity</Text>
-                </View>
+                <TabSwitcher />
+                {activeTab === 'Activity' ? (
                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
                     <View style={[styles.effortHistoryList]}>
                         <SessionTapHistory currentSession={currentSession} isCurrent={true} currentSessionObject={currentSessionObject}/>
                         {sessionsHistory && Object.keys(sessionsHistory).length > 0 && <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold'}}>Past Sessions</Text>}
                         <SessionTapHistory currentSession={sessionsHistory} isCurrent={false}/>
                     </View>
-                </View>
+                </View>): <ProgressContent />}
             </View>
         </ScrollView>
         </SafeAreaView>
@@ -341,7 +475,8 @@ const styles = StyleSheet.create({
         color: 'black',
         backgroundColor: 'transparent',
         paddingHorizontal: 0,
-        paddingVertical: 10,
+        paddingTop: 0,
+        paddingBottom: 20,
     },
     pillButton: {
         backgroundColor: '#3498db', // or any color of your choice
@@ -396,7 +531,31 @@ const styles = StyleSheet.create({
         marginTop: 10,
         alignItems: 'center', 
         flexDirection: 'column',
-    }
+    },
+    tabButton: {
+        borderBottomWidth: 3,
+        borderBottomColor: 'transparent',
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        width: '50%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems:'center',
+    },
+    tabActive: {
+        borderBottomColor: '#3498db',
+        color:'black',
+    },
+    tabText: {
+        fontSize: 15,
+        color: 'lightgray',
+        fontWeight: '500',
+    },
+    activeTabText: {
+        fontSize: 15,
+        color: 'black',
+        fontWeight: '500',
+    },
 });
 
 export default ClimberProfile;
