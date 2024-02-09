@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
     borderColor: '#C3C3C3',
     padding: 10,
     borderRadius: 5,
+    color: 'black',
   },
   authButtonsContainer: {
     flexDirection: 'row',

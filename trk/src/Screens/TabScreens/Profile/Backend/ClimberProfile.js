@@ -293,7 +293,7 @@ const ClimberProfile = ({ navigation }) => {
     //Pagination Logic for scrolling down
     //We have the initally last loaded climb
     const handleLoadMoreSessions = async () => {
-        if (lastLoadedClimb && !loadingMore) {
+        if (lastLoadedClimb && !loadingMore && activeTab === 'Activity') {
             setLoadingMore(true);
             //console.log('Loading more at the Bottom!');
             const newSessions = (await SessionsApi().getRecentFiveSessionsObjects(currentUser.uid, lastLoadedClimb)); //Change to lastLoadedClimb 

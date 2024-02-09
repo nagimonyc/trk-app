@@ -344,12 +344,20 @@ function AnalyticsStack() {
         options={({ navigation }) => ({
           title: 'My Gym',
           headerBackTitleVisible: false,
+          headerTitleAlign: 'center',
           headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row'}}>
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               />
+            </View>
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <Text style={{color: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500'}}>Beta</Text>
             </View>
           ),
         })}
@@ -382,12 +390,20 @@ function ClimbInputStackScreen() {
         name="Create Climb"
         component={ClimbInputData}
         options={({ navigation }) => ({
+          headerTitleAlign: 'center',
           headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row'}}>
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               />
+            </View>
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <Text style={{color: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500'}}>Beta</Text>
             </View>
           ),
         })}
