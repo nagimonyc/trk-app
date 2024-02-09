@@ -2,25 +2,61 @@ import ClimbsApi from "../../../../../api/ClimbsApi";
 import TapsApi from "../../../../../api/TapsApi";
 import CommentsApi from "../../../../../api/CommentsApi";
 
-export const fetchSetClimbs = async (userId) => {
+export const fetchSetClimbs = async (userId, setName = 'Commercial') => { //You are selecting by Set already!
   const { getClimbsBySomeField } = ClimbsApi();
   try {
-    const querySnapshot = await getClimbsBySomeField('setter', userId);
+    const querySnapshot = await getClimbsBySomeField('set', setName);
     if (querySnapshot && querySnapshot.docs) {
       const climbs = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })).filter(climb => !climb.archived);
-      return climbs; // Return the processed data
+      //const uniqueSets = Array.from(new Set(climbs.map(climb => climb.set))).filter(set => set !== null && set !== undefined).map((doc, index) => ({label: doc, value: index}));
+      //console.log(uniqueSets);
+      //return {
+      //  climbs: climbs,
+      //  uniqueSets: uniqueSets,
+      //  defaultSelected: (uniqueSets.length > 0? uniqueSets[uniqueSets.length - 1].value: null)
+      //}; // Return the processed data, unique sets for dropdown, and default selected set
+      return climbs;
     } else {
       console.error("No data found in Firestore query");
       return []; // Return an empty array if no data is found
     }
   } catch (error) {
     console.error("Error fetching climbs:", error);
-    return []; // Return an empty array in case of an error
+    return [];// Return an empty array in case of an error
   }
 };
+
+export const fetchSets = async () => { //You are selecting by Set already!
+  //const { getClimbsBySomeField } = ClimbsApi();
+  try {
+    const querySnapshot = await ClimbsApi().getClimbsBySomeField('gym', 'dSlDcmXq4WHD5iyvYXFi');
+    if (querySnapshot && querySnapshot.docs) {
+      const climbs = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      //console.log('Climbs: ', climbs);
+      const uniqueSets = Array.from(new Set(climbs.map(climb => climb.set))).filter(set => set !== null && set !== undefined).map((doc, index) => ({label: doc, value: index}));
+      //console.log(uniqueSets);
+      return {
+        uniqueSets: uniqueSets,
+        defaultSelected: (uniqueSets.length > 0? uniqueSets[uniqueSets.length - 1].value: null)
+      }; // Return the processed data, unique sets for dropdown, and default selected set
+    } else {
+      console.error("No data found in Firestore query");
+      return {uniqueSets: null, defaultSelected: null}; // Return an empty array if no data is found
+    }
+  } catch (error) {
+    console.error("Error fetching climbs:", error);
+    return {uniqueSets: null, defaultSelected: null};// Return an empty array in case of an error
+  }
+};
+
+
+
 
 export const fetchTapsAndCalculateAscents = async (yourClimbs) => {
   const { getTapsBySomeField } = TapsApi();
@@ -67,6 +103,7 @@ export const fetchTapsAndCalculateAscents = async (yourClimbs) => {
   }
 
   let peakHour = Object.keys(timeFrequencyMap).reduce((a, b) => timeFrequencyMap[a] > timeFrequencyMap[b] ? a : b, null);
+  //console.log('Time Frequency Map: ', timeFrequencyMap);
   let peakTimeString = peakHour ? `${peakHour}:00 - ${parseInt(peakHour) + 1}:00` : '';
 
   // Determine most and least completed climbs
