@@ -32,11 +32,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 25,
         textAlign: 'center',
+        color: 'black',
     },
     text: {
         fontSize: 20,
         textAlign: 'center',
         marginHorizontal: 45,
+        color: 'black',
     },
 });
 
