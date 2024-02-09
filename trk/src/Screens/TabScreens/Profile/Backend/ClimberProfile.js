@@ -158,6 +158,8 @@ const ClimberProfile = ({ navigation }) => {
                             <Text style={{ fontSize: 15, color: 'black' }}>{gradeThisWeek}</Text>
                         </View>
             </View>
+            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 20, fontWeight: '300', textAlign:'center', width: '100%'}}>More features coming soon.</Text>
+            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 5, fontWeight: '300', textAlign:'center', width: '100%'}}>Any suggestions? Leave them in feedback!</Text>
         </View>
     );
 
