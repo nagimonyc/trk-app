@@ -38,6 +38,8 @@ const Tab = createBottomTabNavigator();
 const GymTopTab = createMaterialTopTabNavigator();
 const ClimbInputStack = createStackNavigator();
 
+
+//Smaller Feedback Button
 const FeedbackButton = ({ onPress, title, navigation }) => (
   <TouchableOpacity onPress={() => navigation.navigate('Developer_Feedback')} style={styles.button}>
     <Text style={styles.text}>{title}</Text>
@@ -49,7 +51,7 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
 const styles = StyleSheet.create({
   button: {
     backgroundColor: 'white',
-    padding: 10,
+    padding: 5,
     borderRadius: 5,
     marginRight: 10,
     marginLeft: 10,
@@ -63,11 +65,15 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginLeft: 10,
     borderColor: '#fe8100',
-    borderWidth: 1
+    borderWidth: 1,
+    display: 'flex',
+    justifyContent:'center',
+    alignItems: 'center',
   },
   text: {
     color: '#4c6a78',
     textAlign: 'center',
+    fontSize: 12, 
   },
   text_tracker: {
     color: '#fe8100',
@@ -151,12 +157,18 @@ function RecordStack() {
         options={({ navigation }) => ({
           title: 'Record',
           headerBackTitleVisible: null,
+          headerTitleAlign: 'center',
           headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row'}}>
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               />
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}
@@ -243,6 +255,7 @@ function ProfileStack() {
         component={UserProfile}
         options={({ navigation }) => ({
           title: 'Profile',
+          headerTitleAlign: 'center',
           headerBackTitleVisible: false,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
@@ -250,6 +263,11 @@ function ProfileStack() {
                 title="Feedback"
                 navigation={navigation}
               />
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}
@@ -344,12 +362,20 @@ function AnalyticsStack() {
         options={({ navigation }) => ({
           title: 'My Gym',
           headerBackTitleVisible: false,
+          headerTitleAlign: 'center',
           headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row'}}>
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               />
+            </View>
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}
@@ -382,12 +408,20 @@ function ClimbInputStackScreen() {
         name="Create Climb"
         component={ClimbInputData}
         options={({ navigation }) => ({
+          headerTitleAlign: 'center',
           headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row'}}>
               <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               />
+            </View>
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}

@@ -139,7 +139,7 @@ function ShareView({ route }) {
                     </View>
                 </LinearGradient>
             </View>
-            <View style={{display:'flex', flexDirection:'row'}}>
+            <View style={{display:'flex', flexDirection:'row', justifyContent: 'space-around', width: '90%'}}>
                 <TouchableOpacity style={styles.shareButton} onPress={saveImageLocally}>
                     <Text style={styles.shareButtonText}>Save</Text>
                 </TouchableOpacity>
@@ -200,10 +200,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         backgroundColor: '#3498db',
         borderRadius: 20,
-        marginRight: 10,
+        width: '40%',
     },
     shareButtonText: {
         color: 'white',
+        textAlign: 'center'
     },
 });
 

@@ -10,7 +10,6 @@ import Slide3 from '../Screens/NavScreens/Onboarding/Front/slide3';
 import Slide4 from '../Screens/NavScreens/Onboarding/Front/slide4';
 import Slide5 from '../Screens/NavScreens/Onboarding/Front/slide5';
 import Slide6 from '../Screens/NavScreens/Onboarding/Front/slide6';
-import { platform } from 'process';
 
 // Add Slide5 if you have a fifth slide
 

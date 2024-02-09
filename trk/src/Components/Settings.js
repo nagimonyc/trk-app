@@ -40,13 +40,13 @@ const Settings = () => {
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
             <TouchableOpacity 
-                style={[styles.button, { backgroundColor: 'black' }]} 
+                style={[styles.button, { backgroundColor: '#D2122E' }]} 
                 onPress={handleDeleteAccount}
             >
                 <Text style={styles.buttonText}>Delete Account</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-                style={[styles.button, { backgroundColor: '#3498db' }]} 
+                style={[styles.button, { backgroundColor: '#fe8100'}]} 
                 onPress={SignOut}
             >
                 <Text style={styles.buttonText}>Sign Out</Text>
@@ -71,14 +71,15 @@ const styles = StyleSheet.create({
     button: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        borderRadius: 5,  
+        borderRadius: 20,  
         alignItems: 'center', 
         justifyContent: 'center',
         width: '45%',  
     },
     buttonText: {
         color: 'white',  
-        fontSize: 16
+        fontSize: 15,
+        fontWeight: '400'
     }
     
 });

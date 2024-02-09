@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Text, View, ScrollView, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 import { AuthContext } from '../../../../../Utils/AuthContext';
+import DropDownPicker from 'react-native-dropdown-picker';
 import {
   fetchSetClimbs,
   fetchTapsAndCalculateAscents,
-  fetchCommentsAndCalculateFeedback
+  fetchCommentsAndCalculateFeedback,
+  fetchSets
 } from '../Backend/analyticsCalculations';
 
 
@@ -38,18 +40,26 @@ const GymDaily = ({navigation}) => {
 
   useEffect(() => {
     const initializeSetClimbs = async () => {
-      const climbs = await fetchSetClimbs(userId);
-      setYourClimbs(climbs);
-      setTotalClimbs(climbs.length.toString());
+      const climbs = await fetchSetClimbs(userId, 'Commercial');
+      if (climbs && climbs.length > 0) {
+        setYourClimbs(prev => climbs);
+        setTotalClimbs(climbs? climbs.length.toString(): '');
+      }
+      const {uniqueSets, defaultSelected} = await fetchSets();
+      if (uniqueSets && uniqueSets.length > 0) {
+        setSets(uniqueSets);
+      }
+      if (defaultSelected) {
+        setSelectedSetId(defaultSelected);
+      }
     };
-
     initializeSetClimbs();
-  }, [userId, currentUser])
+  }, [userId, currentUser]);
 
   useEffect(() => {
 
     const processTapsAndAscents = async () => {
-      if (yourClimbs.length > 0) {
+      if (yourClimbs && yourClimbs.length > 0) {
         const {
           totalTaps,
           allTaps,
@@ -74,7 +84,7 @@ const GymDaily = ({navigation}) => {
 
   useEffect(() => {
 
-    if (yourClimbs.length > 0) {
+    if (yourClimbs && yourClimbs.length > 0) {
       const processCommentsAndFeedback = async () => {
         const {
           comments,
@@ -118,13 +128,29 @@ const GymDaily = ({navigation}) => {
     navigation.navigate('Data Detail', title)
   }
 
+  //On selectedsetId changed
+
+  //For the DropDown
+  const [openSetPicker, setOpenSetPicker] = useState(false);
+  const [selectedSetId, setSelectedSetId] = useState(null);
+  const [sets, setSets] = useState([]);
 
   return (
     <ScrollView>
       <SafeAreaView>
-        <View>
-          <View style={styles.header}>
-            <Text style={styles.title}>Lead Cave</Text>
+          <View style={{width: '100%', display: 'flex',flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 10}}>
+            {sets && sets.length > 0 && <DropDownPicker
+                  open={openSetPicker}
+                  value={selectedSetId}
+                  items={sets}
+                  setOpen={setOpenSetPicker}
+                  setValue={setSelectedSetId}
+                  placeholder="Commercial"
+                  style={{height: 40}}
+                  containerStyle={{marginTop: 30}}
+                  zIndex={100}
+                  listMode="SCROLLVIEW"
+            />}
           </View>
           <View style={styles.boxCollection}>
 
@@ -196,8 +222,6 @@ const GymDaily = ({navigation}) => {
                 </View>
               </TouchableOpacity>
             </View>
-
-          </View>
       </SafeAreaView>
     </ScrollView>
   )
