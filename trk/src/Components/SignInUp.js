@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, TextInput, Alert, TouchableWithoutFeedback, Keyboard, SafeAreaView, Switch, TouchableOpacity, Image} from 'react-native';
+import { View, StyleSheet, Text, TextInput, Alert, TouchableWithoutFeedback, Keyboard, SafeAreaView, Switch, TouchableOpacity, Image } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 GoogleSignin.configure({
   webClientId: '786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com', // Use your actual web client ID
@@ -31,6 +32,7 @@ const SignInUp = () => {
       });
   };
 
+
   const handleSignUp = () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'Email and password must not be empty');
@@ -50,25 +52,25 @@ const SignInUp = () => {
           username: user.email.split('@')[0],
           isNewUser: true,
         })
-        .then(() => {
-          console.log('User added to Firestore');
-        })
-        .catch((error) => {
-          console.error('Error adding user to Firestore:', error);
-        });
+          .then(() => {
+            console.log('User added to Firestore');
+          })
+          .catch((error) => {
+            console.error('Error adding user to Firestore:', error);
+          });
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
-            Alert.alert('Email already in use')
+          Alert.alert('Email already in use')
         } else if (password.length < 6) {
-            Alert.alert('Password must be at least 6 characters')
+          Alert.alert('Password must be at least 6 characters')
         } else if (error.code === 'auth/invalid-email') {
-            Alert.alert('Must use a valid email')
+          Alert.alert('Must use a valid email')
         }
         else {
-            Alert.alert('Something went wrong with signup')
+          Alert.alert('Something went wrong with signup')
         }
-    });
+      });
   };
 
   const onGoogleButtonPress = async () => {
@@ -76,28 +78,57 @@ const SignInUp = () => {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const { idToken } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
       const userCredential = await auth().signInWithCredential(googleCredential);
       console.log('Signed in with Google!');
-      // Additional Firestore handling for new Google user
-      if (userCredential.additionalUserInfo.isNewUser) {
-        firestore().collection('users').doc(userCredential.user.uid).set({
-          email: userCredential.user.email,
-          uid: userCredential.user.uid,
-          role: setterIsEnabled ? 'setter' : 'climber',
-          taps: 0,
-          nyuComp: nyuCompIsEnabled,
-          timestamp: new Date(),
-          username: userCredential.user.email.split('@')[0],
-          isNewUser: true,
-        });
-      }
+
+      // Handle Firestore user data management
+      manageFirestoreUserData(userCredential);
     } catch (error) {
+      console.error('Google Sign-In Error', error);
       Alert.alert('Google Sign-In Error', error.message);
     }
   };
 
-  const onAppleButtonPress = async () => {
+  // Separate function to manage Firestore user data
+  const manageFirestoreUserData = (userCredential) => {
+    if (userCredential.additionalUserInfo.isNewUser) {
+      firestore().collection('users').doc(userCredential.user.uid).set({
+        email: userCredential.user.email,
+        uid: userCredential.user.uid,
+        role: setterIsEnabled ? 'setter' : 'climber',
+        taps: 0,
+        nyuComp: nyuCompIsEnabled,
+        timestamp: new Date(),
+        username: userCredential.user.email.split('@')[0],
+        isNewUser: true,
+      })
+        .then(() => console.log('User added to Firestore'))
+        .catch((error) => console.error('Error adding user to Firestore:', error));
+    }
+  };
 
+  async function onAppleButtonPress() {
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: appleAuth.Operation.LOGIN,
+      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+    });
+
+    if (!appleAuthRequestResponse.identityToken) {
+      throw new Error('Apple Sign-In failed - no identity token returned');
+    }
+
+    const { identityToken, nonce } = appleAuthRequestResponse;
+    const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+
+    const userCredential = await auth().signInWithCredential(appleCredential);
+    if (userCredential.additionalUserInfo.isNewUser) {
+      firestore().collection('users').doc(userCredential.user.uid).set({
+        email: userCredential.user.email,
+        uid: userCredential.user.uid,
+        // Add additional user info as required
+      });
+    }
   }
 
   const handleForgotPassword = () => {
@@ -118,12 +149,12 @@ const SignInUp = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style= {styles.logoView}>
-      <Image source={require('../../assets/long-logo.png')} style={styles.logo}/>
+      <View style={styles.logoView}>
+        <Image source={require('../../assets/long-logo.png')} style={styles.logo} />
       </View>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View style={styles.formContainer}>
-            <Text style={styles.fieldTitle}>Email</Text>
+          <Text style={styles.fieldTitle}>Email</Text>
           <TextInput
             placeholder="Email"
             placeholderTextColor="#c4c4c4"
@@ -140,14 +171,14 @@ const SignInUp = () => {
             onChangeText={setPassword}
             style={styles.input}
           />
-          <Text style={[{color: '#7c7c7c', alignSelf: 'flex-start',}]}>Password must contain at least 6 characters.</Text>
+          <Text style={[{ color: '#7c7c7c', alignSelf: 'flex-start', }]}>Password must contain at least 6 characters.</Text>
           <View style={styles.authButtonsContainer}>
-            <TouchableOpacity onPress={handleSignIn} style={[styles.enterButton, {backgroundColor: 'white', borderColor: '#C3C3C3', marginLeft: 7}]}>
-              <Text style={[styles.enterText, {color: 'black'}]}>Log In</Text>
-              </TouchableOpacity>
-            <TouchableOpacity onPress={handleSignUp} style={[styles.enterButton, {backgroundColor: '#ff8100', borderColor: '#ff8100', marginRight: 7}]}>
-              <Text style={[styles.enterText, {color: 'white'}]}>Sign Up</Text>
-              </TouchableOpacity>
+            <TouchableOpacity onPress={handleSignIn} style={[styles.enterButton, { backgroundColor: 'white', borderColor: '#C3C3C3', marginLeft: 7 }]}>
+              <Text style={[styles.enterText, { color: 'black' }]}>Log In</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSignUp} style={[styles.enterButton, { backgroundColor: '#ff8100', borderColor: '#ff8100', marginRight: 7 }]}>
+              <Text style={[styles.enterText, { color: 'white' }]}>Sign Up</Text>
+            </TouchableOpacity>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
             <View style={styles.lineStyle} />
@@ -155,23 +186,23 @@ const SignInUp = () => {
             <View style={styles.lineStyle} />
           </View>
           <View>
-        <TouchableOpacity
-          onPress={onGoogleButtonPressAndroidOnly}
-          style={styles.alternateSignInButton}
-        >
-          <Image source={require('../../assets/google.png')} style={styles.googleIcon} />
-          <Text style={styles.alternateSignInButtonText}>Continue with Google</Text>
-        </TouchableOpacity>
-        {Platform.OS === 'ios' && (
-    <TouchableOpacity
-      onPress={onAppleButtonPress} // Ensure you have implemented onAppleButtonPress for handling the sign-in process
-      style={styles.alternateSignInButton}
-    >
-      <Image source={require('../../assets/apple.png')} style={styles.appleIcon} />
-      <Text style={styles.alternateSignInButtonText}>Continue with Apple</Text>
-    </TouchableOpacity>
-  )}
-      </View>
+            <TouchableOpacity
+              onPress={onGoogleButtonPress}
+              style={styles.alternateSignInButton}
+            >
+              <Image source={require('../../assets/google.png')} style={styles.googleIcon} />
+              <Text style={styles.alternateSignInButtonText}>Continue with Google</Text>
+            </TouchableOpacity>
+            {Platform.OS === 'ios' && (
+              <TouchableOpacity
+                onPress={onAppleButtonPress} // Ensure you have implemented onAppleButtonPress for handling the sign-in process
+                style={styles.alternateSignInButton}
+              >
+                <Image source={require('../../assets/apple.png')} style={styles.appleIcon} />
+                <Text style={styles.alternateSignInButtonText}>Continue with Apple</Text>
+              </TouchableOpacity>
+            )}
+          </View>
           <Text onPress={handleForgotPassword} style={styles.forgotPasswordText}>
             Reset your password
           </Text>
@@ -219,7 +250,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
-  fieldTitle:{
+  fieldTitle: {
     alignSelf: 'flex-start',
     marginTop: 12,
     color: 'black'
@@ -230,7 +261,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f8f4',
     padding: 10,
     borderRadius: 4,
-    marginTop: 15, 
+    marginTop: 15,
     width: 345,
     height: 50,
     borderWidth: 1,
@@ -249,7 +280,7 @@ const styles = StyleSheet.create({
     marginLeft: -10,
     fontWeight: '600',
     flex: 1,
-    textAlign: 'center', 
+    textAlign: 'center',
   },
   forgotPasswordText: {
     color: '#7B7B7B',
@@ -259,7 +290,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 20,
   },
-  enterButton:{
+  enterButton: {
     width: 151,
     height: 47,
     justifyContent: 'center',
@@ -270,7 +301,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 241,
     height: 66,
-    resizeMode: 'contain', 
+    resizeMode: 'contain',
   },
   logoView: {
     marginTop: 58,
@@ -284,7 +315,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#7B7B7B',
     marginTop: 17,
   },
-  
+
   orTextStyle: {
     textAlign: 'center',
     color: '#7B7B7B',
