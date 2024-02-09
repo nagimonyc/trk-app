@@ -168,7 +168,7 @@ function RecordStack() {
           ),
           headerLeft: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <Text style={{color: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500'}}>Beta</Text>
+              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}
@@ -267,7 +267,7 @@ function ProfileStack() {
           ),
           headerLeft: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <Text style={{color: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500'}}>Beta</Text>
+              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}
