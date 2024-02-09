@@ -152,9 +152,6 @@ const GymDaily = ({navigation}) => {
                   listMode="SCROLLVIEW"
             />}
           </View>
-          <View style={styles.header}>
-            <Text style={styles.title}>Lead Cave</Text>
-          </View>
           <View style={styles.boxCollection}>
 
             <View style={styles.row}>
