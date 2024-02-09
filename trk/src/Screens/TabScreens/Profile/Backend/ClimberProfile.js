@@ -10,7 +10,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import SessionTapHistory from "../../../../Components/SessionTapHistory";
 import moment from 'moment-timezone';
-import { RefreshControl, ScrollView} from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native';
 import UsersApi from "../../../../api/UsersApi";
 import storage from '@react-native-firebase/storage';
 import SessionsApi from "../../../../api/SessionsApi";
@@ -37,7 +37,7 @@ const ClimberProfile = ({ navigation }) => {
     const [historyCount, setHistoryCount] = useState(0);
     const [sessionCount, setSessionCount] = useState(0);
     const [refreshing, setRefreshing] = useState(false);
-    
+
     //For pagination
     const [lastLoadedClimb, setLastLoadedClimb] = useState(null);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -50,47 +50,47 @@ const ClimberProfile = ({ navigation }) => {
     const [timeThisWeek, setTimeThisWeek] = useState('0m');
     const [gradeThisWeek, setGradeThisWeek] = useState('V0');
 
-     // Define the tab switcher component
-     const TabSwitcher = () => (
-        <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 30, backgroundColor: 'white'}}>
-            <TouchableOpacity 
+    // Define the tab switcher component
+    const TabSwitcher = () => (
+        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%', marginTop: 30, backgroundColor: 'white' }}>
+            <TouchableOpacity
                 style={[styles.tabButton, activeTab === 'Activity' ? styles.tabActive : {}]}
                 onPress={() => setActiveTab('Activity')}
             >
-                <Text style={[activeTab === 'Activity'? styles.activeTabText: styles.tabText]}>ACTIVITY</Text>
+                <Text style={[activeTab === 'Activity' ? styles.activeTabText : styles.tabText]}>ACTIVITY</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
                 style={[styles.tabButton, activeTab === 'Progress' ? styles.tabActive : {}]}
                 onPress={() => setActiveTab('Progress')}
             >
-                <Text style={[activeTab === 'Activity'? styles.tabText: styles.activeTabText]}>PROGRESS</Text>
+                <Text style={[activeTab === 'Activity' ? styles.tabText : styles.activeTabText]}>PROGRESS</Text>
             </TouchableOpacity>
         </View>
     );
 
     useEffect(() => {
         if (climbsThisWeek && climbsThisWeek.length > 0) {
-          // Sort the climbs by grade lexicographically in descending order
-          const sorted = climbsThisWeek.slice().sort((a, b) => {
-            // Assuming that the grade property is a string and can be compared lexicographically
-            return b.grade.localeCompare(a.grade);
-          });
-          // Set the highest grade
-          setGradeThisWeek(sorted[0].grade);
+            // Sort the climbs by grade lexicographically in descending order
+            const sorted = climbsThisWeek.slice().sort((a, b) => {
+                // Assuming that the grade property is a string and can be compared lexicographically
+                return b.grade.localeCompare(a.grade);
+            });
+            // Set the highest grade
+            setGradeThisWeek(sorted[0].grade);
         }
-      }, [climbsThisWeek]);
+    }, [climbsThisWeek]);
 
 
     //To prepare climbs to be displayed (for the week) 
     const prepClimbs = async (data) => {
-        try  {
+        try {
             const tapsPromises = data.climbs.map(tapId => TapsApi().getTap(tapId));
             const tapsData = await Promise.all(tapsPromises);
             const promise = tapsData.map(tap => ClimbsApi().getClimb(tap.data().climb));
             const recentSnapshot = await Promise.all(promise);
             const recentSessionStarts = recentSnapshot.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
-                return { ...climbSnapshot.data(), tapId: tapsData[index].id, tapTimestamp: tapsData[index].data().timestamp};
+                return { ...climbSnapshot.data(), tapId: tapsData[index].id, tapTimestamp: tapsData[index].data().timestamp };
             }).filter(climb => climb !== null);
             setClimbsThisWeek(prev => prev.concat(recentSessionStarts));
         } catch (error) {
@@ -102,28 +102,28 @@ const ClimberProfile = ({ navigation }) => {
     const calculateDuration = async (data) => {
         try {
             // Assuming timestamps are in milliseconds
-            const firstTap = data[0];
-            const lastTap = data[data.length - 1];
+            const firstTap = data[data.length - 1];
+            const lastTap = data[0];
 
             //Timestamp and ExpiryTime Exits in Session Objects!
             //const lastTapItem = (await TapsApi().getTap(lastTap)).data();
             //const firstTapItem = (await TapsApi().getTap(firstTap)).data();
             const lastTimestamp = firstTap.timestamp.toDate(); // Most recent
             const firstTimestamp = lastTap.expiryTime.toDate(); // Oldest
-        
+
             // Calculate the difference in hours
             const differenceInHours = (firstTimestamp - lastTimestamp) / (1000 * 60 * 60);
-        
+
             // If the difference is less than an hour, return in minutes
             if (differenceInHours < 1) {
                 const differenceInMinutes = Math.round((firstTimestamp - lastTimestamp) / (1000 * 60));
                 setTimeThisWeek(`${differenceInMinutes} mins`);
             }
-        
+
             // Otherwise, round to the nearest half hour and return in hours
             const roundedHours = Math.round(differenceInHours * 2) / 2;
             setTimeThisWeek(`${roundedHours} hrs`);
-        } catch (error){
+        } catch (error) {
             console.error('Error while calculating duration: ', error.message);
         }
     };
@@ -131,35 +131,35 @@ const ClimberProfile = ({ navigation }) => {
 
     //Display for the Progress Tab
     const ProgressContent = () => (
-        <View style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingBottom: 20, paddingTop: 10}}>
-            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold'}}>This Week</Text>
-            <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', padding: 15}}>
-                <LineGraphComponent data={climbsThisWeek}/>
+        <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingBottom: 20, paddingTop: 10 }}>
+            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>This Week</Text>
+            <View style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'row', padding: 15 }}>
+                <LineGraphComponent data={climbsThisWeek} />
             </View>
-            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold'}}>Total</Text>
-            <View style={{ backgroundColor: 'white', paddingHorizontal: 15, display: 'flex', width: '100%', marginTop: 20, paddingVertical: 5}}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
-                            <Text style={{ fontSize: 15, color: 'black' }}>Sessions</Text>
-                            <Text style={{ fontSize: 15, color: 'black' }}>{sessionsThisWeek.length}</Text>
-                        </View>
-                        <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
-                            <Text style={{ fontSize: 15, color: 'black' }}>Climbs</Text>
-                            <Text style={{ fontSize: 15, color: 'black' }}>{climbsThisWeek.length}</Text>
-                        </View>
-                        <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
-                            <Text style={{ fontSize: 15, color: 'black' }}>Time</Text>
-                            <Text style={{ fontSize: 15, color: 'black' }}>{timeThisWeek}</Text>
-                        </View>
-                        <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8 }}>
-                            <Text style={{ fontSize: 15, color: 'black' }}>Best Effort</Text>
-                            <Text style={{ fontSize: 15, color: 'black' }}>{gradeThisWeek}</Text>
-                        </View>
+            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>Total</Text>
+            <View style={{ backgroundColor: 'white', paddingHorizontal: 15, display: 'flex', width: '100%', marginTop: 20, paddingVertical: 5 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
+                    <Text style={{ fontSize: 15, color: 'black' }}>Sessions</Text>
+                    <Text style={{ fontSize: 15, color: 'black' }}>{sessionsThisWeek.length}</Text>
+                </View>
+                <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
+                    <Text style={{ fontSize: 15, color: 'black' }}>Climbs</Text>
+                    <Text style={{ fontSize: 15, color: 'black' }}>{climbsThisWeek.length}</Text>
+                </View>
+                <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
+                    <Text style={{ fontSize: 15, color: 'black' }}>Time</Text>
+                    <Text style={{ fontSize: 15, color: 'black' }}>{timeThisWeek}</Text>
+                </View>
+                <View style={{ borderBottomColor: '#E0E0E0', borderBottomWidth: 1, marginVertical: 8 }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 8 }}>
+                    <Text style={{ fontSize: 15, color: 'black' }}>Best Effort</Text>
+                    <Text style={{ fontSize: 15, color: 'black' }}>{gradeThisWeek}</Text>
+                </View>
             </View>
-            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 20, fontWeight: '300', textAlign:'center', width: '100%'}}>More features coming soon.</Text>
-            <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 5, fontWeight: '300', textAlign:'center', width: '100%'}}>Any suggestions? Leave them in feedback!</Text>
+            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 20, fontWeight: '300', textAlign: 'center', width: '100%' }}>More features coming soon.</Text>
+            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 5, fontWeight: '300', textAlign: 'center', width: '100%' }}>Any suggestions? Leave them in feedback!</Text>
         </View>
     );
 
@@ -175,11 +175,11 @@ const ClimberProfile = ({ navigation }) => {
     //Get active sessions in the same manner. Fetch sessions through the session object (order by timestamp and fetch last 5)- for pagination
     const handleTapHistory = async () => {
         try {
-            const {getActiveSessionTaps, getTotalTapCount} = TapsApi();
+            const { getActiveSessionTaps, getTotalTapCount } = TapsApi();
             const { getClimb } = ClimbsApi();
-            
+
             //To get User information, retained as is
-            const {getUsersBySomeField} = UsersApi();
+            const { getUsersBySomeField } = UsersApi();
             let user = (await getUsersBySomeField('uid', currentUser.uid));
             if (user) {
                 setUser(user.docs[0].data());
@@ -194,9 +194,9 @@ const ClimberProfile = ({ navigation }) => {
             let weeklySessionObjects = (await SessionsApi().getLastWeekSessionsObjects(currentUser.uid));
             const weeklySessionObjectsFiltered = weeklySessionObjects.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setClimbsThisWeek([]);
-            for (let i = 0; i <weeklySessionObjectsFiltered.length; i=i+1) {
+            for (let i = 0; i < weeklySessionObjectsFiltered.length; i = i + 1) {
                 if (weeklySessionObjectsFiltered[i].climbs)
-                prepClimbs(weeklySessionObjectsFiltered[i]);
+                    prepClimbs(weeklySessionObjectsFiltered[i]);
             }
             if (weeklySessionObjectsFiltered && weeklySessionObjectsFiltered.length > 0) {
                 calculateDuration(weeklySessionObjectsFiltered);
@@ -221,7 +221,7 @@ const ClimberProfile = ({ navigation }) => {
             //Combine active session climb details with tap data
             const activeClimbsHistory = activeClimbsSnapshots.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
-                return { ...climbSnapshot.data(), tapId: filteredActiveTaps[index].id, tapTimestamp: filteredActiveTaps[index].timestamp, isSessionStart: filteredActiveTaps[index].isSessionStart, tagged: filteredActiveTaps[index].tagged};
+                return { ...climbSnapshot.data(), tapId: filteredActiveTaps[index].id, tapTimestamp: filteredActiveTaps[index].timestamp, isSessionStart: filteredActiveTaps[index].isSessionStart, tagged: filteredActiveTaps[index].tagged };
             }).filter(climb => climb !== null && (climb.archived === undefined || climb.archived === false));
 
 
@@ -230,10 +230,10 @@ const ClimberProfile = ({ navigation }) => {
             //For the Firebase Query
             if (recentSessionObjects.docs.at(-1)) {
                 //console.log('Last loaded climb set: ', recentSession.docs.at(-1));
-                setLastLoadedClimb(recentSessionObjects.docs.at(-1)); 
+                setLastLoadedClimb(recentSessionObjects.docs.at(-1));
             }
 
-            const {activeSession, activeSessionTimestamp} = groupBySessions(activeClimbsHistory);
+            const { activeSession, activeSessionTimestamp } = groupBySessions(activeClimbsHistory);
 
             setSessionsHistory(recentSessionObjectsFiltered); //Updating sessions on fetching a new climbHistory, expired sessions
             setSessionsThisWeek(weeklySessionObjectsFiltered);
@@ -245,7 +245,7 @@ const ClimberProfile = ({ navigation }) => {
             console.log('The session count is: ', sessionCount);
             setSessionCount(sessionCount); //Session count updated, based on expired and current
             setHistoryCount(tapCount); //Total tap Count updated
-        
+
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
@@ -256,7 +256,7 @@ const ClimberProfile = ({ navigation }) => {
         //console.log('Refreshing...');
         setRefreshing(true);
         handleTapHistory().then(() => setRefreshing(false));
-      }, []);
+    }, []);
 
     // Helper function to format timestamp
     const formatTimestamp = (timestamp) => {
@@ -277,15 +277,15 @@ const ClimberProfile = ({ navigation }) => {
         // Convert to milliseconds and create a new Date object
         return new Date(timestamp.seconds * 1000 + Math.round(timestamp.nanoseconds / 1000000));
     };
-    
+
     //Starting climb is the session start of the last session you want to fetch, and start is the last session you fetched previously
     const groupBySessions = (activeClimbs, start = null) => {
         //Active session calculation REMAINS THE SAME, now wholly reliant on the firebase call
-        const activeSessionStart = (activeClimbs && activeClimbs.length > 0? activeClimbs[activeClimbs.length - 1]: {tapTimestamp: firebase.firestore.Timestamp.now()});
+        const activeSessionStart = (activeClimbs && activeClimbs.length > 0 ? activeClimbs[activeClimbs.length - 1] : { tapTimestamp: firebase.firestore.Timestamp.now() });
         const activeSessionTimestamp = moment(convertTimestampToDate(activeSessionStart.tapTimestamp)).tz('America/New_York').format('YYYY-MM-DD HH:mm');
         const activeSession = {};
-        activeSession[activeSessionTimestamp] = (activeClimbs && activeClimbs.length > 0 ? activeClimbs: []); //For desc ordering of active session taps
-        return {activeSession, activeSessionTimestamp};
+        activeSession[activeSessionTimestamp] = (activeClimbs && activeClimbs.length > 0 ? activeClimbs : []); //For desc ordering of active session taps
+        return { activeSession, activeSessionTimestamp };
         //Returns expired sessions, active sessions, and the current session's timestamp
     };
 
@@ -298,7 +298,7 @@ const ClimberProfile = ({ navigation }) => {
             //console.log('Loading more at the Bottom!');
             const newSessions = (await SessionsApi().getRecentFiveSessionsObjects(currentUser.uid, lastLoadedClimb)); //Change to lastLoadedClimb 
             const newSessionsFiltered = newSessions.docs.map(doc => ({ id: doc.id, ...doc.data() })) // Convert to tap objects
-        
+
             if (newSessionsFiltered.length == 0) {
                 console.log('No new climbs!');
                 setLoadingMore(false);
@@ -307,7 +307,7 @@ const ClimberProfile = ({ navigation }) => {
             if (newSessions.docs.at(-1)) {
                 setLastLoadedClimb(newSessions.docs.at(-1));
             }
-            setSessionsHistory(prevSessions => ({ ...prevSessions, ...newSessionsFiltered}));
+            setSessionsHistory(prevSessions => ({ ...prevSessions, ...newSessionsFiltered }));
             setLoadingMore(false);
             return;
         }
@@ -328,31 +328,31 @@ const ClimberProfile = ({ navigation }) => {
 
     useEffect(() => {
         const loadImages = async () => {
-          try {
-            // Default image path
-            let climbImageURL = 'climb photos/the_crag.png';
-            if (user && user.image && user.image.length > 0) {
-                //Implement image fetch logic
-                climbImageURL = user.image[0].path;
+            try {
+                // Default image path
+                let climbImageURL = 'climb photos/the_crag.png';
+                if (user && user.image && user.image.length > 0) {
+                    //Implement image fetch logic
+                    climbImageURL = user.image[0].path;
+                }
+                const loadedClimbImageUrl = await loadImageUrl(climbImageURL);
+                setClimbImageUrl(loadedClimbImageUrl);
+            } catch (error) {
+                console.error("Error loading images: ", error);
             }
-            const loadedClimbImageUrl = await loadImageUrl(climbImageURL);
-            setClimbImageUrl(loadedClimbImageUrl);
-          } catch (error) {
-            console.error("Error loading images: ", error);
-          }
         };
-       loadImages();
+        loadImages();
     }, [user]);
 
 
     //To fetch the climb image of the latest climb
     const loadImageUrl = async (imagePath) => {
         try {
-          const url = await storage().ref(imagePath).getDownloadURL();
-          return url;
+            const url = await storage().ref(imagePath).getDownloadURL();
+            return url;
         } catch (error) {
-          console.error("Error getting image URL: ", error);
-          throw error;
+            console.error("Error getting image URL: ", error);
+            throw error;
         }
     };
 
@@ -361,59 +361,59 @@ const ClimberProfile = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView
-            onScroll={onScroll}
-            scrollEventThrottle={200} // Adjust based on performance
-            refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#3498db"]}/>
-            }
-            style={{margin: 0, padding: 0, width: '100%', height: '100%'}}
+                onScroll={onScroll}
+                scrollEventThrottle={200} // Adjust based on performance
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#3498db"]} />
+                }
+                style={{ margin: 0, padding: 0, width: '100%', height: '100%' }}
             >
-            <View style={styles.innerContainer}>
-                <View style={styles.profileTop}>
-                    <View style={styles.topLine}>
-                        <TouchableOpacity style={styles.initialCircle} onPress={()=> {navigation.navigate('Edit_User', {user: user})}}>
-                            {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{borderRadius: 50, height: '100%', width: '100%'}} />)}
-                            {!climbImageUrl &&  (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
-                            <View style={{ position: 'absolute', bottom: 0, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor:'black'}}>
-                            <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }}   resizeMode="contain" />
+                <View style={styles.innerContainer}>
+                    <View style={styles.profileTop}>
+                        <View style={styles.topLine}>
+                            <TouchableOpacity style={styles.initialCircle} onPress={() => { navigation.navigate('Edit_User', { user: user }) }}>
+                                {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ borderRadius: 50, height: '100%', width: '100%' }} />)}
+                                {!climbImageUrl && (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
+                                <View style={{ position: 'absolute', bottom: 0, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor: 'black' }}>
+                                    <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }} resizeMode="contain" />
+                                </View>
+                            </TouchableOpacity>
+                            <View style={styles.recapData}>
+                                <Text style={styles.recapNumber}>{historyCount}</Text>
+                                <Text style={styles.any_text}>Climbs</Text>
                             </View>
-                        </TouchableOpacity>
-                        <View style={styles.recapData}>
-                            <Text style={styles.recapNumber}>{historyCount}</Text>
-                            <Text style={styles.any_text}>Climbs</Text>
+                            <View style={styles.recapData}>
+                                <Text style={styles.recapNumber}>{sessionCount}</Text>
+                                <Text style={styles.any_text}>Sessions</Text>
+                            </View>
+                            <TouchableOpacity style={styles.settings}
+                                onPress={() => navigation.navigate('Settings')}>
+                                {
+                                    Platform.OS === 'android' ?
+                                        <Icon name="settings" size={30} color="#3498db" /> :
+                                        <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
+                                }
+                            </TouchableOpacity>
                         </View>
-                        <View style={styles.recapData}>
-                            <Text style={styles.recapNumber}>{sessionCount}</Text>
-                            <Text style={styles.any_text}>Sessions</Text>
+                        <View style={styles.greeting}>
+                            <Text style={styles.greeting_text}>
+                                Hi <Text style={{ color: 'black' }}>
+                                    {user && user.username ? user.username : ''}
+                                </Text> 🖖
+                            </Text>
                         </View>
-                        <TouchableOpacity style={styles.settings}
-                        onPress={() => navigation.navigate('Settings')}>
-                            {
-                                Platform.OS === 'android' ?
-                                    <Icon name="settings" size={30} color="#3498db" /> :
-                                    <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
-                            }
-                        </TouchableOpacity>
                     </View>
-                    <View style={styles.greeting}>
-                        <Text style={styles.greeting_text}>
-                            Hi <Text style={{ color: 'black' }}>
-                                {user && user.username? user.username: ''}
-                            </Text> 🖖
-                        </Text>
-                    </View>
+                    <TabSwitcher />
+                    {activeTab === 'Activity' ? (
+                        <View style={[styles.effortHistory, { alignItems: 'center' }]}>
+                            <View style={[styles.effortHistoryList]}>
+                                <SessionTapHistory currentSession={currentSession} isCurrent={true} currentSessionObject={currentSessionObject} />
+                                {sessionsHistory && Object.keys(sessionsHistory).length > 0 && <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>Past Sessions</Text>}
+                                <SessionTapHistory currentSession={sessionsHistory} isCurrent={false} />
+                            </View>
+                        </View>) : <ProgressContent />}
                 </View>
-                <TabSwitcher />
-                {activeTab === 'Activity' ? (
-                <View style={[styles.effortHistory, { alignItems: 'center' }]}>
-                    <View style={[styles.effortHistoryList]}>
-                        <SessionTapHistory currentSession={currentSession} isCurrent={true} currentSessionObject={currentSessionObject}/>
-                        {sessionsHistory && Object.keys(sessionsHistory).length > 0 && <Text style={{color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold'}}>Past Sessions</Text>}
-                        <SessionTapHistory currentSession={sessionsHistory} isCurrent={false}/>
-                    </View>
-                </View>): <ProgressContent />}
-            </View>
-        </ScrollView>
+            </ScrollView>
         </SafeAreaView>
     );
 }
@@ -522,14 +522,14 @@ const styles = StyleSheet.create({
     recapNumber: {
         color: 'black',
         fontWeight: 'bold',
-    }, 
+    },
     settings: {
         marginRight: 15,
-        alignSelf: 'center', 
-    }, 
+        alignSelf: 'center',
+    },
     recapData: {
         marginTop: 10,
-        alignItems: 'center', 
+        alignItems: 'center',
         flexDirection: 'column',
     },
     tabButton: {
@@ -540,11 +540,11 @@ const styles = StyleSheet.create({
         width: '50%',
         display: 'flex',
         justifyContent: 'center',
-        alignItems:'center',
+        alignItems: 'center',
     },
     tabActive: {
         borderBottomColor: '#3498db',
-        color:'black',
+        color: 'black',
     },
     tabText: {
         fontSize: 15,
