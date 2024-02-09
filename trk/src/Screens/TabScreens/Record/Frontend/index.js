@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import NfcManager from 'react-native-nfc-manager';
 import AndroidPrompt from '../../../../Components/AndroidPrompt';
 import TapHistory from '../../../../Components/TapHistory';
@@ -18,7 +18,9 @@ function RecordScreen(props) {
     return (
         <>
             <View style={{ alignItems: 'flex-end' }}>
-                <Button title="Help" onPress={handleHelpPress} />
+                <TouchableOpacity  onPress={handleHelpPress}>
+                    <Text style={[{color: '#007aff', fontSize: 15, alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 20}]}>Help</Text>
+                </TouchableOpacity>
             </View>
             <View style={styles.center}>
                 {renderNfcButtons()}
