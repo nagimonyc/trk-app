@@ -8,7 +8,7 @@ const Slide1 = () => {
             <View style={{ flex: 1 }}>
             </View >
             <View style={{ flex: 2 }}>
-                <Image source={require('../../../../../assets/giphy.gif')} style={styles.image} />
+                <Image source={require('../../../../../assets/iosOpen.gif')} style={styles.image} resizeMode='contain' />
             </View >
             <View style={{ flex: 1 }}>
                 <Text style={styles.header}>Nagimo</Text>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View, StyleSheet, Button, SafeAreaView, Text } from 'react-native';
+import { Modal, View, StyleSheet, Button, SafeAreaView, Text, Platform } from 'react-native';
 import Swiper from 'react-native-swiper';
 
 
@@ -9,7 +9,7 @@ import Slide2 from '../Screens/NavScreens/Onboarding/Front/slide2';
 import Slide3 from '../Screens/NavScreens/Onboarding/Front/slide3';
 import Slide4 from '../Screens/NavScreens/Onboarding/Front/slide4';
 import Slide5 from '../Screens/NavScreens/Onboarding/Front/slide5';
-import { Platform } from 'react-native';
+import Slide6 from '../Screens/NavScreens/Onboarding/Front/slide6';
 
 // Add Slide5 if you have a fifth slide
 
@@ -25,7 +25,7 @@ const OnboardingModal = ({ isVisible, onClose }) => {
                 onRequestClose={onClose}>
                 <Swiper loop={false} showsButtons={true} activeDotColor="#FF8100" dotColor="#D9D9D9" nextButton={renderNextButton()} prevButton={renderPrevButton()}>
                     <Slide1 />
-                    <Slide2 />
+                    {Platform.OS === 'ios' ? <Slide2 /> : <Slide6 />}
                     {Platform.OS === 'ios' ? <Slide3 /> : <Slide5 />}
                     <Slide4 onClose={onClose} />
                 </Swiper>

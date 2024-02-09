@@ -8,10 +8,10 @@ const Slide5 = () => {
             <View style={{ flex: 1 }}>
             </View >
             <View style={{ flex: 2 }}>
-                <Image source={require('../../../../../assets/giphy.gif')} style={styles.image} />
+                <Image source={require('../../../../../assets/androidTag.gif')} style={styles.image} resizeMode='contain' />
             </View >
             <View style={{ flex: 1 }}>
-                <Text style={styles.header}>Nagimo (android)</Text>
+                <Text style={styles.header}>Nagimo</Text>
                 <Text style={styles.text}><Text style={{ fontWeight: 'bold' }}>Tap</Text> your phone against the tag</Text>
             </View >
             <View style={{ flex: 1 }}>

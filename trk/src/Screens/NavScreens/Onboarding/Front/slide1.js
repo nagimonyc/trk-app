@@ -11,7 +11,7 @@ const Slide1 = () => {
                 <Image source={require('../../../../../assets/climbing-illustration.png')} style={styles.image} />
             </View >
             <View style={{ flex: 1 }}>
-                <Text style={styles.header}>Nagimo</Text>
+                <Text style={styles.header}>Climb</Text>
                 <Text style={styles.text}>Climbed something you <Text style={{ fontWeight: 'bold' }}>loved</Text> but can’t keep a record of it?</Text>
             </View >
             <View style={{ flex: 1 }}>
