@@ -161,7 +161,7 @@ function RecordStack() {
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row'}}>
               <FeedbackButton
-                title="Feedback"
+                title="Help"
                 navigation={navigation}
               />
             </View>
@@ -176,7 +176,7 @@ function RecordStack() {
       <Stack.Screen
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
-        options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+        options={{ title: 'Help', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Detail"

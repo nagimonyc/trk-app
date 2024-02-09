@@ -15,6 +15,14 @@ export const AuthProvider = ({ children }) => {
     const [tapCount, setTapCount] = useState(0);
     const [isNewUser, setIsNewUser] = useState(false);
 
+    const resetOnboarding = () => {
+        setIsNewUser(true); // Set isNewUser back to true
+        if (currentUser) {
+            // Also update Firestore document for the current user
+            firestore().collection('users').doc(currentUser.uid).update({ isNewUser: true });
+        }
+    };
+
     async function onAuthStateChanged(user) {
         if (user) {
             try {
@@ -90,7 +98,7 @@ export const AuthProvider = ({ children }) => {
     // Return the provider component
     return (
         <AuthContext.Provider value={{
-            currentUser, initializing, role, tapCount, isNewUser, completeOnboarding
+            currentUser, initializing, role, tapCount, isNewUser, completeOnboarding, resetOnboarding
         }}>
             {children}
         </AuthContext.Provider>
