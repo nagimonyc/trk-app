@@ -278,7 +278,7 @@ const ClimbInputData = (props) => {
   async function handleAddClimb() {
     if (!validateInput()) return;
     let isReading = true;
-    androidPromptRef.current?.setVisible(true);
+    if (Platform.OS === 'android' && androidPromptRef.current) {androidPromptRef.current?.setVisible(true)};
     try {
         await NfcManager.requestTechnology(NfcTech.NfcA);
         isReading = false;
