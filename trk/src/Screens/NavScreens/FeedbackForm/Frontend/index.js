@@ -85,12 +85,10 @@ const FeedbackForm = ({ route }) => {
                   onChangeText={setExplanation}
                   placeholder="Enter reason"
                 ></TextInput>
-
-                <Button
-                  title="Submit review"
-                  disabled={!rating}
-                  onPress={handleFeedback}
-                />
+                
+                 <TouchableOpacity  onPress={handleFeedback} disabled={!rating}>
+                    <Text style={[{color: '#007aff', fontSize: 15, alignSelf: 'center', paddingTop: 10}]}>Submit Review</Text>
+                  </TouchableOpacity>
               </View>
 
             </View>
