@@ -11,8 +11,8 @@ const Slide1 = ({ onClose }) => {
                 <Image source={require('../../../../../assets/giphy.gif')} style={styles.image} />
             </View >
             <View style={{ flex: 1 }}>
-                <Text style={styles.header}>Enjoy our Beta</Text>
-                <Text style={styles.text}>Enjoy all your climbing memories in one place. And some bugs... too.</Text>
+                <Text style={styles.header}>Enjoy our App!</Text>
+                <Text style={styles.text}>This is an early version, expect some funky bugs sometimes. 😎</Text>
                 {/* And some bugs... too. */}
                 <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
                     <TouchableOpacity style={{ backgroundColor: '#FF8100', padding: 10, borderRadius: 5, marginTop: 20 }} onPress={onClose}>
