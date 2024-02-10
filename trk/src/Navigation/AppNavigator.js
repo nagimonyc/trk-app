@@ -67,13 +67,13 @@ const styles = StyleSheet.create({
     borderColor: '#fe8100',
     borderWidth: 1,
     display: 'flex',
-    justifyContent:'center',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   text: {
     color: '#4c6a78',
     textAlign: 'center',
-    fontSize: 12, 
+    fontSize: 12,
   },
   text_tracker: {
     color: '#fe8100',
@@ -159,16 +159,11 @@ function RecordStack() {
           headerBackTitleVisible: null,
           headerTitleAlign: 'center',
           headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row'}}>
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
               <FeedbackButton
                 title="Help"
                 navigation={navigation}
               />
-            </View>
-          ),
-          headerLeft: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
             </View>
           ),
         })}
@@ -265,11 +260,6 @@ function ProfileStack() {
               />
             </View>
           ),
-          headerLeft: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
-            </View>
-          ),
         })}
       />
       <Stack.Screen
@@ -364,18 +354,13 @@ function AnalyticsStack() {
           headerBackTitleVisible: false,
           headerTitleAlign: 'center',
           headerRight: () => (
-          <View style={{ display: 'flex', flexDirection: 'row' }}>
-            <View style={{ display: 'flex', flexDirection: 'row'}}>
-              <FeedbackButton
-                title="Feedback"
-                navigation={navigation}
-              />
-            </View>
-            </View>
-          ),
-          headerLeft: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <FeedbackButton
+                  title="Feedback"
+                  navigation={navigation}
+                />
+              </View>
             </View>
           ),
         })}
@@ -410,18 +395,13 @@ function ClimbInputStackScreen() {
         options={({ navigation }) => ({
           headerTitleAlign: 'center',
           headerRight: () => (
-          <View style={{ display: 'flex', flexDirection: 'row' }}>
-            <View style={{ display: 'flex', flexDirection: 'row'}}>
-              <FeedbackButton
-                title="Feedback"
-                navigation={navigation}
-              />
-            </View>
-            </View>
-          ),
-          headerLeft: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <Text style={{backgroundColor: '#fe8100', marginLeft: 10, fontSize: 12, fontWeight: '500', color: 'white', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10}}>BETA</Text>
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <FeedbackButton
+                  title="Feedback"
+                  navigation={navigation}
+                />
+              </View>
             </View>
           ),
         })}
