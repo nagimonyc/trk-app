@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native'; // Ensure you import useRoute
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'; // Ensure you import useRoute
 import NfcManager from 'react-native-nfc-manager';
 import AndroidPrompt from '../../../../Components/AndroidPrompt';
 import TapHistory from '../../../../Components/TapHistory';
@@ -12,7 +12,7 @@ function RecordScreen(props) {
     console.log('[TEST] RecordScreen called');
 
     const { isNewUser, completeOnboarding } = useContext(AuthContext);
-    const [showOnboarding, setShowOnboarding] = useState(isNewUser);
+    const [showOnboarding, setShowOnboarding] = useState(false);
     const route = useRoute(); // Use useRoute to access the current route
     const navigation = useNavigation(); // If not already using useNavigation
 
@@ -22,6 +22,12 @@ function RecordScreen(props) {
             setShowOnboarding(true);
         }
     }, [route.params]);
+
+    useEffect(() => {
+        if (isNewUser) {
+            setShowOnboarding(true);
+        }
+    });
 
 
     const handleCloseOnboarding = () => {

@@ -36,6 +36,9 @@ export const AuthProvider = ({ children }) => {
         }
 
         setCurrentUser(user);
+        if (user && user.isNewUser) {
+            setIsNewUser(user.isNewUser);
+        }
         if (initializing) setInitializing(false);
     }
 

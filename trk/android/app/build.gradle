@@ -81,8 +81,8 @@ android {
         applicationId "com.nagimo.Nagimo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20
-        versionName "20.0"
+        versionCode 23
+        versionName "23.0"
     }
     signingConfigs {
         debug {
