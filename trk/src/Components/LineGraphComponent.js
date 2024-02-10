@@ -5,7 +5,7 @@ import { Text } from 'react-native-paper';
 
 const LineGraphComponent = ({ data }) => {
     if (!data || data.length < 2) {
-        return (<View style={{width: Dimensions.get('window').width, display: 'flex', flexDirection: 'row', backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingVertical: 80}}><Text style={{color: '#8E8E90', fontWeight: '700', fontSize: 15}}>Keep tapping to see the graph 🧗🏼</Text></View>);
+        return (<View style={{width: Dimensions.get('window').width, display: 'flex', flexDirection: 'row', backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingVertical: 80}}><Text style={{color: '#8E8E90', fontWeight: 'bold', fontSize: 15}}>Keep tapping to see the graph 🧗🏼</Text></View>);
     }
 
     const screenWidth = Dimensions.get('window').width;
