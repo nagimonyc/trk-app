@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { AuthContext } from '../../../../Utils/AuthContext';
 import { fetchClimbData, getTapDetails, loadImageUrl, updateTap, archiveTap, handleUpdate, onFeedback, onDefinition, getSelectedIndex } from '../Backend/ClimbDetailLogic';
@@ -127,12 +127,104 @@ function ClimbDetail(props) {
     //  the reason i put this here is because we will eventually display name and grade here when we encode it onto the nfc tags 
     //  right now it means that if there is no wifi, something is shown on screen
   } else if (climbData.set === 'Competition') {
-    return (
-      <KeyboardAvoidingView style={{ flex: 1 }} // Make KeyboardAvoidingView take up the entire screen
-        behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjust behavior based on platform
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // Optional: adjust the offset
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    if (Platform.OS === 'ios') {
+      return (
+        < KeyboardAvoidingView style={{ flex: 1 }
+        } // Make KeyboardAvoidingView take up the entire screen
+          behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjust behavior based on platform
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // Optional: adjust the offset
+        >
+          < TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} >
+            <ScrollView>
+              <View style={styles.container}>
+                <View style={[styles.wrapper]}>
+                  <SafeAreaView />
+                  <View style={styles.top}>
+                    <View style={{ alignItems: 'center' }}>
+                      <View style={[styles.gradeCircle, { alignSelf: 'center' }]}>
+                        <Text style={{ alignItems: 'center' }}>{climbData.grade}</Text>
+                      </View>
+                      <Text style={styles.titleText}>{climbData.name}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.line}></View>
+
+
+                  <SafeAreaView style={styles.contentArea} >
+                    <View style={styles.group}>
+                      <Text style={styles.title}>IFSC score:</Text>
+                      <Text>{climbData.ifsc}</Text>
+                    </View>
+                    <View style={styles.group}>
+                      <Text style={styles.title}>Type:</Text>
+                      <Text>{climbData.type}</Text>
+                    </View>
+                    <View style={styles.group}>
+                      <Text>Completion</Text>
+                    </View>
+                    <View style={styles.segmentedControlContainer}>
+                      <SegmentedControl
+                        values={['Zone', 'Top']}
+                        tintColor="#007AFF"
+                        selectedIndex={completion === "Zone" ? 0 : 1} // set the initially selected index
+                        style={styles.segmentedControl}
+                        onChange={(event) => {
+                          setCompletion(event.nativeEvent.value);
+                        }}
+                      />
+                    </View>
+                    <View style={styles.group}>
+                      <Text>Attempts</Text>
+                      <View style={styles.segmentedControlContainer}>
+                        <SegmentedControl
+                          values={['⚡️', '2', '3', '4']}
+                          tintColor="#007AFF"
+                          selectedIndex={getSelectedIndex(attempts)} // set the initially selected index
+                          style={styles.segmentedControl}
+                          onChange={(event) => {
+                            setAttempts(event.nativeEvent.value);
+                          }}
+                        />
+                      </View>
+                    </View>
+                    <View style={styles.group}>
+                      <Text style={styles.title}>Witness 1</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholderTextColor={"#b1b1b3"}
+                        value={witness1}
+                        onChangeText={setWitness1}
+                        placeholder="Enter witness 1"
+                      />
+                    </View>
+                    <View style={styles.group}>
+                      <Text style={styles.title}>Witness 2</Text>
+                      <TextInput
+                        style={styles.input}
+                        placeholderTextColor={"#b1b1b3"}
+                        value={witness2}
+                        onChangeText={setWitness2}
+                        placeholder="Enter witness 2"
+                      />
+                    </View>
+                    <Button
+                      title="Update"
+                      disabled={!witness1 || !witness2 || !completion || !attempts}
+                      onPress={() => handleUpdate(completion, attempts, witness1, witness2, tapId)}
+                    >
+
+                    </Button>
+                  </SafeAreaView>
+
+                </View>
+              </View>
+            </ScrollView>
+          </TouchableWithoutFeedback >
+        </KeyboardAvoidingView >
+      )
+    } else {
+      return (
+        < TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false} >
           <ScrollView>
             <View style={styles.container}>
               <View style={[styles.wrapper]}>
@@ -217,9 +309,9 @@ function ClimbDetail(props) {
               </View>
             </View>
           </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
-    )
+        </TouchableWithoutFeedback >
+      )
+    }
   }
   else {
     return (
