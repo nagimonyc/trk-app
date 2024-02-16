@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TextInput, Button, TouchableWithoutFeedback, Keyboard, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { AuthContext } from '../../../../Utils/AuthContext';
 import { fetchClimbData, getTapDetails, loadImageUrl, updateTap, archiveTap, handleUpdate, onFeedback, onDefinition, getSelectedIndex } from '../Backend/ClimbDetailLogic';
@@ -128,93 +128,97 @@ function ClimbDetail(props) {
     //  right now it means that if there is no wifi, something is shown on screen
   } else if (climbData.set === 'Competition') {
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView>
-          <View style={styles.container}>
-            <View style={[styles.wrapper]}>
-              <SafeAreaView />
-              <View style={styles.top}>
-                <View style={styles.topLeft}>
-                  <View style={styles.gradeCircle}>
-                    <Text>{climbData.grade}</Text>
+      <KeyboardAvoidingView style={{ flex: 1 }} // Make KeyboardAvoidingView take up the entire screen
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjust behavior based on platform
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // Optional: adjust the offset
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <ScrollView>
+            <View style={styles.container}>
+              <View style={[styles.wrapper]}>
+                <SafeAreaView />
+                <View style={styles.top}>
+                  <View style={{ alignItems: 'center' }}>
+                    <View style={[styles.gradeCircle, { alignSelf: 'center' }]}>
+                      <Text style={{ alignItems: 'center' }}>{climbData.grade}</Text>
+                    </View>
+                    <Text style={styles.titleText}>{climbData.name}</Text>
                   </View>
-
-                  <Text style={styles.titleText}>{climbData.name}</Text>
                 </View>
-              </View>
-              <View style={styles.line}></View>
+                <View style={styles.line}></View>
 
 
-              <SafeAreaView style={styles.contentArea} >
-                <View style={styles.group}>
-                  <Text style={styles.title}>IFSC score:</Text>
-                  <Text>{climbData.ifsc}</Text>
-                </View>
-                <View style={styles.group}>
-                  <Text style={styles.title}>Type:</Text>
-                  <Text>{climbData.type}</Text>
-                </View>
-                <View style={styles.group}>
-                  <Text>Completion</Text>
-                </View>
-                <View style={styles.segmentedControlContainer}>
-                  <SegmentedControl
-                    values={['Zone', 'Top']}
-                    tintColor="#007AFF"
-                    selectedIndex={completion === "Zone" ? 0 : 1} // set the initially selected index
-                    style={styles.segmentedControl}
-                    onChange={(event) => {
-                      setCompletion(event.nativeEvent.value);
-                    }}
-                  />
-                </View>
-                <View style={styles.group}>
-                  <Text>Attempts</Text>
+                <SafeAreaView style={styles.contentArea} >
+                  <View style={styles.group}>
+                    <Text style={styles.title}>IFSC score:</Text>
+                    <Text>{climbData.ifsc}</Text>
+                  </View>
+                  <View style={styles.group}>
+                    <Text style={styles.title}>Type:</Text>
+                    <Text>{climbData.type}</Text>
+                  </View>
+                  <View style={styles.group}>
+                    <Text>Completion</Text>
+                  </View>
                   <View style={styles.segmentedControlContainer}>
                     <SegmentedControl
-                      values={['⚡️', '2', '3', '4']}
+                      values={['Zone', 'Top']}
                       tintColor="#007AFF"
-                      selectedIndex={getSelectedIndex(attempts)} // set the initially selected index
+                      selectedIndex={completion === "Zone" ? 0 : 1} // set the initially selected index
                       style={styles.segmentedControl}
                       onChange={(event) => {
-                        setAttempts(event.nativeEvent.value);
+                        setCompletion(event.nativeEvent.value);
                       }}
                     />
                   </View>
-                </View>
-                <View style={styles.group}>
-                  <Text style={styles.title}>Witness 1</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholderTextColor={"#b1b1b3"}
-                    value={witness1}
-                    onChangeText={setWitness1}
-                    placeholder="Enter witness 1"
-                  />
-                </View>
-                <View style={styles.group}>
-                  <Text style={styles.title}>Witness 2</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholderTextColor={"#b1b1b3"}
-                    value={witness2}
-                    onChangeText={setWitness2}
-                    placeholder="Enter witness 2"
-                  />
-                </View>
-                <Button
-                  title="Update"
-                  disabled={!witness1 || !witness2 || !completion || !attempts}
-                  onPress={() => handleUpdate(completion, attempts, witness1, witness2, tapId)}
-                >
+                  <View style={styles.group}>
+                    <Text>Attempts</Text>
+                    <View style={styles.segmentedControlContainer}>
+                      <SegmentedControl
+                        values={['⚡️', '2', '3', '4']}
+                        tintColor="#007AFF"
+                        selectedIndex={getSelectedIndex(attempts)} // set the initially selected index
+                        style={styles.segmentedControl}
+                        onChange={(event) => {
+                          setAttempts(event.nativeEvent.value);
+                        }}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.group}>
+                    <Text style={styles.title}>Witness 1</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholderTextColor={"#b1b1b3"}
+                      value={witness1}
+                      onChangeText={setWitness1}
+                      placeholder="Enter witness 1"
+                    />
+                  </View>
+                  <View style={styles.group}>
+                    <Text style={styles.title}>Witness 2</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholderTextColor={"#b1b1b3"}
+                      value={witness2}
+                      onChangeText={setWitness2}
+                      placeholder="Enter witness 2"
+                    />
+                  </View>
+                  <Button
+                    title="Update"
+                    disabled={!witness1 || !witness2 || !completion || !attempts}
+                    onPress={() => handleUpdate(completion, attempts, witness1, witness2, tapId)}
+                  >
 
-                </Button>
-              </SafeAreaView>
+                  </Button>
+                </SafeAreaView>
 
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     )
   }
   else {
@@ -230,9 +234,9 @@ function ClimbDetail(props) {
                 </View>
                 <Text style={styles.setText}>Set by Eddie P.</Text>
                 <View style={styles.button}>
-                  <TouchableOpacity  onPress={() => onFeedback(navigation, climbData, climbId)}>
-                    <Text style={[{color: '#007aff', marginLeft: 50, fontSize: 15}]}>Review this climb</Text>
-                    </TouchableOpacity>
+                  <TouchableOpacity onPress={() => onFeedback(navigation, climbData, climbId)}>
+                    <Text style={[{ color: '#007aff', marginLeft: 50, fontSize: 15 }]}>Review this climb</Text>
+                  </TouchableOpacity>
                 </View>
 
               </View>
@@ -240,53 +244,53 @@ function ClimbDetail(props) {
 
               <View style={styles.verticalAlignmentContainer}>
 
-              <View style={styles.top}>
-                <View style={styles.dataPair}>
-                  <Text style={styles.subheading}>Grade</Text>
-                  <View style={styles.gradeCircle}>
-                    <Text style={[{color: 'black', alignSelf: 'center'}]}>{climbData.grade}</Text>
-                  </View>
+                <View style={styles.top}>
+                  <View style={styles.dataPair}>
+                    <Text style={styles.subheading}>Grade</Text>
+                    <View style={styles.gradeCircle}>
+                      <Text style={[{ color: 'black', alignSelf: 'center' }]}>{climbData.grade}</Text>
+                    </View>
                   </View>
                   <View style={styles.dataPair}>
-                  <Text style={styles.subheading}>Name</Text>
-                  <Text style={styles.titleText}>{climbData.name}</Text>
+                    <Text style={styles.subheading}>Name</Text>
+                    <Text style={styles.titleText}>{climbData.name}</Text>
                   </View>
-       
-
-              </View>
-
-              <View style={styles.descriptorsContainer}>
-                {climbData.descriptors && climbData.descriptors.map((descriptor, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.descriptorButton}
-                    onPress={() => onDefinition(navigation, descriptor)}
-                    activeOpacity={0.6}
-                  >
-                    <Text style={styles.descriptorText}>{descriptor}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
 
 
-              {climbData.info && (
-                <View style={styles.infoBox}>
-                  <Text style={styles.subheading}>Info</Text>
-                  <Text style={styles.info}>{climbData.info}</Text>
                 </View>
-              )}
 
-<View style={styles.climbPhoto}>
-                <Text style={styles.subheading}>Photo</Text>
-                {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%', borderRadius: 5 }} /> : <Text>Loading...</Text>}
-              </View>
-              {role == 'climber' && <>
-                <View style={[styles.button, {marginTop: 40, alignItems: 'center', marginRight: 30}]}>
-                  <TouchableOpacity  onPress={() => archiveTap(navigation, tapId)} color="red" >
-                    <Text style={[{color: '#fe0100', fontSize: 15}]}>Delete</Text>
-                  </TouchableOpacity>
+                <View style={styles.descriptorsContainer}>
+                  {climbData.descriptors && climbData.descriptors.map((descriptor, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={styles.descriptorButton}
+                      onPress={() => onDefinition(navigation, descriptor)}
+                      activeOpacity={0.6}
+                    >
+                      <Text style={styles.descriptorText}>{descriptor}</Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
-              </>}
+
+
+                {climbData.info && (
+                  <View style={styles.infoBox}>
+                    <Text style={styles.subheading}>Info</Text>
+                    <Text style={styles.info}>{climbData.info}</Text>
+                  </View>
+                )}
+
+                <View style={styles.climbPhoto}>
+                  <Text style={styles.subheading}>Photo</Text>
+                  {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%', borderRadius: 5 }} /> : <Text>Loading...</Text>}
+                </View>
+                {role == 'climber' && <>
+                  <View style={[styles.button, { marginTop: 40, alignItems: 'center', marginRight: 30 }]}>
+                    <TouchableOpacity onPress={() => archiveTap(navigation, tapId)} color="red" >
+                      <Text style={[{ color: '#fe0100', fontSize: 15 }]}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+                </>}
               </View>
             </View>
           </View>
@@ -333,12 +337,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
     flexWrap: 'wrap',
-    maxWidth: '60%',
+    // maxWidth: '60%',
     color: 'black',
+    marginTop: 5
   },
- dataPair: {
+  dataPair: {
     alignItems: 'flex-start',
-    alignSelf: 'stretch', 
+    alignSelf: 'stretch',
     width: '50%',
 
   },
@@ -350,8 +355,7 @@ const styles = StyleSheet.create({
     color: 'black',
     borderColor: '#fe8100',
     borderWidth: 1,
-    marginRight: 8,
-    padding: 8, 
+    padding: 8,
     alignItems: 'center', // Center content horizontally
     justifyContent: 'center', // Center content vertically
   },
@@ -437,11 +441,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     height: '100%',
-  }, 
-  setText:{
-    color: 'black', 
-    fontWeight: '400', 
-    marginTop: 10, 
+  },
+  setText: {
+    color: 'black',
+    fontWeight: '400',
+    marginTop: 10,
     marginLeft: 5,
     fontSize: 13,
   },
