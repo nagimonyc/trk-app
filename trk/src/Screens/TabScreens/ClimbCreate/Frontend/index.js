@@ -303,6 +303,11 @@ const ClimbInputData = (props) => {
 
         const { addClimb } = ClimbsApi();
         const newClimbId = await addClimb(climb); //Adding the climb to firebase
+
+        if (newClimbId) {
+          const climbId = newClimbId._documentPath._parts[1]; // Get the document ID
+          await ClimbsApi().updateClimb(climbId, { climb_id: climbId }); // Update the document to include the climb_id
+        }
         
         //Check if set is a custom set (make), add climb and setter
         const filteredSets = setItems.filter(set => set.value === 'custom');
