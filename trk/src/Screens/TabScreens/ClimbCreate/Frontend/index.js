@@ -300,31 +300,28 @@ const ClimbInputData = (props) => {
         setter: setter.uid,
         timestamp: new Date(),
       };
-      
-        const { addClimb } = ClimbsApi();
-        const newClimbId = await addClimb(climb); //Adding the climb to firebase
 
-        if (newClimbId) {
-          const climbId = newClimbId._documentPath._parts[1]; // Get the document ID
-          await ClimbsApi().updateClimb(climbId, { climb_id: climbId }); // Update the document to include the climb_id
-        }
-        
-        //Check if set is a custom set (make), add climb and setter
-        const filteredSets = setItems.filter(set => set.value === 'custom');
-        if (filteredSets.length === 0) {
-          //Use the existing setName
-          //console.log('Set already exists!: ', selectedValue);
-          const oldSet = await SetsApi().getSetByName(String(selectedValue).trim());
-          console.log(oldSet);
-          if (oldSet && oldSet.docs[0]) {
-            const setId = oldSet.docs[0].id;
-            const setData = oldSet.docs[0].data();
-            const newClimbs = [newClimbId._documentPath._parts[1]].concat((setData.climbs? setData.climbs: [])); //replace with newClimbId
-            const newSetters = [currentUser.uid].concat((setData.setters? setData.setters: []));
-            await SetsApi().updateSet(setId, {climbs: newClimbs, setters: newSetters});
-          } else {
-            console.error('Set Exists But Not Found!');
-          }
+      const { addClimb } = ClimbsApi();
+      const newClimbId = await addClimb(climb); //Adding the climb to firebase
+
+      if (newClimbId) {
+        const climbId = newClimbId._documentPath._parts[1]; // Get the document ID
+        await ClimbsApi().updateClimb(climbId, { climb_id: climbId }); // Update the document to include the climb_id
+      }
+
+      //Check if set is a custom set (make), add climb and setter
+      const filteredSets = setItems.filter(set => set.value === 'custom');
+      if (filteredSets.length === 0) {
+        //Use the existing setName
+        //console.log('Set already exists!: ', selectedValue);
+        const oldSet = await SetsApi().getSetByName(String(selectedValue).trim());
+        console.log(oldSet);
+        if (oldSet && oldSet.docs[0]) {
+          const setId = oldSet.docs[0].id;
+          const setData = oldSet.docs[0].data();
+          const newClimbs = [newClimbId._documentPath._parts[1]].concat((setData.climbs ? setData.climbs : [])); //replace with newClimbId
+          const newSetters = [currentUser.uid].concat((setData.setters ? setData.setters : []));
+          await SetsApi().updateSet(setId, { climbs: newClimbs, setters: newSetters });
         } else {
           console.error('Set Exists But Not Found!');
         }
