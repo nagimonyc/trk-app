@@ -202,22 +202,17 @@ const SessionDetail = ({route}) => {
         const firstTimestamp = firstTapItem.timestamp.toDate(); // Most recent
         const lastTimestamp = lastTapItem.timestamp.toDate(); // Oldest
     
-        // Calculate the difference in hours
-        const differenceInHours = (firstTimestamp - lastTimestamp) / (1000 * 60 * 60);
-    
-        // If the difference is less than an hour, return in minutes
-        if (differenceInHours < 1) {
-            const differenceInMinutes = Math.round((firstTimestamp - lastTimestamp) / (1000 * 60));
-            setDuration(`${differenceInMinutes} mins`);
-        }
-    
-        // Otherwise, round to the nearest half hour and return in hours
-        const roundedHours = Math.round(differenceInHours * 2) / 2;
-        setDuration(`${roundedHours} hrs`);
+        // Calculate the difference in minutes directly
+        const differenceInMinutes = Math.round((firstTimestamp - lastTimestamp) / (1000 * 60));
+        
+        // Handle singular and plural forms for "minute"
+        const durationText = differenceInMinutes === 1 ? `${differenceInMinutes} min` : `${differenceInMinutes} mins`;
+        setDuration(durationText);
     } catch (error){
         console.error('Error while calculating duration: ', error.message);
     }
 };
+
     
     
     
