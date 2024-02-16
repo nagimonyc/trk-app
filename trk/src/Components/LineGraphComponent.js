@@ -35,7 +35,7 @@ const LineGraphComponent = ({ data }) => {
 
     let linePathD = "M";
     sortedData.forEach((climb, index) => {
-        const x = normalizeTimestamp(climb.tapTimestamp);
+        const x = normalizeTimestamp(climb.tapTimestamp) - (index === 0 || index === sortedData.length - 1? 0 : 10);
         const y = uniqueGrades.indexOf(climb.grade) * yScale + yScale;
         linePathD += `${index === 0 ? '' : 'L'}${x},${y} `;
     });
@@ -73,32 +73,61 @@ const LineGraphComponent = ({ data }) => {
                     const isLowest = climb.grade === uniqueGrades[uniqueGrades.length - 1] && !lowestRendered;
                     if (isHighest) highestRendered = true;
                     if (isLowest) lowestRendered = true;
-
-                    return (
-                        <React.Fragment key={`fragment-${index}`}>
-                            <Circle
-                                cx={normalizeTimestamp(climb.tapTimestamp)}
-                                cy={y}
-                                r="5"
-                                fill="#fe8100"
-                                stroke="white"
-                                strokeWidth="0.5"
-                            />
-                            {(isHighest || isLowest) && (
-                                <SVGText
-                                    x={normalizeTimestamp(climb.tapTimestamp)}
-                                    y={y - 15} // Adjusted for visibility
-                                    fill="#fe8100"
-                                    fontWeight="500"
-                                    fontSize="12"
-                                    textAnchor="middle"
-                                    alignmentBaseline="middle"
-                                >
-                                    {climb.grade}
-                                </SVGText>
-                            )}
-                        </React.Fragment>
-                    );
+                    
+                    if (index === 0 || index === sortedData.length - 1) {
+                            return (
+                                <React.Fragment key={`fragment-${index}`}>
+                                    <Circle
+                                        cx={normalizeTimestamp(climb.tapTimestamp)}
+                                        cy={y}
+                                        r="5"
+                                        fill="#fe8100"
+                                        stroke="white"
+                                        strokeWidth="0.5"
+                                    />
+                                    {(isHighest || isLowest) && (
+                                        <SVGText
+                                            x={normalizeTimestamp(climb.tapTimestamp)}
+                                            y={y - 15} // Adjusted for visibility
+                                            fill="#fe8100"
+                                            fontWeight="500"
+                                            fontSize="12"
+                                            textAnchor="middle"
+                                            alignmentBaseline="middle"
+                                        >
+                                            {climb.grade}
+                                        </SVGText>
+                                    )}
+                                </React.Fragment>
+                            ); 
+                        }
+                        else {
+                            return (
+                                <React.Fragment key={`fragment-${index}`}>
+                                    <Circle
+                                        cx={normalizeTimestamp(climb.tapTimestamp) - 10}
+                                        cy={y}
+                                        r="5"
+                                        fill="#fe8100"
+                                        stroke="white"
+                                        strokeWidth="0.5"
+                                    />
+                                    {(isHighest || isLowest) && (
+                                        <SVGText
+                                            x={normalizeTimestamp(climb.tapTimestamp) - 10}
+                                            y={y - 15} // Adjusted for visibility
+                                            fill="#fe8100"
+                                            fontWeight="500"
+                                            fontSize="12"
+                                            textAnchor="middle"
+                                            alignmentBaseline="middle"
+                                        >
+                                            {climb.grade}
+                                        </SVGText>
+                                    )}
+                                </React.Fragment>
+                            ); 
+                    }
                 })}
             </Svg>
         </View>

@@ -1,12 +1,12 @@
-import React, { useState, useContext } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity} from "react-native";
+import React, { useState, useContext, useEffect  } from "react";
+import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, Switch } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import SignOut from "./SignOut";
 
 const Settings = () => {
-    const { currentUser } = useContext(AuthContext);
+    const { currentUser, role } = useContext(AuthContext);
     const handleDeleteAccount = async () => {
         Alert.alert(
             "Delete Account",
@@ -36,8 +36,46 @@ const Settings = () => {
             ]
         );
     };
+
+    const [nyuCompIsEnabled, setNyuCompIsEnabled] = useState(false);
+
+    useEffect(() => {
+         console.log(currentUser);
+        const fetchSettings = async () => {
+            const userUID = currentUser.uid;
+            const doc = await firestore().collection('users').doc(userUID).get();
+            if (doc.exists) {
+                setNyuCompIsEnabled(doc.data().nyuComp || false);
+            }
+        };
+
+        fetchSettings();
+    }, [currentUser.uid]); // Depend on currentUser.uid to refetch if it changes
+
+    const toggleSwitchNyu = async () => {
+        const newNyuCompIsEnabled = !nyuCompIsEnabled;
+        setNyuCompIsEnabled(newNyuCompIsEnabled);
+
+        try {
+            const userUID = currentUser.uid;
+            await firestore().collection('users').doc(userUID).update({
+                nyuComp: newNyuCompIsEnabled,
+            });
+        } catch (error) {
+            console.error("Error updating user settings:", error);
+            setNyuCompIsEnabled(!newNyuCompIsEnabled);
+        }
+    };
+
+
     return (
         <SafeAreaView style={styles.container}>
+
+           {role === 'climber' && (<View style={styles.switchContainer}>
+                <Text style={({marginBottom: 10, fontSize: 15})}>NYU tryouts?</Text>
+                <Switch onValueChange={toggleSwitchNyu} value={nyuCompIsEnabled} />
+
+            </View>)}
             <View style={styles.innerContainer}>
             <TouchableOpacity 
                 style={[styles.button, { backgroundColor: '#D2122E' }]} 
@@ -80,8 +118,14 @@ const styles = StyleSheet.create({
         color: 'white',  
         fontSize: 15,
         fontWeight: '400'
-    }
+    }, 
+    switchContainer: {
+            alignItems: 'center',
+            marginTop: 20,
+            marginBottom: 100,
+          },
     
+
 });
 
 export default Settings;
