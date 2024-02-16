@@ -50,10 +50,10 @@ const ClimbInputData = (props) => {
         setInfo(climbData.info);
       }
     };
-  
+
     fetchData();
   }, [isEditMode, climbData]); // Dependencies
-  
+
 
 
 
@@ -129,21 +129,21 @@ const ClimbInputData = (props) => {
       const existingCustom = prevItems.find(item => item.value === 'custom');
       const searchTextLower = searchText.toLowerCase().trim();
       const exists = prevItems.some(item => item.label.toLowerCase().trim() === searchTextLower);
-  
+
       if (searchText && !exists) {
         // If there's searchText and it does not match any existing item, add "Add custom"
         if (!existingCustom) {
-          return [...prevItems, { label: `Add "${searchText}"`, value: 'custom', name: searchText.trim()}];
+          return [...prevItems, { label: `Add "${searchText}"`, value: 'custom', name: searchText.trim() }];
         } else {
           // Update the existing custom item label without removing it
-          return prevItems.map(item => item.value === 'custom' ? { ...item, label: `Add "${searchText}"`, name: searchText.trim()} : item);
+          return prevItems.map(item => item.value === 'custom' ? { ...item, label: `Add "${searchText}"`, name: searchText.trim() } : item);
         }
       } else {
         // If searchText is empty or there's a match, remove "Add custom" option
         return prevItems.filter(item => item.value !== 'custom');
       }
     });
-  }, [searchText]);  
+  }, [searchText]);
 
   const handleImagePick = async () => {
     //console.log("handleImagePick called");
@@ -198,11 +198,11 @@ const ClimbInputData = (props) => {
     };
 
     try {
-    const { updateClimb } = ClimbsApi();
-    const newClimbId = await updateClimb(climbData.id, updatedClimb);
-    //console.log(newClimbId);
-    if (newClimbId) {
-    //Check if set is a custom set (make), add climb and setter
+      const { updateClimb } = ClimbsApi();
+      const newClimbId = await updateClimb(climbData.id, updatedClimb);
+      //console.log(newClimbId);
+      if (newClimbId) {
+        //Check if set is a custom set (make), add climb and setter
         const filteredSets = setItems.filter(set => set.value === 'custom');
         //console.log(newClimbId);
 
@@ -225,7 +225,7 @@ const ClimbInputData = (props) => {
               } else {
                 console.error('Climb has a set, but the set has no record of the climb [ITEMS EXIST]');
               }
-              await SetsApi().updateSet(setObjId, {climbs: climbs, setters: setters}); //Removing the old climb and setter
+              await SetsApi().updateSet(setObjId, { climbs: climbs, setters: setters }); //Removing the old climb and setter
             } else {
               console.error('Climb has a set, but the set has no record of the climb');
             }
@@ -240,9 +240,9 @@ const ClimbInputData = (props) => {
           if (oldSet && oldSet.docs[0]) {
             const setId = oldSet.docs[0].id;
             const setData = oldSet.docs[0].data();
-            const newClimbs = [newClimbId].concat((setData.climbs? setData.climbs: [])); //replace with newClimbId
-            const newSetters = [currentUser.uid].concat((setData.setters? setData.setters: []));
-            await SetsApi().updateSet(setId, {climbs: newClimbs, setters: newSetters});
+            const newClimbs = [newClimbId].concat((setData.climbs ? setData.climbs : [])); //replace with newClimbId
+            const newSetters = [currentUser.uid].concat((setData.setters ? setData.setters : []));
+            await SetsApi().updateSet(setId, { climbs: newClimbs, setters: newSetters });
           } else {
             console.error('Set Exists But Not Found!');
           }
@@ -268,39 +268,39 @@ const ClimbInputData = (props) => {
 
         Alert.alert("Success", "Climb updated successfully");
       }
-     } catch (err) {
-        Alert.alert("Error updating climb");
-        console.error(err);
-      }
+    } catch (err) {
+      Alert.alert("Error updating climb");
+      console.error(err);
+    }
   }
 
   //Altered to include Set Details
   async function handleAddClimb() {
     if (!validateInput()) return;
     let isReading = true;
-    if (Platform.OS === 'android' && androidPromptRef.current) {androidPromptRef.current?.setVisible(true)};
+    if (Platform.OS === 'android' && androidPromptRef.current) { androidPromptRef.current?.setVisible(true) };
     try {
-        await NfcManager.requestTechnology(NfcTech.NfcA);
-        isReading = false;
-        await ensurePasswordProtection();
-        let imagesArray = [];
-        if (image && image.path) {
-            const newImageRef = await uploadImage(image.path);
-            imagesArray.push(newImageRef);
-        }
-        const climb = {
-          name,
-          grade,
-          gym,
-          type,
-          set: selectedValue,
-          ifsc,
-          info,
-          images: imagesArray,
-          setter: setter.uid,
-          timestamp: new Date(),
+      await NfcManager.requestTechnology(NfcTech.NfcA);
+      isReading = false;
+      await ensurePasswordProtection();
+      let imagesArray = [];
+      if (image && image.path) {
+        const newImageRef = await uploadImage(image.path);
+        imagesArray.push(newImageRef);
+      }
+      const climb = {
+        name,
+        grade,
+        gym,
+        type,
+        set: selectedValue,
+        ifsc,
+        info,
+        images: imagesArray,
+        setter: setter.uid,
+        timestamp: new Date(),
       };
-
+      
         const { addClimb } = ClimbsApi();
         const newClimbId = await addClimb(climb); //Adding the climb to firebase
 
@@ -326,42 +326,45 @@ const ClimbInputData = (props) => {
             console.error('Set Exists But Not Found!');
           }
         } else {
-          //console.log('New Set to be Created!');
-          const setObj = {
-            archived: false,
-            name: filteredSets[0].name,
-            climbs: [newClimbId._documentPath._parts[1]], //replace with newClimbId
-            setters: [currentUser.uid]
-          }
-          await SetsApi().addSet(setObj);
+          console.error('Set Exists But Not Found!');
         }
-        
-        const climbBytes = await writeClimb(newClimbId._documentPath._parts[1], grade, name);
+      } else {
+        //console.log('New Set to be Created!');
+        const setObj = {
+          archived: false,
+          name: filteredSets[0].name,
+          climbs: [newClimbId._documentPath._parts[1]], //replace with newClimbId
+          setters: [currentUser.uid]
+        }
+        await SetsApi().addSet(setObj);
+      }
 
-        //await writeSignature(climbBytes); For now, always fails
+      const climbBytes = await writeClimb(newClimbId._documentPath._parts[1], grade, name);
 
-        // Reset form values here since NFC and addClimb were successful
-        setName("");
-        setGrade("");
-        setGym(null);
-        setImage("");
-        setType("Boulder");
-        setInfo('');
-        setSet(null);
-        setSelectedValue(null);
-        setIfsc("");
-        setReload(current =>  !current); //To reload sets (with newly created one too!)
+      //await writeSignature(climbBytes); For now, always fails
+
+      // Reset form values here since NFC and addClimb were successful
+      setName("");
+      setGrade("");
+      setGym(null);
+      setImage("");
+      setType("Boulder");
+      setInfo('');
+      setSet(null);
+      setSelectedValue(null);
+      setIfsc("");
+      setReload(current => !current); //To reload sets (with newly created one too!)
     } catch (ex) {
-        if (isReading) {
-            Alert.alert('Action', 'Climb tagging cancelled.', [{ text: 'OK' }]);
-        } else {
-            Alert.alert('Error', ex.message || 'An error occurred', [{ text: 'OK' }]);
-        }
+      if (isReading) {
+        Alert.alert('Action', 'Climb tagging cancelled.', [{ text: 'OK' }]);
+      } else {
+        Alert.alert('Error', ex.message || 'An error occurred', [{ text: 'OK' }]);
+      }
     } finally {
-        NfcManager.cancelTechnologyRequest().catch(() => 0);
-        androidPromptRef.current?.setVisible(false);
+      NfcManager.cancelTechnologyRequest().catch(() => 0);
+      androidPromptRef.current?.setVisible(false);
     }
-}
+  }
 
   const confirmDelete = () => {
     Alert.alert(
@@ -400,7 +403,7 @@ const ClimbInputData = (props) => {
           } else {
             console.error('Climb has a set, but the set has no record of the climb [ITEMS EXIST]');
           }
-          await SetsApi().updateSet(setObjId, {climbs: climbs, setters: setters}); //Removing the old climb and setter
+          await SetsApi().updateSet(setObjId, { climbs: climbs, setters: setters }); //Removing the old climb and setter
         } else {
           console.error('Climb has a set, but the set has no record of the climb');
         }
@@ -500,42 +503,42 @@ const ClimbInputData = (props) => {
 
               <Text style={styles.label}>Set</Text>
 
-                <DropDownPicker
-                  listMode="SCROLLVIEW"
-                  open={setsOpen}
-                  maxHeight={2000}
-                  dropDownDirection="BOTTOM"
-                  nestedScrollEnabled={true}
-                  setOpen={setSetsOpen}
-                  value={set}
-                  onSelectItem={(item)=>{
-                    if (item && item.value && item.label) {
-                      setSet(item.value);
-                      if (item.value === 'custom') {
-                        setSelectedValue(item.name);
-                      } else {
-                        setSelectedValue(item.label);
-                      }
+              <DropDownPicker
+                listMode="SCROLLVIEW"
+                open={setsOpen}
+                maxHeight={2000}
+                dropDownDirection="BOTTOM"
+                nestedScrollEnabled={true}
+                setOpen={setSetsOpen}
+                value={set}
+                onSelectItem={(item) => {
+                  if (item && item.value && item.label) {
+                    setSet(item.value);
+                    if (item.value === 'custom') {
+                      setSelectedValue(item.name);
+                    } else {
+                      setSelectedValue(item.label);
                     }
-                  }}
-                  items={setItems}
-                  containerStyle={{ height: 60, zIndex: 500}}
-                  style={styles.dropdown}
-                  dropDownContainerStyle={{
-                    backgroundColor: '#e0e0e0',
-                    borderColor: '#e0e0e0',
-                    borderWidth: 1,
-                  }}
-                  setItems={setSetItems}
-                  searchable={true}
-                  searchPlaceholder="Search or add..."
-                  searchTextInputProps={{
-                    onChangeText: text => setSearchText(text),
-                    value: searchText,
-                  }}
-                  placeholderStyle={{ color: 'grey', fontSize: 18 }}
-                  textStyle={{ fontSize: 18 }}
-                />
+                  }
+                }}
+                items={setItems}
+                containerStyle={{ height: 60, zIndex: 500 }}
+                style={styles.dropdown}
+                dropDownContainerStyle={{
+                  backgroundColor: '#e0e0e0',
+                  borderColor: '#e0e0e0',
+                  borderWidth: 1,
+                }}
+                setItems={setSetItems}
+                searchable={true}
+                searchPlaceholder="Search or add..."
+                searchTextInputProps={{
+                  onChangeText: text => setSearchText(text),
+                  value: searchText,
+                }}
+                placeholderStyle={{ color: 'grey', fontSize: 18 }}
+                textStyle={{ fontSize: 18 }}
+              />
 
               <Text style={styles.label}>More Info</Text>
               <TextInput
@@ -566,7 +569,7 @@ const ClimbInputData = (props) => {
             {
               isEditMode ?
                 (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                  <Button title="Update Climb" onPress={handleUpdateClimb} disabled={!name || !grade || !gym || !set}/>
+                  <Button title="Update Climb" onPress={handleUpdateClimb} disabled={!name || !grade || !gym || !set} />
                 </View>) :
                 <Button title="Add Climb" onPress={handleAddClimb} disabled={!name || !grade || !gym || !set} />
             }
