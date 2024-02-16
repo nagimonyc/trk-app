@@ -135,6 +135,30 @@ const GymDaily = ({navigation}) => {
   const [selectedSetId, setSelectedSetId] = useState(null);
   const [sets, setSets] = useState([]);
 
+  
+
+
+  useEffect(() => {
+    const getSetClimbs = async () => {
+      //console.log('Here for sets');
+      const climbs = await fetchSetClimbs(userId, sets[selectedSetId]);
+      //console.log('Climbs fetched: ', climbs);
+      if (climbs && climbs.length > 0) {
+        setYourClimbs(prev => climbs);
+        setTotalClimbs(climbs? climbs.length.toString(): '0');
+        //console.log('Climbs Set!');
+      } else {
+        setYourClimbs([]);
+        setTotalClimbs('0');
+
+      }
+    };
+    if (selectedSetId != null){
+      //console.log('Tried!');
+      getSetClimbs();
+    }
+  }, [selectedSetId]);
+
   return (
     <ScrollView>
       <SafeAreaView>
@@ -148,7 +172,7 @@ const GymDaily = ({navigation}) => {
                   placeholder="Commercial"
                   style={{height: 40}}
                   containerStyle={{marginTop: 30}}
-                  zIndex={100}
+                  zIndex={2000}
                   listMode="SCROLLVIEW"
             />}
           </View>

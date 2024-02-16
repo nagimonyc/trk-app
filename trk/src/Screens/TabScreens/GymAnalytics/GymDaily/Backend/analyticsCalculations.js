@@ -2,10 +2,11 @@ import ClimbsApi from "../../../../../api/ClimbsApi";
 import TapsApi from "../../../../../api/TapsApi";
 import CommentsApi from "../../../../../api/CommentsApi";
 
-export const fetchSetClimbs = async (userId, setName = 'Commercial') => { //You are selecting by Set already!
+export const fetchSetClimbs = async (userId, setName) => { //You are selecting by Set already!
   const { getClimbsBySomeField } = ClimbsApi();
   try {
-    const querySnapshot = await getClimbsBySomeField('set', setName);
+    //console.log('Set Name: ', setName);
+    const querySnapshot = await getClimbsBySomeField('set', String(setName.label));
     if (querySnapshot && querySnapshot.docs) {
       const climbs = querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -32,7 +33,7 @@ export const fetchSetClimbs = async (userId, setName = 'Commercial') => { //You 
 export const fetchSets = async () => { //You are selecting by Set already!
   //const { getClimbsBySomeField } = ClimbsApi();
   try {
-    const querySnapshot = await ClimbsApi().getClimbsBySomeField('gym', 'dSlDcmXq4WHD5iyvYXFi');
+    const querySnapshot = await ClimbsApi().getClimbsBySomeField('gym', 'TDrC1lRRjbMuMI06pONY'); //Movement ID
     if (querySnapshot && querySnapshot.docs) {
       const climbs = querySnapshot.docs.map(doc => ({
         id: doc.id,
