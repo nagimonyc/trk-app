@@ -162,20 +162,34 @@ const GymDaily = ({navigation}) => {
   return (
     <ScrollView>
       <SafeAreaView>
-          <View style={{width: '100%', display: 'flex',flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 10}}>
+          
             {sets && sets.length > 0 && <DropDownPicker
+                  listMode="SCROLLVIEW"
                   open={openSetPicker}
+                  maxHeight={2000}
+                  dropDownDirection="BOTTOM"
+                  nestedScrollEnabled={true}
+                  setOpen={setOpenSetPicker}
                   value={selectedSetId}
                   items={sets}
-                  setOpen={setOpenSetPicker}
                   setValue={setSelectedSetId}
+                  containerStyle={{marginTop: 20, height: 50, zIndex: 1000, width: 340, alignSelf: 'center',}}
+                  dropDownContainerStyle={{
+                    backgroundColor: '#e0e0e0',
+                    borderColor: 'black',
+                    borderWidth: 1,
+                  }}
+                  labelStyle={{
+               
+                    fontWeight: 'bold' // Make the text a little bolder
+                  }}
                   placeholder="Commercial"
-                  style={{height: 40}}
-                  containerStyle={{marginTop: 30}}
+                  style={{backgroundColor: '#e0e0e0', borderColor: '#e0e0e0',}}
+                 
                   zIndex={2000}
-                  listMode="SCROLLVIEW"
-            />}
-          </View>
+                
+            />} 
+
           <View style={styles.boxCollection}>
 
             <View style={styles.row}>
