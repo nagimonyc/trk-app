@@ -100,16 +100,22 @@ function SetDetail(props) {
             {feedbackList.length > 0 && (
               <Text style={styles.feedbackTitle}>Feedback</Text>
             )}
-            {feedbackList.length > 0 ? (
-              feedbackList.map((comment, index) => (
-                <View key={index} style={styles.commentContainer}>
-                  <Text style={styles.commentText}>{comment.explanation}</Text>
-                  <Text style={styles.commentRating}>{() => renderRating(comment.rating)}</Text>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.noFeedback}>No feedback yet.</Text>
-            )}
+        {feedbackList.length > 0 ? (
+  feedbackList.map((comment, index) => (
+    <View key={index} style={[
+      styles.commentContainer, 
+      !comment.explanation && styles.centerRating
+    ]}>
+      {comment.explanation ? (
+        <Text style={styles.commentText}>{comment.explanation}</Text>
+      ) : null}
+      <Text style={styles.commentRating}>{renderRating(comment.rating)}</Text>
+    </View>
+  ))
+) : (
+  <Text style={styles.noFeedback}>No feedback yet.</Text>
+)}
+
           </View>
         </View>
       </View>
@@ -278,8 +284,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 7,
     color: 'black',
-
   },
+  centerRating: {
+    alignItems: 'center', 
+    justifyContent: 'center',
+    padding: 10,
+  },
+  
 })
 
 export default SetDetail;
