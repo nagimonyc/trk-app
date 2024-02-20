@@ -47,6 +47,8 @@ const SessionDetail = ({route}) => {
     //For the Images in SessionItem
     const [allImages, setAllImages] = useState([]);
     const [duration, setDuration] = useState('0 mins');
+    const [elevation, setElevation] = useState(0);
+
     
 
     const prepClimbs = async () => {
@@ -61,6 +63,8 @@ const SessionDetail = ({route}) => {
             }).filter(climb => climb !== null);
             setClimbs(recentSessionStarts);
             setDescClimbs([...recentSessionStarts].reverse());
+
+            setElevation(recentSessionStarts.length * 4);
         } catch (error) {
             console.error('Error while preparing climbs: ', error.message);
         }
@@ -332,7 +336,7 @@ const SessionDetail = ({route}) => {
         <View style={{width: '100%', justifyContent:'center', display:'flex', alignItems: 'center', flexDirection: 'row', paddingHorizontal: 10, paddingBottom: 10}}>
             <View style={{display: 'flex', width: '50%', height: 80, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Text style={{color: 'black', paddingBottom: 5, fontSize: 15, fontWeight: '300', borderRightWidth: 0.5, borderRightColor: 'black', width: '100%', textAlign:'center'}}>Elevation</Text>
-                <Text style={{color: 'black', paddingBottom: 5, fontSize: 25, fontWeight: '400', borderRightWidth: 0.5, borderRightColor: 'black', width: '100%', textAlign:'center'}}>0 m</Text>
+                <Text style={{color: 'black', paddingBottom: 5, fontSize: 25, fontWeight: '400', borderRightWidth: 0.5, borderRightColor: 'black', width: '100%', textAlign:'center'}}>{elevation} m</Text>
             </View>
             <View style={{display: 'flex', width: '50%', height: 80, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <Text style={{color: 'black', paddingBottom: 5, fontSize: 15, fontWeight: '300', width: '100%', textAlign:'center'}}>Best Effort</Text>
