@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useContext } from 'react';
 import { View, Image, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import LinearGradient from 'react-native-linear-gradient';
@@ -7,12 +7,15 @@ import Share from 'react-native-share';
 import RNFS from 'react-native-fs';
 import { PermissionsAndroid} from "react-native";
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import analytics from '@react-native-firebase/analytics';
+import { AuthContext } from '../../../../Utils/AuthContext';
 
 function ShareView({ route }) {
     // Destructure climbData from route.params
     const { climbData } = route.params;
     const { imageUrl, climbCount, grade, duration } = climbData;
     const viewRef = useRef();
+    const {currentUser, role} = useContext(AuthContext);
 
     //Permission Check for Android
     async function hasAndroidPermission() {
@@ -85,6 +88,12 @@ function ShareView({ route }) {
 
     const shareView = async () => {
         try {
+            //Firebase analytics on Sharing the Share Item
+            analytics().logEvent('Share_Collectible_Pressed', {
+                user_id: currentUser.uid,
+                timestamp: new Date().toISOString()
+            });
+
             const filePath = await saveView();
             if (filePath) {
                 await Share.open({
@@ -101,6 +110,13 @@ function ShareView({ route }) {
 
     const saveImageLocally = async () => {
         try {
+            
+            //Firebase analytics on Saving the Share Item
+            analytics().logEvent('Save_Collectible_Pressed', {
+                user_id: currentUser.uid,
+                timestamp: new Date().toISOString()
+            });
+
             const filePath = await saveView();
             if (filePath) {
                 await savePicture(filePath);
