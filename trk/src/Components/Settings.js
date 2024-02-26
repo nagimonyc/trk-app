@@ -72,8 +72,9 @@ const Settings = () => {
         <SafeAreaView style={styles.container}>
 
            {role === 'climber' && (<View style={styles.switchContainer}>
-                <Text style={({marginBottom: 10, fontSize: 15})}>NYU tryouts?</Text>
-                <Switch onValueChange={toggleSwitchNyu} value={nyuCompIsEnabled} />
+                <Text style={({marginBottom: 10, fontSize: 15, color: 'black'})}>NYU tryouts?</Text>
+                <Switch onValueChange={toggleSwitchNyu} value={nyuCompIsEnabled}  trackColor={{false: 'rgba(0,0,0,0.3)', true: 'rgba(0,0,0,0.1)'}}
+                thumbColor={'#fe8100'}/>
 
             </View>)}
             <View style={styles.innerContainer}>
