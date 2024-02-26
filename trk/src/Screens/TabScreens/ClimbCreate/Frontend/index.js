@@ -16,6 +16,7 @@ import storage from '@react-native-firebase/storage';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import GymsApi from "../../../../api/GymsApi";
 import SetsApi from "../../../../api/SetsApi";
+import Slider from '@react-native-community/slider';
 
 
 const ClimbInputData = (props) => {
@@ -80,6 +81,13 @@ const ClimbInputData = (props) => {
   const [set, setSet] = useState(null);
   const [selectedValue, setSelectedValue] = useState(null);
   const [reload, setReload] = useState(false); //To reload with new sets
+
+
+  //RIC sliders
+  const [risk, setRisk] = useState(2);
+  const [intensity, setIntensity] = useState(2);
+  const [complexity, setComplexity] = useState(2);
+
 
   const yourCancelFunction = () => {
     NfcManager.cancelTechnologyRequest()
@@ -195,6 +203,9 @@ const ClimbInputData = (props) => {
       images: imagesArray,
       setter: setter.uid,
       timestamp: new Date(),
+      risk: risk,
+      intensity: intensity,
+      complexity: complexity,
     };
 
     try {
@@ -265,7 +276,9 @@ const ClimbInputData = (props) => {
         setSet(null);
         setSelectedValue(null);
         setIfsc("");
-
+        setRisk(2);
+        setIntensity(2);
+        setComplexity(2);
         Alert.alert("Success", "Climb updated successfully");
       }
     } catch (err) {
@@ -299,6 +312,9 @@ const ClimbInputData = (props) => {
         images: imagesArray,
         setter: setter.uid,
         timestamp: new Date(),
+        risk: risk,
+        intensity: intensity,
+        complexity: complexity,
       };
 
       const { addClimb } = ClimbsApi();
@@ -350,6 +366,9 @@ const ClimbInputData = (props) => {
       setSet(null);
       setSelectedValue(null);
       setIfsc("");
+      setRisk(2);
+      setIntensity(2);
+      setComplexity(2);
       setReload(current => !current); //To reload sets (with newly created one too!)
     } catch (ex) {
       if (isReading) {
@@ -547,6 +566,58 @@ const ClimbInputData = (props) => {
                 multiline={true}
 
               />
+
+              <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'stretch', padding: 0,}}>
+                  <Text style={[styles.label, { color: '#000000' }]}>RIC (Risk, Intensity, Complexity)</Text>
+                  <View>
+                      <Slider
+                          style={{ width: '100%', height: 40 }}
+                          minimumValue={0}
+                          maximumValue={5}
+                          minimumTrackTintColor="#000000"
+                          maximumTrackTintColor="#000000"
+                          thumbTintColor="#000000"
+                          step={1} // This ensures the slider moves in steps of 1
+                          onValueChange={(value) => setRisk(Math.round(value))} // Rounds the value to ensure it's an integer
+                          value={risk}
+                      />
+                      <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15}}>Risk: {risk}</Text>
+                  </View>
+
+                  <View>
+                      <Slider
+                          style={{ width: '100%', height: 40 }}
+                          minimumValue={0}
+                          maximumValue={5}
+                          minimumTrackTintColor="#000000"
+                          maximumTrackTintColor="#000000"
+                          thumbTintColor="#000000"
+                          step={1} // This ensures the slider moves in steps of 1
+                          onValueChange={(value) => setIntensity(Math.round(value))} // Rounds the value to ensure it's an integer
+                          value={intensity}
+                      />
+                      <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15}}>Intensity: {intensity}</Text>
+                  </View>
+
+                  <View>
+                      <Slider
+                          style={{ width: '100%', height: 40 }}
+                          minimumValue={0}
+                          maximumValue={5}
+                          minimumTrackTintColor="#000000"
+                          maximumTrackTintColor="#000000"
+                          thumbTintColor="#000000"
+                          step={1} // This ensures the slider moves in steps of 1
+                          onValueChange={(value) => setComplexity(Math.round(value))} // Rounds the value to ensure it's an integer
+                          value={complexity}
+                      />
+                      <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15}}>Complexity: {complexity}</Text>
+                  </View>
+              </View>
+
+
+
+
 
               <Text style={styles.label}>Image</Text>
               <TouchableOpacity style={styles.uploadButton} onPress={handleImagePick}>
