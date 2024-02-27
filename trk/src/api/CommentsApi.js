@@ -12,8 +12,15 @@ function CommentsApi() {
     return ref.where(field, '==', value).get();
   };
 
+  function getCommentsCountBySomeField(field, value) {
+    return ref.where(field, '==', value).get().then((querySnapshot) => {
+      return querySnapshot.size;
+    });
+  }
+
   return {
     getCommentsBySomeField,
+    getCommentsCountBySomeField
   };
 }
 
