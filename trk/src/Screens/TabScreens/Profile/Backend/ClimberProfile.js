@@ -485,8 +485,8 @@ const ClimberProfile = ({ navigation }) => {
                         <View style={{ width: '100%', backgroundColor: 'white', marginTop: 10 }}>
                             <View style={{ paddingHorizontal: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
-                                    <Text>Climb Found</Text>
-                                    <Text>Climb Found</Text>
+                                    <Text>Climbs Found</Text>
+                                    <Text>Climbs Found</Text>
                                 </View>
                                 {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
@@ -501,8 +501,8 @@ const ClimberProfile = ({ navigation }) => {
                             </View>
                             <View style={{ paddingHorizontal: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
-                                    <Text >Climbing Sessions per Week</Text>
-                                    <Text>{sessionsThisWeek.length}</Text>
+                                    <Text >Climbing Sessions (Total)</Text>
+                                    <Text>{sessionCount}</Text>
                                 </View>
                                 {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
@@ -510,7 +510,7 @@ const ClimberProfile = ({ navigation }) => {
                             <View style={{ paddingHorizontal: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
                                     <Text >Best Effort</Text>
-                                    <Text>Climb Found</Text>
+                                    <Text>{gradeThisWeek}</Text>
                                 </View>
                                 {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
