@@ -466,7 +466,7 @@ export const useHomeScreenLogic = (props) => {
             ));
 
             return (
-                <View style={{ display: 'flex', flexDirection: 'column', margin: 0, padding: 0, justifyContent: (tapId ? 'flex-start' : 'center'), width: '100%', height: '100%' }}>
+                <View style={{ display: 'flex', flexDirection: 'column', justifyContent: (tapId ? 'flex-start' : 'center'), width: '100%' }}>
                     {tapId !== null && climb !== null && tapObj !== null && ( //Animated Top View
                         <Animated.View
                             style={{
@@ -498,12 +498,14 @@ export const useHomeScreenLogic = (props) => {
                             </View>
                         </Animated.View>
                     )}
-                    <View style={{ paddingBottom: 20, justifyContent: 'center', paddingTop: 20 }}>
-                        {messageComponent}
+                    <View style={{ paddingBottom: 20, justifyContent: 'center' }}>
+                        <View style={{ paddingTop: 30 }}>
+                            {messageComponent}
+                        </View>
                         <TouchableOpacity style={styles.button} onPress={identifyClimb}>
                             <Animated.Image
                                 source={logo}
-                                style={[styles.image, { transform: [{ scale: logoScale }] }]}
+                                style={[styles.image, { width: 100, transform: [{ scale: logoScale }] }]}
                                 resizeMode="contain"
                             />
                         </TouchableOpacity>
@@ -533,7 +535,7 @@ const styles = StyleSheet.create({
     },
     tapText: {
         textAlign: 'center',
-        color: 'black',
+        color: '#2F2F2F',
         fontSize: 20,
         fontWeight: '400'
     },
@@ -554,10 +556,10 @@ const styles = StyleSheet.create({
     button: {
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 20,
+        // padding: 20,
         borderRadius: 5,
         color: 'black',
-        marginTop: 30,
+        // marginTop: 30,
     },
     tapIdContainer: {
         padding: 20,
@@ -582,9 +584,9 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
     sentence: {
-        marginTop: 10,
+        // marginTop: 10,
         textAlign: 'center',
-        color: 'black',
+        color: '#2F2F2F',
         fontSize: 20,
         fontWeight: '400'
     },
