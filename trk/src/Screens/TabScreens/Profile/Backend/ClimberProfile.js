@@ -485,6 +485,7 @@ const ClimberProfile = ({ navigation }) => {
                         <View style={{ width: '100%', backgroundColor: 'white', marginTop: 10 }}>
                             <View style={{ paddingHorizontal: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+
                                     <Text>Climbs Found</Text>
                                     <Text>Climbs Found</Text>
                                 </View>
