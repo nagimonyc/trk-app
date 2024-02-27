@@ -1,12 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image } from "react-native";
+import { Linking, Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image } from "react-native";
 import { AuthContext } from "../../../../Utils/AuthContext";
 import TapHistory from "../../../../Components/TapHistory";
 import TapsApi from "../../../../api/TapsApi";
 import ClimbsApi from "../../../../api/ClimbsApi";
+import CommentsApi from "../../../../api/CommentsApi";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Make sure to import Icon
 import { useFocusEffect } from '@react-navigation/native';
 import SessionTapHistory from "../../../../Components/SessionTapHistory";
 import moment from 'moment-timezone';
@@ -49,6 +51,8 @@ const ClimberProfile = ({ navigation }) => {
     const [climbsThisWeek, setClimbsThisWeek] = useState([]);
     const [timeThisWeek, setTimeThisWeek] = useState('0m');
     const [gradeThisWeek, setGradeThisWeek] = useState('V0');
+    const [commentsLeft, setCommentsLeft] = useState(0);
+
 
     // Define the tab switcher component
     const TabSwitcher = () => (
@@ -128,15 +132,46 @@ const ClimberProfile = ({ navigation }) => {
         }
     };
 
+    const MoreSection = () => {
+        const [showProgress, setShowProgress] = useState(false);
+
+        // Helper function to toggle the progress graph
+        const toggleProgress = () => {
+            setShowProgress(!showProgress);
+        };
+
+        return (
+            <View style={{ marginTop: 20 }}>
+                <Text style={{ paddingHorizontal: 15, color: 'black', fontSize: 16, fontWeight: '700' }}>More</Text>
+                <TouchableOpacity
+                    style={{
+                        paddingHorizontal: 15,
+                        paddingVertical: 10,
+                        backgroundColor: 'white',
+                        alignItems: 'center',
+                        justifyContent: 'space-between', // Use space-between to align Text and Icon
+                        flexDirection: 'row', // Set direction of children to row
+                        marginTop: 10,
+                    }}
+                    onPress={toggleProgress}
+                >
+                    <View></View>
+                    <Text style={{ color: '#9A9A9A', fontWeight: '500', fontSize: 14 }}>Weekly Graph</Text>
+                    <Icon name={showProgress ? 'chevron-up' : 'chevron-down'} size={14} color="#525252" />
+                </TouchableOpacity>
+                {showProgress && <ProgressContent />}
+            </View>
+        );
+    };
 
     //Display for the Progress Tab
     const ProgressContent = () => (
-        <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', paddingBottom: 20, paddingTop: 10 }}>
-            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>This Week</Text>
-            <View style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'row', padding: 15 }}>
+        <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
+            {/* <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>This Week</Text> */}
+            <View style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                 <LineGraphComponent data={climbsThisWeek} />
             </View>
-            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>Total</Text>
+            {/* <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>Total</Text>
             <View style={{ backgroundColor: 'white', paddingHorizontal: 15, display: 'flex', width: '100%', marginTop: 20, paddingVertical: 5 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 5 }}>
                     <Text style={{ fontSize: 15, color: 'black' }}>Sessions</Text>
@@ -157,9 +192,9 @@ const ClimberProfile = ({ navigation }) => {
                     <Text style={{ fontSize: 15, color: 'black' }}>Best Effort</Text>
                     <Text style={{ fontSize: 15, color: 'black' }}>{gradeThisWeek}</Text>
                 </View>
-            </View>
-            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 20, fontWeight: '300', textAlign: 'center', width: '100%' }}>More features coming soon.</Text>
-            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 5, fontWeight: '300', textAlign: 'center', width: '100%' }}>Any suggestions? Leave them in feedback!</Text>
+            </View> */}
+            {/* <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 20, fontWeight: '300', textAlign: 'center', width: '100%' }}>More features coming soon.</Text>
+            <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 5, fontWeight: '300', textAlign: 'center', width: '100%' }}>Any suggestions? Leave them in feedback!</Text> */}
         </View>
     );
 
@@ -177,6 +212,12 @@ const ClimberProfile = ({ navigation }) => {
         try {
             const { getActiveSessionTaps, getTotalTapCount } = TapsApi();
             const { getClimb } = ClimbsApi();
+
+            const { getCommentsCountBySomeField } = CommentsApi();
+            let count = await getCommentsCountBySomeField('user', currentUser.uid);
+            if (count) {
+                setCommentsLeft(count); // Update the state variable
+            }
 
             //To get User information, retained as is
             const { getUsersBySomeField } = UsersApi();
@@ -359,62 +400,160 @@ const ClimberProfile = ({ navigation }) => {
 
     //Scroll View Added for Drag Down Refresh
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView
-                onScroll={onScroll}
-                scrollEventThrottle={200} // Adjust based on performance
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#3498db"]} />
-                }
-                style={{ margin: 0, padding: 0, width: '100%', height: '100%' }}
-            >
-                <View style={styles.innerContainer}>
-                    <View style={styles.profileTop}>
-                        <View style={styles.topLine}>
-                            <TouchableOpacity style={styles.initialCircle} onPress={() => { navigation.navigate('Edit_User', { user: user }) }}>
-                                {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ borderRadius: 50, height: '100%', width: '100%' }} />)}
+        // <SafeAreaView style={styles.container}>
+        //     <ScrollView
+        //         onScroll={onScroll}
+        //         scrollEventThrottle={200} // Adjust based on performance
+        //         refreshControl={
+        //             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#3498db"]} />
+        //         }
+        //         style={{ margin: 0, padding: 0, width: '100%', height: '100%' }}
+        //     >
+        //         <View style={styles.innerContainer}>
+        //             <View style={styles.profileTop}>
+        //                 <View style={styles.topLine}>
+        // <TouchableOpacity style={styles.initialCircle} onPress={() => { navigation.navigate('Edit_User', { user: user }) }}>
+        //     {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ borderRadius: 50, height: '100%', width: '100%' }} />)}
+        //     {!climbImageUrl && (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
+        //     <View style={{ position: 'absolute', bottom: 0, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor: 'black' }}>
+        //         <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }} resizeMode="contain" />
+        //     </View>
+        // </TouchableOpacity>
+        // <View style={styles.recapData}>
+        //     <Text style={styles.recapNumber}>{historyCount}</Text>
+        //     <Text style={styles.any_text}>Climbs</Text>
+        // </View>
+        // <View style={styles.recapData}>
+        //     <Text style={styles.recapNumber}>{sessionCount}</Text>
+        //     <Text style={styles.any_text}>Sessions</Text>
+        // </View>
+        // <TouchableOpacity style={styles.settings}
+        //     onPress={() => navigation.navigate('Settings')}>
+        //     {
+        //         Platform.OS === 'android' ?
+        //             <Icon name="settings" size={30} color="#3498db" /> :
+        //             <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
+        //     }
+        // </TouchableOpacity>
+        //                 </View>
+        // <View style={styles.greeting}>
+        //     <Text style={styles.greeting_text}>
+        //         Hi <Text style={{ color: 'black' }}>
+        //             {user && user.username ? user.username : ''}
+        //         </Text> 🖖
+        //     </Text>
+        // </View>
+        //             </View>
+        //             <TabSwitcher />
+        //             {activeTab === 'Activity' ? (
+        //                 <View style={[styles.effortHistory, { alignItems: 'center' }]}>
+        //                     <View style={[styles.effortHistoryList]}>
+        //                         <SessionTapHistory currentSession={currentSession} isCurrent={true} currentSessionObject={currentSessionObject} />
+        //                         {sessionsHistory && Object.keys(sessionsHistory).length > 0 && <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>Past Sessions</Text>}
+        //                         <SessionTapHistory currentSession={sessionsHistory} isCurrent={false} />
+        //                     </View>
+        //                 </View>) : <ProgressContent />}
+        //         </View>
+        //     </ScrollView>
+        // </SafeAreaView>
+
+        <View style={{ flex: 1 }}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
+                <SafeAreaView style={[styles.container]}>
+                    {/* profile section */}
+                    <View style={{ height: 115, flexDirection: 'row', backgroundColor: 'white', paddingHorizontal: 15 }}>
+                        {/* photo */}
+                        <View style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity style={[styles.initialCircle]} onPress={() => { navigation.navigate('Edit_User', { user: user }) }}>
+                                {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ height: '100%', width: '100%', borderRadius: 10 }} resizeMode="contain" />)}
                                 {!climbImageUrl && (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
-                                <View style={{ position: 'absolute', bottom: 0, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor: 'black' }}>
+                                <View style={{ position: 'absolute', bottom: -5, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor: 'black' }}>
                                     <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }} resizeMode="contain" />
                                 </View>
                             </TouchableOpacity>
-                            <View style={styles.recapData}>
-                                <Text style={styles.recapNumber}>{historyCount}</Text>
-                                <Text style={styles.any_text}>Climbs</Text>
-                            </View>
-                            <View style={styles.recapData}>
-                                <Text style={styles.recapNumber}>{sessionCount}</Text>
-                                <Text style={styles.any_text}>Sessions</Text>
-                            </View>
-                            <TouchableOpacity style={styles.settings}
-                                onPress={() => navigation.navigate('Settings')}>
-                                {
-                                    Platform.OS === 'android' ?
-                                        <Icon name="settings" size={30} color="#3498db" /> :
-                                        <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
-                                }
-                            </TouchableOpacity>
                         </View>
-                        <View style={styles.greeting}>
-                            <Text style={styles.greeting_text}>
-                                Hi <Text style={{ color: 'black' }}>
-                                    {user && user.username ? user.username : ''}
-                                </Text> 🖖
+                        {/* text */}
+                        <View style={{ marginLeft: 15, justifyContent: 'center' }}>
+                            <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>
+                                {user && user.username ? user.username : ''}
                             </Text>
                         </View>
                     </View>
-                    <TabSwitcher />
-                    {activeTab === 'Activity' ? (
-                        <View style={[styles.effortHistory, { alignItems: 'center' }]}>
-                            <View style={[styles.effortHistoryList]}>
-                                <SessionTapHistory currentSession={currentSession} isCurrent={true} currentSessionObject={currentSessionObject} />
-                                {sessionsHistory && Object.keys(sessionsHistory).length > 0 && <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>Past Sessions</Text>}
-                                <SessionTapHistory currentSession={sessionsHistory} isCurrent={false} />
+                    {/* Fun Stats */}
+                    <View style={{ marginTop: 20 }}>
+                        <Text style={{ paddingHorizontal: 15, color: 'black', fontSize: 16, fontWeight: '700' }}>Fun Stats</Text>
+                        <View style={{ width: '100%', backgroundColor: 'white', marginTop: 10 }}>
+                            <View style={{ paddingHorizontal: 15 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                    <Text>Climb Found</Text>
+                                    <Text>Climb Found</Text>
+                                </View>
+                                {/* Divider */}
+                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
-                        </View>) : <ProgressContent />}
+                            <View style={{ paddingHorizontal: 15 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                    <Text >Route Setters Smiling (Reviews Left)</Text>
+                                    <Text>{commentsLeft}</Text>
+                                </View>
+                                {/* Divider */}
+                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
+                            </View>
+                            <View style={{ paddingHorizontal: 15 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                    <Text >Climbing Sessions per Week</Text>
+                                    <Text>{sessionsThisWeek.length}</Text>
+                                </View>
+                                {/* Divider */}
+                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
+                            </View>
+                            <View style={{ paddingHorizontal: 15 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                    <Text >Best Effort</Text>
+                                    <Text>Climb Found</Text>
+                                </View>
+                                {/* Divider */}
+                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
+                            </View>
+                            <View style={{
+                                paddingHorizontal: 15,
+                                backgroundColor: 'white', // Ensure there's a background color
+                                shadowColor: "#000",
+                                shadowOffset: {
+                                    width: 0,
+                                    height: 2,
+                                },
+                                shadowOpacity: 0.25,
+                                shadowRadius: 2,
+                                elevation: 5, // for Android
+                            }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                    <Text >Friends made along the way</Text>
+                                    <Text>∞</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                    {/* More (graph) */}
+                    <MoreSection />
+
+                </SafeAreaView >
+                {/* call me 🤙 */}
+                <View style={{
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    marginBottom: 25
+                }}>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More & more features coming soon ♥</Text>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have feature ideas or feedback :)</Text>
+                    <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
+                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
+                    </TouchableOpacity>
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+            </ScrollView >
+        </View>
     );
 }
 //Sessions are now passed to SessionTapHistory (displaying logic only now)
@@ -497,16 +636,16 @@ const styles = StyleSheet.create({
     },
     greeting_text: {
         color: 'black',
-        fontSize: 16,
+        fontSize: 18,
+        fontWeight: '700'
     },
     initialCircle: {
         backgroundColor: '#D9D9D9',
-        width: 50,
-        height: 50,
-        borderRadius: 25,
+        width: 75,
+        height: 75,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 10,
     },
     profileTop: {
         marginLeft: 20,
