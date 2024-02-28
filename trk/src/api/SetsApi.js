@@ -11,8 +11,8 @@ function SetsApi() {
     return ref.add(set);
     }
 
-  function fetchSets() {
-    return ref.get().then(snapshot => {
+  function fetchSets(gymId) {
+    return ref.where('gym','==', gymId).get().then(snapshot => {
       return snapshot.docs;
     }).catch(error => {
       console.error("Error fetching sets: ", error);
@@ -20,9 +20,10 @@ function SetsApi() {
     });
     }
     
-    function getSetByName(name) {
+    function getSetByName(name, gymId) {
         return ref.where('archived', '==', false)
         .where('name','==', name)
+        .where('gym','==', gymId)
         .get();
     }
 
