@@ -498,14 +498,14 @@ export const useHomeScreenLogic = (props) => {
                             </View>
                         </Animated.View>
                     )}
-                    <View style={{ paddingBottom: 20, justifyContent: 'center' }}>
+                    <View style={{ paddingBottom: 20, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', display: 'flex'}}>
                         <View style={{ paddingTop: 30 }}>
                             {messageComponent}
                         </View>
                         <TouchableOpacity style={styles.button} onPress={identifyClimb}>
                             <Animated.Image
                                 source={logo}
-                                style={[styles.image, { width: 100, transform: [{ scale: logoScale }] }]}
+                                style={[styles.image, { width: 150, transform: [{ scale: logoScale }] }]}
                                 resizeMode="contain"
                             />
                         </TouchableOpacity>
@@ -536,21 +536,21 @@ const styles = StyleSheet.create({
     tapText: {
         textAlign: 'center',
         color: '#2F2F2F',
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '400'
     },
     celebration: {
         marginTop: 10,
         textAlign: 'center',
         color: 'black',
-        fontSize: 20,
+        fontSize: 18,
     },
 
     instructions: {
         marginTop: 10,
         textAlign: 'center',
         color: 'black',
-        fontSize: 20,
+        fontSize: 18,
         paddingHorizontal: 40,
     },
     button: {
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
         // padding: 20,
         borderRadius: 5,
         color: 'black',
-        // marginTop: 30,
+        marginTop: 15,
     },
     tapIdContainer: {
         padding: 20,
@@ -587,7 +587,7 @@ const styles = StyleSheet.create({
         // marginTop: 10,
         textAlign: 'center',
         color: '#2F2F2F',
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: '400'
     },
 });
