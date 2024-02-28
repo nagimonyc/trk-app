@@ -302,7 +302,6 @@ export const useHomeScreenLogic = (props) => {
     };
 
     //FADE-IN AND OUT ANIMATION HANDLER
-    /*
     useEffect(() => {
         if (tapId) {
             // Immediate fade-in animation
@@ -360,8 +359,7 @@ export const useHomeScreenLogic = (props) => {
             };
         }
     }, [tapId, fadeAnim]);
-    */
-    //NO NEED FOR ANIMATIONS!
+    
 
     //Timestamp formatting for future ClimbItem call
     const timeStampFormatting = (timestamp) => {
