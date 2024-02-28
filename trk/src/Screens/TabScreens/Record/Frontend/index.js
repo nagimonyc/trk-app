@@ -65,8 +65,13 @@ function RecordScreen(props) {
                             <Text style={[styles.text, styles.climbCardText, {color: 'black'}]}>🎉 Climb Found 🎉</Text>
                             <View style={styles.momentumTextWrapper}>
                                 <View style={styles.inlineContainer}>
+                                    {tapObj.tapNumber == 1 && (
                                     <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>Record a <Text style={{fontWeight: 'bold'}}>video</Text> to <Text style={{fontWeight: 'bold'}}>unlock</Text> Climb Card!</Text>
-                                </View>
+                                    )}
+                                    {tapObj.tapNumber > 1 && (
+                                    <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>You've taken on this climb before!</Text>
+                                    )}
+                                    </View>
                             </View>
                         </View>
                     </View>

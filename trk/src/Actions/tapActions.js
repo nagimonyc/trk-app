@@ -64,6 +64,7 @@ export const processClimbId = (climbId, currentUser, role) => {
                 }
             }            
 
+            const climbCountForUser = (await (TapsApi().getClimbsByIdUserCount(climbId, currentUser.uid))).data().count; //Counting previous taps by that user on the climb (FOR MESSAGING AND LOADING!)     
               const tap = {
                 archived: false,
                 climb: climbId,
@@ -74,6 +75,7 @@ export const processClimbId = (climbId, currentUser, role) => {
                 witness1: '',
                 witness2: '',
                 isSessionStart: isSessionStart,
+                tapNumber: (climbCountForUser + 1),
                 expiryTime: isSessionStart ? sixHoursLater : (lastUserTap?.expiryTime || null),
             };
 
