@@ -43,12 +43,60 @@ function RecordScreen(props) {
     const {
         renderNfcButtons,
         androidPromptRef,
+        tapId,
+        climb,
+        tapObj,
     } = logic(props);
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
                 {/* idle card */}
+                {tapId !== null && climb !== null && (
                 <View style={styles.idleCard}>
+                    {/* top part */}
+                    <View style={styles.topPart}>
+                        {/* Media */}
+                        <View style={styles.media}>
+                            <Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" />
+                            <Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text>
+                        </View>
+                        {/* Text */}
+                        <View style={styles.textContainer}>
+                            <Text style={[styles.text, styles.climbCardText, {color: 'black'}]}>🎉 Climb Found 🎉</Text>
+                            <View style={styles.momentumTextWrapper}>
+                                <View style={styles.inlineContainer}>
+                                    <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>Record a <Text style={{fontWeight: 'bold'}}>video</Text> to <Text style={{fontWeight: 'bold'}}>unlock</Text> Climb Card!</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                    <View style={styles.divider} />
+                    {/* bottom part */}
+                    <View style={styles.bottomPart}>
+                        {/* image & color */}
+                        <View style={[styles.climbNoBg]}>
+                            <Text style={{ textAlign: 'center', fontSize: 42, color: 'black'}}>
+                                ?
+                            </Text>
+                        </View>
+                        <View style={styles.climbColor}>
+                        </View>
+                        <View style={{ flexDirection: 'column', marginLeft: 15 }}>
+                            <View>
+                                <Text style={{ fontSize: 12, color: '#454545' }}>Name</Text>
+                                <Text style={{ fontSize: 20, color: 'black', paddingVertical: 5}}>{climb.name}</Text>
+                            </View>
+                            <View>
+                                <Text style={{ fontSize: 12, color: '#454545' }}>Grade</Text>
+                                <Text style={{ fontSize: 30, fontWeight: 400, paddingVertical: 5, color: 'black'}}>{climb.grade}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>)}
+
+                {(tapId == null || climb == null) && (
+               
+               <View style={styles.idleCard}>
                     {/* top part */}
                     <View style={styles.topPart}>
                         {/* Media */}
@@ -60,10 +108,15 @@ function RecordScreen(props) {
                         <View style={styles.textContainer}>
                             <Text style={[styles.text, styles.climbCardText, {color: 'black'}]}>🃏 Climb Card 🃏</Text>
                             <View style={styles.momentumTextWrapper}>
-                                <View style={styles.inlineContainer}>
-                                    <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>Tap <Image source={logo} style={styles.logo} resizeMode="contain" /> </Text>
-                                    <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>to collect your first card!</Text>
-                                </View>
+                            <View style={styles.inlineContainer}>
+                                <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>
+                                    Tap 
+                                </Text>
+                                <Image source={logo} style={styles.logo} resizeMode="contain" />
+                                <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>
+                                    to collect your first card!
+                                </Text>
+                            </View>
                             </View>
                         </View>
                     </View>
@@ -89,7 +142,7 @@ function RecordScreen(props) {
                             </View>
                         </View>
                     </View>
-                </View>
+                </View>)}
                 <View>
                     {renderNfcButtons()}
                 </View>

@@ -299,6 +299,7 @@ export const useHomeScreenLogic = (props) => {
     };
 
     //FADE-IN AND OUT ANIMATION HANDLER
+    /*
     useEffect(() => {
         if (tapId) {
             // Immediate fade-in animation
@@ -356,6 +357,8 @@ export const useHomeScreenLogic = (props) => {
             };
         }
     }, [tapId, fadeAnim]);
+    */
+    //NO NEED FOR ANIMATIONS!
 
     //Timestamp formatting for future ClimbItem call
     const timeStampFormatting = (timestamp) => {
@@ -466,38 +469,7 @@ export const useHomeScreenLogic = (props) => {
             ));
 
             return (
-                <View style={{ display: 'flex', flexDirection: 'column', justifyContent: (tapId ? 'flex-start' : 'center'), width: '100%' }}>
-                    {tapId !== null && climb !== null && tapObj !== null && ( //Animated Top View
-                        <Animated.View
-                            style={{
-                                ...styles.tapIdContainer,
-                                opacity: fadeAnim, // Bind opacity to animated value
-                            }}
-                        >
-                            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-                                <Text style={{ color: 'black', fontSize: 15 }}>That's a tap!</Text>
-                                <IconButton
-                                    icon="camera-timer"
-                                    iconColor="black"
-                                    size={20}
-                                    style={{ position: 'absolute', end: 0 }}
-                                />
-                            </View>
-
-                            <ClimbItem climb={climb} tapId={tapId} tapTimestamp={timeStampFormatting(tapObj.timestamp)} fromHome={true} />
-
-                            <View style={{ display: 'flex', flexDirection: 'column', paddingVertical: 5 }}>
-                                <View style={{ alignSelf: 'center' }}>
-                                    {tapObj.isSessionStart && <Text style={{ backgroundColor: 'white', textAlign: 'center', paddingHorizontal: 5, paddingVertical: 3, fontSize: 13, borderRadius: 3, color: 'black' }}>First Tap in Session!</Text>}
-                                </View>
-                                <TouchableOpacity style={styles.navigate}
-                                    onPress={() => navigation.navigate('ProfileTab')}>
-                                    <Text style={styles.buttonText}>Check it out in Profile</Text>
-                                    <RightArrow style={{ width: '100%', height: '100%' }} />
-                                </TouchableOpacity>
-                            </View>
-                        </Animated.View>
-                    )}
+                <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%'}}>
                     <View style={{ paddingBottom: 20, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', display: 'flex'}}>
                         <View style={{ paddingTop: 30 }}>
                             {messageComponent}
@@ -517,6 +489,9 @@ export const useHomeScreenLogic = (props) => {
     return {
         renderNfcButtons,
         androidPromptRef,
+        tapId,
+        climb,
+        tapObj,
     };
 };
 //Have leveraged the abilities of the new session mock object
@@ -593,3 +568,37 @@ const styles = StyleSheet.create({
 });
 
 export default useHomeScreenLogic;
+
+/* justifyContent: (tapId ? 'flex-start' : 'center'), width: '100%' }}>
+                    tapId !== null && climb !== null && tapObj !== null && ( //Animated Top View
+                        <Animated.View
+                            style={{
+                                ...styles.tapIdContainer,
+                                opacity: fadeAnim, // Bind opacity to animated value
+                            }}
+                        >
+                            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+                                <Text style={{ color: 'black', fontSize: 15 }}>That's a tap!</Text>
+                                <IconButton
+                                    icon="camera-timer"
+                                    iconColor="black"
+                                    size={20}
+                                    style={{ position: 'absolute', end: 0 }}
+                                />
+                            </View>
+
+                            <ClimbItem climb={climb} tapId={tapId} tapTimestamp={timeStampFormatting(tapObj.timestamp)} fromHome={true} />
+
+                            <View style={{ display: 'flex', flexDirection: 'column', paddingVertical: 5 }}>
+                                <View style={{ alignSelf: 'center' }}>
+                                    {tapObj.isSessionStart && <Text style={{ backgroundColor: 'white', textAlign: 'center', paddingHorizontal: 5, paddingVertical: 3, fontSize: 13, borderRadius: 3, color: 'black' }}>First Tap in Session!</Text>}
+                                </View>
+                                <TouchableOpacity style={styles.navigate}
+                                    onPress={() => navigation.navigate('ProfileTab')}>
+                                    <Text style={styles.buttonText}>Check it out in Profile</Text>
+                                    <RightArrow style={{ width: '100%', height: '100%' }} />
+                                </TouchableOpacity>
+                            </View>
+                        </Animated.View>
+                        )*/
+//Rendered on tapping completion- REMOVED FOR THIS ITERATION!
