@@ -123,7 +123,7 @@ const ClimbInputData = (props) => {
   const [value, setValue] = useState(null);
 
   useEffect(() => {
-    SetsApi().fetchSets().then(sets => {
+    SetsApi().fetchSets('TDrC1lRRjbMuMI06pONY').then(sets => {      //Passing Movement's Gym ID
       const formattedSets = sets.map(doc => ({ label: doc.data().name, value: doc.id }));
       setSetItems(formattedSets);
     });
@@ -221,7 +221,7 @@ const ClimbInputData = (props) => {
         //Same Logic for deletion
         if (climbData.set && selectedValue !== climbData.set) {
           //We need to remove it from its existing set
-          const setObjSnapshot = await SetsApi().getSetByName(climbData.set);
+          const setObjSnapshot = await SetsApi().getSetByName(climbData.set, 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
           if (!setObjSnapshot.empty) {
             const setObj = setObjSnapshot.docs[0].data();
             console.log(setObj);
@@ -246,7 +246,7 @@ const ClimbInputData = (props) => {
         if (filteredSets.length === 0 && (!climbData || selectedValue !== climbData.set)) { //No need to add if same set
           //Use the existing setName
           //console.log('Set already exists!: ', selectedValue);
-          const oldSet = await SetsApi().getSetByName(String(selectedValue).trim());
+          const oldSet = await SetsApi().getSetByName(String(selectedValue).trim(), 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
           //console.log(oldSet);
           if (oldSet && oldSet.docs[0]) {
             const setId = oldSet.docs[0].id;
@@ -262,7 +262,8 @@ const ClimbInputData = (props) => {
             archived: false,
             name: filteredSets[0].name,
             climbs: [newClimbId], //replace with newClimbId
-            setters: [currentUser.uid]
+            setters: [currentUser.uid],
+            gym: "TDrC1lRRjbMuMI06pONY", //Movement's Gym ID
           }
           await SetsApi().addSet(setObj);
         }
@@ -330,7 +331,7 @@ const ClimbInputData = (props) => {
       if (filteredSets.length === 0) {
         //Use the existing setName
         //console.log('Set already exists!: ', selectedValue);
-        const oldSet = await SetsApi().getSetByName(String(selectedValue).trim());
+        const oldSet = await SetsApi().getSetByName(String(selectedValue).trim(), 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
         console.log(oldSet);
         if (oldSet && oldSet.docs[0]) {
           const setId = oldSet.docs[0].id;
@@ -347,7 +348,8 @@ const ClimbInputData = (props) => {
           archived: false,
           name: filteredSets[0].name,
           climbs: [newClimbId._documentPath._parts[1]], //replace with newClimbId
-          setters: [currentUser.uid]
+          setters: [currentUser.uid],
+          gym: "TDrC1lRRjbMuMI06pONY", //Movement's Gym ID
         }
         await SetsApi().addSet(setObj);
       }
@@ -404,7 +406,7 @@ const ClimbInputData = (props) => {
     const { updateClimb } = ClimbsApi();
     const newClimbId = await updateClimb(climbData.id, { archived: true });
     if (newClimbId && climbData.set) {
-      const setObjSnapshot = await SetsApi().getSetByName(climbData.set);
+      const setObjSnapshot = await SetsApi().getSetByName(climbData.set, 'TDrC1lRRjbMuMI06pONY'); //Moevement's Gym ID
       if (!setObjSnapshot.empty) {
         const setObj = setObjSnapshot.docs[0].data();
         //console.log(setObj);
