@@ -26,8 +26,6 @@ import moment from 'moment-timezone';
 //Same changes as TapActions to allow for session creation and updates on tapping.
 //Only altered CSS with the integration of the dynamic text (UI impact only)
 export const useHomeScreenLogic = (props) => {
-
-
     // Animation
     const logoScale = useRef(new Animated.Value(1)).current;
 
@@ -302,7 +300,6 @@ export const useHomeScreenLogic = (props) => {
     };
 
     //FADE-IN AND OUT ANIMATION HANDLER
-    /*
     useEffect(() => {
         if (tapId) {
             // Immediate fade-in animation
@@ -360,8 +357,7 @@ export const useHomeScreenLogic = (props) => {
             };
         }
     }, [tapId, fadeAnim]);
-    */
-    //NO NEED FOR ANIMATIONS!
+    
 
     //Timestamp formatting for future ClimbItem call
     const timeStampFormatting = (timestamp) => {

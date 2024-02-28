@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, SafeAreaView, Image } from 'react-native';
+import { Text, View, StyleSheet, Button, SafeAreaView, Image, TouchableOpacity, Modal } from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'; // Ensure you import useRoute
 import NfcManager from 'react-native-nfc-manager';
 import AndroidPrompt from '../../../../Components/AndroidPrompt';
@@ -17,6 +17,11 @@ function RecordScreen(props) {
     const navigation = useNavigation(); // If not already using useNavigation
     const logo = require('../../../../../assets/nagimo-logo2.png');
 
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    
+    const toggleModal = () => {
+        setIsModalVisible(!isModalVisible);
+    };
 
     useEffect(() => {
         if (route.params?.showOnboardingModal) {
@@ -40,6 +45,13 @@ function RecordScreen(props) {
     };
 
     // const showOnboarding = props.route.params?.showOnboarding || false;
+
+
+    //Copies for the Modal to Access
+    const [tapIdCopy, setTapIdCopy] = useState(null);
+    const [climbCopy, setClimbCopy] = useState(null);
+    const [tapObjCopy, setTapObjCopy] = useState(null);
+
     const {
         renderNfcButtons,
         androidPromptRef,
@@ -47,11 +59,34 @@ function RecordScreen(props) {
         climb,
         tapObj,
     } = logic(props);
+
+    // Hook for tapId
+    useEffect(() => {
+        if (tapId !== null) {
+            setTapIdCopy(tapId);
+        }
+    }, [tapId]);
+
+    // Hook for climb
+    useEffect(() => {
+        if (climb !== null) {
+            setClimbCopy(climb);
+        }
+    }, [climb]);
+
+    // Hook for tapObj
+    useEffect(() => {
+        if (tapObj !== null) {
+            setTapObjCopy(tapObj);
+        }
+    }, [tapObj]);
+    
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
                 {/* idle card */}
                 {tapId !== null && climb !== null && (
+                <TouchableOpacity onPress={toggleModal}>
                 <View style={styles.idleCard}>
                     {/* top part */}
                     <View style={styles.topPart}>
@@ -97,7 +132,8 @@ function RecordScreen(props) {
                             </View>
                         </View>
                     </View>
-                </View>)}
+                </View>
+                </TouchableOpacity>)}
 
                 {(tapId == null || climb == null) && (
                
@@ -151,6 +187,21 @@ function RecordScreen(props) {
                 <View>
                     {renderNfcButtons()}
                 </View>
+                {/* Modal Like View (Contained Within)*/}
+                {isModalVisible && (
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <TouchableOpacity
+                                style={styles.closeButton}
+                                onPress={() => setIsModalVisible(!isModalVisible)}
+                            >
+                                <Text style={styles.textStyle}>✕</Text>
+                            </TouchableOpacity>
+                            {/* Modal content goes here */}
+                            <Text style={styles.modalText}>Modal content can be placed here.</Text>
+                        </View>
+                    </View>
+                )}
             </View>
             {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
             <OnboardingModal isVisible={showOnboarding} onClose={handleCloseOnboarding} />
@@ -239,6 +290,80 @@ const styles = StyleSheet.create({
         height: 130,
         backgroundColor: '#fe8100',
         marginLeft: 8,
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        width: '90%', // 90% of parent width
+        height: '90%', // 90% of parent height
+    },
+    closeButton: {
+        backgroundColor: '#FF6165',
+        width: 30,
+        height: 30,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: -5,
+        right: -5,
+    },
+    textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        height: '100%',
+        width: '100%',
+        textAlignVertical: 'top',
+        paddingTop: 3,
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    modalContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+        padding: 0, // Adjust as needed
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        width: '90%', // Adjust as needed
+        height: '90%', // Adjust as needed, less than 100% to not cover full screen
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
 });
 
