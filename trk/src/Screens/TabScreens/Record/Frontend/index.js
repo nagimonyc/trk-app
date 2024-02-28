@@ -54,15 +54,15 @@ function RecordScreen(props) {
                         {/* Media */}
                         <View style={styles.media}>
                             <Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" />
-                            <Text style={{ marginTop: 15, fontSize: 12, fontWeight: 700, color: '#505050' }}>Add Media</Text>
+                            <Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text>
                         </View>
                         {/* Text */}
                         <View style={styles.textContainer}>
-                            <Text style={[styles.text, styles.climbCardText]}>🃏 Climb Card 🃏</Text>
+                            <Text style={[styles.text, styles.climbCardText, {color: 'black'}]}>🃏 Climb Card 🃏</Text>
                             <View style={styles.momentumTextWrapper}>
                                 <View style={styles.inlineContainer}>
-                                    <Image source={logo} style={styles.logo} resizeMode="contain" />
-                                    <Text style={[styles.text, styles.momentumText]}>Tap to collect your first card</Text>
+                                    <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>Tap <Image source={logo} style={styles.logo} resizeMode="contain" /> </Text>
+                                    <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>to collect your first card!</Text>
                                 </View>
                             </View>
                         </View>
@@ -72,7 +72,7 @@ function RecordScreen(props) {
                     <View style={styles.bottomPart}>
                         {/* image & color */}
                         <View style={[styles.climbNoBg]}>
-                            <Text style={{ textAlign: 'center', fontSize: 42 }}>
+                            <Text style={{ textAlign: 'center', fontSize: 42, color: 'black'}}>
                                 ?
                             </Text>
                         </View>
@@ -80,12 +80,12 @@ function RecordScreen(props) {
                         </View>
                         <View style={{ flexDirection: 'column', marginLeft: 15 }}>
                             <View>
-                                <Text style={{ fontSize: 8, color: '#454545' }}>Name</Text>
-                                <Text style={{ fontSize: 20 }}>?</Text>
+                                <Text style={{ fontSize: 12, color: '#454545' }}>Name</Text>
+                                <Text style={{ fontSize: 20, color: 'black', paddingVertical: 5}}>?</Text>
                             </View>
                             <View>
-                                <Text style={{ fontSize: 8, color: '#454545' }}>Grade</Text>
-                                <Text style={{ fontSize: 32, fontWeight: 400 }}>?</Text>
+                                <Text style={{ fontSize: 12, color: '#454545' }}>Grade</Text>
+                                <Text style={{ fontSize: 30, fontWeight: 400, paddingVertical: 5, color: 'black'}}>?</Text>
                             </View>
                         </View>
                     </View>
@@ -104,9 +104,10 @@ const styles = StyleSheet.create({
     //Simplified CSS logic (one style variable)
     idleCard: {
         backgroundColor: 'white',
-        marginHorizontal: 20,
-        marginTop: 60,
+        marginHorizontal: 10,
+        marginTop: 20,
         borderRadius: 15,
+        height: 340
     },
     topPart: {
         flexDirection: 'row',
@@ -119,16 +120,18 @@ const styles = StyleSheet.create({
 
     },
     media: {
-        width: 145,
+        width: 125,
         height: 145,
         backgroundColor: '#D9D9D9',
         justifyContent: 'center',
         alignItems: 'center',
+        borderRadius: 10
     },
     textContainer: {
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center', // Aligns children to the center of the container
+        paddingHorizontal: 10,
     },
     climbCardText: {
         alignSelf: 'center', // Centers the text horizontally
@@ -141,7 +144,7 @@ const styles = StyleSheet.create({
     },
     momentumText: {
         alignSelf: 'center', // Centers the text horizontally
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: '400',
         textAlign: 'center'
     },
@@ -150,6 +153,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', // Centers child vertically in the available space
         flexDirection: 'row', // Aligns children in a row
         alignItems: 'center', // Centers children vertically in the row
+        marginTop: 20
     },
     inlineContainer: {
         flexDirection: 'column', // Aligns children in a row
@@ -165,8 +169,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
     },
     climbNoBg: {
-        width: 75,
-        height: 75,
+        width: 120,
+        height: 130,
         borderRadius: 10,
         borderColor: '#DEDEDE',
         borderWidth: 1,
@@ -174,9 +178,9 @@ const styles = StyleSheet.create({
     },
     climbColor: {
         width: 35,
-        height: 75,
-        backgroundColor: 'pink',
-        marginLeft: 5,
+        height: 130,
+        backgroundColor: '#fe8100',
+        marginLeft: 8,
     },
 });
 
