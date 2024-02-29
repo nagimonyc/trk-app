@@ -8,6 +8,8 @@ import logic from '../Backend/logic';
 import OnboardingModal from '../../../../Components/OnboardingModal';
 import { AuthContext } from '../../../../Utils/AuthContext';
 import TapCard from '../../../../Components/TapCard';
+import { ActivityIndicator } from 'react-native-paper';
+import storage from '@react-native-firebase/storage';
 
 function RecordScreen(props) {
     console.log('[TEST] RecordScreen called');
@@ -97,6 +99,22 @@ function RecordScreen(props) {
         return tempTimestamp;
     };
     
+    //To get the tapped Climb URL
+    const [climbImageUrl, setClimbImageURL] = useState(null);
+    useEffect(() => {
+        const fetchImageURL = async () => {
+            try {
+                const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
+                setClimbImageURL(climbImage);
+            } catch (error) {
+                console.error('Failed to fetch image URL:', error);
+            }
+        };
+        if (climb) {
+            fetchImageURL();
+        }
+    }, [climb]);
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
@@ -131,11 +149,9 @@ function RecordScreen(props) {
                     <View style={styles.bottomPart}>
                         {/* image & color */}
                         <View style={[styles.climbNoBg]}>
-                            <Text style={{ textAlign: 'center', fontSize: 42, color: 'black'}}>
-                                ?
-                            </Text>
+                            {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: 120, height: 130}} resizeMode="contain" /> : <ActivityIndicator color='#fe8100'/>}
                         </View>
-                        <View style={styles.climbColor}>
+                        <View style={[styles.climbColor, {backgroundColor: (climb.color? climb.color: '#fe8100')}]}>
                         </View>
                         <View style={{ flexDirection: 'column', marginLeft: 15 }}>
                             <View>
@@ -188,7 +204,7 @@ function RecordScreen(props) {
                                 ?
                             </Text>
                         </View>
-                        <View style={styles.climbColor}>
+                        <View style={[styles.climbColor, {backgroundColor: '#fe8100'}]}>
                         </View>
                         <View style={{ flexDirection: 'column', marginLeft: 15 }}>
                             <View>
@@ -306,7 +322,6 @@ const styles = StyleSheet.create({
     climbColor: {
         width: 35,
         height: 130,
-        backgroundColor: '#fe8100',
         marginLeft: 8,
     },
     centeredView: {
