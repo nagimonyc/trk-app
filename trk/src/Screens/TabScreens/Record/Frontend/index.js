@@ -10,11 +10,14 @@ import { AuthContext } from '../../../../Utils/AuthContext';
 import TapCard from '../../../../Components/TapCard';
 import { ActivityIndicator } from 'react-native-paper';
 import storage from '@react-native-firebase/storage';
+import TapsApi from '../../../../api/TapsApi';
+import ClimbsApi from '../../../../api/ClimbsApi';
+import Video from 'react-native-video';
 
 function RecordScreen(props) {
     console.log('[TEST] RecordScreen called');
 
-    const { isNewUser, completeOnboarding } = useContext(AuthContext);
+    const { isNewUser, completeOnboarding, currentUser, role} = useContext(AuthContext);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const route = useRoute(); // Use useRoute to access the current route
     const navigation = useNavigation(); // If not already using useNavigation
@@ -100,19 +103,47 @@ function RecordScreen(props) {
     };
     //To get the tapped Climb URL
     const [climbImageUrl, setClimbImageURL] = useState(null);
+    const [selectedImageUrl, setSelectedImageURL] = useState(null);
+
     useEffect(() => {
         const fetchImageURL = async () => {
             try {
                 if (climb && climb.images && climb.images.length > 0) {
-                const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
-                setClimbImageURL(climbImage);
+                    const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
+                    setClimbImageURL(climbImage);
+                    //Get the last video uploaded by that user for that climb
+                } else {
+                    setClimbImageURL(null);
+                    setSelectedImageURL(null);
                 }
             } catch (error) {
                 console.error('Failed to fetch image URL:', error);
             }
         };
+
         fetchImageURL();
     }, [climb]);
+
+    useEffect(() => {
+        const fetchSelectedURL = async () => {
+                if (tapObj) {
+                    const snapshot = await TapsApi().getClimbsByIdUser(tapObj.climb, currentUser.uid);
+                    if (!snapshot.empty){
+                        let flag = 0
+                        for (let i = 0; i < snapshot.docs.length; i = i +1) {
+                            let temp = snapshot.docs[i].data();
+                            if (temp.videos && temp.videos.length > 0) {
+                                if (flag == 0) {
+                                    setSelectedImageURL(temp.videos[0]);
+                                    break; //CAN CHANGE BUT UI LOOKS UGLY WITH FLATLIST!
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        fetchSelectedURL();
+    },[tapObj]);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -125,8 +156,8 @@ function RecordScreen(props) {
                     <View style={styles.topPart}>
                         {/* Media */}
                         <View style={styles.media}>
-                                <Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" />
-                                <Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text>
+                                {!selectedImageUrl && (<><Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" /><Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text></>)}
+                            {selectedImageUrl && (<Video source={{uri: selectedImageUrl}} style={{width: 120, height: 140}} repeat={true} muted={true}/>)}
                         </View>
                         {/* Text */}
                         <View style={styles.textContainer}>
@@ -231,7 +262,7 @@ function RecordScreen(props) {
                                 <Text style={styles.textStyle}>✕</Text>
                             </TouchableOpacity>
                             {/* Modal content goes here */}
-                            <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={true}/>
+                            <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={(selectedImageUrl == null)}/>
                         </View>
                     </View>
                 )}
@@ -360,10 +391,10 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-        padding: 0, // Adjust as needed
+        paddingTop: 20, // Adjust as needed
     },
     modalContent: {
         backgroundColor: 'white',
@@ -371,7 +402,7 @@ const styles = StyleSheet.create({
         padding: 0,
         alignItems: 'center',
         width: '90%', // Adjust as needed
-        height: '95%', // Adjust as needed, less than 100% to not cover full screen
+        height: '85%', // Adjust as needed, less than 100% to not cover full screen
         shadowColor: '#000',
         shadowOffset: {
             width: 0,

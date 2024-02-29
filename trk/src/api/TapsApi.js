@@ -135,6 +135,15 @@ function TapsApi() {
         .get();
     }
 
+    function getClimbsByIdUser(climbId, userId) {
+        return ref
+        .where('user', '==', userId)
+        .where('climb', '==', climbId)
+        .where('archived', '==', false)
+        .orderBy('timestamp', 'desc')
+        .get();
+    }
+
     return {
         addTap,
         getTap,
@@ -147,7 +156,8 @@ function TapsApi() {
         getActiveSessionTaps,
         getTotalSessionCount,
         getTotalTapCount,
-        getClimbsByIdUserCount
+        getClimbsByIdUserCount,
+        getClimbsByIdUser,
     };
 }
 

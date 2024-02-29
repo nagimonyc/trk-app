@@ -11,26 +11,25 @@ import { BlurView } from '@react-native-community/blur';
 import ImagePicker from 'react-native-image-crop-picker';
 import {launchImageLibrary} from 'react-native-image-picker';
 import Video from 'react-native-video';
+import ClimbsApi from '../api/ClimbsApi';
 
-const RightArrow = () => (
-  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <Path d="M9 18l6-6-6-6" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </Svg>
-);
+
 
 const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
     console.log('[TEST] TapCard called');
     const navigation = useNavigation();
-    const { role } = React.useContext(AuthContext);
+    const {currentUser, role } = React.useContext(AuthContext);
     const [imageUrl, setImageURL] = useState(null);
 
 
     const [climbImageUrl, setClimbImageURL] = useState(null);
     const [routeSetterName, setRouteSetterName] = useState('Eddie P.');
 
-
+    const [currentBlurred, setCurrentBlurred] = useState(blurred);
+;
     const [selectedImageUrl, setSelectedImageURL] = useState(null);
-    const [addedMedia, setAddedMedia] = useState([]);
+    const [addedMedia, setAddedMedia] = useState([]);  //Useful for Community
+    const [lastUserMedia, setLastUserMedia] = useState(null);
     
     useEffect(() => {
         const fetchImageURL = async () => {
@@ -40,6 +39,27 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
                 if (climb && climb.images && climb.images.length > 0) {
                 const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
                 setClimbImageURL(climbImage);
+                //Get the last video uploaded by that user for that climb
+                const snapshot = await TapsApi().getClimbsByIdUser(tapObj.climb, currentUser.uid);
+                if (!snapshot.empty){
+                    let flag = 0
+                    for (let i = 0; i < snapshot.docs.length; i = i +1) {
+                        let temp = snapshot.docs[i].data();
+                        if (temp.videos && temp.videos.length > 0) {
+                            if (flag == 0) {
+                                setSelectedImageURL(temp.videos[0]);
+                                setCurrentBlurred(false);
+                                flag  = 1;
+                                break; //CAN CHANGE BUT UI LOOKS UGLY WITH FLATLIST!
+                            }
+                            setAddedMedia(prev => prev.concat(temp.videos));
+                        }
+                    }
+                }
+                //Get All Videos Associated with that Climb (COMMUNITY)
+                //if (climb.videos && climb.videos.length > 0) {
+                //    setAddedMedia(climb.videos);
+                //}
                 }
             } catch (error) {
                 console.error('Failed to fetch image URL:', error);
@@ -80,6 +100,8 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
             let url = await uploadVideo(imagePath);
             setSelectedImageURL(url);
              //UNBLUR HERE
+
+            //Adding Video to User Tap
             const tapDataResult = await TapsApi().getTap(tapId);
             let obj = tapDataResult.data();
             const newArray = ((obj.videos && obj.videos.length > 0)? obj.videos.concat([url]): [url]);
@@ -87,12 +109,16 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
                 videos: newArray,
             };
             await TapsApi().updateTap(tapId, updatedTap);
-        }
-        if (pickedImages && pickedImages.length > 0) {
-            pickedImages = pickedImages.map(obj => obj.uri);
-            setAddedMedia(prev => pickedImages.concat(prev));
-        }
 
+            //Adding Video to Overall Climb
+            let climbObj = (await ClimbsApi().getClimb(tapObj.climb)).data();
+            const newClimbsArray = ((climbObj.videos && climbObj.videos.length > 0)? [url].concat(climbObj.videos): [url]);
+            const updatedClimb = {
+                videos: newClimbsArray,
+            };
+            await ClimbsApi().updateClimb(tapObj.climb, updatedClimb);
+            setAddedMedia(prev => [url].concat(prev));
+        }
         } catch (err) {
         console.error("Error picking image:", err);
         }
@@ -124,8 +150,7 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
     };
     
     /* NEED TO ADD MEDIA*/
-    if (blurred) {
-        return (
+    return (
             <View style={styles.idleCard}>
                 {/* top part */}
                 <View style={styles.topPart}>
@@ -142,8 +167,13 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
                     <View style={styles.textContainer}>
                         <View style={styles.momentumTextWrapper}>
                             <View style={styles.inlineContainer}>
+                                {currentBlurred && (
                                 <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>Record a <Text style={{fontWeight: 'bold'}}>video</Text> to <Text style={{fontWeight: 'bold'}}>unlock</Text> Climb Card!</Text>
-                            </View>
+                                )}
+                                {!currentBlurred && (
+                                <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>Click on this <Text style={{fontWeight: 'bold'}}>video</Text> to <Text style={{fontWeight: 'bold'}}>add</Text> more memories!</Text>
+                                )}
+                                </View>
                         </View>
                     </View>
                 </View>
@@ -189,24 +219,26 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
                             <Text style={{ fontWeight: 'bold', fontSize: 14, marginBottom: 5, color: 'black'}}>
                                 Features
                             </Text>
-                            {/*Features Come Here*/}
                         </View>
-                        <BlurView
-                            style={styles.absolute}
-                            blurType="light"
-                            blurAmount={4}
-                            reducedTransparencyFallbackColor="white"
-                        />
-                    </View>
-                    <View style={styles.absolute, {justifyContent: 'center', alignItems: 'center', marginTop: 0}}>
+                        {currentBlurred && (
+                            <BlurView
+                                style={styles.absolute}
+                                blurType="light"
+                                blurAmount={4}
+                                reducedTransparencyFallbackColor="white"
+                            >
+                            </BlurView>
+                        )}
+                        {currentBlurred && (
+                        <View style={{justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
                             <Image
-                            source={require('../../assets/blur_lock.png')} // Replace with your lock icon image
-                            style={styles.lockIcon}
+                                source={require('../../assets/blur_lock.png')} // Replace with your lock icon image
+                                style={styles.lockIcon}
                             />
+                        </View>)}
                     </View>
             </View>
         );
-    }
 }
 
 const styles = StyleSheet.create({
@@ -292,7 +324,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         bottom: 0,
-        right: 0
+        right: 0,
       },
     lockIcon: {
     width: 40,
