@@ -17,13 +17,17 @@ import Video from 'react-native-video';
 function RecordScreen(props) {
     console.log('[TEST] RecordScreen called');
 
-    const { isNewUser, completeOnboarding, currentUser, role} = useContext(AuthContext);
+    const { isNewUser, completeOnboarding, currentUser, role} = useContext(AuthContext); //For Current User
+    
     const [showOnboarding, setShowOnboarding] = useState(false);
+    
     const route = useRoute(); // Use useRoute to access the current route
+    
     const navigation = useNavigation(); // If not already using useNavigation
+    
     const logo = require('../../../../../assets/nagimo-logo2.png');
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false); //To toggle modal state, only closes when the X button is clicked
     
     const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
@@ -53,7 +57,7 @@ function RecordScreen(props) {
     // const showOnboarding = props.route.params?.showOnboarding || false;
 
 
-    //Copies for the Modal to Access
+    //Copies for the Modal to Access (Otherwise on the 15 second timer shutting, the Modal content would be corrupted).
     const [tapIdCopy, setTapIdCopy] = useState(null);
     const [climbCopy, setClimbCopy] = useState(null);
     const [tapObjCopy, setTapObjCopy] = useState(null);
@@ -88,7 +92,7 @@ function RecordScreen(props) {
     }, [tapObj]);
 
 
-    //Timestamp formatting for future ClimbItem call
+    //Timestamp formatting for future ClimbItem call (UNUSED)
     const timeStampFormatting = (timestamp) => {
         let tempTimestamp = null;
         if (timestamp.toDate) { // Convert Firebase Timestamp to JavaScript Date
@@ -101,9 +105,10 @@ function RecordScreen(props) {
         }
         return tempTimestamp;
     };
+
     //To get the tapped Climb URL
-    const [climbImageUrl, setClimbImageURL] = useState(null);
-    const [selectedImageUrl, setSelectedImageURL] = useState(null);
+    const [climbImageUrl, setClimbImageURL] = useState(null); //The NO-BACKGROUND IMAGE.
+    const [selectedImageUrl, setSelectedImageURL] = useState(null); //The last video posted by the user for the climb.
 
     useEffect(() => {
         const fetchImageURL = async () => {
@@ -135,7 +140,7 @@ function RecordScreen(props) {
                             if (temp.videos && temp.videos.length > 0) {
                                 if (flag == 0) {
                                     setSelectedImageURL(temp.videos[0]);
-                                    break; //CAN CHANGE BUT UI LOOKS UGLY WITH FLATLIST!
+                                    break; //CAN CHANGE BUT UI LOOKS UGLY WITH FLATLIST! SO ONLY THE FIRST VIDEO IS FETCHED!
                                 }
                             }
                         }

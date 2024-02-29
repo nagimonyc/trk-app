@@ -14,7 +14,7 @@ import Video from 'react-native-video';
 import ClimbsApi from '../api/ClimbsApi';
 
 
-
+//TapCard component- Can upload Video, that unblurs the section (MESSAGING CHANGES!)- NO FEATURES IMPLEMENTED
 const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
     console.log('[TEST] TapCard called');
     const navigation = useNavigation();
