@@ -98,21 +98,20 @@ function RecordScreen(props) {
         }
         return tempTimestamp;
     };
-    
     //To get the tapped Climb URL
     const [climbImageUrl, setClimbImageURL] = useState(null);
     useEffect(() => {
         const fetchImageURL = async () => {
             try {
+                if (climb && climb.images && climb.images.length > 0) {
                 const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
                 setClimbImageURL(climbImage);
+                }
             } catch (error) {
                 console.error('Failed to fetch image URL:', error);
             }
         };
-        if (climb) {
-            fetchImageURL();
-        }
+        fetchImageURL();
     }, [climb]);
 
     return (
@@ -126,8 +125,8 @@ function RecordScreen(props) {
                     <View style={styles.topPart}>
                         {/* Media */}
                         <View style={styles.media}>
-                            <Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" />
-                            <Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text>
+                                <Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" />
+                                <Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text>
                         </View>
                         {/* Text */}
                         <View style={styles.textContainer}>

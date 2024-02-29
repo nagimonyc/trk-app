@@ -77,6 +77,7 @@ export const processClimbId = (climbId, currentUser, role) => {
                 isSessionStart: isSessionStart,
                 tapNumber: (climbCountForUser + 1),
                 expiryTime: isSessionStart ? sixHoursLater : (lastUserTap?.expiryTime || null),
+                videos: [],
             };
 
             const documentReference =  await addTap(tap);

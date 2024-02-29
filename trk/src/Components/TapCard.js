@@ -8,6 +8,9 @@ import TapsApi from '../api/TapsApi';
 import Svg, { Path } from 'react-native-svg';
 import { ActivityIndicator } from 'react-native-paper';
 import { BlurView } from '@react-native-community/blur';
+import ImagePicker from 'react-native-image-crop-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
+import Video from 'react-native-video';
 
 const RightArrow = () => (
   <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -20,16 +23,24 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
     const navigation = useNavigation();
     const { role } = React.useContext(AuthContext);
     const [imageUrl, setImageURL] = useState(null);
+
+
     const [climbImageUrl, setClimbImageURL] = useState(null);
-    const [routeSetterName, setRouteSetterName] = useState('Eddie P.')
+    const [routeSetterName, setRouteSetterName] = useState('Eddie P.');
+
+
+    const [selectedImageUrl, setSelectedImageURL] = useState(null);
+    const [addedMedia, setAddedMedia] = useState([]);
     
     useEffect(() => {
         const fetchImageURL = async () => {
             try {
                 const url = await storage().ref('profile photos/epset.png').getDownloadURL();
                 setImageURL(url);
+                if (climb && climb.images && climb.images.length > 0) {
                 const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
                 setClimbImageURL(climbImage);
+                }
             } catch (error) {
                 console.error('Failed to fetch image URL:', error);
             }
@@ -53,6 +64,65 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
         const url = await loadImageUrl(path);
         return url;
     };
+
+    //Video Adding Logic
+    const selectImageLogic = async () => {
+        //console.log("handleImagePick called");
+        try {
+        let result = await launchImageLibrary({mediaType: 'video', videoQuality: 'high'});
+        let pickedImages = result.assets;
+
+        // Save the full image path for later uploading
+        const imagePath = (pickedImages && pickedImages.length > 0? pickedImages[0].uri: null); //Last Image that you pick
+
+        if (imagePath) {
+            // Set the image state to include the full path
+            let url = await uploadVideo(imagePath);
+            setSelectedImageURL(url);
+             //UNBLUR HERE
+            const tapDataResult = await TapsApi().getTap(tapId);
+            let obj = tapDataResult.data();
+            const newArray = ((obj.videos && obj.videos.length > 0)? obj.videos.concat([url]): [url]);
+            const updatedTap = {
+                videos: newArray,
+            };
+            await TapsApi().updateTap(tapId, updatedTap);
+        }
+        if (pickedImages && pickedImages.length > 0) {
+            pickedImages = pickedImages.map(obj => obj.uri);
+            setAddedMedia(prev => pickedImages.concat(prev));
+        }
+
+        } catch (err) {
+        console.error("Error picking image:", err);
+        }
+    };
+
+    const uploadVideo = async (videoPath) => { //VIDEO UPLOADING AND PLAYING INSTANTLY!
+        try {
+            // Create a reference to the Firebase Storage bucket
+            const reference = storage().ref(`videos/${new Date().toISOString()}.mp4`);
+            
+            // Put the file in the bucket
+            const task = reference.putFile(videoPath);
+    
+            task.on('state_changed', (snapshot) => {
+                // You can use this to track the progress of the upload
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+            });
+    
+            // Get the download URL after the upload is complete
+            await task;
+            const url = await reference.getDownloadURL();
+            console.log('Video download URL:', url);
+
+            return url; // You may want to do something with the URL, like storing it in a database
+        } catch (error) {
+            console.error('Video upload error:', error);
+        }
+    };
+    
     /* NEED TO ADD MEDIA*/
     if (blurred) {
         return (
@@ -61,8 +131,12 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
                 <View style={styles.topPart}>
                     {/* Media */}
                     <View style={styles.media}>
-                    <Image source={require('../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" />
-                        <Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text>
+
+                        <TouchableOpacity onPress={selectImageLogic}>
+                            {!selectedImageUrl && (<><Image source={require('../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" /><Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text></>)}
+                            {selectedImageUrl && (<Video source={{uri: selectedImageUrl}} style={{width: 120, height: 140}} repeat={true} muted={true}/>)}
+                        </TouchableOpacity>
+
                     </View>
                     {/* Text */}
                     <View style={styles.textContainer}>
