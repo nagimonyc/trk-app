@@ -7,6 +7,9 @@ import TapHistory from '../../../../Components/TapHistory';
 import logic from '../Backend/logic';
 import OnboardingModal from '../../../../Components/OnboardingModal';
 import { AuthContext } from '../../../../Utils/AuthContext';
+import TapCard from '../../../../Components/TapCard';
+import { ActivityIndicator } from 'react-native-paper';
+import storage from '@react-native-firebase/storage';
 
 function RecordScreen(props) {
     console.log('[TEST] RecordScreen called');
@@ -80,7 +83,38 @@ function RecordScreen(props) {
             setTapObjCopy(tapObj);
         }
     }, [tapObj]);
+
+
+    //Timestamp formatting for future ClimbItem call
+    const timeStampFormatting = (timestamp) => {
+        let tempTimestamp = null;
+        if (timestamp.toDate) { // Convert Firebase Timestamp to JavaScript Date
+            tempTimestamp = timestamp.toDate().toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: 'America/New_York' // NEW YORK TIME
+            });
+        }
+        return tempTimestamp;
+    };
     
+    //To get the tapped Climb URL
+    const [climbImageUrl, setClimbImageURL] = useState(null);
+    useEffect(() => {
+        const fetchImageURL = async () => {
+            try {
+                const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
+                setClimbImageURL(climbImage);
+            } catch (error) {
+                console.error('Failed to fetch image URL:', error);
+            }
+        };
+        if (climb) {
+            fetchImageURL();
+        }
+    }, [climb]);
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
@@ -115,11 +149,9 @@ function RecordScreen(props) {
                     <View style={styles.bottomPart}>
                         {/* image & color */}
                         <View style={[styles.climbNoBg]}>
-                            <Text style={{ textAlign: 'center', fontSize: 42, color: 'black'}}>
-                                ?
-                            </Text>
+                            {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: 120, height: 130}} resizeMode="contain" /> : <ActivityIndicator color='#fe8100'/>}
                         </View>
-                        <View style={styles.climbColor}>
+                        <View style={[styles.climbColor, {backgroundColor: (climb.color? climb.color: '#fe8100')}]}>
                         </View>
                         <View style={{ flexDirection: 'column', marginLeft: 15 }}>
                             <View>
@@ -128,7 +160,7 @@ function RecordScreen(props) {
                             </View>
                             <View>
                                 <Text style={{ fontSize: 12, color: '#454545' }}>Grade</Text>
-                                <Text style={{ fontSize: 30, fontWeight: 400, paddingVertical: 5, color: 'black'}}>{climb.grade}</Text>
+                                <Text style={{ fontSize: 30, fontWeight: 800, paddingVertical: 5, color: 'black'}}>{climb.grade}</Text>
                             </View>
                         </View>
                     </View>
@@ -150,10 +182,12 @@ function RecordScreen(props) {
                             <Text style={[styles.text, styles.climbCardText, {color: 'black'}]}>🃏 Climb Card 🃏</Text>
                             <View style={styles.momentumTextWrapper}>
                             <View style={styles.inlineContainer}>
-                                <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+                                <Text style={[styles.text, styles.momentumText, { color: 'black' }]}>
                                     Tap 
                                 </Text>
-                                <Image source={logo} style={styles.logo} resizeMode="contain" />
+                                <Image source={logo} style={[styles.logo, {marginLeft: 5}]} resizeMode="contain" />
+                                </View>
                                 <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>
                                     to collect your first card!
                                 </Text>
@@ -170,7 +204,7 @@ function RecordScreen(props) {
                                 ?
                             </Text>
                         </View>
-                        <View style={styles.climbColor}>
+                        <View style={[styles.climbColor, {backgroundColor: '#fe8100'}]}>
                         </View>
                         <View style={{ flexDirection: 'column', marginLeft: 15 }}>
                             <View>
@@ -179,7 +213,7 @@ function RecordScreen(props) {
                             </View>
                             <View>
                                 <Text style={{ fontSize: 12, color: '#454545' }}>Grade</Text>
-                                <Text style={{ fontSize: 30, fontWeight: 400, paddingVertical: 5, color: 'black'}}>?</Text>
+                                <Text style={{ fontSize: 30, fontWeight: 800, paddingVertical: 5, color: 'black'}}>?</Text>
                             </View>
                         </View>
                     </View>
@@ -198,7 +232,7 @@ function RecordScreen(props) {
                                 <Text style={styles.textStyle}>✕</Text>
                             </TouchableOpacity>
                             {/* Modal content goes here */}
-                            <Text style={styles.modalText}>Modal content can be placed here.</Text>
+                            <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={true}/>
                         </View>
                     </View>
                 )}
@@ -288,7 +322,6 @@ const styles = StyleSheet.create({
     climbColor: {
         width: 35,
         height: 130,
-        backgroundColor: '#fe8100',
         marginLeft: 8,
     },
     centeredView: {
@@ -296,23 +329,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-        width: '90%', // 90% of parent width
-        height: '90%', // 90% of parent height
     },
     closeButton: {
         backgroundColor: '#FF6165',
@@ -324,6 +340,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: -5,
         right: -5,
+        zIndex: 2000,
     },
     textStyle: {
         color: 'white',
@@ -352,10 +369,10 @@ const styles = StyleSheet.create({
     modalContent: {
         backgroundColor: 'white',
         borderRadius: 20,
-        padding: 35,
+        padding: 0,
         alignItems: 'center',
         width: '90%', // Adjust as needed
-        height: '90%', // Adjust as needed, less than 100% to not cover full screen
+        height: '95%', // Adjust as needed, less than 100% to not cover full screen
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
