@@ -222,6 +222,7 @@ export const useHomeScreenLogic = (props) => {
                         isSessionStart: isSessionStart,
                         tapNumber: (climbCountForUser + 1),
                         expiryTime: isSessionStart ? sixHoursLater : (lastUserTap?.expiryTime || null),
+                        videos: [],
                     };
 
                     //console.log('Tap: ', tap);
