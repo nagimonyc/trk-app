@@ -205,17 +205,27 @@ const Collection = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <TextInput
-                placeholder="Search climbs..."
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                style={styles.searchInput}
-                placeholderTextColor={'gray'}
-            />
+        <SafeAreaView style={[styles.container, { paddingHorizontal: 0 }]}>
+            <View style={{ backgroundColor: 'white', width: '100%', height: 55, justifyContent: 'center' }}>
+                <View style={styles.inputContainer}>
+                    <Image
+                        source={require('../../assets/search.png')} // Replace './path-to-your-image.png' with the path to your image
+                        style={styles.icon}
+                        resizeMode="contain"
+                    />
+                    <TextInput
+                        placeholder={`Try "Green v4"`}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        style={styles.textInput}
+                        placeholderTextColor={'#838287'}
+                    />
+                </View>
+            </View>
             <ScrollView
                 contentContainerStyle={styles.scrollViewContent}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#fe8100']} />}
+                style={{ marginHorizontal: 15 }}
             >
                 {Object.keys(filteredClimbs).sort((a, b) => {
                     // Use the same sorting logic as before to ensure consistency
@@ -252,18 +262,18 @@ const Collection = () => {
                             <Text style={styles.textStyle}>✕</Text>
                         </TouchableOpacity>
                         {/* Modal content goes here */}
-                        <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={null} blurred={(currentBlurredFromChild === 'Seen')} call={handleBlurChange}/>
+                        <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={null} blurred={(currentBlurredFromChild === 'Seen')} call={handleBlurChange} />
                     </View>
                     {(currentBlurredFromChild === 'Video Present') && (
-                        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%', paddingHorizontal: 20, marginTop: 20}}>
-                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor:'#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15}}
-                            onPress={() => {navigation.navigate('Community', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
-                            <Text style={{color: 'white', fontSize: 15, fontWeight: '600'}}>Community Posts</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', paddingHorizontal: 20, marginTop: 20 }}>
+                            <TouchableOpacity style={{ paddingVertical: 15, backgroundColor: '#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15 }}
+                                onPress={() => { navigation.navigate('Community', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy }) }}>
+                                <Text style={{ color: 'white', fontSize: 15, fontWeight: '600' }}>Community Posts</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50}}
-                            onPress={() => {navigation.navigate('New_Share', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
-                            <Image source={require('../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                            <TouchableOpacity style={{ paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50 }}
+                                onPress={() => { navigation.navigate('New_Share', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy }) }}>
+                                <Image source={require('../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
                             </TouchableOpacity>
                         </View>)}
                 </View>
@@ -273,6 +283,27 @@ const Collection = () => {
 }
 
 const styles = StyleSheet.create({
+    inputContainer: {
+        flexDirection: 'row',
+        height: 35,
+        backgroundColor: '#EEEEF0', // Match the gray box color
+        borderRadius: 10, // Match the border radius from your design
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        marginHorizontal: 15
+    },
+    icon: {
+        width: 16, // Adjust as needed
+        height: 16, // Adjust as needed
+        marginRight: 10,
+    },
+    textInput: {
+        flex: 1,
+        fontSize: 16, // Adjust as needed
+        color: '#000', // Text color
+        // Remove border if you previously had one
+    },
     centeredView: {
         flex: 1,
         justifyContent: 'center',
@@ -380,10 +411,12 @@ const styles = StyleSheet.create({
     },
     searchInput: {
         marginVertical: 10,
-        padding: 8,
-        backgroundColor: '#D9D9D9',
+        padding: 10,
+        backgroundColor: '#EEEEF0',
         borderRadius: 10,
-        width: '100%'
+        width: '100%',
+        fontSize: 16,
+        fontWeight: '400',
     },
     // ... add other styles that you might need
 });
