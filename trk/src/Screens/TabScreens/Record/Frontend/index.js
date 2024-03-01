@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, SafeAreaView, Image, TouchableOpacity, Modal } from 'react-native';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { Text, View, StyleSheet, Button, SafeAreaView, Image, TouchableOpacity, Modal, Dimensions, Animated} from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'; // Ensure you import useRoute
 import NfcManager from 'react-native-nfc-manager';
 import AndroidPrompt from '../../../../Components/AndroidPrompt';
@@ -61,6 +61,32 @@ function RecordScreen(props) {
     const [tapIdCopy, setTapIdCopy] = useState(null);
     const [climbCopy, setClimbCopy] = useState(null);
     const [tapObjCopy, setTapObjCopy] = useState(null);
+
+
+    const { height } = Dimensions.get('window'); // Get screen height
+
+    // Initialize an Animated Value for the Y position
+    const moveAnim = useRef(new Animated.Value(0)).current; // Starts from the top (0)
+
+    useEffect(() => {
+        if (tapIdCopy) {
+            // Directly start the animation when tapId changes to null
+            Animated.timing(moveAnim, {
+                toValue: 1,
+                duration: 2000,
+                useNativeDriver: true,
+            }).start(() => {
+                // Consider delaying the reset or tying it to a user action if appropriate
+                // For immediate reset, ensure it doesn't conflict with your animation logic
+                moveAnim.setValue(0); // Reset the position for the next animation
+            });
+        }
+    }, [tapIdCopy, moveAnim]);
+
+    const translateY = moveAnim.interpolate({
+        inputRange: [0, 1], // Input range for the interpolation
+        outputRange: [20, height-70], // Output range from top (0) to bottom (height - 100)
+    });
 
     const {
         renderNfcButtons,
@@ -154,6 +180,19 @@ function RecordScreen(props) {
         <SafeAreaView style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
                 {/* idle card */}
+                <Animated.Image
+                    source={require('../../../../../assets/nagimo-logo.png')} // Make sure the path is correct
+                    style={{
+                        width: 50,
+                        height: 50,
+                        position: 'absolute',
+                        left: 20,
+                        // Remove top, bottom, right if using translateY for vertical positioning
+                        zIndex: 100,
+                        transform: [{ translateY }]
+                    }}
+                    resizeMode="contain"
+                />
                 {tapId !== null && climb !== null && (
                 <TouchableOpacity onPress={toggleModal}>
                 <View style={styles.idleCard}>
