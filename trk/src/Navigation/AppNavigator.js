@@ -32,6 +32,7 @@ import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 import FollowScreen from '../Screens/TabScreens/Follow';
 import Community from '../Components/Community';
 import New_Share from '../Components/New_Share';
+import Collection from '../Components/Collection';
 
 //Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
 //Added live tracker to other components
@@ -253,6 +254,53 @@ function FollowStack() {
   );
 }
 
+function CollectionStack() {
+  console.log('[TEST] FollowStack called');
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Collection"
+        component={Collection}
+        options={({ navigation }) => ({
+          title: 'My Collection',
+          headerBackTitleVisible: null,
+          headerTitleAlign: 'center',
+          headerRight: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
+            </View>
+          ),
+        })}
+      />
+      <Stack.Screen
+        name="Developer_Feedback"
+        component={DeveloperFeedbackForm}
+        options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Feedback"
+        component={FeedbackForm}
+        options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Definition"
+        component={GlossaryDefinition}
+        options={{ title: 'Definition', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Climbs_Tracker"
+        component={LiveClimbTracker}
+        options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+
+
 function ProfileStack() {
   console.log('[TEST] ProfileStack called');
   return (
@@ -451,6 +499,23 @@ function AppTabs() {
         }}
 
       /> */}
+      <Tab.Screen
+        name="Collection_Stack"
+        component={CollectionStack}
+        options={{
+          title: 'Collection',
+          headerShown: false,
+          tabBarIcon: ({ size, focused, color }) => {
+            return (
+              <Image
+                style={{ width: size, height: size }}
+                source={require('../../assets/follow.png')}
+              />
+            );
+          },
+        }}
+
+      />
       {role === 'climber' ? null :
         <Tab.Screen
           name="Create_Climb_Tab"

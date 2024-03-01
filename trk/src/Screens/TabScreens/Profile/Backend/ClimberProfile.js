@@ -90,7 +90,7 @@ const ClimberProfile = ({ navigation }) => {
         try {
             const tapsPromises = data.climbs.map(tapId => TapsApi().getTap(tapId));
             const tapsData = await Promise.all(tapsPromises);
-            const promise = tapsData.map(tap => ClimbsApi().getClimb(tap.data().climb));
+            const promise = tapsData.filter(tap => (tap.data() != null && tap.data() != undefined)).map(tap => ClimbsApi().getClimb(tap.data().climb));
             const recentSnapshot = await Promise.all(promise);
             const recentSessionStarts = recentSnapshot.map((climbSnapshot, index) => {
                 if (!climbSnapshot.exists) return null;
