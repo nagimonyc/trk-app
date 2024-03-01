@@ -13,9 +13,9 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import Video from 'react-native-video';
 import ClimbsApi from '../api/ClimbsApi';
 
-
+//Callback function passed from Parent (Record Screen), to UNBLUR IN REAL TIME
 //TapCard component- Can upload Video, that unblurs the section (MESSAGING CHANGES!)- NO FEATURES IMPLEMENTED
-const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
+const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true, call}) => {
     console.log('[TEST] TapCard called');
     const navigation = useNavigation();
     const {currentUser, role } = React.useContext(AuthContext);
@@ -49,10 +49,11 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
                             if (flag == 0) {
                                 setSelectedImageURL(temp.videos[0]);
                                 setCurrentBlurred(false);
+                                call(false); //To update parent state and show community posts
                                 flag  = 1;
                                 break; //CAN CHANGE BUT UI LOOKS UGLY WITH FLATLIST!
                             }
-                            setAddedMedia(prev => prev.concat(temp.videos));
+                            //setAddedMedia(prev => prev.concat(temp.videos));
                         }
                     }
                 }
@@ -99,7 +100,6 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
             // Set the image state to include the full path
             let url = await uploadVideo(imagePath);
             setSelectedImageURL(url);
-             //UNBLUR HERE
 
             //Adding Video to User Tap
             const tapDataResult = await TapsApi().getTap(tapId);
@@ -117,7 +117,9 @@ const TapCard = ({climb, tapId, tapObj, tapTimestamp, blurred = true}) => {
                 videos: newClimbsArray,
             };
             await ClimbsApi().updateClimb(tapObj.climb, updatedClimb);
-            setAddedMedia(prev => [url].concat(prev));
+            //setAddedMedia(prev => [url].concat(prev));
+            setCurrentBlurred(false);
+            call(false);
         }
         } catch (err) {
         console.error("Error picking image:", err);

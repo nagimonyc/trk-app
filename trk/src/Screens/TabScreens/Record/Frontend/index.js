@@ -14,6 +14,9 @@ import TapsApi from '../../../../api/TapsApi';
 import ClimbsApi from '../../../../api/ClimbsApi';
 import Video from 'react-native-video';
 
+
+
+//Added support for Community and Share
 function RecordScreen(props) {
     console.log('[TEST] RecordScreen called');
 
@@ -61,6 +64,7 @@ function RecordScreen(props) {
     const [tapIdCopy, setTapIdCopy] = useState(null);
     const [climbCopy, setClimbCopy] = useState(null);
     const [tapObjCopy, setTapObjCopy] = useState(null);
+    const [selectedImageUrlCopy, setSelectedImageURLCopy] = useState(null);
 
     const {
         renderNfcButtons,
@@ -110,6 +114,13 @@ function RecordScreen(props) {
     const [climbImageUrl, setClimbImageURL] = useState(null); //The NO-BACKGROUND IMAGE.
     const [selectedImageUrl, setSelectedImageURL] = useState(null); //The last video posted by the user for the climb.
 
+    // Hook for tapObj
+    useEffect(() => {
+        if (selectedImageUrl !== null) {
+            setSelectedImageURLCopy(selectedImageUrl);
+        }
+    }, [selectedImageUrl]);
+
     useEffect(() => {
         const fetchImageURL = async () => {
             try {
@@ -140,6 +151,7 @@ function RecordScreen(props) {
                             if (temp.videos && temp.videos.length > 0) {
                                 if (flag == 0) {
                                     setSelectedImageURL(temp.videos[0]);
+                                    setCurrentBlurredFromChild(false);
                                     break; //CAN CHANGE BUT UI LOOKS UGLY WITH FLATLIST! SO ONLY THE FIRST VIDEO IS FETCHED!
                                 }
                             }
@@ -149,6 +161,13 @@ function RecordScreen(props) {
             }
         fetchSelectedURL();
     },[tapObj]);
+
+    const [currentBlurredFromChild, setCurrentBlurredFromChild] = useState(true);
+
+    // Callback function to receive the data
+    const handleBlurChange = (isBlurred) => {
+        setCurrentBlurredFromChild(isBlurred);
+    };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -160,8 +179,8 @@ function RecordScreen(props) {
                     {/* top part */}
                     <View style={styles.topPart}>
                         {/* Media */}
-                        <View style={styles.media}>
-                                {!selectedImageUrl && (<><Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" /><Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text></>)}
+                        <View style={styles.media}>  
+                            {!selectedImageUrl && (<><Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" /><Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text></>)}
                             {selectedImageUrl && (<Video source={{uri: selectedImageUrl}} style={{width: 120, height: 140}} repeat={true} muted={true}/>)}
                         </View>
                         {/* Text */}
@@ -173,7 +192,7 @@ function RecordScreen(props) {
                                     <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>Record a <Text style={{fontWeight: 'bold'}}>video</Text> to <Text style={{fontWeight: 'bold'}}>unlock</Text> Climb Card!</Text>
                                     )}
                                     {tapObj.tapNumber > 1 && (
-                                    <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>You've taken on this climb before!</Text>
+                                    <Text style={[styles.text, styles.momentumText, {color: 'black', marginBottom: 5}]}>You've taken on this climb <Text style={{fontWeight: 'bold'}}>{tapObj.tapNumber - 1}</Text> time{tapObj.tapNumber - 1 >1?'s': ''} before!</Text> //Adding number to the text
                                     )}
                                     </View>
                             </View>
@@ -267,8 +286,20 @@ function RecordScreen(props) {
                                 <Text style={styles.textStyle}>✕</Text>
                             </TouchableOpacity>
                             {/* Modal content goes here */}
-                            <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={(selectedImageUrl == null)}/>
+                            <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={currentBlurredFromChild} call={setCurrentBlurredFromChild}/>
                         </View>
+                        {!currentBlurredFromChild && (
+                        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%', paddingHorizontal: 20, marginTop: 20}}>
+                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor:'#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15}}
+                            onPress={() => {navigation.navigate('Community', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
+                            <Text style={{color: 'white', fontSize: 15, fontWeight: '600'}}>Community Posts</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50}}
+                            onPress={() => {navigation.navigate('New_Share', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
+                            <Image source={require('../../../../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                            </TouchableOpacity>
+                        </View>)}
                     </View>
                 )}
             </View>

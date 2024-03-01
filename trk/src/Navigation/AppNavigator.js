@@ -30,6 +30,8 @@ import EditSession from '../Components/Edit_Session';
 import UserEdit from '../Components/UserEdit';
 import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 import FollowScreen from '../Screens/TabScreens/Follow';
+import Community from '../Components/Community';
+import New_Share from '../Components/New_Share';
 
 //Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
 //Added live tracker to other components
@@ -177,6 +179,16 @@ function RecordStack() {
         name="Detail"
         component={ClimbDetailScreen}
         options={{ title: 'Climb Detail', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Community"
+        component={Community}
+        options={{ title: 'Community Posts', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="New_Share"
+        component={New_Share}
+        options={{ title: 'Share Card', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Feedback"
