@@ -43,7 +43,7 @@ const Community = ({ route }) => {
                     for (let i = 0; i < snapshot.docs.length; i = i +1) {
                         let temp = snapshot.docs[i].data();
                         if (temp.videos && temp.videos.length > 0) {
-                            setAddedMedia(prev => prev.concat(temp.videos)); //TWICE, CHANGE THIS
+                            setAddedMedia(prev => prev.concat(temp.videos));
                         }
                     }
                 }
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: 'rgba(0,0,0,0.4)',
+        backgroundColor: 'rgba(255,255,255,0.8)',
     },
     modalView: {
         backgroundColor: "black",

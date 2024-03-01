@@ -188,7 +188,7 @@ function RecordStack() {
       <Stack.Screen
         name="New_Share"
         component={New_Share}
-        options={{ title: 'Share Card', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
+        options={{ title: 'Share', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Feedback"
