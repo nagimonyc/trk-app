@@ -10,6 +10,7 @@ import TapsApi from "../api/TapsApi";
 import { FlatList, Image } from "react-native";
 import storage from '@react-native-firebase/storage';
 import TapCard from "./TapCard";
+import { useNavigation } from '@react-navigation/native';
 
 const ClimbTile = ({ climb, onPressFunction }) => {
     // Placeholder image if no image is available or if climb status is 'Unseen'
@@ -40,7 +41,7 @@ const Collection = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredClimbs, setFilteredClimbs] = useState({});
 
-
+    const navigation = useNavigation();
 
     const [refreshing, setRefreshing] = useState(false); // Add this line for pull-to-refresh
 
@@ -191,7 +192,15 @@ const Collection = () => {
         setTapIdCopy(climb.sampleTap);
         setClimbCopy(climb);
         setTapObjCopy({ climb: climb.climbId });
+        setCurrentBlurredFromChild(climb.status);
         setIsModalVisible(!isModalVisible); //Make it Visible
+    };
+
+    const [currentBlurredFromChild, setCurrentBlurredFromChild] = useState('');
+
+    // Callback function to receive the data
+    const handleBlurChange = (val) => {
+        setCurrentBlurredFromChild('Video Present');
     };
 
     return (
@@ -201,6 +210,7 @@ const Collection = () => {
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 style={styles.searchInput}
+                placeholderTextColor={'gray'}
             />
             <ScrollView
                 contentContainerStyle={styles.scrollViewContent}
@@ -241,8 +251,20 @@ const Collection = () => {
                             <Text style={styles.textStyle}>✕</Text>
                         </TouchableOpacity>
                         {/* Modal content goes here */}
-                        <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={null} blurred={(climbCopy && climbCopy.status === 'Seen')} />
+                        <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={null} blurred={(currentBlurredFromChild === 'Seen')} call={handleBlurChange}/>
                     </View>
+                    {(currentBlurredFromChild === 'Video Present') && (
+                        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%', paddingHorizontal: 20, marginTop: 20}}>
+                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor:'#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15}}
+                            onPress={() => {navigation.navigate('Community', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
+                            <Text style={{color: 'white', fontSize: 15, fontWeight: '600'}}>Community Posts</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50}}
+                            onPress={() => {navigation.navigate('New_Share', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
+                            <Image source={require('../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                            </TouchableOpacity>
+                        </View>)}
                 </View>
             )}
         </SafeAreaView>
@@ -356,10 +378,11 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     searchInput: {
-        margin: 10,
+        marginVertical: 10,
         padding: 8,
         backgroundColor: '#D9D9D9',
         borderRadius: 10,
+        width: '100%'
     },
     // ... add other styles that you might need
 });

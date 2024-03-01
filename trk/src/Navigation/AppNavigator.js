@@ -30,6 +30,8 @@ import EditSession from '../Components/Edit_Session';
 import UserEdit from '../Components/UserEdit';
 import ShareView from '../Screens/NavScreens/ShareSession/Frontend';
 import FollowScreen from '../Screens/TabScreens/Follow';
+import Community from '../Components/Community';
+import New_Share from '../Components/New_Share';
 import Collection from '../Components/Collection';
 import Community from '../Components/Community';
 import New_Share from '../Components/New_Share';
