@@ -250,7 +250,7 @@ function CollectionStack() {
         name="Collection"
         component={Collection}
         options={({ navigation }) => ({
-          title: 'Collection',
+          title: 'My Collection',
           headerBackTitleVisible: null,
           headerTitleAlign: 'center',
           headerRight: () => (
