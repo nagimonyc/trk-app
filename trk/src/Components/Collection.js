@@ -232,11 +232,11 @@ const Collection = () => {
                         resizeMode="contain"
                     />
                     <TextInput
-                        placeholder={`Try "Green v4"`}
+                        placeholder={`Try "Green V4"`}
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                         style={styles.textInput}
-                        placeholderTextColor={'#838287'}
+                        placeholderTextColor={'gray'}
                     />
                 </View>
             </View>
@@ -303,23 +303,25 @@ const Collection = () => {
 const styles = StyleSheet.create({
     inputContainer: {
         flexDirection: 'row',
-        height: 35,
+        height: '65%',
         backgroundColor: '#EEEEF0', // Match the gray box color
         borderRadius: 10, // Match the border radius from your design
         alignItems: 'center',
         paddingHorizontal: 10,
-        paddingVertical: 10,
         marginHorizontal: 15
     },
     icon: {
         width: 16, // Adjust as needed
-        height: 16, // Adjust as needed
+        height: '100%', // Adjust as needed
         marginRight: 10,
     },
     textInput: {
         flex: 1,
-        fontSize: 16, // Adjust as needed
+        fontSize: 14, // Adjust as needed
         color: '#000', // Text color
+        height: '100%',
+        margin: 0,
+        padding: 0
         // Remove border if you previously had one
     },
     centeredView: {
