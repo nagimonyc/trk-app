@@ -11,6 +11,7 @@ import { FlatList, Image } from "react-native";
 import storage from '@react-native-firebase/storage';
 import TapCard from "./TapCard";
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ClimbTile = ({ climb, onPressFunction }) => {
     // Placeholder image if no image is available or if climb status is 'Unseen'
@@ -56,6 +57,25 @@ const Collection = () => {
     const [tapIdCopy, setTapIdCopy] = useState(null);
     const [climbCopy, setClimbCopy] = useState(null);
     const [tapObjCopy, setTapObjCopy] = useState(null);
+
+    // Step 3: Load cached data when the component mounts
+    useEffect(() => {
+        const loadCachedData = async () => {
+            const cachedClimbs = await AsyncStorage.getItem('climbs');
+            const cachedAllClimbs = await AsyncStorage.getItem('allClimbs');
+            const cachedUnseenCounts = await AsyncStorage.getItem('unseenCounts');
+
+            if (cachedClimbs) setClimbs(JSON.parse(cachedClimbs));
+            if (cachedAllClimbs) setAllClimbs(JSON.parse(cachedAllClimbs));
+            if (cachedUnseenCounts) setUnseenCounts(JSON.parse(cachedUnseenCounts));
+
+            // After loading cached data, refresh the data
+            setRefreshing(true);
+            handleClimbHistory().then(() => setRefreshing(false));
+        };
+
+        loadCachedData();
+    }, []);
 
     const handleClimbHistory = async () => {
         try {
@@ -123,15 +143,13 @@ const Collection = () => {
             // Set the grouped climbs in the state
             setAllClimbs(allClimbsTemp);
             setUnseenCounts(unseenCountsTemp);
+            await AsyncStorage.setItem('climbs', JSON.stringify(sortedGroupedClimbs));
+            await AsyncStorage.setItem('allClimbs', JSON.stringify(allClimbsTemp));
+            await AsyncStorage.setItem('unseenCounts', JSON.stringify(unseenCountsTemp));
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
     };
-
-    useEffect(() => {
-        setRefreshing(true);
-        handleClimbHistory().then(() => setRefreshing(false));
-    }, []);
 
     useEffect(() => {
         if (searchQuery.trim() === '') {
@@ -237,7 +255,7 @@ const Collection = () => {
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                             <Text style={styles.gradeTitle}>{grade}</Text>
                             <Text style={styles.gradeCount}>
-                                {filteredClimbs[grade].length - (unseenCounts[grade] || 0)}/{filteredClimbs[grade].length}
+                                {Math.max(filteredClimbs[grade].length - (unseenCounts[grade] || 0), 0)}/{filteredClimbs[grade].length}
                             </Text>
                         </View>
                         <ScrollView horizontal={true} contentContainerStyle={{ flex: 1 }}>
@@ -417,6 +435,7 @@ const styles = StyleSheet.create({
         width: '100%',
         fontSize: 16,
         fontWeight: '400',
+        color:'black',
     },
     // ... add other styles that you might need
 });
