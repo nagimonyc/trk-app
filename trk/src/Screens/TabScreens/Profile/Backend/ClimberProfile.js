@@ -93,7 +93,7 @@ const ClimberProfile = ({ navigation }) => {
             const promise = tapsData.filter(tap => (tap.data() != null && tap.data() != undefined)).map(tap => ClimbsApi().getClimb(tap.data().climb));
             const recentSnapshot = await Promise.all(promise);
             const recentSessionStarts = recentSnapshot.map((climbSnapshot, index) => {
-                if (!climbSnapshot.exists) return null;
+                if (!climbSnapshot.exists || !tapsData[index] || !tapsData[index].data()) return null;
                 return { ...climbSnapshot.data(), tapId: tapsData[index].id, tapTimestamp: tapsData[index].data().timestamp };
             }).filter(climb => climb !== null);
             setClimbsThisWeek(prev => prev.concat(recentSessionStarts));
@@ -239,6 +239,8 @@ const ClimberProfile = ({ navigation }) => {
                 if (weeklySessionObjectsFiltered[i].climbs)
                     prepClimbs(weeklySessionObjectsFiltered[i]);
             }
+            setSessionsThisWeek(weeklySessionObjectsFiltered);
+            /*
             if (weeklySessionObjectsFiltered && weeklySessionObjectsFiltered.length > 0) {
                 calculateDuration(weeklySessionObjectsFiltered);
             }
@@ -286,7 +288,7 @@ const ClimberProfile = ({ navigation }) => {
             console.log('The session count is: ', sessionCount);
             setSessionCount(sessionCount); //Session count updated, based on expired and current
             setHistoryCount(tapCount); //Total tap Count updated
-
+            */
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
