@@ -255,7 +255,7 @@ const Collection = () => {
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                             <Text style={styles.gradeTitle}>{grade}</Text>
                             <Text style={styles.gradeCount}>
-                                {filteredClimbs[grade].length - (unseenCounts[grade] || 0)}/{filteredClimbs[grade].length}
+                                {Math.max(filteredClimbs[grade].length - (unseenCounts[grade] || 0), 0)}/{filteredClimbs[grade].length}
                             </Text>
                         </View>
                         <ScrollView horizontal={true} contentContainerStyle={{ flex: 1 }}>
@@ -435,6 +435,7 @@ const styles = StyleSheet.create({
         width: '100%',
         fontSize: 16,
         fontWeight: '400',
+        color:'black',
     },
     // ... add other styles that you might need
 });
