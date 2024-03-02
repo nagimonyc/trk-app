@@ -207,7 +207,7 @@ function RecordScreen(props) {
                         position: 'absolute',
                         left: 20,
                         // Remove top, bottom, right if using translateY for vertical positioning
-                        zIndex: 100,
+                        zIndex: -5,
                         transform: [{ translateY }]
                     }}
                     resizeMode="contain"
