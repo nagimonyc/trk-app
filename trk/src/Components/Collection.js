@@ -258,7 +258,7 @@ const Collection = () => {
                                 {Math.max(filteredClimbs[grade].length - (unseenCounts[grade] || 0), 0)}/{filteredClimbs[grade].length}
                             </Text>
                         </View>
-                        <ScrollView horizontal={true} contentContainerStyle={{ flex: 1 }}>
+                        <ScrollView horizontal={true} contentContainerStyle={{ flex: 1 }} scrollEnabled={false}>
                             <FlatList
                                 data={filteredClimbs[grade]}
                                 renderItem={({ item, index }) => <ClimbTile climb={item} onPressFunction={handlePressFunction} />}
