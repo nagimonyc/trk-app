@@ -220,7 +220,7 @@ function RecordScreen(props) {
                         {/* Media */}
                         <View style={styles.media}>  
                             {!selectedImageUrl && (<><Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" /><Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text></>)}
-                            {selectedImageUrl && (<Video source={{uri: selectedImageUrl}} style={{width: 120, height: 140}} repeat={true} muted={true}/>)}
+                            {selectedImageUrl && (<Video source={{uri: selectedImageUrl}} style={{width: 120, height: 140}} muted={true} paused={true}/>)}
                         </View>
                         {/* Text */}
                         <View style={styles.textContainer}>
