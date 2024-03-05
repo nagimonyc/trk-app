@@ -252,24 +252,30 @@ const Collection = () => {
                     return gradeA - gradeB;
                 }).map((grade) => ( // Use filteredClimbs here
                     <View key={grade} style={styles.gradeSection}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-                            <Text style={styles.gradeTitle}>{grade}</Text>
-                            <Text style={styles.gradeCount}>
-                                {Math.max(filteredClimbs[grade].length - (unseenCounts[grade] || 0), 0)}/{filteredClimbs[grade].length}
-                            </Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'flex-end' }}>
+                            <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                                <Text style={[styles.gradeTitle]}>{grade}</Text>
+                            </View>
+                            <View style={[styles.gradeCountContainer, { paddingBottom: 1 }]}>
+                                <Text style={styles.gradeCount}>
+                                    {Math.max(filteredClimbs[grade].length - (unseenCounts[grade] || 0), 0)}/{filteredClimbs[grade].length}
+                                </Text>
+                            </View>
                         </View>
-                        <ScrollView horizontal={true} contentContainerStyle={{ flex: 1 }} scrollEnabled={false}>
+                        <ScrollView horizontal={true} contentContainerStyle={{}} scrollEnabled={false}>
                             <FlatList
                                 data={filteredClimbs[grade]}
-                                renderItem={({ item, index }) => <ClimbTile climb={item} onPressFunction={handlePressFunction} />}
-                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item }) => <ClimbTile climb={item} onPressFunction={handlePressFunction} />}
+                                keyExtractor={(item) => item.climbId.toString()} // Use a unique property from the item instead of the index
                                 numColumns={4}
+                                scrollEnabled={false} // Make sure scrolling is disabled if it's not needed
                                 columnWrapperStyle={styles.columnWrapper}
                             />
                         </ScrollView>
                     </View>
-                ))}
-            </ScrollView>
+                ))
+                }
+            </ScrollView >
             {isModalVisible && (
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
@@ -296,7 +302,7 @@ const Collection = () => {
                         </View>)}
                 </View>
             )}
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }
 
@@ -391,24 +397,29 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     gradeSection: {
-        marginBottom: 20,
+        marginBottom: 15,
     },
     gradeTitle: {
-        fontSize: 30,
+        fontSize: 32,
         fontWeight: 'bold',
         color: '#000',
+        width: '100%',
+        margin: -2,
+    },
+    gradeCountContainer: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#C7C7C7',
+        width: '85%',
+        textAlign: 'right',
+        // Add padding or height if needed to ensure the border is visible
         marginBottom: 5,
-        width: '20%'
+        justifyContent: 'center'
     },
     gradeCount: {
         fontSize: 16,
         color: 'gray',
-        marginBottom: 10,
-        width: '80%',
-        textAlign: 'right',
-        borderBottomWidth: 1,
-        borderBottomColor: 'gray',
         fontWeight: '600',
+        textAlign: 'right',
     },
     climbTile: {
         height: 75, // Adjust the height as needed
@@ -427,7 +438,9 @@ const styles = StyleSheet.create({
         objectFit: 'contain',
     },
     columnWrapper: {
-        justifyContent: 'flex-start',
+        // justifyContent: 'flex-start',
+        // alignSelf: 'flex-end'
+        marginTop: 15,
     },
     searchInput: {
         marginVertical: 10,
@@ -437,7 +450,7 @@ const styles = StyleSheet.create({
         width: '100%',
         fontSize: 16,
         fontWeight: '400',
-        color:'black',
+        color: 'black',
     },
     // ... add other styles that you might need
 });
