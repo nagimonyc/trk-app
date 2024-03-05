@@ -322,35 +322,46 @@ function RecordScreen(props) {
                             activeOpacity={1} // No visual feedback
                             onPress={() => setIsModalVisible(!isModalVisible)} // Close modal when background is pressed
                         >
-                        <TouchableWithoutFeedback>
-                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', margin: 0, padding: 0}}>
-                        <View style={styles.modalContent}>
-                            <TouchableOpacity
-                                style={styles.closeButton}
-                                onPress={() => setIsModalVisible(!isModalVisible)}
-                            >
-                                <Text style={styles.textStyle}>✕</Text>
-                            </TouchableOpacity>
-                            {/* Modal content goes here */}
-                            <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={currentBlurredFromChild} call={setCurrentBlurredFromChild}/>
-                        </View>
-                        {!currentBlurredFromChild && (
-                        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%', paddingHorizontal: 20, marginTop: 20}}>
-                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor:'#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15}}
-                            onPress={() => {navigation.navigate('Community', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
-                            <Text style={{color: 'white', fontSize: 15, fontWeight: '600'}}>Community Posts</Text>
-                            </TouchableOpacity>
+                            <TouchableWithoutFeedback>
+                                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', margin: 0, padding: 0}}>
+                                    <View style={styles.modalContent}>
+                                        {/* Modal content goes here */}
+                                        <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={currentBlurredFromChild} call={setCurrentBlurredFromChild}/>
+                                    </View>
+                                    <View style={{
+                                            flexDirection: 'row',
+                                            justifyContent: (currentBlurredFromChild === false) ? 'space-around' : 'center',
+                                            alignItems: 'center',
+                                            padding: 10,
+                                            marginTop: 10,
+                                            width: '100%',
+                                    }}>
+                                    {currentBlurredFromChild === false && (
+                                        <>
+                                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor:'#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15}}
+                                            onPress={() => {navigation.navigate('Community', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
+                                                <Text style={{color: 'white', fontSize: 15, fontWeight: '600'}}>Community Posts</Text>
+                                            </TouchableOpacity>
 
-                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50}}
-                            onPress={() => {navigation.navigate('New_Share', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
-                            <Image source={require('../../../../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
-                            </TouchableOpacity>
-                        </View>)}
-                        </View>
-                        </TouchableWithoutFeedback>
+                                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50}}
+                                            onPress={() => {navigation.navigate('New_Share', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
+                                                <Image source={require('../../../../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                                            </TouchableOpacity>
+                                        </>
+                                    )}
+                                    <TouchableOpacity
+                                        style={[styles.closeButton, { marginHorizontal: currentBlurredFromChild === false ? 10 : 'auto' }]}
+                                        onPress={() => setIsModalVisible(!isModalVisible)}
+                                    >
+                                        <Text style={styles.textStyle}>✕</Text>
+                                    </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
                         </TouchableOpacity>
                     </View>
                 )}
+
             </View>
             {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
             <OnboardingModal isVisible={showOnboarding} onClose={handleCloseOnboarding} />
@@ -452,10 +463,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'absolute',
-        bottom: -5,
-        right: -5,
         zIndex: 2000,
+        position: 'relative',
     },
     textStyle: {
         color: 'white',
