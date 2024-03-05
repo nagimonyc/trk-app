@@ -58,6 +58,37 @@ const Collection = () => {
     const [climbCopy, setClimbCopy] = useState(null);
     const [tapObjCopy, setTapObjCopy] = useState(null);
 
+    // Get device dimensions
+    const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+    // Calculate card width based on the device width, with a maximum limit
+    const cardWidth = Math.min(screenWidth * 0.9, 350); // or any other max width you prefer
+    console.log('screenWidth:', screenWidth);
+    console.log('Card Width:', cardWidth);
+    // Calculate card height based on TCG aspect ratio
+    const cardHeight = cardWidth * (88 / 63); // TCG cards are typically 88mm x 63mm
+    console.log('screenHeight:', screenHeight)
+    console.log('Card Height:', cardHeight);
+    // Calculate corner radius as a percentage of card height
+    const cornerRadius = cardHeight * 0.0357; // Adjust percentage as needed
+    console.log('Corner Radius:', cornerRadius);
+
+    // Now use these dimensions in your component's inline styles or pass them to the StyleSheet
+    const dynamicStyles = {
+        card: {
+            width: cardWidth,
+            height: cardHeight,
+            borderRadius: cornerRadius,
+            // overflow: 'hidden',
+            // ... other styles
+        },
+        cardContent: {
+            marginHorizontal: cardHeight * 0.0357,
+            marginVertical: cardHeight * 0.0357,
+            marginImage: cardHeight * 0.0875,
+        },
+
+    }
+
     // Step 3: Load cached data when the component mounts
     useEffect(() => {
         const loadCachedData = async () => {
@@ -278,7 +309,7 @@ const Collection = () => {
             </ScrollView >
             <View>
                 <Modal
-                    animationType="slide"
+                    animationType="none"
                     transparent={true}
                     visible={isModalVisible}
                     onRequestClose={() => {
@@ -287,7 +318,7 @@ const Collection = () => {
                     }}
                 >
                     <View style={styles.centeredView}>
-                        <View style={styles.modalContent}>
+                        <View style={[styles.modalContent, { width: cardWidth, height: cardHeight, borderRadius: cornerRadius }]}>
                             <TouchableOpacity
                                 style={styles.closeButton}
                                 onPress={() => setIsModalVisible(!isModalVisible)}
@@ -303,8 +334,11 @@ const Collection = () => {
                                     tapTimestamp={null}
                                     blurred={(currentBlurredFromChild === 'Seen')}
                                     call={handleBlurChange}
+                                    cardStyle={dynamicStyles.cardContent}
                                 />
                             )}
+                            {/* marginHorizontal: cardWidth * 0.0357,
+            marginVertical: cardHeight * 0.0357, */}
                         </View>
                     </View>
                 </Modal>
@@ -317,24 +351,9 @@ const Collection = () => {
 const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
         marginTop: 22,
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
     },
     modalText: {
         marginBottom: 15,
@@ -394,24 +413,9 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
-    modalContainer: {
-        // position: 'absolute',
-        // top: 0,
-        // left: 0,
-        // right: 0,
-        // bottom: 0,
-        // justifyContent: 'flex-start',
-        alignItems: 'center',
-        // backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-        paddingTop: 20, // Adjust as needed
-    },
     modalContent: {
-        backgroundColor: 'white',
-        borderRadius: 20,
-        padding: 0,
-        alignItems: 'center',
-        width: '90%', // Adjust as needed
-        height: '85%', // Adjust as needed, less than 100% to not cover full screen
+        backgroundColor: '#E0B33E',
+        // alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -471,8 +475,6 @@ const styles = StyleSheet.create({
         objectFit: 'contain',
     },
     columnWrapper: {
-        // justifyContent: 'flex-start',
-        // alignSelf: 'flex-end'
         marginTop: 15,
     },
     searchInput: {
