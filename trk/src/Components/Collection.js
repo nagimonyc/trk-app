@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, TextInput, Switch, RefreshControl, ScrollView, SectionList, Dimensions } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, TextInput, Switch, RefreshControl, ScrollView, SectionList, Dimensions, TouchableWithoutFeedback} from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
@@ -278,6 +278,13 @@ const Collection = () => {
             </ScrollView >
             {isModalVisible && (
                 <View style={styles.modalContainer}>
+                    <TouchableOpacity
+                            style={{paddingHorizontal: 10, paddingBottom: 10, flex: 1, paddingTop: 30}}
+                            activeOpacity={1} // No visual feedback
+                            onPress={() => setIsModalVisible(!isModalVisible)} // Close modal when background is pressed
+                        >
+                        <TouchableWithoutFeedback>
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', margin: 0, padding: 0}}>        
                     <View style={styles.modalContent}>
                         <TouchableOpacity
                             style={styles.closeButton}
@@ -300,6 +307,9 @@ const Collection = () => {
                                 <Image source={require('../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
                             </TouchableOpacity>
                         </View>)}
+                        </View>
+                        </TouchableWithoutFeedback>
+                        </TouchableOpacity>
                 </View>
             )}
         </SafeAreaView >
@@ -344,7 +354,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        top: -5,
+        bottom: -5,
         right: -5,
         zIndex: 2000,
     },
@@ -370,7 +380,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-        paddingTop: 20, // Adjust as needed
     },
     modalContent: {
         backgroundColor: 'white',

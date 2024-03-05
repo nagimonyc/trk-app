@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { Text, View, StyleSheet, Button, SafeAreaView, Image, TouchableOpacity, Modal, Dimensions, Animated} from 'react-native';
+import { Text, View, StyleSheet, Button, SafeAreaView, Image, TouchableOpacity, Modal, Dimensions, Animated, TouchableWithoutFeedback} from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'; // Ensure you import useRoute
 import NfcManager from 'react-native-nfc-manager';
 import AndroidPrompt from '../../../../Components/AndroidPrompt';
@@ -317,6 +317,13 @@ function RecordScreen(props) {
                 {/* Modal Like View (Contained Within)*/}
                 {isModalVisible && (
                     <View style={styles.modalContainer}>
+                        <TouchableOpacity
+                            style={{paddingHorizontal: 10, paddingBottom: 10, flex: 1, paddingTop: 30}}
+                            activeOpacity={1} // No visual feedback
+                            onPress={() => setIsModalVisible(!isModalVisible)} // Close modal when background is pressed
+                        >
+                        <TouchableWithoutFeedback>
+                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', margin: 0, padding: 0}}>
                         <View style={styles.modalContent}>
                             <TouchableOpacity
                                 style={styles.closeButton}
@@ -339,6 +346,9 @@ function RecordScreen(props) {
                             <Image source={require('../../../../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
                             </TouchableOpacity>
                         </View>)}
+                        </View>
+                        </TouchableWithoutFeedback>
+                        </TouchableOpacity>
                     </View>
                 )}
             </View>
@@ -443,7 +453,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        top: -5,
+        bottom: -5,
         right: -5,
         zIndex: 2000,
     },
@@ -469,7 +479,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-        paddingTop: 20, // Adjust as needed
     },
     modalContent: {
         backgroundColor: 'white',
