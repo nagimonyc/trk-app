@@ -359,8 +359,8 @@ const styles = StyleSheet.create({
     },
     closeButton: {
         backgroundColor: '#FF6165',
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
@@ -373,8 +373,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: '100%',
         width: '100%',
-        textAlignVertical: 'top',
-        paddingTop: 3,
+        textAlignVertical: 'center',
+        padding: 10,
     },
     modalText: {
         marginBottom: 15,
