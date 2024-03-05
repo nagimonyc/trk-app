@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Modal} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Modal, Alert} from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import TapsApi from "../api/TapsApi";
 import ClimbsApi from "../api/ClimbsApi";
@@ -27,6 +27,18 @@ const Community = ({ route }) => {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [currentVideoUrl, setCurrentVideoUrl] = useState('');
+
+    const checkDisabled = (item) => {
+        return addedMediaAll.includes(item);
+    }; 
+
+    const [isCurrentVideoPrivate, setIsCurrentVideoPrivate] = useState(!checkDisabled(currentVideoUrl));
+
+    useEffect(() => {
+        // Whenever currentVideoUrl or addedMediaAll changes, update isCurrentVideoPrivate
+        console.log(!checkDisabled(currentVideoUrl));
+        setIsCurrentVideoPrivate(!checkDisabled(currentVideoUrl));
+    }, [currentVideoUrl, addedMediaAll]);
 
 
     //Gets Your Media and Media Associated with the Climb!
@@ -61,6 +73,44 @@ const Community = ({ route }) => {
         fetchImageURL();
     }, [climb]);
 
+    const makeVideoPrivate = (videoUrl) => {
+        Alert.alert(
+            "Make Video Private",
+            "Are you sure you want to make this video private?",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                },
+                { 
+                    text: "Yes", onPress: () => {
+                        (async () => {
+                            try {
+                                // Filter out the videoUrl from addedMediaAll
+                                const updatedMedia = addedMediaAll.filter(item => item !== videoUrl);
+                                setAddedMediaAll(updatedMedia);
+                                //Remove from Server
+                                const climbObj = await ClimbsApi().getClimb(tapObj.climb).then(response => response.data());
+                                if (climbObj && climbObj.videos) {
+                                    const updatedVideos = climbObj.videos.filter(item => item !== videoUrl);
+                                    const newClimb = {videos: updatedVideos}
+                                    // Assuming you have a method to update the climb object with the new videos array
+                                    await ClimbsApi().updateClimb(tapObj.climb, newClimb);
+                                }
+                                setModalVisible(false);
+                            } catch (error) {
+                                console.error("Failed to make video private:", error);
+                                // Optionally, handle the error with user feedback
+                                setIsCurrentVideoPrivate(false);
+                            }
+                        })();
+                    } 
+                }
+            ]
+        );
+    };    
+     
     /*const [itemsPerPage, setItemsPerPage] = useState(8);
     const fetchData = async () => {
         // Example logic for fetching next chunk of data
@@ -154,6 +204,16 @@ const Community = ({ route }) => {
                             autoplay={true}
                             volume={1.0}
                         />
+                       <TouchableOpacity
+                            style={[styles.shareButton, isCurrentVideoPrivate && styles.shareButtonDisabled]}
+                            onPress={() => makeVideoPrivate(currentVideoUrl)}
+                            disabled={isCurrentVideoPrivate}
+                        >
+                            <Text style={[styles.shareButtonText, isCurrentVideoPrivate && styles.shareButtonTextDisabled]}>
+                                Make Private
+                            </Text>
+                        </TouchableOpacity>
+
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity
                                 style={styles.buttonClose}
@@ -170,6 +230,24 @@ const Community = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
+    shareButton: {
+        marginTop: 30,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#3498db',
+        borderRadius: 20,
+        width: '50%',
+    },
+    shareButtonDisabled: {
+        backgroundColor: '#bdc3c7', // Disabled button color, e.g., a shade of gray
+    },
+    shareButtonText: {
+        color: 'white', // Original text color
+        textAlign: 'center',
+    },
+    shareButtonTextDisabled: {
+        color: '#7f8c8d', // Disabled text color, e.g., a darker shade of gray
+    },
     container: {
         flex: 1,
         justifyContent: 'flex-start',
@@ -202,7 +280,8 @@ const styles = StyleSheet.create({
     // Keep your existing styles as they are
     centeredView: {
         flex: 1,
-        justifyContent: "center",
+        justifyContent: "flex-start",
+        paddingTop: 80,
         alignItems: "center",
         backgroundColor: 'rgba(255,255,255,0.8)',
     },
@@ -220,7 +299,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         width: '90%',
-        height: '80%',
+        height: '85%',
     },
     modalVideo: {
         width: '100%',

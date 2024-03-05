@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { Text, View, StyleSheet, Button, SafeAreaView, Image, TouchableOpacity, Modal, Dimensions, Animated} from 'react-native';
+import { Text, View, StyleSheet, Button, SafeAreaView, Image, TouchableOpacity, Modal, Dimensions, Animated, TouchableWithoutFeedback} from 'react-native';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'; // Ensure you import useRoute
 import NfcManager from 'react-native-nfc-manager';
 import AndroidPrompt from '../../../../Components/AndroidPrompt';
@@ -317,30 +317,51 @@ function RecordScreen(props) {
                 {/* Modal Like View (Contained Within)*/}
                 {isModalVisible && (
                     <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <TouchableOpacity
-                                style={styles.closeButton}
-                                onPress={() => setIsModalVisible(!isModalVisible)}
-                            >
-                                <Text style={styles.textStyle}>✕</Text>
-                            </TouchableOpacity>
-                            {/* Modal content goes here */}
-                            <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={currentBlurredFromChild} call={setCurrentBlurredFromChild}/>
-                        </View>
-                        {!currentBlurredFromChild && (
-                        <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%', paddingHorizontal: 20, marginTop: 20}}>
-                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor:'#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15}}
-                            onPress={() => {navigation.navigate('Community', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
-                            <Text style={{color: 'white', fontSize: 15, fontWeight: '600'}}>Community Posts</Text>
-                            </TouchableOpacity>
+                        <TouchableOpacity
+                            style={{paddingHorizontal: 10, paddingBottom: 10, flex: 1, paddingTop: 30}}
+                            activeOpacity={1} // No visual feedback
+                            onPress={() => setIsModalVisible(!isModalVisible)} // Close modal when background is pressed
+                        >
+                            <TouchableWithoutFeedback>
+                                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', margin: 0, padding: 0}}>
+                                    <View style={styles.modalContent}>
+                                        {/* Modal content goes here */}
+                                        <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={timeStampFormatting(tapObjCopy.timestamp)} blurred={currentBlurredFromChild} call={setCurrentBlurredFromChild}/>
+                                    </View>
+                                    <View style={{
+                                            flexDirection: 'row',
+                                            justifyContent: (currentBlurredFromChild === false) ? 'space-around' : 'center',
+                                            alignItems: 'center',
+                                            padding: 10,
+                                            marginTop: 10,
+                                            width: '100%',
+                                    }}>
+                                    {currentBlurredFromChild === false && (
+                                        <>
+                                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor:'#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15}}
+                                            onPress={() => {navigation.navigate('Community', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
+                                                <Text style={{color: 'white', fontSize: 15, fontWeight: '600'}}>Community Posts</Text>
+                                            </TouchableOpacity>
 
-                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50}}
-                            onPress={() => {navigation.navigate('New_Share', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
-                            <Image source={require('../../../../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
-                            </TouchableOpacity>
-                        </View>)}
+                                            <TouchableOpacity style={{paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50}}
+                                            onPress={() => {navigation.navigate('New_Share', {climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy})}}>
+                                                <Image source={require('../../../../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                                            </TouchableOpacity>
+                                        </>
+                                    )}
+                                    <TouchableOpacity
+                                        style={[styles.closeButton, { marginHorizontal: currentBlurredFromChild === false ? 10 : 'auto' }]}
+                                        onPress={() => setIsModalVisible(!isModalVisible)}
+                                    >
+                                        <Text style={styles.textStyle}>✕</Text>
+                                    </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </TouchableOpacity>
                     </View>
                 )}
+
             </View>
             {(androidPromptRef) ? <AndroidPrompt ref={androidPromptRef} onCancelPress={() => NfcManager.cancelTechnologyRequest()} /> : null}
             <OnboardingModal isVisible={showOnboarding} onClose={handleCloseOnboarding} />
@@ -437,15 +458,13 @@ const styles = StyleSheet.create({
     },
     closeButton: {
         backgroundColor: '#FF6165',
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'absolute',
-        top: -5,
-        right: -5,
         zIndex: 2000,
+        position: 'relative',
     },
     textStyle: {
         color: 'white',
@@ -453,8 +472,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: '100%',
         width: '100%',
-        textAlignVertical: 'top',
-        paddingTop: 3,
+        textAlignVertical: 'center',
+        padding: 10,
     },
     modalText: {
         marginBottom: 15,
@@ -469,7 +488,6 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-        paddingTop: 20, // Adjust as needed
     },
     modalContent: {
         backgroundColor: 'white',
