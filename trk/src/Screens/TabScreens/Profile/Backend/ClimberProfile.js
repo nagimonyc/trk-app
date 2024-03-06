@@ -36,9 +36,11 @@ const ClimberProfile = ({ navigation }) => {
 
     const [currentSessionObject, setCurrentSessionObject] = useState(null);
 
-    const [historyCount, setHistoryCount] = useState(0);
     const [sessionCount, setSessionCount] = useState(0);
     const [refreshing, setRefreshing] = useState(false);
+
+    // best effort
+    const [highestVGrade, setHighestVGrade] = useState('V0');
 
     //For pagination
     const [lastLoadedClimb, setLastLoadedClimb] = useState(null);
@@ -52,6 +54,7 @@ const ClimberProfile = ({ navigation }) => {
     const [timeThisWeek, setTimeThisWeek] = useState('0m');
     const [gradeThisWeek, setGradeThisWeek] = useState('V0');
     const [commentsLeft, setCommentsLeft] = useState(0);
+    // const [tapCount, setTapCount] = useState(0);
 
 
     // Define the tab switcher component
@@ -210,8 +213,52 @@ const ClimberProfile = ({ navigation }) => {
     //Get active sessions in the same manner. Fetch sessions through the session object (order by timestamp and fetch last 5)- for pagination
     const handleTapHistory = async () => {
         try {
-            const { getActiveSessionTaps, getTotalTapCount } = TapsApi();
+            const { getActiveSessionTaps, getTotalTapCount, getTapsBySomeField } = TapsApi();
             const { getClimb } = ClimbsApi();
+
+            // const tapCountCheck = await getTotalTapCount(currentUser.uid);
+            // if (tapCountCheck) {
+            //     setTapCount(tapCountCheck.data().count);
+            // }
+
+            const userTapsCheck = await getTapsBySomeField('user', currentUser.uid);
+            if (!userTapsCheck) {
+                console.log("No user taps found");
+                return;
+            }
+
+            // Temporary array to hold all the grades
+            const grades = [];
+
+            // Fetch all climbs associated with the taps
+            for (let doc of userTapsCheck.docs) {
+                let tap = { id: doc.id, ...doc.data() };
+                let climb = await getClimb(tap.climb); // Assuming getClimb returns the climb document
+                if (climb) {
+                    let grade = climb.data().grade; // Assuming climb data has a grade field
+                    console.log(`Grade for climbId ${tap.climb}: ${grade}`);
+                    // Add the grade to the array
+                    grades.push(grade);
+                }
+            }
+
+            // Now filter the grades to only include those starting with "V" and find the highest one
+            const vGrades = grades
+                .filter(grade => grade.startsWith("V"))
+                .map(grade => parseInt(grade.substring(1), 10)); // Convert the numeric part to an integer
+
+            // Check if there are any "V" grades, find the highest, and set it in the state
+            if (vGrades.length > 0) {
+                const highestVGradeNumber = Math.max(...vGrades);
+                const highestVGrade = `V${highestVGradeNumber}`;
+                setHighestVGrade(highestVGrade);
+                console.log(`Highest V Grade: ${highestVGrade}`);
+                // Here you could update a state variable to store the highest V grade
+                // setHighestVGrade(highestVGrade); // Assuming you have a useState to store this
+            } else {
+                console.log("No V grades found");
+                // Handle the case where no "V" grades are present
+            }
 
             const { getCommentsCountBySomeField } = CommentsApi();
             let count = await getCommentsCountBySomeField('user', currentUser.uid);
@@ -492,12 +539,12 @@ const ClimberProfile = ({ navigation }) => {
                         <Text style={{ paddingHorizontal: 15, color: 'black', fontSize: 16, fontWeight: '700' }}>Fun Stats</Text>
                         <View style={{ width: '100%', backgroundColor: 'white', marginTop: 10 }}>
                             <View style={{ paddingHorizontal: 15 }}>
-                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
                                     <Text style={{ color: 'black' }}>Climbs Found</Text>
-                                    <Text style={{ color: 'black' }}>1</Text>
-                                </View> */}
+                                    <Text style={{ color: 'black' }}>{tapCount}</Text>
+                                </View>
                                 {/* Divider */}
-                                {/* <View style={{ height: 1, backgroundColor: '#e0e0e0' }} /> */}
+                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{ paddingHorizontal: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
@@ -516,12 +563,12 @@ const ClimberProfile = ({ navigation }) => {
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{ paddingHorizontal: 15 }}>
-                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
                                     <Text style={{ color: 'black' }}>Best Effort</Text>
-                                    <Text style={{ color: 'black' }}>Climb Found</Text>
-                                </View> */}
+                                    <Text style={{ color: 'black' }}>{highestVGrade}</Text>
+                                </View>
                                 {/* Divider */}
-                                {/* <View style={{ height: 1, backgroundColor: '#e0e0e0' }} /> */}
+                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{
                                 paddingHorizontal: 15,

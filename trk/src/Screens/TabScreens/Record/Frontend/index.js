@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     //Simplified CSS logic (one style variable)
     idleCard: {
         backgroundColor: 'white',
-        marginHorizontal: 15,
+        marginHorizontal: 20,
         marginTop: 20,
         borderRadius: 15,
         height: 340,

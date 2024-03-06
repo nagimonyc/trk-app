@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, TextInput, Switch, RefreshControl, ScrollView, SectionList, Dimensions, TouchableWithoutFeedback} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, TextInput, Switch, RefreshControl, ScrollView, SectionList, Dimensions, TouchableWithoutFeedback } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
@@ -279,48 +279,48 @@ const Collection = () => {
             {isModalVisible && (
                 <View style={styles.modalContainer}>
                     <TouchableOpacity
-                            style={{paddingHorizontal: 10, paddingBottom: 10, flex: 1, paddingTop: 30}}
-                            activeOpacity={1} // No visual feedback
-                            onPress={() => setIsModalVisible(!isModalVisible)} // Close modal when background is pressed
-                        >
+                        style={{ paddingHorizontal: 10, paddingBottom: 10, flex: 1, paddingTop: 30 }}
+                        activeOpacity={1} // No visual feedback
+                        onPress={() => setIsModalVisible(!isModalVisible)} // Close modal when background is pressed
+                    >
                         <TouchableWithoutFeedback>
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', margin: 0, padding: 0}}>        
-                    <View style={styles.modalContent}>
-                        {/* Modal content goes here */}
-                        <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={null} blurred={(currentBlurredFromChild === 'Seen')} call={handleBlurChange} />
-                    </View>
-                    <View style={{
-                        flexDirection: 'row',
-                        justifyContent: (currentBlurredFromChild === 'Video Present') ? 'space-around' : 'center',
-                        alignItems: 'center',
-                        padding: 10,
-                        marginTop: 10,
-                        width: '100%',
-                    }}>
-                        {(currentBlurredFromChild === 'Video Present') && (
-                            <>
-                                <TouchableOpacity style={{ paddingVertical: 15, backgroundColor: '#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15 }}
-                                    onPress={() => { navigation.navigate('Community', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy }) }}>
-                                    <Text style={{ color: 'white', fontSize: 15, fontWeight: '600' }}>Community Posts</Text>
-                                </TouchableOpacity>
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', margin: 0, padding: 0 }}>
+                                <View style={styles.modalContent}>
+                                    {/* Modal content goes here */}
+                                    <TapCard climb={climbCopy} tapId={tapIdCopy} tapObj={tapObjCopy} tapTimestamp={null} blurred={(currentBlurredFromChild === 'Seen')} call={handleBlurChange} />
+                                </View>
+                                <View style={{
+                                    flexDirection: 'row',
+                                    justifyContent: (currentBlurredFromChild === 'Video Present') ? 'space-around' : 'center',
+                                    alignItems: 'center',
+                                    padding: 10,
+                                    marginTop: 10,
+                                    width: '100%',
+                                }}>
+                                    {(currentBlurredFromChild === 'Video Present') && (
+                                        <>
+                                            <TouchableOpacity style={{ paddingVertical: 15, backgroundColor: '#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15 }}
+                                                onPress={() => { navigation.navigate('Community', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy }) }}>
+                                                <Text style={{ color: 'white', fontSize: 15, fontWeight: '600' }}>Community Posts</Text>
+                                            </TouchableOpacity>
 
-                                <TouchableOpacity style={{ paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50 }}
-                                    onPress={() => { navigation.navigate('New_Share', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy }) }}>
-                                    <Image source={require('../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
-                                </TouchableOpacity>
-                            </>
-                        )}
-                        <TouchableOpacity
-                            style={[styles.closeButton, { marginLeft: (currentBlurredFromChild === 'Video Present') ? 0 : 'auto', marginRight: (currentBlurredFromChild === 'Video Present') ? 0 : 'auto' }]}
-                            onPress={() => setIsModalVisible(!isModalVisible)}
-                        >
-                            <Text style={styles.textStyle}>✕</Text>
-                        </TouchableOpacity>
-                    </View>
+                                            <TouchableOpacity style={{ paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50 }}
+                                                onPress={() => { navigation.navigate('New_Share', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy }) }}>
+                                                <Image source={require('../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
+                                            </TouchableOpacity>
+                                        </>
+                                    )}
+                                    <TouchableOpacity
+                                        style={[styles.closeButton, { marginLeft: (currentBlurredFromChild === 'Video Present') ? 0 : 'auto', marginRight: (currentBlurredFromChild === 'Video Present') ? 0 : 'auto' }]}
+                                        onPress={() => setIsModalVisible(!isModalVisible)}
+                                    >
+                                        <Text style={styles.textStyle}>✕</Text>
+                                    </TouchableOpacity>
+                                </View>
 
-                        </View>
+                            </View>
                         </TouchableWithoutFeedback>
-                        </TouchableOpacity>
+                    </TouchableOpacity>
                 </View>
             )}
         </SafeAreaView >
@@ -423,11 +423,12 @@ const styles = StyleSheet.create({
         color: '#000',
         width: '100%',
         margin: -2,
+
     },
     gradeCountContainer: {
         borderBottomWidth: 1,
         borderBottomColor: '#C7C7C7',
-        width: '85%',
+        width: '83%',
         textAlign: 'right',
         // Add padding or height if needed to ensure the border is visible
         marginBottom: 5,
