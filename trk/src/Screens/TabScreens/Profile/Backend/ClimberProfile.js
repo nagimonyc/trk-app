@@ -468,60 +468,60 @@ const ClimberProfile = ({ navigation }) => {
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             {/* photo */}
                             <TouchableOpacity style={[styles.initialCircle]} onPress={() => { navigation.navigate('Edit_User', { user: user }) }}>
-                            {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ height: '100%', width: '100%', borderRadius: 10 }} resizeMode="contain" />)}
-                            {!climbImageUrl && (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
-                            <View style={{ position: 'absolute', bottom: -5, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor: 'black' }}>
-                                <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }} resizeMode="contain" />
-                            </View>
+                                {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ height: '100%', width: '100%', borderRadius: 10 }} resizeMode="contain" />)}
+                                {!climbImageUrl && (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
+                                <View style={{ position: 'absolute', bottom: -5, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor: 'black' }}>
+                                    <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }} resizeMode="contain" />
+                                </View>
                             </TouchableOpacity>
                             {/* text */}
                             <View style={{ marginLeft: 15 }}>
-                            <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>
-                                {user && user.username ? user.username : ''}
-                            </Text>
+                                <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>
+                                    {user && user.username ? user.username : ''}
+                                </Text>
                             </View>
                         </View>
-                        
+
                         {/* Right Container for settings icon */}
-                        <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={{paddingVertical: 20}}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={{ paddingVertical: 20 }}>
                             <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
                         </TouchableOpacity>
-                        </View>
+                    </View>
                     {/* Fun Stats */}
                     <View style={{ marginTop: 20 }}>
                         <Text style={{ paddingHorizontal: 15, color: 'black', fontSize: 16, fontWeight: '700' }}>Fun Stats</Text>
                         <View style={{ width: '100%', backgroundColor: 'white', marginTop: 10 }}>
                             <View style={{ paddingHorizontal: 15 }}>
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                    <Text style={{ color: 'black' }}>Climbs Found</Text>
+                                    <Text style={{ color: 'black' }}>1</Text>
+                                </View> */}
+                                {/* Divider */}
+                                {/* <View style={{ height: 1, backgroundColor: '#e0e0e0' }} /> */}
+                            </View>
+                            <View style={{ paddingHorizontal: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
-                                    <Text style={{color: 'black'}}>Climb Found</Text>
-                                    <Text style={{color: 'black'}}>Climb Found</Text>
+                                    <Text style={{ color: 'black' }}>Route Setters Smiling (Reviews Left)</Text>
+                                    <Text style={{ color: 'black' }}>{commentsLeft}</Text>
                                 </View>
                                 {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{ paddingHorizontal: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
-                                    <Text style={{color: 'black'}}>Route Setters Smiling (Reviews Left)</Text>
-                                    <Text style={{color: 'black'}}>{commentsLeft}</Text>
+                                    <Text style={{ color: 'black' }}>Climbing Sessions per Week</Text>
+                                    <Text style={{ color: 'black' }}>{sessionsThisWeek.length}</Text>
                                 </View>
                                 {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{ paddingHorizontal: 15 }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
-                                    <Text style={{color: 'black'}}>Climbing Sessions per Week</Text>
-                                    <Text style={{color: 'black'}}>{sessionsThisWeek.length}</Text>
-                                </View>
+                                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
+                                    <Text style={{ color: 'black' }}>Best Effort</Text>
+                                    <Text style={{ color: 'black' }}>Climb Found</Text>
+                                </View> */}
                                 {/* Divider */}
-                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
-                            </View>
-                            <View style={{ paddingHorizontal: 15 }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
-                                    <Text style={{color: 'black'}}>Best Effort</Text>
-                                    <Text style={{color: 'black'}}>Climb Found</Text>
-                                </View>
-                                {/* Divider */}
-                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
+                                {/* <View style={{ height: 1, backgroundColor: '#e0e0e0' }} /> */}
                             </View>
                             <View style={{
                                 paddingHorizontal: 15,
@@ -536,8 +536,8 @@ const ClimberProfile = ({ navigation }) => {
                                 elevation: 5, // for Android
                             }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
-                                    <Text style={{color: 'black'}}>Friends made along the way</Text>
-                                    <Text style={{color: 'black'}}>∞</Text>
+                                    <Text style={{ color: 'black' }}>Friends made along the way</Text>
+                                    <Text style={{ color: 'black' }}>∞</Text>
                                 </View>
                             </View>
                         </View>
