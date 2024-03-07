@@ -127,7 +127,7 @@ export const useHomeScreenLogic = (props) => {
         Animated.loop(
             Animated.sequence([
                 Animated.timing(logoScale, {
-                    toValue: 1.15, // Slightly larger
+                    toValue: 1.1, // Slightly larger
                     duration: 1750,
                     useNativeDriver: true,
                 }),
@@ -209,7 +209,7 @@ export const useHomeScreenLogic = (props) => {
                     }
 
                     const climbCountForUser = (await (TapsApi().getClimbsByIdUserCount(climbId, currentUser.uid))).data().count; //Counting previous taps by that user on the climb (FOR MESSAGING AND LOADING!)
-                    
+
                     const tap = {
                         archived: false,
                         climb: climbId,
@@ -358,7 +358,7 @@ export const useHomeScreenLogic = (props) => {
             };
         }
     }, [tapId, fadeAnim]);
-    
+
 
     //Timestamp formatting for future ClimbItem call
     const timeStampFormatting = (timestamp) => {
@@ -469,8 +469,8 @@ export const useHomeScreenLogic = (props) => {
             ));
 
             return (
-                <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%'}}>
-                    <View style={{ paddingBottom: 20, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', display: 'flex'}}>
+                <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
+                    <View style={{ paddingBottom: 20, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', display: 'flex' }}>
                         <View style={{ paddingTop: 30 }}>
                             {messageComponent}
                         </View>
@@ -503,8 +503,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     image: {
-        width: 180,
-        height: 180,
+        width: 120,
+        height: 120,
         marginBottom: 20,
         marginTop: 0,
     },
@@ -512,7 +512,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#2F2F2F',
         fontSize: 18,
-        fontWeight: '400'
+        fontWeight: '400',
+        marginTop: 30,
     },
     celebration: {
         marginTop: 10,

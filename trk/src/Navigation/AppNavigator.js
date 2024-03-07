@@ -508,8 +508,8 @@ function AppTabs() {
           tabBarIcon: ({ size, focused, color }) => {
             return (
               <Image
-                style={{ width: size, height: size }}
-                source={require('../../assets/follow.png')}
+                style={{ width: size, height: size - 2 }}
+                source={require('../../assets/card_collec_icon.png')}
               />
             );
           },
