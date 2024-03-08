@@ -422,13 +422,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#000',
         width: '100%',
-        margin: -2,
+        marginBottom: -2,
+        // textAlign: 'center'
 
     },
     gradeCountContainer: {
         borderBottomWidth: 1,
         borderBottomColor: '#C7C7C7',
-        width: '83%',
+        width: '81%',
         textAlign: 'right',
         // Add padding or height if needed to ensure the border is visible
         marginBottom: 5,
