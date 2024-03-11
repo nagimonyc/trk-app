@@ -204,6 +204,7 @@ const Community = ({ route }) => {
                             autoplay={true}
                             volume={1.0}
                         />
+                        {activeTab === 'Mine' && (
                        <TouchableOpacity
                             style={[styles.shareButton, isCurrentVideoPrivate && styles.shareButtonDisabled]}
                             onPress={() => makeVideoPrivate(currentVideoUrl)}
@@ -212,7 +213,7 @@ const Community = ({ route }) => {
                             <Text style={[styles.shareButtonText, isCurrentVideoPrivate && styles.shareButtonTextDisabled]}>
                                 Make Private
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity>)}
 
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity
