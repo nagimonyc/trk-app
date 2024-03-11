@@ -85,6 +85,8 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
         const url = await loadImageUrl(path);
         return url;
     };
+        
+    const [isUploading, setIsUploading] = useState(false); // Add this line
 
     //Video Adding Logic
     const selectImageLogic = async () => {
@@ -123,11 +125,12 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
             }
         } catch (err) {
             console.error("Error picking image:", err);
-        }
+        } 
     };
 
     const uploadVideo = async (videoPath) => { //VIDEO UPLOADING AND PLAYING INSTANTLY!
         try {
+            setIsUploading(true); // Start uploading
             // Create a reference to the Firebase Storage bucket
             const reference = storage().ref(`videos/${new Date().toISOString()}.mp4`);
 
@@ -148,6 +151,8 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
             return url; // You may want to do something with the URL, like storing it in a database
         } catch (error) {
             console.error('Video upload error:', error);
+        } finally {
+            setIsUploading(false); // Stop uploading regardless of outcome
         }
     };
 
@@ -159,10 +164,22 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
                 {/* Media */}
                 <View style={styles.media}>
 
-                    <TouchableOpacity onPress={selectImageLogic}>
-                        {!selectedImageUrl && (<><Image source={require('../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" /><Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text></>)}
-                        {selectedImageUrl && (<Video source={{ uri: selectedImageUrl }} style={{ width: 120, height: 140 }} muted={true} paused={true} />)}
-                    </TouchableOpacity>
+                <TouchableOpacity onPress={selectImageLogic}>
+                    {isUploading ? (
+                        <ActivityIndicator color='#fe8100' size={'large'}/>
+                    ) : (
+                        <>
+                            {!selectedImageUrl ? (
+                                <>
+                                    <Image source={require('../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" />
+                                    <Text style={{ marginTop: 15, fontSize: 12, fontWeight: '500', color: '#505050' }}>Add Media</Text>
+                                </>
+                            ) : (
+                                <Video source={{ uri: selectedImageUrl }} style={{ width: 120, height: 140 }} muted={true} paused={true} />
+                            )}
+                        </>
+                    )}
+                </TouchableOpacity>
 
                 </View>
                 {/* Text */}
