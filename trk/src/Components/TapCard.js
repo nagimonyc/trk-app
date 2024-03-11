@@ -92,6 +92,7 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
     const selectImageLogic = async () => {
         //console.log("handleImagePick called");
         try {
+            setIsUploading(true); // Start uploading
             let result = await launchImageLibrary({ mediaType: 'video', videoQuality: 'high' });
             let pickedImages = result.assets;
 
@@ -125,12 +126,13 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
             }
         } catch (err) {
             console.error("Error picking image:", err);
-        } 
+        } finally {
+            setIsUploading(false); // Stop uploading regardless of outcome
+        }
     };
 
     const uploadVideo = async (videoPath) => { //VIDEO UPLOADING AND PLAYING INSTANTLY!
         try {
-            setIsUploading(true); // Start uploading
             // Create a reference to the Firebase Storage bucket
             const reference = storage().ref(`videos/${new Date().toISOString()}.mp4`);
 
@@ -151,9 +153,7 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
             return url; // You may want to do something with the URL, like storing it in a database
         } catch (error) {
             console.error('Video upload error:', error);
-        } finally {
-            setIsUploading(false); // Stop uploading regardless of outcome
-        }
+        } 
     };
 
     /* NEED TO ADD MEDIA*/
