@@ -280,6 +280,11 @@ function CollectionStack() {
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
       />
+            <Stack.Screen
+        name="Community"
+        component={Community}
+        options={{ title: 'Community Posts', headerBackTitle: 'Collection', headerTitleAlign: 'center' }}
+      />
       <Stack.Screen
         name="Feedback"
         component={FeedbackForm}
