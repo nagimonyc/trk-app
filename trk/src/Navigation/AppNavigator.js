@@ -152,13 +152,14 @@ function HomeStack() {
 
 function RecordStack() {
   console.log('[TEST] HomeStack called');
+  const { role } = useContext(AuthContext);
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="RecordPage_stack"
         component={RecordScreen}
         options={({ navigation }) => ({
-          title: 'Record',
+          title: role === 'setter' ? 'Scan' : 'Record',
           headerBackTitleVisible: null,
           headerTitleAlign: 'center',
           headerRight: () => (
@@ -484,9 +485,10 @@ function ClimbInputStackScreen() {
 function AppTabs() {
   console.log('[TEST] AppTabs called');
   const { role } = useContext(AuthContext);
+  const initialRouteName = role === 'setter' ? 'AnalyticsTab' : 'Record';
 
   return (
-    <Tab.Navigator initialRouteName="Record">
+    <Tab.Navigator initialRouteName={initialRouteName}>
       {/* <Tab.Screen
         name="Home"
         component={HomeStack}
@@ -504,6 +506,61 @@ function AppTabs() {
         }}
 
       /> */}
+      {role === 'setter' && (
+        <>
+        <Tab.Screen
+          name="AnalyticsTab"
+          component={AnalyticsStack}
+          options={{
+            title: 'My Gym', headerShown: false,
+            tabBarIcon: ({ size, focused, color }) => {
+              return (
+                <Image
+                  style={{ width: size, height: size }}
+                  source={require('../../assets/analytics.png')}
+                />
+              );
+            },
+          }}
+        /> 
+
+        <Tab.Screen
+          name="Create_Climb_Tab"
+          component={ClimbInputStackScreen} // Use the new stack here
+          options={{
+            title: 'Create Climb',
+            headerShown: false,
+            tabBarIcon: ({ size, focused, color }) => {
+              return (
+                <Image
+                  style={{ width: size, height: size }}
+                  source={require('../../assets/tools.png')}
+                />);
+            },
+          }}
+        />
+
+        <Tab.Screen
+        name="Record"
+        component={RecordStack}
+        options={{
+          title: 'Scan',
+          headerShown: false,
+          // To be completed by @abhipi or @redpepper-nag
+          tabBarIcon: ({ size, focused, color }) => {
+            return (
+              <Image
+                style={{ width: size, height: size }}
+                source={require('../../assets/record.png')}
+              />
+            );
+          },
+        }}
+      />
+        </>
+        )}
+        
+
       <Tab.Screen
         name="Collection_Stack"
         component={CollectionStack}
@@ -521,22 +578,8 @@ function AppTabs() {
         }}
 
       />
-      {role === 'climber' ? null :
-        <Tab.Screen
-          name="Create_Climb_Tab"
-          component={ClimbInputStackScreen} // Use the new stack here
-          options={{
-            title: 'Create Climb',
-            headerShown: false,
-            tabBarIcon: ({ size, focused, color }) => {
-              return (
-                <Image
-                  style={{ width: size, height: size }}
-                  source={require('../../assets/tools.png')}
-                />);
-            },
-          }}
-        />}
+
+{role !== 'setter' && (
       <Tab.Screen
         name="Record"
         component={RecordStack}
@@ -553,7 +596,9 @@ function AppTabs() {
             );
           },
         }}
-      />
+      />)}
+      
+        
       {/* <Tab.Screen
         name="Follow"
         component={FollowStack}
@@ -586,22 +631,7 @@ function AppTabs() {
           },
         }}
       />
-      {role === 'climber' ? null :
-        <Tab.Screen
-          name="AnalyticsTab"
-          component={AnalyticsStack}
-          options={{
-            title: 'My Gym', headerShown: false,
-            tabBarIcon: ({ size, focused, color }) => {
-              return (
-                <Image
-                  style={{ width: size, height: size }}
-                  source={require('../../assets/analytics.png')}
-                />
-              );
-            },
-          }}
-        />}
+
     </Tab.Navigator>
   );
 }
