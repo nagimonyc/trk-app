@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Image } from 'react-native';
 import { Platform, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
 
@@ -33,6 +34,7 @@ import FollowScreen from '../Screens/TabScreens/Follow';
 import Community from '../Components/Community';
 import New_Share from '../Components/New_Share';
 import Collection from '../Components/Collection';
+import Notification from '../Screens/NavScreens/Notification/Frontend';
 
 //Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
 //Added live tracker to other components
@@ -49,9 +51,39 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
   </TouchableOpacity>
 );
 
+// notification bell
+const NotificationButton = ({ onPress, title, navigation }) => {
+  const [notificationCount, setNotificationCount] = useState(0);
+  return (
+    <TouchableOpacity onPress={() => navigation.navigate('Notification')} style={styles.button}>
+      <Icon name="notifications" size={24} color="#4c6a78" />
+      {notificationCount > 0 && (
+        <View style={styles.notificationBadge}>
+          <Text style={styles.notificationText}>{notificationCount}</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
 
 
 const styles = StyleSheet.create({
+  notificationBadge: {
+    position: 'absolute',
+    right: -6,
+    top: -3,
+    backgroundColor: 'red',
+    borderRadius: 6,
+    width: 12,
+    height: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
   button: {
     backgroundColor: 'white',
     padding: 5,
@@ -281,7 +313,7 @@ function CollectionStack() {
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
       />
-            <Stack.Screen
+      <Stack.Screen
         name="Community"
         component={Community}
         options={{ title: 'Community Posts', headerBackTitle: 'Collection', headerTitleAlign: 'center' }}
@@ -422,14 +454,24 @@ function AnalyticsStack() {
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
               <View style={{ display: 'flex', flexDirection: 'row' }}>
-                <FeedbackButton
-                  title="Feedback"
+                <NotificationButton
+                  title="Notification"
                   navigation={navigation}
                 />
+                {/* <FeedbackButton
+                  title="Feedback"
+                  navigation={navigation}
+                /> */}
+                {/* NOTIFICATION ICON HERE */}
               </View>
             </View>
           ),
         })}
+      />
+      <Stack.Screen
+        name="Notification"
+        component={Notification}
+        options={{ title: 'Notifications', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Developer_Feedback"
@@ -508,58 +550,58 @@ function AppTabs() {
       /> */}
       {role === 'setter' && (
         <>
-        <Tab.Screen
-          name="AnalyticsTab"
-          component={AnalyticsStack}
-          options={{
-            title: 'My Gym', headerShown: false,
-            tabBarIcon: ({ size, focused, color }) => {
-              return (
-                <Image
-                  style={{ width: size, height: size }}
-                  source={require('../../assets/analytics.png')}
-                />
-              );
-            },
-          }}
-        /> 
+          <Tab.Screen
+            name="AnalyticsTab"
+            component={AnalyticsStack}
+            options={{
+              title: 'My Gym', headerShown: false,
+              tabBarIcon: ({ size, focused, color }) => {
+                return (
+                  <Image
+                    style={{ width: size, height: size }}
+                    source={require('../../assets/analytics.png')}
+                  />
+                );
+              },
+            }}
+          />
 
-        <Tab.Screen
-          name="Create_Climb_Tab"
-          component={ClimbInputStackScreen} // Use the new stack here
-          options={{
-            title: 'Create Climb',
-            headerShown: false,
-            tabBarIcon: ({ size, focused, color }) => {
-              return (
-                <Image
-                  style={{ width: size, height: size }}
-                  source={require('../../assets/tools.png')}
-                />);
-            },
-          }}
-        />
+          <Tab.Screen
+            name="Create_Climb_Tab"
+            component={ClimbInputStackScreen} // Use the new stack here
+            options={{
+              title: 'Create Climb',
+              headerShown: false,
+              tabBarIcon: ({ size, focused, color }) => {
+                return (
+                  <Image
+                    style={{ width: size, height: size }}
+                    source={require('../../assets/tools.png')}
+                  />);
+              },
+            }}
+          />
 
-        <Tab.Screen
-        name="Record"
-        component={RecordStack}
-        options={{
-          title: 'Scan',
-          headerShown: false,
-          // To be completed by @abhipi or @redpepper-nag
-          tabBarIcon: ({ size, focused, color }) => {
-            return (
-              <Image
-                style={{ width: size, height: size }}
-                source={require('../../assets/record.png')}
-              />
-            );
-          },
-        }}
-      />
+          <Tab.Screen
+            name="Record"
+            component={RecordStack}
+            options={{
+              title: 'Scan',
+              headerShown: false,
+              // To be completed by @abhipi or @redpepper-nag
+              tabBarIcon: ({ size, focused, color }) => {
+                return (
+                  <Image
+                    style={{ width: size, height: size }}
+                    source={require('../../assets/record.png')}
+                  />
+                );
+              },
+            }}
+          />
         </>
-        )}
-        
+      )}
+
 
       <Tab.Screen
         name="Collection_Stack"
@@ -579,26 +621,26 @@ function AppTabs() {
 
       />
 
-{role !== 'setter' && (
-      <Tab.Screen
-        name="Record"
-        component={RecordStack}
-        options={{
-          title: 'Record',
-          headerShown: false,
-          // To be completed by @abhipi or @redpepper-nag
-          tabBarIcon: ({ size, focused, color }) => {
-            return (
-              <Image
-                style={{ width: size, height: size }}
-                source={require('../../assets/record.png')}
-              />
-            );
-          },
-        }}
-      />)}
-      
-        
+      {role !== 'setter' && (
+        <Tab.Screen
+          name="Record"
+          component={RecordStack}
+          options={{
+            title: 'Record',
+            headerShown: false,
+            // To be completed by @abhipi or @redpepper-nag
+            tabBarIcon: ({ size, focused, color }) => {
+              return (
+                <Image
+                  style={{ width: size, height: size }}
+                  source={require('../../assets/record.png')}
+                />
+              );
+            },
+          }}
+        />)}
+
+
       {/* <Tab.Screen
         name="Follow"
         component={FollowStack}
