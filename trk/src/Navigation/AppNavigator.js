@@ -58,7 +58,7 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
 
 const MessageButton = ({ onPress, title, navigation }) => (
   <TouchableOpacity onPress={() => navigation.navigate('Rooms_Screen')} style={styles.button}>
-    <Icon name="message" size={24} color="#4c6a78" />
+    <Image source={require('../../assets/message.png')}  style={{ width: 21, height: 21 }}/>
   </TouchableOpacity>
 );
 
@@ -110,7 +110,7 @@ const NotificationButton = ({ navigation }) => {
       navigation.navigate('Notification');
       markNotificationsAsRead();
     }} style={styles.button}>
-      <Icon name="notifications" size={24} color="#4c6a78" />
+      <Image source={require('../../assets/notifications.png')}  style={{ width: 18, height: 21 }}/>
       {notificationCount > 0 && (
         <View style={styles.notificationBadge}>
           <Text style={styles.notificationText}>{notificationCount}</Text>
@@ -505,38 +505,8 @@ function AnalyticsStack() {
           title: 'My Gym',
           headerBackTitleVisible: false,
           headerTitleAlign: 'center',
-          headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <View style={{ display: 'flex', flexDirection: 'row' }}>
-                <NotificationButton
-                  title="Notification"
-                  navigation={navigation}
-                />
-                {/* <FeedbackButton
-                  title="Feedback"
-                  navigation={navigation}
-                /> */}
-                {/* NOTIFICATION ICON HERE */}
-              </View>
-            </View>
-          ),
-          headerLeft: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <View style={{ display: 'flex', flexDirection: 'row' }}>
-                <MessageButton
-                  title="Messages"
-                  navigation={navigation}
-                />
-                {/* <FeedbackButton
-                  title="Feedback"
-                  navigation={navigation}
-                /> */}
-                {/* NOTIFICATION ICON HERE */}
-              </View>
-            </View>
-          ),
         })}
-      /> */}
+      />  */}
       <Stack.Screen
       name="MyGym"
       component={VideoGrid}
@@ -547,10 +517,30 @@ function AnalyticsStack() {
         headerRight: () => (
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <FeedbackButton
-                title="Feedback"
+              <NotificationButton
+                title="Notification"
                 navigation={navigation}
               />
+              {/* <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              /> 
+              {/* NOTIFICATION ICON HERE */}
+            </View>
+          </View>
+        ),
+        headerLeft: () => (
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <MessageButton
+                title="Messages"
+                navigation={navigation}
+              />
+              {/* <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              /> */}
+              {/* NOTIFICATION ICON HERE */}
             </View>
           </View>
         ),
