@@ -27,6 +27,22 @@ function UsersApi() {
         .get();
     }
 
+    function getUsersByForSearchSetter(searchQuery) {
+        return ref.where('username', '>=', searchQuery)
+        .where('username', '<=', searchQuery + '\uf8ff')
+        .where('role', '==', 'setter')
+        .limit(10)
+        .get();
+    }
+
+    function getUsersByForSearchEmailSetter(searchQuery) {
+        return ref.where('email', '>=', searchQuery)
+        .where('email', '<=', searchQuery + '\uf8ff')
+        .where('role', '==', 'setter')
+        .limit(10)
+        .get();
+    }
+
     //To update the user collection (usernames, etc)
     async function updateUser(userId, updatedUser) {
         const userRef = ref.doc(userId);
@@ -37,7 +53,9 @@ function UsersApi() {
         getUsersBySomeField,
         updateUser,
         getUsersByForSearch,
-        getUsersByForSearchEmail
+        getUsersByForSearchEmail,
+        getUsersByForSearchEmailSetter,
+        getUsersByForSearchSetter,
     };
 }
 
