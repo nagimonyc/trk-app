@@ -260,7 +260,54 @@ function RecordScreen(props) {
                         </View>
                     </TouchableOpacity>)}
 
-                {(tapId == null || climb == null) && (
+                    {/* card filled for RS */}
+                    {climb !== null && tapId == null && (
+                   
+                        <View style={styles.idleCard}>
+                            {/* top part */}
+                            <View style={styles.topPart}>
+                                {/* Media */}
+                                <View style={styles.media}>
+                                    {!selectedImageUrl && (<><Image source={require('../../../../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" /><Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text></>)}
+                                    {selectedImageUrl && (<Video source={{ uri: selectedImageUrl }} style={{ width: 120, height: 140 }} muted={true} paused={true} />)}
+                                </View>
+                                {/* Text */}
+                                <View style={styles.textContainer}>
+                                    <Text style={[styles.text, styles.climbCardText, { color: 'black' }]}>🎉 Climb Found 🎉</Text>
+                                    <View style={styles.momentumTextWrapper}>
+                                        <View style={styles.inlineContainer}>
+                                           
+                                                <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>Record a <Text style={{ fontWeight: 'bold' }}>video</Text> to <Text style={{ fontWeight: 'bold' }}>share</Text> the intended beta</Text>
+                                            
+                                            
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={styles.divider} />
+                            {/* bottom part */}
+                            <View style={styles.bottomPart}>
+                                {/* image & color */}
+                                <View style={[styles.climbNoBg]}>
+                                    {climbImageUrl ? <Image source={{ uri: climbImageUrl }} style={{ width: 120, height: 130 }} resizeMode="contain" /> : <ActivityIndicator color='#fe8100' />}
+                                </View>
+                                <View style={[styles.climbColor, { backgroundColor: (climb.color ? climb.color : '#fe8100') }]}>
+                                </View>
+                                <View style={{ flexDirection: 'column', marginLeft: 15 }}>
+                                    <View>
+                                        <Text style={{ fontSize: 12, color: '#454545' }}>Name</Text>
+                                        <Text style={{ fontSize: 20, color: 'black', paddingVertical: 5 }}>{climb.name}</Text>
+                                    </View>
+                                    <View>
+                                        <Text style={{ fontSize: 12, color: '#454545' }}>Grade</Text>
+                                        <Text style={{ fontSize: 30, fontWeight: 800, paddingVertical: 5, color: 'black' }}>{climb.grade}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    )}
+
+                {tapId == null && climb == null && (
 
                     <View style={styles.idleCard}>
                         {/* top part */}
@@ -281,9 +328,15 @@ function RecordScreen(props) {
                                             </Text>
                                             <Image source={logo} style={[styles.logo, { marginLeft: 5 }]} resizeMode="contain" />
                                         </View>
-                                        <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>
-                                            to collect your first card!
-                                        </Text>
+                                        {role === 'setter' ? (
+                <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>
+                    to read a card!
+                </Text>
+            ) : (
+                <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>
+                    to collect your first card!
+                </Text>
+            )}
                                     </View>
                                 </View>
                             </View>

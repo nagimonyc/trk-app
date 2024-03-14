@@ -100,8 +100,11 @@ export const useHomeScreenLogic = (props) => {
         }, [])
     );
     const selectRandomMessage = useCallback(() => {
-        let message;
-        if (isFirstTimeUser) {
+        let message;  
+        if (role === 'setter') {
+            message = tapMessage.RouteSetter[randomIndex(tapMessage.RouteSetter)]
+        }
+        else if (isFirstTimeUser) {
             message = tapMessage.FTU[randomIndex(tapMessage.FTU)];
         } else if (isFirstClimbOfDay) {
             message = tapMessage.FirstClimbOfDay[randomIndex(tapMessage.FirstClimbOfDay)];
@@ -401,11 +404,25 @@ export const useHomeScreenLogic = (props) => {
             isReading = false;  // Clear the flag on successful read
 
             if (climbId && climbId[0]) {
-                //console.log(climbId[0]);
-                //console.log('Climb ID worked');
-                //Better way to verify climb_id
+                if (role === 'setter') {
+                    // Fetch and display climb information directly for setters
+                    const climbDataResult = await ClimbsApi().getClimb(climbId[0]);
+
+                    if (climbDataResult && climbDataResult._data) {
+                        setClimb(climbDataResult._data);
+
+                        setTimeout(() => {
+                            setClimb(null);
+                        }, 10000);
+
+                        // Optionally, handle additional UI logic or state updates here
+                    } else {
+                        throw new Error('Climb data not found');
+                    }
+                } else {
                 checkConnectivity(climbId);
                 //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
+                }
             } else {
                 throw new Error('Invalid climb ID');
             }
