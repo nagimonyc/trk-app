@@ -131,10 +131,22 @@ exports.notifySetterOnVideoUpload = functions.firestore
             const climbData = climbSnap.data();
             // Assuming the climb data has a 'setter' field with the user ID
             const setterId = climbData.setter;
+            console.log('Setter ID:', setterId);
+
 
             // Then, get the setter's FCM token
             const setterRef = admin.firestore().collection('users').doc(setterId);
             const setterSnap = await setterRef.get();
+
+            const climberRef = admin.firestore().collection('users').doc(afterData.user);
+            const climberSnap = await climberRef.get();
+
+            if (!climberSnap.exists) {
+                console.log('Climber not found');
+                return null;
+            }
+
+            const climberData = climberSnap.data();
 
             if (!setterSnap.exists || !setterSnap.data().fcmToken) {
                 console.log('Setter not found or no FCM token available');
@@ -142,6 +154,19 @@ exports.notifySetterOnVideoUpload = functions.firestore
             }
 
             const fcmToken = setterSnap.data().fcmToken;
+
+            const notification = {
+                userId: setterId,
+                title: `Check out ${climbData.name} ${climbData.grade}`,
+                body: `New beta video uploaded by`,
+                username: climberData.username,
+                climbId: afterData.climb,
+                seen: false,
+                timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                image: climbData.images[climbData.images.length - 1].path,
+            };
+
+            await admin.firestore().collection('notifications').add(notification);
 
             // Send notification to the setter
             const message = {

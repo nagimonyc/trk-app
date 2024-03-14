@@ -5,7 +5,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Image } from 'react-native';
 import { Platform, StyleSheet, TouchableOpacity, Text, View } from 'react-native';
-
+import firestore from '@react-native-firebase/firestore';
 import CompRanking from '../Screens/TabScreens/GymAnalytics/CompRanking/Frontend';
 import HomeScreen from '../Screens/TabScreens/Home/Frontend';
 import ClimbInputData from '../Screens/TabScreens/ClimbCreate/Frontend';
@@ -51,11 +51,54 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
   </TouchableOpacity>
 );
 
-// notification bell
-const NotificationButton = ({ onPress, title, navigation }) => {
+const NotificationButton = ({ navigation }) => {
+  const { currentUser } = useContext(AuthContext);
   const [notificationCount, setNotificationCount] = useState(0);
+
+  const markNotificationsAsRead = async () => {
+    // Get the current user's unread notifications from Firestore
+    const notificationsSnapshot = await firestore()
+      .collection('notifications')
+      .where('userId', '==', currentUser.uid)
+      .where('seen', '==', false)
+      .get();
+
+    // Create a batch to perform multiple write operations as a single transaction
+    const batch = firestore().batch();
+
+    notificationsSnapshot.forEach((doc) => {
+      // For each unread notification, set 'seen' to true
+      const notificationRef = firestore().collection('notifications').doc(doc.id);
+      batch.update(notificationRef, { seen: true });
+    });
+
+    // Commit the batch
+    await batch.commit();
+
+    // Reset the notification count
+    setNotificationCount(0);
+  };
+
+  useEffect(() => {
+    const unsubscribe = firestore()
+      .collection('notifications')
+      .where('userId', '==', currentUser.uid)
+      .where('seen', '==', false) // Adjust this based on your notification document structure
+      .onSnapshot(snapshot => {
+        // Count the number of unread notifications
+        const unreadCount = snapshot.docs.length;
+        setNotificationCount(unreadCount);
+      });
+
+    // Cleanup listener on component unmount
+    return () => unsubscribe();
+  }, [currentUser.uid]);
+
   return (
-    <TouchableOpacity onPress={() => navigation.navigate('Notification')} style={styles.button}>
+    <TouchableOpacity onPress={() => {
+      navigation.navigate('Notification');
+      markNotificationsAsRead();
+    }} style={styles.button}>
       <Icon name="notifications" size={24} color="#4c6a78" />
       {notificationCount > 0 && (
         <View style={styles.notificationBadge}>
@@ -67,31 +110,31 @@ const NotificationButton = ({ onPress, title, navigation }) => {
 };
 
 
+
 const styles = StyleSheet.create({
   notificationBadge: {
     position: 'absolute',
-    right: -6,
-    top: -3,
+    right: -1, // adjust the position as needed
+    top: -3,  // adjust the position as needed
     backgroundColor: 'red',
-    borderRadius: 6,
-    width: 12,
-    height: 12,
+    borderRadius: 7.5, // Half of the width and height to make it a circle
+    width: 15, // Set a width and height that work for your design
+    height: 15, // Set a width and height that work for your design
     justifyContent: 'center',
     alignItems: 'center',
   },
   notificationText: {
     color: 'white',
-    fontSize: 10,
+    fontSize: 10, // Make sure the font size allows the text to fit in the badge
     fontWeight: 'bold',
+    textAlign: 'center', // Center the text horizontally
+    lineHeight: 15, // Match the height of the badge for vertical centering
   },
   button: {
     backgroundColor: 'white',
     padding: 5,
-    borderRadius: 5,
     marginRight: 10,
     marginLeft: 10,
-    borderColor: '#4c6a78',
-    borderWidth: 1
   },
   button_tracker: {
     backgroundColor: 'white',
