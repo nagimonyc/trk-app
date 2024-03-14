@@ -328,9 +328,15 @@ function RecordScreen(props) {
                                             </Text>
                                             <Image source={logo} style={[styles.logo, { marginLeft: 5 }]} resizeMode="contain" />
                                         </View>
-                                        <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>
-                                            to collect your first card!
-                                        </Text>
+                                        {role === 'setter' ? (
+                <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>
+                    to read a card!
+                </Text>
+            ) : (
+                <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>
+                    to collect your first card!
+                </Text>
+            )}
                                     </View>
                                 </View>
                             </View>
