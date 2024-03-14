@@ -34,6 +34,9 @@ import FollowScreen from '../Screens/TabScreens/Follow';
 import Community from '../Components/Community';
 import New_Share from '../Components/New_Share';
 import Collection from '../Components/Collection';
+
+import VideoGrid from '../Components/VideoGrid';
+
 import Notification from '../Screens/NavScreens/Notification/Frontend';
 import RoomsScreen from '../Components/RoomsScreen';
 import UsersScreen from '../Components/UsersScreen';
@@ -495,7 +498,7 @@ function AnalyticsStack() {
   return (
     <Stack.Navigator>
       {/* Here, change the name of the screen to 'Competition_Ranking_screen' */}
-      <Stack.Screen
+      {/* <Stack.Screen
         name="MyGym"
         component={GymTabs}
         options={({ navigation }) => ({
@@ -533,6 +536,26 @@ function AnalyticsStack() {
             </View>
           ),
         })}
+      /> */}
+      <Stack.Screen
+      name="MyGym"
+      component={VideoGrid}
+      options={({navigation}) => ({
+        title: 'My Gym',
+        headerBackTitleVisible: false,
+        headerTitleAlign: 'center',
+        headerRight: () => (
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <FeedbackButton
+                title="Feedback"
+                navigation={navigation}
+              />
+            </View>
+          </View>
+        ),
+      })
+    }
       />
       <Stack.Screen
         name="Notification"
