@@ -1236,6 +1236,34 @@
   resolved "https://registry.npmjs.org/@expo/sdk-runtime-versions/-/sdk-runtime-versions-1.0.0.tgz"
   integrity sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==
 
+"@flyerhq/react-native-chat-ui@^1.4.3":
+  version "1.4.3"
+  resolved "https://registry.npmjs.org/@flyerhq/react-native-chat-ui/-/react-native-chat-ui-1.4.3.tgz"
+  integrity sha512-qrk6qQbvLXQruIQcHBWbf7FEyz6Sq0E+1man740VydBcvx5DuUlCwQwS2c7FMVKsvpOwmtxxFlKXdwPbOpZtnA==
+  dependencies:
+    "@flyerhq/react-native-keyboard-accessory-view" "^2.3.3"
+    "@flyerhq/react-native-link-preview" "^1.5.2"
+    dayjs "^1.10.7"
+    react-native-image-viewing "^0.2.1"
+    react-native-parsed-text "^0.0.22"
+
+"@flyerhq/react-native-firebase-chat-core@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@flyerhq/react-native-firebase-chat-core/-/react-native-firebase-chat-core-1.4.2.tgz#34ba8833ba5a55c69ac3fcfc529f9c7ea0c595db"
+  integrity sha512-pQ5ei9VmKBcBFNwRYDzFBNCk4cYnzY4SZU3tO1ZW4Oinyh0yWPN4FbMtRK9EMdDvAIcgGxwGmOdoNCFvLnoscg==
+
+"@flyerhq/react-native-keyboard-accessory-view@^2.3.3":
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/@flyerhq/react-native-keyboard-accessory-view/-/react-native-keyboard-accessory-view-2.4.0.tgz"
+  integrity sha512-LF2WdkMk23bTTpsXPQIyVjWttfo+6DcG0HcgE4kp+ozbVRv2Z1S+K1IRd1CR1LAuvHPnVax3DjrJqsGFTavqvA==
+
+"@flyerhq/react-native-link-preview@^1.5.2":
+  version "1.6.0"
+  resolved "https://registry.npmjs.org/@flyerhq/react-native-link-preview/-/react-native-link-preview-1.6.0.tgz"
+  integrity sha512-MY2Kxlf3SzLVUAuGU2LXhDU0a2icNBWL7MDCA8BNpmKqsWI+tHjX3mHm5nGpsLweYG5wsajzBd5XS0KCXNPkJA==
+  dependencies:
+    html-entities "^2.3.2"
+
 "@google-cloud/tasks@^4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@google-cloud/tasks/-/tasks-4.0.1.tgz"
@@ -3420,7 +3448,7 @@ d3-shape@^3.2.0:
   dependencies:
     d3-array "2 - 3"
 
-dayjs@^1.8.15:
+dayjs@^1.10.7, dayjs@^1.8.15:
   version "1.11.10"
   resolved "https://registry.npmjs.org/dayjs/-/dayjs-1.11.10.tgz"
   integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
@@ -4552,6 +4580,11 @@ hoist-non-react-statics@^3.3.0:
   integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
   dependencies:
     react-is "^16.7.0"
+
+html-entities@^2.3.2:
+  version "2.5.2"
+  resolved "https://registry.npmjs.org/html-entities/-/html-entities-2.5.2.tgz"
+  integrity sha512-K//PSRMQk4FZ78Kyau+mZurHn3FH0Vwr+H36eE0rPbeYkRRi9YxceYPhuN60UwWorxyKHhqoAJl2OFKa4BVtaA==
 
 html-escaper@^2.0.0:
   version "2.0.2"
@@ -6952,7 +6985,7 @@ prompts@^2.0.1, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@*, prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@*, prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.7.2, prop-types@^15.7.x, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -7161,6 +7194,11 @@ react-native-image-picker@^7.1.0:
   resolved "https://registry.npmjs.org/react-native-image-picker/-/react-native-image-picker-7.1.0.tgz"
   integrity sha512-An0hn2mwqjGAA2mbsXdHRTyoMMklGPT9stIjE2zvkegU7CdoFhowqvVHfnELJNZnfAiSQuIaeY//z0r1R0lsgw==
 
+react-native-image-viewing@^0.2.1:
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/react-native-image-viewing/-/react-native-image-viewing-0.2.2.tgz"
+  integrity sha512-osWieG+p/d2NPbAyonOMubttajtYEYiRGQaJA54slFxZ69j1V4/dCmcrVQry47ktVKy8/qpFwCpW1eT6MH5T2Q==
+
 react-native-level-fs@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/react-native-level-fs/-/react-native-level-fs-3.0.1.tgz"
@@ -7194,6 +7232,13 @@ react-native-paper@^5.11.1:
     "@callstack/react-theme-provider" "^3.0.9"
     color "^3.1.2"
     use-latest-callback "^0.1.5"
+
+react-native-parsed-text@^0.0.22:
+  version "0.0.22"
+  resolved "https://registry.npmjs.org/react-native-parsed-text/-/react-native-parsed-text-0.0.22.tgz"
+  integrity sha512-hfD83RDXZf9Fvth3DowR7j65fMnlqM9PpxZBGWkzVcUTFtqe6/yPcIoIAgrJbKn6YmtzkivmhWE2MCE4JKBXrQ==
+  dependencies:
+    prop-types "^15.7.x"
 
 react-native-permissions@^2.0.2:
   version "2.2.2"

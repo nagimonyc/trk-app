@@ -12,6 +12,8 @@
     "postinstall": "npm run nodeify"
   },
   "dependencies": {
+    "@flyerhq/react-native-chat-ui": "^1.4.3",
+    "@flyerhq/react-native-firebase-chat-core": "^1.4.2",
     "@google-cloud/tasks": "^4.0.1",
     "@invertase/react-native-apple-authentication": "^2.3.0",
     "@react-native-async-storage/async-storage": "^1.21.0",

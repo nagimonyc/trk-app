@@ -35,6 +35,8 @@ import Community from '../Components/Community';
 import New_Share from '../Components/New_Share';
 import Collection from '../Components/Collection';
 import Notification from '../Screens/NavScreens/Notification/Frontend';
+import RoomsScreen from '../Components/RoomsScreen';
+import UsersScreen from '../Components/UsersScreen';
 
 //Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
 //Added live tracker to other components
@@ -48,6 +50,12 @@ const ClimbInputStack = createStackNavigator();
 const FeedbackButton = ({ onPress, title, navigation }) => (
   <TouchableOpacity onPress={() => navigation.navigate('Developer_Feedback')} style={styles.button}>
     <Text style={styles.text}>{title}</Text>
+  </TouchableOpacity>
+);
+
+const MessageButton = ({ onPress, title, navigation }) => (
+  <TouchableOpacity onPress={() => navigation.navigate('Rooms_Screen')} style={styles.button}>
+    <Icon name="message" size={24} color="#4c6a78" />
   </TouchableOpacity>
 );
 
@@ -509,12 +517,37 @@ function AnalyticsStack() {
               </View>
             </View>
           ),
+          headerLeft: () => (
+            <View style={{ display: 'flex', flexDirection: 'row' }}>
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <MessageButton
+                  title="Messages"
+                  navigation={navigation}
+                />
+                {/* <FeedbackButton
+                  title="Feedback"
+                  navigation={navigation}
+                /> */}
+                {/* NOTIFICATION ICON HERE */}
+              </View>
+            </View>
+          ),
         })}
       />
       <Stack.Screen
         name="Notification"
         component={Notification}
         options={{ title: 'Notifications', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Rooms_Screen"
+        component={RoomsScreen}
+        options={{ title: 'Chats', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="UsersScreen"
+        component={UsersScreen}
+        options={{ title: 'New Chat', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Developer_Feedback"

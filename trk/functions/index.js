@@ -23,6 +23,7 @@ const admin = require('firebase-admin');
 const { CloudTasksClient } = require('@google-cloud/tasks');
 const client = new CloudTasksClient();
 admin.initializeApp();
+admin.firestore().settings({ignoreUndefinedProperties:true});
 
 exports.incrementUserTapCounter = functions.firestore
     .document('taps/{tapId}')
