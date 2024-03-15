@@ -691,7 +691,7 @@ function AppTabs() {
         </>
       )}
 
-
+{role !== 'setter' && (
       <Tab.Screen
         name="Collection_Stack"
         component={CollectionStack}
@@ -708,7 +708,7 @@ function AppTabs() {
           },
         }}
 
-      />
+      />)}
 
       {role !== 'setter' && (
         <Tab.Screen
