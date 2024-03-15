@@ -24,11 +24,29 @@ function ClimbsApi() {
         return climbId;
     }
 
+    function getClimbsForSetter(setterId) { //Only Movement for now
+        return ref.where('setter', '==', setterId).where('gym', '==', 'TDrC1lRRjbMuMI06pONY').orderBy('timestamp','desc').get();
+    }
+
+    function getClimbsInLastWeek(setterId) {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // Subtract 7 days to get the date one week ago
+        return ref
+            .where('setter', '==', setterId)
+            .where('timestamp', '>=', oneWeekAgo)
+            .get();
+    }
+    
+
+
+
     return {
         addClimb,
         getClimb,
         getClimbsBySomeField,
-        updateClimb
+        updateClimb,
+        getClimbsForSetter,
+        getClimbsInLastWeek
     };
 }
 
