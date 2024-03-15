@@ -22,7 +22,7 @@ import LineGraphComponent from "../../../../Components/LineGraphComponent";
 //Climb Tile
 const ClimbTile = ({climb}) => {
     // Placeholder image if no image is available or if climb status is 'Unseen'
-    const placeholderImage = require('../../../../../assets/question_box.png');
+    const placeholderImage = require('../../../../../assets/no-image.png');
     const imageSource = climb.climbImage
         ? { uri: climb.climbImage }
         : placeholderImage;
@@ -148,7 +148,7 @@ const SetterProfile = ({ navigation }) => {
                 >
                     <View></View>
                     <Text style={{ color: 'black', fontWeight: '500', fontSize: 14 }}>Current Climbs</Text>
-                    <Icon name={showProgress ? 'chevron-up' : 'chevron-down'} size={14} color="#525252" />
+                    <Image source={showProgress ? require('./../../../../../assets/keyboard-up.png') : require('./../../../../../assets/keyboard-down.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
                 </TouchableOpacity>
                 <ScrollView style={{paddingHorizontal: 20, backgroundColor: 'white'}}>
                 {showProgress && <ProgressContent />}
