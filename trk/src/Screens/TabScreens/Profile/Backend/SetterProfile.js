@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Linking, Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image } from "react-native";
+import { Linking, Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image, FlatList, Dimensions } from "react-native";
 import { AuthContext } from "../../../../Utils/AuthContext";
 import TapHistory from "../../../../Components/TapHistory";
 import TapsApi from "../../../../api/TapsApi";
@@ -18,6 +18,27 @@ import storage from '@react-native-firebase/storage';
 import SessionsApi from "../../../../api/SessionsApi";
 import LineGraphComponent from "../../../../Components/LineGraphComponent";
 
+
+//Climb Tile
+const ClimbTile = ({climb}) => {
+    // Placeholder image if no image is available or if climb status is 'Unseen'
+    const placeholderImage = require('../../../../../assets/question_box.png');
+    const imageSource = climb.climbImage
+        ? { uri: climb.climbImage }
+        : placeholderImage;
+
+    //No Card Modal as of now!
+    return (
+        <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10 }]}> 
+            <Image
+                source={imageSource}
+                style={styles.climbImage}
+            />
+        </TouchableOpacity>
+    );
+};
+
+
 const SetterProfile = ({ navigation }) => {
 
     const {tapCount, currentUser } = React.useContext(AuthContext);
@@ -26,6 +47,23 @@ const SetterProfile = ({ navigation }) => {
     const [style, setStyle] = React.useState("Crimpy");
     const [lastWeekCount, setLastWeekCount] = React.useState(0);
     const [user, setUser] = useState(null);
+
+    const enhanceClimbDataWithImages = async (climbDataArray) => {
+        const climbDataWithImages = await Promise.all(climbDataArray.map(async climb => {
+            let climbImage = '';
+            if (climb.images && climb.images.length > 0) {
+                try {
+                    climbImage = await storage().ref(climb.images[climb.images.length - 1].path).getDownloadURL();
+                } catch (error) {
+                    console.error("Error fetching climb image:", error);
+                    // Handle the error or continue with default/climbImage as an empty string
+                }
+            }
+            return { ...climb, climbImage };
+        }));
+    
+        return climbDataWithImages;
+    };
 
     const handleSetHistory = async () => {
         try {
@@ -73,9 +111,11 @@ const SetterProfile = ({ navigation }) => {
                 return doc.exists ? { id: doc.id, ...doc.data() } : null;
             }).filter(set => set !== null && set.archived !== true);
             
+            const enhancedSetHistory = await enhanceClimbDataWithImages(newSetHistory);
+
             setLastWeekCount(lastWeekSetHistory.length);
             setStyle(style); //Setting the style
-            setSetHistory(newSetHistory);
+            setSetHistory(enhancedSetHistory);
         } catch (error) {
             console.error("Error fetching sets for user:", error);
         }
@@ -110,19 +150,27 @@ const SetterProfile = ({ navigation }) => {
                     <Text style={{ color: 'black', fontWeight: '500', fontSize: 14 }}>Current Climbs</Text>
                     <Icon name={showProgress ? 'chevron-up' : 'chevron-down'} size={14} color="#525252" />
                 </TouchableOpacity>
+                <ScrollView style={{paddingHorizontal: 20, backgroundColor: 'white'}}>
                 {showProgress && <ProgressContent />}
+                </ScrollView>
             </View>
         );
     };
 
     //Display for the Progress Tab
     const ProgressContent = () => (
-        <View style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start' }}>
-            {/* <Text style={{ color: 'black', paddingHorizontal: 20, paddingTop: 10, fontWeight: 'bold' }}>This Week</Text> */}
-            <View style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
-                <LineGraphComponent data={climbsThisWeek} />
-            </View>
-            </View>
+        <FlatList
+            data={setHistory}
+            renderItem={({ item }) => <ClimbTile climb={item}/>}
+            keyExtractor={(item) => item.timestamp.toString()} // Use a unique property from the item instead of the index
+            numColumns={4}
+            scrollEnabled={false} // Make sure scrolling is disabled if it's not needed
+            columnWrapperStyle={styles.columnWrapper}
+            style={{marginBottom: 20}}
+            ListEmptyComponent={() => {
+                <View style={{width: Dimensions.get('window').width, display: 'flex', flexDirection: 'row', backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingVertical: 40}}><Text style={{color: '#8E8E90', fontWeight: 'bold', fontSize: 15}}>Keep tapping to see the graph 🧗🏼</Text></View>
+            }}
+        />
     );
 
     useFocusEffect(
@@ -278,6 +326,23 @@ const SetterProfile = ({ navigation }) => {
 //Two session histories for active session, and older sessions.
 
 const styles = StyleSheet.create({
+    climbImage: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
+    },
+    climbTile: {
+        height: 75, // Adjust the height as needed
+        margin: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0', // Placeholder background color
+    },
+    columnWrapper: {
+        // justifyContent: 'flex-start',
+        // alignSelf: 'flex-end'
+        marginTop: 15,
+    },
     container: {
         flex: 1,
         width: '100%',
