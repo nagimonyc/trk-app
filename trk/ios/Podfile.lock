@@ -628,11 +628,11 @@ PODS:
     - abseil/base/base_internal
     - abseil/base/config
     - abseil/meta/type_traits
-  - AppAuth (1.7.2):
-    - AppAuth/Core (= 1.7.2)
-    - AppAuth/ExternalUserAgent (= 1.7.2)
-  - AppAuth/Core (1.7.2)
-  - AppAuth/ExternalUserAgent (1.7.2):
+  - AppAuth (1.7.3):
+    - AppAuth/Core (= 1.7.3)
+    - AppAuth/ExternalUserAgent (= 1.7.3)
+  - AppAuth/Core (1.7.3)
+  - AppAuth/ExternalUserAgent (1.7.3):
     - AppAuth/Core
   - boost (1.76.0)
   - BoringSSL-GRPC (0.0.24):
@@ -1729,7 +1729,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
-  AppAuth: ca2458caccec349cc1e26d8d9e8fd7d22f1d01f3
+  AppAuth: a13994980c1ec792f7e2e665acd4d4aa6be43240
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
