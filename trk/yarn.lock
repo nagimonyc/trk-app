@@ -1249,7 +1249,7 @@
 
 "@flyerhq/react-native-firebase-chat-core@^1.4.2":
   version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@flyerhq/react-native-firebase-chat-core/-/react-native-firebase-chat-core-1.4.2.tgz#34ba8833ba5a55c69ac3fcfc529f9c7ea0c595db"
+  resolved "https://registry.npmjs.org/@flyerhq/react-native-firebase-chat-core/-/react-native-firebase-chat-core-1.4.2.tgz"
   integrity sha512-pQ5ei9VmKBcBFNwRYDzFBNCk4cYnzY4SZU3tO1ZW4Oinyh0yWPN4FbMtRK9EMdDvAIcgGxwGmOdoNCFvLnoscg==
 
 "@flyerhq/react-native-keyboard-accessory-view@^2.3.3":
