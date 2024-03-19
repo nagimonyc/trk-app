@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Modal, Alert} from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Modal, Alert } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import TapsApi from "../api/TapsApi";
 import ClimbsApi from "../api/ClimbsApi";
@@ -30,7 +30,7 @@ const Community = ({ route }) => {
 
     const checkDisabled = (item) => {
         return addedMediaAll.includes(item);
-    }; 
+    };
 
     const [isCurrentVideoPrivate, setIsCurrentVideoPrivate] = useState(!checkDisabled(currentVideoUrl));
 
@@ -47,24 +47,24 @@ const Community = ({ route }) => {
             try {
                 console.log(climb);
                 if (climb && climb.images && climb.images.length > 0) {
-                const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
-                setClimbImageURL(climbImage);
-                //Get the last video uploaded by that user for that climb
-                const snapshot = await TapsApi().getClimbsByIdUser(tapObj.climb, currentUser.uid);
-                if (!snapshot.empty){
-                    for (let i = 0; i < snapshot.docs.length; i = i +1) {
-                        let temp = snapshot.docs[i].data();
-                        if (temp.videos && temp.videos.length > 0) {
-                            setAddedMedia(prev => prev.concat(temp.videos));
+                    const climbImage = await storage().ref(climb.images[climb.images.length - 1].path).getDownloadURL();
+                    setClimbImageURL(climbImage);
+                    //Get the last video uploaded by that user for that climb
+                    const snapshot = await TapsApi().getClimbsByIdUser(tapObj.climb, currentUser.uid);
+                    if (!snapshot.empty) {
+                        for (let i = 0; i < snapshot.docs.length; i = i + 1) {
+                            let temp = snapshot.docs[i].data();
+                            if (temp.videos && temp.videos.length > 0) {
+                                setAddedMedia(prev => prev.concat(temp.videos));
+                            }
                         }
                     }
+                    //Get All Videos Associated with that Climb (COMMUNITY)
+                    const climbObj = (await ClimbsApi().getClimb(tapObj.climb)).data();
+                    if (climbObj && climbObj.videos && climbObj.videos.length > 0) {
+                        setAddedMediaAll(climbObj.videos);
+                    }
                 }
-                //Get All Videos Associated with that Climb (COMMUNITY)
-                const climbObj = (await ClimbsApi().getClimb(tapObj.climb)).data();
-                if (climbObj && climbObj.videos && climbObj.videos.length > 0) {
-                    setAddedMediaAll(climbObj.videos);
-                }
-            }
             } catch (error) {
                 console.error('Failed to fetch image URL:', error);
             }
@@ -83,7 +83,7 @@ const Community = ({ route }) => {
                     onPress: () => console.log("Cancel Pressed"),
                     style: "cancel"
                 },
-                { 
+                {
                     text: "Yes", onPress: () => {
                         (async () => {
                             try {
@@ -94,7 +94,7 @@ const Community = ({ route }) => {
                                 const climbObj = await ClimbsApi().getClimb(tapObj.climb).then(response => response.data());
                                 if (climbObj && climbObj.videos) {
                                     const updatedVideos = climbObj.videos.filter(item => item !== videoUrl);
-                                    const newClimb = {videos: updatedVideos}
+                                    const newClimb = { videos: updatedVideos }
                                     // Assuming you have a method to update the climb object with the new videos array
                                     await ClimbsApi().updateClimb(tapObj.climb, newClimb);
                                 }
@@ -105,12 +105,12 @@ const Community = ({ route }) => {
                                 setIsCurrentVideoPrivate(false);
                             }
                         })();
-                    } 
+                    }
                 }
             ]
         );
-    };    
-     
+    };
+
     /*const [itemsPerPage, setItemsPerPage] = useState(8);
     const fetchData = async () => {
         // Example logic for fetching next chunk of data
@@ -138,46 +138,46 @@ const Community = ({ route }) => {
 
             {/* Tab Content */}
             {activeTab === 'Community' && (
-                <View style={{flex: 1}}>
+                <View style={{ flex: 1 }}>
                     <FlatList
                         data={addedMediaAll}
                         renderItem={({ item }) => (
                             <TouchableOpacity
-                            onPress={() => {
-                                setCurrentVideoUrl(item);
-                                setModalVisible(true);
-                            }}
-                            >       
-                            <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5}}>
-                            <Video source={{ uri: item }} style={{ width: '100%', height: '100%' }} repeat={true} muted={true} />
-                            </View>
+                                onPress={() => {
+                                    setCurrentVideoUrl(item);
+                                    setModalVisible(true);
+                                }}
+                            >
+                                <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5 }}>
+                                    <Video source={{ uri: item }} style={{ width: '100%', height: '100%' }} repeat={true} muted={true} />
+                                </View>
                             </TouchableOpacity>
                         )}
                         keyExtractor={(item, index) => index.toString()}
                         numColumns={3} // Since you want 3 videos per row
-                        />
+                    />
                     {/* Your community view content goes here */}
                 </View>
             )}
             {activeTab === 'Mine' && (
-                <View style={{flex: 1}}>
+                <View style={{ flex: 1 }}>
                     <FlatList
                         data={addedMedia}
                         renderItem={({ item }) => (
                             <TouchableOpacity
-                            onPress={() => {
-                                setCurrentVideoUrl(item);
-                                setModalVisible(true);
-                            }}
-                            >       
-                            <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5}}>
-                            <Video source={{ uri: item }} style={{ width: '100%', height: '100%' }} repeat={true} muted={true} />
-                            </View>
+                                onPress={() => {
+                                    setCurrentVideoUrl(item);
+                                    setModalVisible(true);
+                                }}
+                            >
+                                <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5 }}>
+                                    <Video source={{ uri: item }} style={{ width: '100%', height: '100%' }} repeat={true} muted={true} />
+                                </View>
                             </TouchableOpacity>
                         )}
                         keyExtractor={(item, index) => index.toString()}
                         numColumns={3} // Since you want 3 videos per row
-                        />
+                    />
                     {/* Your personal view content goes here */}
                 </View>
             )}
@@ -194,7 +194,7 @@ const Community = ({ route }) => {
                     activeOpacity={1}
                     onPressOut={() => setModalVisible(!modalVisible)} // This allows touching outside the modal to close it
                 >
-                    <View style={styles.modalView} onStartShouldSetResponder={() => true}> 
+                    <View style={styles.modalView} onStartShouldSetResponder={() => true}>
                         <Video
                             source={{ uri: currentVideoUrl }}
                             style={styles.modalVideo}
@@ -205,15 +205,15 @@ const Community = ({ route }) => {
                             volume={1.0}
                         />
                         {activeTab === 'Mine' && (
-                       <TouchableOpacity
-                            style={[styles.shareButton, isCurrentVideoPrivate && styles.shareButtonDisabled]}
-                            onPress={() => makeVideoPrivate(currentVideoUrl)}
-                            disabled={isCurrentVideoPrivate}
-                        >
-                            <Text style={[styles.shareButtonText, isCurrentVideoPrivate && styles.shareButtonTextDisabled]}>
-                                Make Private
-                            </Text>
-                        </TouchableOpacity>)}
+                            <TouchableOpacity
+                                style={[styles.shareButton, isCurrentVideoPrivate && styles.shareButtonDisabled]}
+                                onPress={() => makeVideoPrivate(currentVideoUrl)}
+                                disabled={isCurrentVideoPrivate}
+                            >
+                                <Text style={[styles.shareButtonText, isCurrentVideoPrivate && styles.shareButtonTextDisabled]}>
+                                    Make Private
+                                </Text>
+                            </TouchableOpacity>)}
 
                         <View style={styles.closeButtonContainer}>
                             <TouchableOpacity
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold",
         textAlign: "center"
-    },    
+    },
 });
 
 export default Community;

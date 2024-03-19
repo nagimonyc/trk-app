@@ -23,7 +23,7 @@ const admin = require('firebase-admin');
 const { CloudTasksClient } = require('@google-cloud/tasks');
 const client = new CloudTasksClient();
 admin.initializeApp();
-admin.firestore().settings({ignoreUndefinedProperties:true});
+admin.firestore().settings({ ignoreUndefinedProperties: true });
 
 exports.incrementUserTapCounter = functions.firestore
     .document('taps/{tapId}')
@@ -165,6 +165,7 @@ exports.notifySetterOnVideoUpload = functions.firestore
                 seen: false,
                 timestamp: admin.firestore.FieldValue.serverTimestamp(),
                 image: climbData.images[climbData.images.length - 1].path,
+                video: climbData.videos[climbData.videos.length - 1],
             };
 
             await admin.firestore().collection('notifications').add(notification);
