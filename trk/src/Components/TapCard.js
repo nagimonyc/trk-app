@@ -91,7 +91,6 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
 
     //Video Adding Logic
     const selectImageLogic = async () => {
-        //console.log("handleImagePick called");
         try {
             setIsUploading(true); // Start uploading
             let result = await launchImageLibrary({ mediaType: 'video', videoQuality: 'high' });
@@ -102,26 +101,28 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
 
             if (imagePath) {
                 // Set the image state to include the full path
-                let url = await uploadVideo(imagePath);
+                let url = await uploadVideo(imagePath); // Now 'url' is defined here
                 setSelectedImageURL(url);
 
-                //Adding Video to User Tap
+                // Now 'url' is available, so we can correctly create the videoObject
+                const videoObject = { url: url, role: role };
+
+                // Adding Video to User Tap
                 const tapDataResult = await TapsApi().getTap(tapId);
                 let obj = tapDataResult.data();
-                const newArray = ((obj.videos && obj.videos.length > 0) ? obj.videos.concat([url]) : [url]);
+                const newArray = ((obj.videos && obj.videos.length > 0) ? obj.videos.concat([videoObject]) : [videoObject]);
                 const updatedTap = {
                     videos: newArray,
                 };
                 await TapsApi().updateTap(tapId, updatedTap);
 
-                //Adding Video to Overall Climb
+                // Adding Video to Overall Climb
                 let climbObj = (await ClimbsApi().getClimb(tapObj.climb)).data();
-                const newClimbsArray = ((climbObj.videos && climbObj.videos.length > 0) ? [url].concat(climbObj.videos) : [url]);
+                const newClimbsArray = ((climbObj.videos && climbObj.videos.length > 0) ? [videoObject].concat(climbObj.videos) : [videoObject]);
                 const updatedClimb = {
                     videos: newClimbsArray,
                 };
                 await ClimbsApi().updateClimb(tapObj.climb, updatedClimb);
-                //setAddedMedia(prev => [url].concat(prev));
                 setCurrentBlurred(false);
                 call(false);
             }
@@ -131,6 +132,7 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
             setIsUploading(false); // Stop uploading regardless of outcome
         }
     };
+
 
     const uploadVideo = async (videoPath) => { //VIDEO UPLOADING AND PLAYING INSTANTLY!
         try {
@@ -144,14 +146,12 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
                 // You can use this to track the progress of the upload
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 setProgressLevel(Math.round(progress));
-                console.log('Upload is ' + Math.round(progress) + '% done');
             });
 
             // Get the download URL after the upload is complete
             await task;
             const url = await reference.getDownloadURL();
             setProgressLevel(0);
-            console.log('Video download URL:', url);
             return url; // You may want to do something with the URL, like storing it in a database
         } catch (error) {
             console.error('Video upload error:', error);
@@ -188,7 +188,6 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
                 <View style={styles.textContainer}>
                     <View style={styles.momentumTextWrapper}>
                         <View style={styles.inlineContainer}>
-                            {console.log('progressLevel: ', progressLevel)}
                             {isUploading && (
                                 <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>Upload is <Text style={{ fontWeight: 'bold' }}>{progressLevel}%</Text> done.</Text>
                             )}

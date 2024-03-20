@@ -209,6 +209,7 @@ const Collection = () => {
         console.log('Climb: ', climb);
         //Setting Values to Pass To the Card
         setTapIdCopy(climb.sampleTap);
+        console.log(climb.sampleTap);
         setClimbCopy(climb);
         setTapObjCopy({ climb: climb.climbId });
         setCurrentBlurredFromChild(climb.status);
