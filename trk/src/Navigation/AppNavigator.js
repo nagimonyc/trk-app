@@ -696,8 +696,7 @@ function AppTabs() {
         </>
       )}
 
-
-      <Tab.Screen
+      {role !== 'setter' && (<Tab.Screen
         name="Collection_Stack"
         component={CollectionStack}
         options={{
@@ -713,7 +712,8 @@ function AppTabs() {
           },
         }}
 
-      />
+      />)}
+
 
       {role !== 'setter' && (
         <Tab.Screen

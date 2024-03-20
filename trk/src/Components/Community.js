@@ -158,7 +158,7 @@ const Community = ({ route }) => {
                                         {/* Conditional rendering based on role */}
                                         {videoRole == "setter" && (
                                             <Text style={[styles.videoLabel]}>
-                                                {videoRole.charAt(0).toUpperCase() + videoRole.slice(1)}'s Video
+                                                By {videoRole.charAt(0).toUpperCase() + videoRole.slice(1)}
                                             </Text>
                                         )}
                                         <Video source={{ uri: videoUrl }} style={{ width: '100%', height: '100%' }} repeat={false} muted={true} />
