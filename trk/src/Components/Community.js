@@ -15,6 +15,8 @@ const Community = ({ route }) => {
     const data = route.params;
     const { climb, tapId, tapObj } = data;
 
+
+
     const [climbImageUrl, setClimbImageURL] = useState(null);
     const [addedMedia, setAddedMedia] = useState([]);  //Your Media
     const [addedMediaAll, setAddedMediaAll] = useState([]);  //All Media Uploaded
@@ -45,7 +47,6 @@ const Community = ({ route }) => {
     useEffect(() => {
         const fetchImageURL = async () => {
             try {
-                console.log(climb);
                 if (climb && climb.images && climb.images.length > 0) {
                     const climbImage = await storage().ref(climb.images[climb.images.length - 1].path).getDownloadURL();
                     setClimbImageURL(climbImage);
@@ -141,18 +142,30 @@ const Community = ({ route }) => {
                 <View style={{ flex: 1 }}>
                     <FlatList
                         data={addedMediaAll}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setCurrentVideoUrl(item);
-                                    setModalVisible(true);
-                                }}
-                            >
-                                <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5 }}>
-                                    <Video source={{ uri: item }} style={{ width: '100%', height: '100%' }} repeat={true} muted={true} />
-                                </View>
-                            </TouchableOpacity>
-                        )}
+                        renderItem={({ item }) => {
+                            // Determine if the item is an object (new format) or just a string (old format)
+                            const isObject = typeof item === 'object' && item !== null && item.url;
+                            const videoUrl = isObject ? item.url : item; // Use item.url if object, else use item directly
+                            const videoRole = isObject ? item.role : ''; // Default to empty string if not available
+                            return (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setCurrentVideoUrl(videoUrl);
+                                        setModalVisible(true);
+                                    }}
+                                >
+                                    <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5, position: 'relative' }}>
+                                        {/* Conditional rendering based on role */}
+                                        {videoRole == "setter" && (
+                                            <Text style={[styles.videoLabel]}>
+                                                {videoRole.charAt(0).toUpperCase() + videoRole.slice(1)}'s Video
+                                            </Text>
+                                        )}
+                                        <Video source={{ uri: videoUrl }} style={{ width: '100%', height: '100%' }} repeat={false} muted={true} />
+                                    </View>
+                                </TouchableOpacity>
+                            );
+                        }}
                         keyExtractor={(item, index) => index.toString()}
                         numColumns={3} // Since you want 3 videos per row
                     />
@@ -163,22 +176,30 @@ const Community = ({ route }) => {
                 <View style={{ flex: 1 }}>
                     <FlatList
                         data={addedMedia}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setCurrentVideoUrl(item);
-                                    setModalVisible(true);
-                                }}
-                            >
-                                <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5 }}>
-                                    <Video source={{ uri: item }} style={{ width: '100%', height: '100%' }} repeat={true} muted={true} />
-                                </View>
-                            </TouchableOpacity>
-                        )}
+                        renderItem={({ item }) => {
+                            const videoUrl = item; // Assuming 'item' is the URL for the video in the older code structure
+                            return (
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        // Play the video if it's currently paused, otherwise pause it
+                                        setCurrentVideoUrl(currentVideoUrl === videoUrl ? '' : videoUrl);
+                                    }}
+                                    style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5 }}
+                                >
+                                    <Video
+                                        source={{ uri: videoUrl }}
+                                        style={{ width: '100%', height: '100%' }}
+                                        resizeMode="cover"
+                                        repeat={true}
+                                        muted={true}
+                                        paused={currentVideoUrl !== videoUrl} // Pause the video if it's not the current one
+                                    />
+                                </TouchableOpacity>
+                            );
+                        }}
                         keyExtractor={(item, index) => index.toString()}
-                        numColumns={3} // Since you want 3 videos per row
+                        numColumns={3} // 3 videos per row as per your original setup
                     />
-                    {/* Your personal view content goes here */}
                 </View>
             )}
             <Modal
@@ -324,6 +345,18 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center"
     },
+    videoLabel: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        backgroundColor: 'rgba(238, 135, 51, 1)',
+        color: 'white',
+        fontSize: 10,
+        padding: 2,
+        fontWeight: 500,
+        zIndex: 1, // Try increasing this if the label is not appearing on top.
+    },
+    // #EE8733
 });
 
 export default Community;

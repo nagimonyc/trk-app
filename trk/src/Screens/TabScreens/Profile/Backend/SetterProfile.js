@@ -17,19 +17,23 @@ import UsersApi from "../../../../api/UsersApi";
 import storage from '@react-native-firebase/storage';
 import SessionsApi from "../../../../api/SessionsApi";
 import LineGraphComponent from "../../../../Components/LineGraphComponent";
+import { useNavigation } from '@react-navigation/native';
 
 
 //Climb Tile
-const ClimbTile = ({climb}) => {
+const ClimbTile = ({ climb }) => {
+    const navigation = useNavigation();
     // Placeholder image if no image is available or if climb status is 'Unseen'
     const placeholderImage = require('../../../../../assets/no-image.png');
     const imageSource = climb.climbImage
         ? { uri: climb.climbImage }
         : placeholderImage;
-
     //No Card Modal as of now!
+    const tapObj = { climb: climb.id }
+    // const tapId = 
     return (
-        <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10 }]}> 
+        <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10 }]}
+            onPress={() => { navigation.navigate('Community', { climb: climb, tapObj: tapObj }) }}>
             <Image
                 source={imageSource}
                 style={styles.climbImage}
@@ -41,7 +45,7 @@ const ClimbTile = ({climb}) => {
 
 const SetterProfile = ({ navigation }) => {
 
-    const {tapCount, currentUser } = React.useContext(AuthContext);
+    const { tapCount, currentUser } = React.useContext(AuthContext);
 
     const [setHistory, setSetHistory] = React.useState([]);
     const [style, setStyle] = React.useState("Crimpy");
@@ -61,7 +65,7 @@ const SetterProfile = ({ navigation }) => {
             }
             return { ...climb, climbImage };
         }));
-    
+
         return climbDataWithImages;
     };
 
@@ -110,7 +114,7 @@ const SetterProfile = ({ navigation }) => {
             const lastWeekSetHistory = setSnapshot.docs.map(doc => {
                 return doc.exists ? { id: doc.id, ...doc.data() } : null;
             }).filter(set => set !== null && set.archived !== true);
-            
+
             const enhancedSetHistory = await enhanceClimbDataWithImages(newSetHistory);
 
             setLastWeekCount(lastWeekSetHistory.length);
@@ -148,10 +152,10 @@ const SetterProfile = ({ navigation }) => {
                 >
                     <View></View>
                     <Text style={{ color: 'black', fontWeight: '500', fontSize: 14 }}>Current Climbs</Text>
-                    <Image source={showProgress ? require('./../../../../../assets/keyboard-up.png') : require('./../../../../../assets/keyboard-down.png')} style={{ width: 20, height: 20 }}   resizeMode="contain" />
+                    <Image source={showProgress ? require('./../../../../../assets/keyboard-up.png') : require('./../../../../../assets/keyboard-down.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
                 </TouchableOpacity>
-                <ScrollView style={{paddingHorizontal: 20, backgroundColor: 'white'}}>
-                {showProgress && <ProgressContent />}
+                <ScrollView style={{ paddingHorizontal: 20, backgroundColor: 'white' }}>
+                    {showProgress && <ProgressContent />}
                 </ScrollView>
             </View>
         );
@@ -161,14 +165,14 @@ const SetterProfile = ({ navigation }) => {
     const ProgressContent = () => (
         <FlatList
             data={setHistory}
-            renderItem={({ item }) => <ClimbTile climb={item}/>}
+            renderItem={({ item }) => <ClimbTile climb={item} />}
             keyExtractor={(item) => item.timestamp.toString()} // Use a unique property from the item instead of the index
             numColumns={4}
             scrollEnabled={false} // Make sure scrolling is disabled if it's not needed
             columnWrapperStyle={styles.columnWrapper}
-            style={{marginBottom: 20}}
+            style={{ marginBottom: 20 }}
             ListEmptyComponent={() => {
-                <View style={{width: Dimensions.get('window').width, display: 'flex', flexDirection: 'row', backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingVertical: 40}}><Text style={{color: '#8E8E90', fontWeight: 'bold', fontSize: 15}}>Keep tapping to see the graph 🧗🏼</Text></View>
+                <View style={{ width: Dimensions.get('window').width, display: 'flex', flexDirection: 'row', backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingVertical: 40 }}><Text style={{ color: '#8E8E90', fontWeight: 'bold', fontSize: 15 }}>Keep tapping to see the graph 🧗🏼</Text></View>
             }}
         />
     );
@@ -242,8 +246,8 @@ const SetterProfile = ({ navigation }) => {
                     {/* Fun Stats */}
                     <View style={{ marginTop: 20 }}>
                         <Text style={{ paddingHorizontal: 15, color: 'black', fontSize: 16, fontWeight: '700' }}>Bio</Text>
-                        <View style={{ width: '100%', marginTop: 10, paddingHorizontal: 15}}>
-                            <Text style={{color: 'black'}}>{user && user.bio && user.bio.trim() !== ''? user.bio: "I\'m a routesetter!"}</Text>
+                        <View style={{ width: '100%', marginTop: 10, paddingHorizontal: 15 }}>
+                            <Text style={{ color: 'black' }}>{user && user.bio && user.bio.trim() !== '' ? user.bio : "I\'m a routesetter!"}</Text>
                         </View>
                     </View>
                     <View style={{ marginTop: 20 }}>
@@ -276,7 +280,7 @@ const SetterProfile = ({ navigation }) => {
                             <View style={{ paddingHorizontal: 15 }}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 7 }}>
                                     <Text style={{ color: 'black' }}>Your hold color</Text>
-                                    <Text style={{ color: 'black' }}>Pink</Text> 
+                                    <Text style={{ color: 'black' }}>Pink</Text>
                                 </View>
                                 {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />

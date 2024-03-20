@@ -58,7 +58,7 @@ const FeedbackButton = ({ onPress, title, navigation }) => (
 
 const MessageButton = ({ onPress, title, navigation }) => (
   <TouchableOpacity onPress={() => navigation.navigate('Rooms_Screen')} style={styles.button}>
-    <Image source={require('../../assets/message.png')}  style={{ width: 21, height: 21 }}/>
+    <Image source={require('../../assets/message.png')} style={{ width: 21, height: 21 }} />
   </TouchableOpacity>
 );
 
@@ -110,7 +110,7 @@ const NotificationButton = ({ navigation }) => {
       navigation.navigate('Notification');
       markNotificationsAsRead();
     }} style={styles.button}>
-      <Image source={require('../../assets/notifications.png')}  style={{ width: 18, height: 21 }}/>
+      <Image source={require('../../assets/notifications.png')} style={{ width: 18, height: 21 }} />
       {notificationCount > 0 && (
         <View style={styles.notificationBadge}>
           <Text style={styles.notificationText}>{notificationCount}</Text>
@@ -420,6 +420,11 @@ function ProfileStack() {
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
+        name="Community"
+        component={Community}
+        options={{ title: 'Community Posts', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
         name="Session_Detail"
         component={SessionDetail}
         options={({ navigation }) => ({
@@ -508,44 +513,44 @@ function AnalyticsStack() {
         })}
       />  */}
       <Stack.Screen
-      name="MyGym"
-      component={VideoGrid}
-      options={({navigation}) => ({
-        title: 'My Gym',
-        headerBackTitleVisible: false,
-        headerTitleAlign: 'center',
-        headerRight: () => (
-          <View style={{ display: 'flex', flexDirection: 'row' }}>
+        name="MyGym"
+        component={VideoGrid}
+        options={({ navigation }) => ({
+          title: 'My Gym',
+          headerBackTitleVisible: false,
+          headerTitleAlign: 'center',
+          headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <NotificationButton
-                title="Notification"
-                navigation={navigation}
-              />
-              {/* <FeedbackButton
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <NotificationButton
+                  title="Notification"
+                  navigation={navigation}
+                />
+                {/* <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               /> 
               {/* NOTIFICATION ICON HERE */}
+              </View>
             </View>
-          </View>
-        ),
-        headerLeft: () => (
-          <View style={{ display: 'flex', flexDirection: 'row' }}>
+          ),
+          headerLeft: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <MessageButton
-                title="Messages"
-                navigation={navigation}
-              />
-              {/* <FeedbackButton
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <MessageButton
+                  title="Messages"
+                  navigation={navigation}
+                />
+                {/* <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
               /> */}
-              {/* NOTIFICATION ICON HERE */}
+                {/* NOTIFICATION ICON HERE */}
+              </View>
             </View>
-          </View>
-        ),
-      })
-    }
+          ),
+        })
+        }
       />
       <Stack.Screen
         name="Notification"
@@ -691,7 +696,7 @@ function AppTabs() {
         </>
       )}
 
-{role !== 'setter' && (
+
       <Tab.Screen
         name="Collection_Stack"
         component={CollectionStack}
@@ -708,7 +713,7 @@ function AppTabs() {
           },
         }}
 
-      />)}
+      />
 
       {role !== 'setter' && (
         <Tab.Screen
