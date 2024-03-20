@@ -234,10 +234,10 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
                 </View>
                 {/* Setter Section */}
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: 20 }}>
-                    <Text style={{ fontSize: 12, marginRight: 10, color: 'gray' }}>
+                    {/* <Text style={{ fontSize: 12, marginRight: 10, color: 'gray' }}>
                         Set by {routeSetterName}
                     </Text>
-                    {imageUrl ? <Image source={{ uri: imageUrl }} style={{ width: 30, height: 30 }} resizeMode="contain" /> : <ActivityIndicator color='#fe8100' />}
+                    {imageUrl ? <Image source={{ uri: imageUrl }} style={{ width: 30, height: 30 }} resizeMode="contain" /> : <ActivityIndicator color='#fe8100' />} */}
                 </View>
                 {currentBlurred && (
                     <BlurView
