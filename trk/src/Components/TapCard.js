@@ -15,7 +15,7 @@ import ClimbsApi from '../api/ClimbsApi';
 
 //Callback function passed from Parent (Record Screen), to UNBLUR IN REAL TIME
 //TapCard component- Can upload Video, that unblurs the section (MESSAGING CHANGES!)- NO FEATURES IMPLEMENTED
-const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) => {
+const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, cardStyle }) => {
     console.log('[TEST] TapCard called');
     const navigation = useNavigation();
     const { currentUser, role } = React.useContext(AuthContext);
@@ -160,9 +160,9 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
 
     /* NEED TO ADD MEDIA*/
     return (
-        <View style={styles.idleCard}>
+        <View style={[styles.idleCard, cardStyle]}>
             {/* top part */}
-            <View style={styles.topPart}>
+            <View style={[styles.topPart, { marginTop: '5%' }]}>
                 {/* Media */}
                 <View style={styles.media}>
 
@@ -197,7 +197,6 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
                             {currentBlurred && !isUploading && (
                                 <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>Record a <Text style={{ fontWeight: 'bold' }}>video</Text> to <Text style={{ fontWeight: 'bold' }}>unlock</Text> Climb Card!</Text>
                             )}
-
                         </View>
                     </View>
                 </View>
@@ -263,11 +262,7 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
 const styles = StyleSheet.create({
     idleCard: {
         backgroundColor: 'white',
-        marginHorizontal: 10,
-        marginTop: 0,
-        borderRadius: 15,
-        height: 340,
-        width: '100%',
+        flex: 1,
     },
     topPart: {
         flexDirection: 'row',
