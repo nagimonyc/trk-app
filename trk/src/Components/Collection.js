@@ -257,7 +257,7 @@ const Collection = () => {
         console.log(climb.sampleTap);
         setClimbCopy(climb);
         setTapObjCopy({ climb: climb.climbId });
-        setCurrentBlurredFromChild(climb.status);
+        setCurrentBlurredFromChild('Video Present');
         setIsModalVisible(!isModalVisible); //Make it Visible
     };
 
