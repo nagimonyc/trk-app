@@ -286,6 +286,7 @@ const Collection = () => {
                     />
                 </View>
             </View>
+            <View style={{ paddingHorizontal: 10 }}>
             <DropDownPicker
                 open={openGymsDropdown}
                 value={selectedGymId}
@@ -295,10 +296,11 @@ const Collection = () => {
                 setItems={setGyms}
                 zIndex={3000}
                 zIndexInverse={1000}
-                containerStyle={{ height: 40 }}
-                style={{ backgroundColor: '#fafafa', paddingHorizontal: 10 }}
-                dropDownContainerStyle={{ backgroundColor: '#fafafa' }}
+                containerStyle={{ height: 40, paddingTop: 5}}
+                style={{ backgroundColor: '#fafafa'}}
+                dropDownContainerStyle={{ backgroundColor: '#fafafa'}}
             />
+            </View>
             <ScrollView
                 contentContainerStyle={styles.scrollViewContent}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#fe8100']} />}
@@ -448,6 +450,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+        zIndex: 5000
     },
     modalContent: {
         backgroundColor: 'white',
