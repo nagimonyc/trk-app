@@ -16,18 +16,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const ClimbTile = ({ climb, onPressFunction }) => {
     // Placeholder image if no image is available or if climb status is 'Unseen'
     const placeholderImage = require('../../assets/question_box.png');
-    const imageSource = (climb.status !== 'Unseen')
-        ? { uri: climb.climbImage }
-        : placeholderImage;
+    const imageSource = { uri: climb.climbImage };
+
+    // (climb.status !== 'Unseen')
+    //     ? 
+    //     : placeholderImage;
+    const borderColor = climb.status === 'Video Present' ? 'green' : 'white';
 
     return (
-        <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10 }]} onPress={() => { onPressFunction(climb, climb.status) }}>
+        <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10, borderWidth: 3, borderColor: borderColor }]} onPress={() => { onPressFunction(climb, climb.status) }}>
+            {/* {climb.status === 'Video Present' && //When Seen, But No Video Posted
+                <Text style={{ position: 'absolute', color: '#fe8100', top: -20, right: 5, fontSize: 30, fontWeight: 'bold' }}>!</Text>} */}
             <Image
                 source={imageSource}
                 style={styles.climbImage}
             />
-            {climb.status === 'Seen' && //When Seen, But No Video Posted
-                <Text style={{ position: 'absolute', color: '#fe8100', top: -20, right: 5, fontSize: 30, fontWeight: 'bold' }}>!</Text>}
         </TouchableOpacity>
     );
 };
@@ -202,9 +205,9 @@ const Collection = () => {
 
 
     const handlePressFunction = (climb, status) => {
-        if (status === 'Unseen') {
-            return
-        }
+        // if (status === 'Unseen') {
+        //     return
+        // }
         //The Climb Here Must Have a Card
         console.log('Climb: ', climb);
         //Setting Values to Pass To the Card
@@ -448,6 +451,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#f0f0f0', // Placeholder background color
+        // borderRadius: 10,
+        // borderColor: 'blue'
     },
     selectedClimb: {
         borderColor: '#007BFF', // Color for the selected tile
