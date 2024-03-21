@@ -286,20 +286,20 @@ const Collection = () => {
                     />
                 </View>
             </View>
-            <View style={{ paddingHorizontal: 10 }}>
-            <DropDownPicker
-                open={openGymsDropdown}
-                value={selectedGymId}
-                items={gyms}
-                setOpen={setOpenGymsDropdown}
-                setValue={setSelectedGymId}
-                setItems={setGyms}
-                zIndex={3000}
-                zIndexInverse={1000}
-                containerStyle={{ height: 40, paddingTop: 5}}
-                style={{ backgroundColor: '#fafafa'}}
-                dropDownContainerStyle={{ backgroundColor: '#fafafa'}}
-            />
+            <View style={{ paddingHorizontal: 10, zIndex: isModalVisible ? 1 : 3000 }}>
+                <DropDownPicker
+                    open={openGymsDropdown}
+                    value={selectedGymId}
+                    items={gyms}
+                    setOpen={setOpenGymsDropdown}
+                    setValue={setSelectedGymId}
+                    setItems={setGyms}
+                    zIndex={3000}
+                    zIndexInverse={1000}
+                    containerStyle={{ height: 40, paddingTop: 5 }}
+                    style={{ backgroundColor: '#fafafa' }}
+                    dropDownContainerStyle={{ backgroundColor: '#fafafa' }}
+                />
             </View>
             <ScrollView
                 contentContainerStyle={styles.scrollViewContent}
