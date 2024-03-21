@@ -108,17 +108,19 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
                 const videoObject = { url: url, role: role };
 
                 // Adding Video to User Tap
-                const tapDataResult = await TapsApi().getTap(tapId);
-                let obj = tapDataResult.data();
-                const newArray = ((obj.videos && obj.videos.length > 0) ? obj.videos.concat([videoObject]) : [videoObject]);
-                const updatedTap = {
-                    videos: newArray,
-                };
-                await TapsApi().updateTap(tapId, updatedTap);
+                if (tapId) {
+                    const tapDataResult = await TapsApi().getTap(tapId);
+                    let obj = tapDataResult.data();
+                    const newArray = ((obj && obj.videos && obj.videos.length > 0) ? obj.videos.concat([videoObject]) : [videoObject]);
+                    const updatedTap = {
+                        videos: newArray,
+                    };
+                    await TapsApi().updateTap(tapId, updatedTap);
+                }
 
                 // Adding Video to Overall Climb
                 let climbObj = (await ClimbsApi().getClimb(tapObj.climb)).data();
-                const newClimbsArray = ((climbObj.videos && climbObj.videos.length > 0) ? [videoObject].concat(climbObj.videos) : [videoObject]);
+                const newClimbsArray = ((climbObj && climbObj.videos && climbObj.videos.length > 0) ? [videoObject].concat(climbObj.videos) : [videoObject]);
                 const updatedClimb = {
                     videos: newClimbsArray,
                 };
