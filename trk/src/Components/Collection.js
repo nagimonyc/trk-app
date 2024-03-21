@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, TextInput, Switch, RefreshControl, ScrollView, SectionList, Dimensions, TouchableWithoutFeedback } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
+import DropDownPicker from "react-native-dropdown-picker";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import SignOut from "./SignOut";
@@ -12,6 +13,7 @@ import storage from '@react-native-firebase/storage';
 import TapCard from "./TapCard";
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import GymsApi from "../api/GymsApi";
 
 const ClimbTile = ({ climb, onPressFunction }) => {
     // Placeholder image if no image is available or if climb status is 'Unseen'
@@ -45,6 +47,30 @@ const Collection = () => {
     const [allClimbs, setAllClimbs] = useState([]); //List of Climb Objects for Searching
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredClimbs, setFilteredClimbs] = useState({});
+    const [openGymsDropdown, setOpenGymsDropdown] = useState(false);
+
+
+
+    const [gyms, setGyms] = useState([]);
+    const [selectedGymId, setSelectedGymId] = useState(null);
+    useEffect(() => {
+        const fetchGyms = async () => {
+            try {
+                const gymSnapshot = await GymsApi().fetchGyms();
+                const gymOptions = gymSnapshot.map(doc => ({
+                    label: doc.data().Name, // Assuming the gyms collection documents have a Name field
+                    value: doc.id,
+                }));
+                setGyms(gymOptions);
+            } catch (error) {
+                console.error('Failed to fetch gyms:', error);
+            }
+        };
+
+        fetchGyms();
+    }, []);
+
+
 
     const navigation = useNavigation();
 
@@ -54,6 +80,8 @@ const Collection = () => {
         setRefreshing(true);
         handleClimbHistory().then(() => setRefreshing(false)); // Reset refreshing to false when data is fetched
     }, []);
+
+
 
     const [isModalVisible, setIsModalVisible] = useState(false); //To toggle modal state, only closes when the X button is clicked
 
@@ -80,15 +108,29 @@ const Collection = () => {
         loadCachedData();
     }, []);
 
+    useEffect(() => {
+        setRefreshing(true);
+        handleClimbHistory().then(() => setRefreshing(false));
+    }, [selectedGymId]); // Reacts to changes in selectedGymId
+
     const handleClimbHistory = async () => {
+        if (!selectedGymId) {
+            // No gym selected yet, so clear the climbs data or handle accordingly
+            setClimbs([]);
+            setAllClimbs([]);
+            setUnseenCounts([]);
+            return;
+        }
         try {
-            const climbSnapShot = await ClimbsApi().getClimbsBySomeField('gym', 'TDrC1lRRjbMuMI06pONY');
+            const climbSnapShot = await ClimbsApi().getClimbsBySomeField('gym', selectedGymId);
+            console.log("climbSnapShot is ", climbSnapShot);
             let groupedClimbs = {}; // Object to hold the grouped climbs
             let allClimbsTemp = [] //For all Climbs
             let unseenCountsTemp = {} //To count the Unseen Values
 
             if (!climbSnapShot.empty) {
                 const climbDocs = climbSnapShot.docs.filter(obj => obj.data().color_name != undefined);
+                console.log("climbDocs is ", climbDocs);
 
                 for (let i = 0; i < climbDocs.length; i++) {
                     const climbData = climbDocs[i].data();
@@ -244,6 +286,19 @@ const Collection = () => {
                     />
                 </View>
             </View>
+            <DropDownPicker
+                open={openGymsDropdown}
+                value={selectedGymId}
+                items={gyms}
+                setOpen={setOpenGymsDropdown}
+                setValue={setSelectedGymId}
+                setItems={setGyms}
+                zIndex={3000}
+                zIndexInverse={1000}
+                containerStyle={{ height: 40 }}
+                style={{ backgroundColor: '#fafafa', paddingHorizontal: 10 }}
+                dropDownContainerStyle={{ backgroundColor: '#fafafa' }}
+            />
             <ScrollView
                 contentContainerStyle={styles.scrollViewContent}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#fe8100']} />}
