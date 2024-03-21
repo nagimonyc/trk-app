@@ -35,9 +35,10 @@ const ClimbInputData = (props) => {
     const fetchData = async () => {
       if (isEditMode && climbData) {
         // Assuming SetsApi().getSetByName is an async function that fetches the set ID
+        console.log('ClimbData: ', climbData);
         let setId = null;
         if (climbData.set) {
-          setId = await SetsApi().getSetByName(climbData.set);
+          setId = await SetsApi().getSetByName(climbData.set, 'TDrC1lRRjbMuMI06pONY'); //Movement's ID
         }
         setName(climbData.name);
         setGrade(climbData.grade);
@@ -46,6 +47,9 @@ const ClimbInputData = (props) => {
         if (setId && !setId.empty) {
           setSet(setId.docs[0].id); // Assuming this sets the ID for dropdown selection
           setSelectedValue(climbData.set); // Additional state update for selected value, if necessary
+        }
+        if (climbData.properties && climbData.properties.length > 0) {
+          setSelectedClimbTypes(climbData.properties);
         }
         setIfsc(climbData.ifsc);
         setInfo(climbData.info);
@@ -88,6 +92,17 @@ const ClimbInputData = (props) => {
   const [intensity, setIntensity] = useState(2);
   const [complexity, setComplexity] = useState(2);
 
+  //For kind of climb
+  const [selectedClimbTypes, setSelectedClimbTypes] = useState([]);
+
+  const handleClimbTypeSelection = (type) => {
+    if (selectedClimbTypes.includes(type)) {
+      setSelectedClimbTypes(selectedClimbTypes.filter(t => t !== type)); // Remove type
+    } else {
+      console.log(type);
+      setSelectedClimbTypes([...selectedClimbTypes, type]); // Add type
+    }
+  };  
 
   const yourCancelFunction = () => {
     NfcManager.cancelTechnologyRequest()
@@ -101,6 +116,10 @@ const ClimbInputData = (props) => {
     }
     if (grade.length > 5) {
       Alert.alert("Validation Error", "Grade must be 5 characters or less.");
+      return false;
+    }
+    if (selectedClimbTypes.length  == 0) {
+      Alert.alert("Validation Error", "Add what kind of climb this is.");
       return false;
     }
     return true;
@@ -206,6 +225,7 @@ const ClimbInputData = (props) => {
       risk: risk,
       intensity: intensity,
       complexity: complexity,
+      properties: selectedClimbTypes,
     };
 
     try {
@@ -280,6 +300,7 @@ const ClimbInputData = (props) => {
         setRisk(2);
         setIntensity(2);
         setComplexity(2);
+        setSelectedClimbTypes([]);
         Alert.alert("Success", "Climb updated successfully");
       }
     } catch (err) {
@@ -316,6 +337,7 @@ const ClimbInputData = (props) => {
         risk: risk,
         intensity: intensity,
         complexity: complexity,
+        properties: selectedClimbTypes,
       };
 
       const { addClimb } = ClimbsApi();
@@ -371,6 +393,7 @@ const ClimbInputData = (props) => {
       setRisk(2);
       setIntensity(2);
       setComplexity(2);
+      setSelectedClimbTypes([]);
       setReload(current => !current); //To reload sets (with newly created one too!)
     } catch (ex) {
       if (isReading) {
@@ -469,7 +492,7 @@ const ClimbInputData = (props) => {
                 placeholder="Enter grade"
 
               />
-
+              {false && (<>
               <Text style={styles.label}>IFSC Score</Text>
               <TextInput
                 style={styles.input}
@@ -477,7 +500,7 @@ const ClimbInputData = (props) => {
                 onChangeText={setIfsc}
                 placeholderTextColor={"#b1b1b3"}
                 placeholder="Enter score"
-              />
+              /></>)}
 
               <Text style={styles.label}>Gym</Text>
 
@@ -558,13 +581,13 @@ const ClimbInputData = (props) => {
                 textStyle={{ fontSize: 18 }}
               />
 
-              <Text style={styles.label}>More Info</Text>
+              <Text style={styles.label}>Description</Text>
               <TextInput
                 style={styles.largeInput}
                 value={info}
                 placeholderTextColor={"#b1b1b3"}
                 onChangeText={setInfo}
-                placeholder="Enter more info"
+                placeholder="Enter desription"
                 multiline={true}
 
               />
@@ -617,8 +640,20 @@ const ClimbInputData = (props) => {
                   </View>
               </View>
 
-
-
+              <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'stretch', padding: 0, marginTop: 25}}>
+                  <Text style={[styles.label, { color: '#000000' }]}>What kind of climb?</Text>
+                      <View style={styles.climbTypeContainer}>
+                        {["Power", "Technical", "Balance", "Sloppers", "Pinches", "Crimpy", "Static", "Dynamic"].map((type) => (
+                          <TouchableOpacity
+                            key={type}
+                            style={[styles.climbTypeButton, selectedClimbTypes.includes(type) ? styles.climbTypeSelected : {}]}
+                            onPress={() => handleClimbTypeSelection(type)}
+                          >
+                            <Text style={styles.climbTypeButtonText}>{type}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+              </View>
 
 
               <Text style={styles.label}>Image</Text>
@@ -639,9 +674,9 @@ const ClimbInputData = (props) => {
             {
               isEditMode ?
                 (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                  <Button title="Update Climb" onPress={handleUpdateClimb} disabled={!name || !grade || !gym || !set} />
+                  <Button title="Update Climb" onPress={handleUpdateClimb} disabled={!name || !grade || !gym || !set || selectedClimbTypes.length == 0} />
                 </View>) :
-                <Button title="Add Climb" onPress={handleAddClimb} disabled={!name || !grade || !gym || !set} />
+                <Button title="Add Climb" onPress={handleAddClimb} disabled={!name || !grade || !gym || !set || selectedClimbTypes.length == 0} />
             }
           </SafeAreaView>
         </ScrollView>
@@ -653,6 +688,28 @@ const ClimbInputData = (props) => {
 };
 
 const styles = StyleSheet.create({
+  climbTypeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start', // This will help space the items evenly
+    alignItems: 'flex-start', // Ensures alignment is consistent
+    marginBottom: 20,
+  },  
+  climbTypeButton: {
+    backgroundColor: '#d3d3d3', // Light gray background for unselected
+    padding: 10,
+    borderRadius: 20, // Adjust for bubble appearance
+    margin: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '30%', // Adjust the width to fit three in a row
+  },
+  climbTypeSelected: {
+    backgroundColor: '#000', // Black for selected
+  },
+  climbTypeButtonText: {
+    color: '#fff', // White text
+  },  
   container: {
     flex: 1,
     marginBottom: 25

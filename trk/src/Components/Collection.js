@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, TextInput, Switch, RefreshControl, ScrollView, SectionList, Dimensions, Modal, Pressable } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, TextInput, Switch, RefreshControl, ScrollView, SectionList, Dimensions, Modal, Pressable, TouchableWithoutFeedback } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
+import DropDownPicker from "react-native-dropdown-picker";
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from "@react-native-firebase/auth";
 import SignOut from "./SignOut";
@@ -12,22 +13,26 @@ import storage from '@react-native-firebase/storage';
 import TapCard from "./TapCard";
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import GymsApi from "../api/GymsApi";
 
 const ClimbTile = ({ climb, onPressFunction }) => {
     // Placeholder image if no image is available or if climb status is 'Unseen'
     const placeholderImage = require('../../assets/question_box.png');
-    const imageSource = (climb.status !== 'Unseen')
-        ? { uri: climb.climbImage }
-        : placeholderImage;
+    const imageSource = { uri: climb.climbImage };
+
+    // (climb.status !== 'Unseen')
+    //     ? 
+    //     : placeholderImage;
+    const borderColor = climb.status === 'Video Present' ? 'green' : 'white';
 
     return (
-        <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10 }]} onPress={() => { onPressFunction(climb, climb.status) }}>
+        <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10, borderWidth: 3, borderColor: borderColor }]} onPress={() => { onPressFunction(climb, climb.status) }}>
+            {/* {climb.status === 'Video Present' && //When Seen, But No Video Posted
+                <Text style={{ position: 'absolute', color: '#fe8100', top: -20, right: 5, fontSize: 30, fontWeight: 'bold' }}>!</Text>} */}
             <Image
                 source={imageSource}
                 style={styles.climbImage}
             />
-            {climb.status === 'Seen' && //When Seen, But No Video Posted
-                <Text style={{ position: 'absolute', color: '#fe8100', top: -20, right: 5, fontSize: 30, fontWeight: 'bold' }}>!</Text>}
         </TouchableOpacity>
     );
 };
@@ -42,6 +47,30 @@ const Collection = () => {
     const [allClimbs, setAllClimbs] = useState([]); //List of Climb Objects for Searching
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredClimbs, setFilteredClimbs] = useState({});
+    const [openGymsDropdown, setOpenGymsDropdown] = useState(false);
+
+
+
+    const [gyms, setGyms] = useState([]);
+    const [selectedGymId, setSelectedGymId] = useState(null);
+    useEffect(() => {
+        const fetchGyms = async () => {
+            try {
+                const gymSnapshot = await GymsApi().fetchGyms();
+                const gymOptions = gymSnapshot.map(doc => ({
+                    label: doc.data().Name, // Assuming the gyms collection documents have a Name field
+                    value: doc.id,
+                }));
+                setGyms(gymOptions);
+            } catch (error) {
+                console.error('Failed to fetch gyms:', error);
+            }
+        };
+
+        fetchGyms();
+    }, []);
+
+
 
     const navigation = useNavigation();
 
@@ -51,6 +80,8 @@ const Collection = () => {
         setRefreshing(true);
         handleClimbHistory().then(() => setRefreshing(false)); // Reset refreshing to false when data is fetched
     }, []);
+
+
 
     const [isModalVisible, setIsModalVisible] = useState(false); //To toggle modal state, only closes when the X button is clicked
 
@@ -108,15 +139,29 @@ const Collection = () => {
         loadCachedData();
     }, []);
 
+    useEffect(() => {
+        setRefreshing(true);
+        handleClimbHistory().then(() => setRefreshing(false));
+    }, [selectedGymId]); // Reacts to changes in selectedGymId
+
     const handleClimbHistory = async () => {
+        if (!selectedGymId) {
+            // No gym selected yet, so clear the climbs data or handle accordingly
+            setClimbs([]);
+            setAllClimbs([]);
+            setUnseenCounts([]);
+            return;
+        }
         try {
-            const climbSnapShot = await ClimbsApi().getClimbsBySomeField('gym', 'TDrC1lRRjbMuMI06pONY');
+            const climbSnapShot = await ClimbsApi().getClimbsBySomeField('gym', selectedGymId);
+            console.log("climbSnapShot is ", climbSnapShot);
             let groupedClimbs = {}; // Object to hold the grouped climbs
             let allClimbsTemp = [] //For all Climbs
             let unseenCountsTemp = {} //To count the Unseen Values
 
             if (!climbSnapShot.empty) {
                 const climbDocs = climbSnapShot.docs.filter(obj => obj.data().color_name != undefined);
+                console.log("climbDocs is ", climbDocs);
 
                 for (let i = 0; i < climbDocs.length; i++) {
                     const climbData = climbDocs[i].data();
@@ -233,16 +278,17 @@ const Collection = () => {
 
 
     const handlePressFunction = (climb, status) => {
-        if (status === 'Unseen') {
-            return
-        }
+        // if (status === 'Unseen') {
+        //     return
+        // }
         //The Climb Here Must Have a Card
         console.log('Climb: ', climb);
         //Setting Values to Pass To the Card
         setTapIdCopy(climb.sampleTap);
+        console.log(climb.sampleTap);
         setClimbCopy(climb);
         setTapObjCopy({ climb: climb.climbId });
-        setCurrentBlurredFromChild(climb.status);
+        setCurrentBlurredFromChild('Video Present');
         setIsModalVisible(!isModalVisible); //Make it Visible
     };
 
@@ -271,6 +317,19 @@ const Collection = () => {
                     />
                 </View>
             </View>
+            <DropDownPicker
+                open={openGymsDropdown}
+                value={selectedGymId}
+                items={gyms}
+                setOpen={setOpenGymsDropdown}
+                setValue={setSelectedGymId}
+                setItems={setGyms}
+                zIndex={3000}
+                zIndexInverse={1000}
+                containerStyle={{ height: 40 }}
+                style={{ backgroundColor: '#fafafa', paddingHorizontal: 10 }}
+                dropDownContainerStyle={{ backgroundColor: '#fafafa' }}
+            />
             <ScrollView
                 contentContainerStyle={styles.scrollViewContent}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#fe8100']} />}
@@ -411,15 +470,13 @@ const styles = StyleSheet.create({
     },
     closeButton: {
         backgroundColor: '#FF6165',
-        width: 30,
-        height: 30,
+        width: 40,
+        height: 40,
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'absolute',
-        top: -5,
-        right: -5,
         zIndex: 2000,
+        position: 'relative',
     },
     textStyle: {
         color: 'white',
@@ -427,12 +484,22 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         height: '100%',
         width: '100%',
-        textAlignVertical: 'top',
-        paddingTop: 3,
+        textAlignVertical: 'center',
+        padding: 10,
     },
     modalText: {
         marginBottom: 15,
         textAlign: 'center',
+    },
+    modalContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
     },
     modalContent: {
         backgroundColor: '#E0B33E',
@@ -462,12 +529,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#000',
         width: '100%',
-        margin: -2,
+        marginBottom: -2,
+        // textAlign: 'center'
+
     },
     gradeCountContainer: {
         borderBottomWidth: 1,
         borderBottomColor: '#C7C7C7',
-        width: '80%',
+        width: '81%',
         textAlign: 'right',
         // Add padding or height if needed to ensure the border is visible
         marginBottom: 5,
@@ -485,6 +554,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#f0f0f0', // Placeholder background color
+        // borderRadius: 10,
+        // borderColor: 'blue'
     },
     selectedClimb: {
         borderColor: '#007BFF', // Color for the selected tile

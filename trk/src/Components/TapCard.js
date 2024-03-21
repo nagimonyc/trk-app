@@ -20,6 +20,7 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
     const navigation = useNavigation();
     const { currentUser, role } = React.useContext(AuthContext);
     const [imageUrl, setImageURL] = useState(null);
+    const [progressLevel, setProgressLevel] = useState(0);
 
 
     const [climbImageUrl, setClimbImageURL] = useState(null);
@@ -86,10 +87,12 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
         return url;
     };
 
+    const [isUploading, setIsUploading] = useState(false); // Add this line
+
     //Video Adding Logic
     const selectImageLogic = async () => {
-        //console.log("handleImagePick called");
         try {
+            setIsUploading(true); // Start uploading
             let result = await launchImageLibrary({ mediaType: 'video', videoQuality: 'high' });
             let pickedImages = result.assets;
 
@@ -98,33 +101,38 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
 
             if (imagePath) {
                 // Set the image state to include the full path
-                let url = await uploadVideo(imagePath);
+                let url = await uploadVideo(imagePath); // Now 'url' is defined here
                 setSelectedImageURL(url);
 
-                //Adding Video to User Tap
+                // Now 'url' is available, so we can correctly create the videoObject
+                const videoObject = { url: url, role: role };
+
+                // Adding Video to User Tap
                 const tapDataResult = await TapsApi().getTap(tapId);
                 let obj = tapDataResult.data();
-                const newArray = ((obj.videos && obj.videos.length > 0) ? obj.videos.concat([url]) : [url]);
+                const newArray = ((obj.videos && obj.videos.length > 0) ? obj.videos.concat([videoObject]) : [videoObject]);
                 const updatedTap = {
                     videos: newArray,
                 };
                 await TapsApi().updateTap(tapId, updatedTap);
 
-                //Adding Video to Overall Climb
+                // Adding Video to Overall Climb
                 let climbObj = (await ClimbsApi().getClimb(tapObj.climb)).data();
-                const newClimbsArray = ((climbObj.videos && climbObj.videos.length > 0) ? [url].concat(climbObj.videos) : [url]);
+                const newClimbsArray = ((climbObj.videos && climbObj.videos.length > 0) ? [videoObject].concat(climbObj.videos) : [videoObject]);
                 const updatedClimb = {
                     videos: newClimbsArray,
                 };
                 await ClimbsApi().updateClimb(tapObj.climb, updatedClimb);
-                //setAddedMedia(prev => [url].concat(prev));
                 setCurrentBlurred(false);
                 call(false);
             }
         } catch (err) {
             console.error("Error picking image:", err);
+        } finally {
+            setIsUploading(false); // Stop uploading regardless of outcome
         }
     };
+
 
     const uploadVideo = async (videoPath) => { //VIDEO UPLOADING AND PLAYING INSTANTLY!
         try {
@@ -137,14 +145,13 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
             task.on('state_changed', (snapshot) => {
                 // You can use this to track the progress of the upload
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
+                setProgressLevel(Math.round(progress));
             });
 
             // Get the download URL after the upload is complete
             await task;
             const url = await reference.getDownloadURL();
-            console.log('Video download URL:', url);
-
+            setProgressLevel(0);
             return url; // You may want to do something with the URL, like storing it in a database
         } catch (error) {
             console.error('Video upload error:', error);
@@ -160,8 +167,20 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
                 <View style={styles.media}>
 
                     <TouchableOpacity onPress={selectImageLogic}>
-                        {!selectedImageUrl && (<><Image source={require('../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" /><Text style={{ marginTop: 15, fontSize: 12, fontWeight: 500, color: '#505050' }}>Add Media</Text></>)}
-                        {selectedImageUrl && (<Video source={{ uri: selectedImageUrl }} style={{ width: 120, height: 140 }} muted={true} paused={true} />)}
+                        {isUploading ? (
+                            <ActivityIndicator color='#fe8100' size={'large'} />
+                        ) : (
+                            <>
+                                {!selectedImageUrl ? (
+                                    <>
+                                        <Image source={require('../../assets/add-photo-image-(3).png')} style={{ width: 50, height: 50 }} resizeMode="contain" />
+                                        <Text style={{ marginTop: 15, fontSize: 12, fontWeight: '500', color: '#505050' }}>Add Media</Text>
+                                    </>
+                                ) : (
+                                    <Video source={{ uri: selectedImageUrl }} style={{ width: 120, height: 140 }} muted={true} paused={true} />
+                                )}
+                            </>
+                        )}
                     </TouchableOpacity>
 
                 </View>
@@ -169,11 +188,14 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
                 <View style={styles.textContainer}>
                     <View style={styles.momentumTextWrapper}>
                         <View style={styles.inlineContainer}>
-                            {currentBlurred && (
-                                <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>Record a <Text style={{ fontWeight: 'bold' }}>video</Text> to <Text style={{ fontWeight: 'bold' }}>unlock</Text> Climb Card!</Text>
+                            {isUploading && (
+                                <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>Upload is <Text style={{ fontWeight: 'bold' }}>{progressLevel}%</Text> done.</Text>
                             )}
-                            {!currentBlurred && (
+                            {!currentBlurred && !isUploading && (
                                 <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>Click on this <Text style={{ fontWeight: 'bold' }}>video</Text> to <Text style={{ fontWeight: 'bold' }}>add</Text> more memories!</Text>
+                            )}
+                            {currentBlurred && !isUploading && (
+                                <Text style={[styles.text, styles.momentumText, { color: 'black', marginBottom: 5 }]}>Record a <Text style={{ fontWeight: 'bold' }}>video</Text> to <Text style={{ fontWeight: 'bold' }}>unlock</Text> Climb Card!</Text>
                             )}
                         </View>
                     </View>
@@ -211,12 +233,12 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
                 </View>
                 {/* Setter Section */}
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingHorizontal: 20 }}>
-                    <Text style={{ fontSize: 12, marginRight: 10, color: 'gray' }}>
+                    {/* <Text style={{ fontSize: 12, marginRight: 10, color: 'gray' }}>
                         Set by {routeSetterName}
                     </Text>
-                    {imageUrl ? <Image source={{ uri: imageUrl }} style={{ width: 30, height: 30 }} resizeMode="contain" /> : <ActivityIndicator color='#fe8100' />}
+                    {imageUrl ? <Image source={{ uri: imageUrl }} style={{ width: 30, height: 30 }} resizeMode="contain" /> : <ActivityIndicator color='#fe8100' />} */}
                 </View>
-                {/* {currentBlurred && (
+                {currentBlurred && (
                     <BlurView
                         style={styles.absolute}
                         blurType="light"
@@ -231,7 +253,7 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call, car
                             source={require('../../assets/blur_lock.png')} // Replace with your lock icon image
                             style={styles.lockIcon}
                         />
-                    </View>)} */}
+                    </View>)}
             </View>
         </View>
     );
