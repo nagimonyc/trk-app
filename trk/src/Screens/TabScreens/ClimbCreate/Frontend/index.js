@@ -643,7 +643,7 @@ const ClimbInputData = (props) => {
               <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'stretch', padding: 0, marginTop: 25}}>
                   <Text style={[styles.label, { color: '#000000' }]}>What kind of climb?</Text>
                       <View style={styles.climbTypeContainer}>
-                        {["Power", "Technical", "Balance", "Stoppers", "Pinches", "Crimpy", "Static", "Dynamic"].map((type) => (
+                        {["Power", "Technical", "Balance", "Sloppers", "Pinches", "Crimpy", "Static", "Dynamic"].map((type) => (
                           <TouchableOpacity
                             key={type}
                             style={[styles.climbTypeButton, selectedClimbTypes.includes(type) ? styles.climbTypeSelected : {}]}
