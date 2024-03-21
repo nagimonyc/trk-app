@@ -342,16 +342,13 @@ const Collection = () => {
                         </View>
                         {currentBlurredFromChild === 'Video Present' && (
                             <View style={{ flexDirection: 'row', marginTop: 20, justifyContent: 'space-around', width: '100%' }}>
-                                <TouchableOpacity
-                                    style={styles.communityButton} // Define this style
-                                    onPress={() => navigation.navigate('Community', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy })}
-                                >
-                                    <Text style={styles.buttonText}>Community Posts</Text>
+                                <TouchableOpacity style={{ paddingVertical: 15, backgroundColor: '#fe8100', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 15 }}
+                                    onPress={() => { setIsModalVisible(!isModalVisible); navigation.navigate('Community', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy }); }}>
+                                    <Text style={{ color: 'white', fontSize: 15, fontWeight: '600' }}>Community Posts</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={styles.shareButton} // Define this style
-                                    onPress={() => navigation.navigate('New_Share', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy })}
-                                >
+
+                                <TouchableOpacity style={{ paddingVertical: 15, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20, borderRadius: 50 }}
+                                    onPress={() => { setIsModalVisible(!isModalVisible); navigation.navigate('New_Share', { climb: climbCopy, tapId: tapIdCopy, tapObj: tapObjCopy }); }}>
                                     <Image source={require('../../assets/uil_share.png')} style={{ width: 20, height: 20 }} resizeMode="contain" />
                                 </TouchableOpacity>
                             </View>
@@ -405,7 +402,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     communityButton: {
-        backgroundColor: 'red'
+        paddingVertical: 15,
+        backgroundColor: '#fe8100',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        borderRadius: 15
     },
     closeButton: {
         backgroundColor: '#FF6165',
