@@ -37,14 +37,20 @@ const ClimbInputData = (props) => {
         // Assuming SetsApi().getSetByName is an async function that fetches the set ID
         console.log('ClimbData: ', climbData);
         let setId = null;
+        let secondSetId = null;
         if (climbData.set) {
           setId = await SetsApi().getSetByName(climbData.set, 'TDrC1lRRjbMuMI06pONY'); //Movement's ID
+          secondSetId = await SetsApi().getSetByName(climbData.set, 'dSlDcmXq4WHD5iyvYXFi'); //Gowanus' ID
         }
         setName(climbData.name);
         setGrade(climbData.grade);
         setGym(climbData.gym);
         setType(climbData.type);
         if (setId && !setId.empty) {
+          setSet(setId.docs[0].id); // Assuming this sets the ID for dropdown selection
+          setSelectedValue(climbData.set); // Additional state update for selected value, if necessary
+        }
+        else if (secondSetId && !secondSetId.empty) { //For Gowanus
           setSet(setId.docs[0].id); // Assuming this sets the ID for dropdown selection
           setSelectedValue(climbData.set); // Additional state update for selected value, if necessary
         }
@@ -142,11 +148,22 @@ const ClimbInputData = (props) => {
   const [value, setValue] = useState(null);
 
   useEffect(() => {
-    SetsApi().fetchSets('TDrC1lRRjbMuMI06pONY').then(sets => {      //Passing Movement's Gym ID
+    // Initial fetch for the first gym ID
+    SetsApi().fetchSets('TDrC1lRRjbMuMI06pONY').then(sets => {
       const formattedSets = sets.map(doc => ({ label: doc.data().name, value: doc.id }));
-      setSetItems(formattedSets);
+      
+      // Fetch for the second gym ID (Gowanus)
+      SetsApi().fetchSets('dSlDcmXq4WHD5iyvYXFi').then(secondSets => {
+        const formattedSecondSets = secondSets.map(doc => ({ label: doc.data().name, value: doc.id }));
+        
+        // Combine the results from both gym IDs
+        const combinedSets = [...formattedSets, ...formattedSecondSets];
+        
+        setSetItems(combinedSets); // Update the state with the combined list
+      });
     });
-  }, [reload]);
+  }, [reload]); // Dependency array to re-run the effect if needed
+  
 
 
   //To create custom sets
@@ -241,7 +258,11 @@ const ClimbInputData = (props) => {
         //Same Logic for deletion
         if (climbData.set && selectedValue !== climbData.set) {
           //We need to remove it from its existing set
-          const setObjSnapshot = await SetsApi().getSetByName(climbData.set, 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
+          let setObjSnapshot = await SetsApi().getSetByName(climbData.set, 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
+          if (!setObjSnapshot || setObjSnapshot.empty) {
+            setObjSnapshot = await SetsApi().getSetByName(climbData.set, 'dSlDcmXq4WHD5iyvYXFi'); //Gowanus
+          }
+
           if (!setObjSnapshot.empty) {
             const setObj = setObjSnapshot.docs[0].data();
             console.log(setObj);
@@ -266,7 +287,11 @@ const ClimbInputData = (props) => {
         if (filteredSets.length === 0 && (!climbData || selectedValue !== climbData.set)) { //No need to add if same set
           //Use the existing setName
           //console.log('Set already exists!: ', selectedValue);
-          const oldSet = await SetsApi().getSetByName(String(selectedValue).trim(), 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
+          let oldSet = await SetsApi().getSetByName(String(selectedValue).trim(), 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
+          if (!oldSet || !oldSet.docs[0]) {
+            oldSet = await SetsApi().getSetByName(String(selectedValue).trim(), 'dSlDcmXq4WHD5iyvYXFi'); //Passing Gowanus' Gym ID
+          }
+
           //console.log(oldSet);
           if (oldSet && oldSet.docs[0]) {
             const setId = oldSet.docs[0].id;
@@ -283,7 +308,7 @@ const ClimbInputData = (props) => {
             name: filteredSets[0].name,
             climbs: [newClimbId], //replace with newClimbId
             setters: [currentUser.uid],
-            gym: "TDrC1lRRjbMuMI06pONY", //Movement's Gym ID
+            gym: gym, //Movement's Gym ID or Gowanus (Based on Selected)
           }
           await SetsApi().addSet(setObj);
         }
@@ -353,7 +378,10 @@ const ClimbInputData = (props) => {
       if (filteredSets.length === 0) {
         //Use the existing setName
         //console.log('Set already exists!: ', selectedValue);
-        const oldSet = await SetsApi().getSetByName(String(selectedValue).trim(), 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
+        let oldSet = await SetsApi().getSetByName(String(selectedValue).trim(), 'TDrC1lRRjbMuMI06pONY'); //Passing Movement's Gym ID
+        if (!oldSet || !oldSet.docs[0]) {
+          oldSet = await SetsApi().getSetByName(String(selectedValue).trim(), 'dSlDcmXq4WHD5iyvYXFi'); //Passing Gowanus' Gym ID
+        }
         console.log(oldSet);
         if (oldSet && oldSet.docs[0]) {
           const setId = oldSet.docs[0].id;
@@ -371,7 +399,7 @@ const ClimbInputData = (props) => {
           name: filteredSets[0].name,
           climbs: [newClimbId._documentPath._parts[1]], //replace with newClimbId
           setters: [currentUser.uid],
-          gym: "TDrC1lRRjbMuMI06pONY", //Movement's Gym ID
+          gym: gym, //Movement's Gym ID
         }
         await SetsApi().addSet(setObj);
       }
