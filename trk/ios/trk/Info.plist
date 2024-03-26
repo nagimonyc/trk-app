@@ -59,15 +59,15 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Nagimo needs access to your Camera.</string>
+	<string>Nagimo includes a climb photo in the user's climb post</string>
 	<key>NSFileProviderDomainUsageDescription</key>
 	<string>Share climb performance image</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Nagimo needs access to your Microphone.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Nagimo requires access to the photo library to save images.</string>
+	<string>Nagimo uses your camera to capture and attach photos to your climbing activities for richer climb posts.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Nagimo requires access to the photo library to share images.</string>
+	<string>Nagimo accesses your photo library to save your profile picture, personalizing your user experience.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>MaterialCommunityIcons.ttf</string>
