@@ -432,8 +432,8 @@ function ProfileStack() {
           headerBackTitleVisible: false,
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <FeedbackButton
-                title="Feedback"
+              <NagimoPlusButton
+                title="Nagimo+"
                 navigation={navigation}
               />
             </View>
@@ -444,6 +444,11 @@ function ProfileStack() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Payment_Portal"
+        component={PayUI}
+        options={{ title: 'Nagimo+', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Community"
@@ -560,21 +565,20 @@ function AnalyticsStack() {
               </View>
             </View>
           ),
-          headerLeft: () => (
+         /* headerLeft: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
               <View style={{ display: 'flex', flexDirection: 'row' }}>
                 <MessageButton
                   title="Messages"
                   navigation={navigation}
                 />
-                {/* <FeedbackButton
+                 <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
-              /> */}
-                {/* NOTIFICATION ICON HERE */}
+              /> 
+                {/* NOTIFICATION ICON HERE 
               </View>
-            </View>
-          ),
+         </View> */
         })
         }
       />
