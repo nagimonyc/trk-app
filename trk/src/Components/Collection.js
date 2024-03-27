@@ -53,6 +53,7 @@ const Collection = () => {
 
     const [gyms, setGyms] = useState([]);
     const [selectedGymId, setSelectedGymId] = useState(null);
+
     useEffect(() => {
         const fetchGyms = async () => {
             try {
@@ -61,7 +62,16 @@ const Collection = () => {
                     label: doc.data().Name, // Assuming the gyms collection documents have a Name field
                     value: doc.id,
                 }));
+
+                // Find the gym with the label "Movement Gowanus"
+                const defaultGym = gymOptions.find(gym => gym.label === "Movement Gowanus");
+
                 setGyms(gymOptions);
+
+                // If the "Movement Gowanus" gym exists, set it as the selected gym
+                if (defaultGym) {
+                    setSelectedGymId(defaultGym.value);
+                }
             } catch (error) {
                 console.error('Failed to fetch gyms:', error);
             }
@@ -69,6 +79,7 @@ const Collection = () => {
 
         fetchGyms();
     }, []);
+
 
 
 
