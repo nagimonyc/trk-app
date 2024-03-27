@@ -560,21 +560,20 @@ function AnalyticsStack() {
               </View>
             </View>
           ),
-          headerLeft: () => (
+         /* headerLeft: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
               <View style={{ display: 'flex', flexDirection: 'row' }}>
                 <MessageButton
                   title="Messages"
                   navigation={navigation}
                 />
-                {/* <FeedbackButton
+                 <FeedbackButton
                 title="Feedback"
                 navigation={navigation}
-              /> */}
-                {/* NOTIFICATION ICON HERE */}
+              /> 
+                {/* NOTIFICATION ICON HERE 
               </View>
-            </View>
-          ),
+         </View> */
         })
         }
       />
