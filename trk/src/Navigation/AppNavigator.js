@@ -715,7 +715,7 @@ function AppTabs() {
       />)}
 
 
-      {role !== 'setter' && (
+      {/* {role !== 'setter' && (
         <Tab.Screen
           name="Record"
           component={RecordStack}
@@ -732,7 +732,7 @@ function AppTabs() {
               );
             },
           }}
-        />)}
+        />)} */}
 
 
       {/* <Tab.Screen
