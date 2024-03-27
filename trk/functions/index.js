@@ -24,6 +24,7 @@ const { CloudTasksClient } = require('@google-cloud/tasks');
 const client = new CloudTasksClient();
 admin.initializeApp();
 admin.firestore().settings({ ignoreUndefinedProperties: true });
+const stripe = require('stripe')(functions.config().stripe.secret);
 
 exports.incrementUserTapCounter = functions.firestore
     .document('taps/{tapId}')
@@ -236,6 +237,49 @@ exports.scheduleFunction = functions.https.onCall(async (data, context) => {
         //console.log(`Task skipped`);
     }
 
+});
+
+//Stripe Functions (Server Side)
+exports.createPaymentSheet = functions.https.onRequest(async (req, res) => {
+    // CORS headers
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET, POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        res.status(204).send('');
+        return;
+    } else if (req.method !== "POST") {
+        res.status(405).send('Method Not Allowed');
+        return;
+    }
+
+    try {
+        // Assuming the request body includes amount and optionally currency
+        const { amount, currency = 'usd' } = req.body;
+
+        const customer = await stripe.customers.create();
+        const ephemeralKey = await stripe.ephemeralKeys.create(
+            { customer: customer.id },
+            { apiVersion: '2023-10-16' }
+        );
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: currency,
+            customer: customer.id,
+            automatic_payment_methods: { enabled: true },
+        });
+
+        res.json({
+            paymentIntent: paymentIntent.client_secret,
+            ephemeralKey: ephemeralKey.secret,
+            customer: customer.id,
+            publishableKey: 'pk_test_51OaSWnEQO3gNE6xrupNXVOgHTxT3JGH5mj07j5HBbOrNEyaaRSztctflHgBtNtrV0APnny4p70El04Sc7vVZOWij00JypHZCkV' // Ensure you replace this with your actual publishable key
+        });
+    } catch (error) {
+        console.error("Error creating payment sheet:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 //Notification styling and packaging

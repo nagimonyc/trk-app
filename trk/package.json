@@ -36,6 +36,7 @@
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/stack": "^6.3.17",
     "@redux-offline/redux-offline": "^2.6.0-native.1",
+    "@stripe/stripe-react-native": "^0.37.1",
     "buffer": "^4.9.2",
     "elliptic": "^6.5.4",
     "events": "^1.1.1",
