@@ -256,9 +256,9 @@ exports.createPaymentSheet = functions.https.onRequest(async (req, res) => {
 
     try {
         // Assuming the request body includes amount and optionally currency
-        const { amount, currency = 'usd' } = req.body;
+        const { amount, currency = 'usd', email = 'nagimo.nyc@nagimo.org' } = req.body;
 
-        const customer = await stripe.customers.create();
+        const customer = await stripe.customers.create({email: email});
         const ephemeralKey = await stripe.ephemeralKeys.create(
             { customer: customer.id },
             { apiVersion: '2023-10-16' }
@@ -274,7 +274,7 @@ exports.createPaymentSheet = functions.https.onRequest(async (req, res) => {
             paymentIntent: paymentIntent.client_secret,
             ephemeralKey: ephemeralKey.secret,
             customer: customer.id,
-            publishableKey: 'pk_test_51OaSWnEQO3gNE6xrupNXVOgHTxT3JGH5mj07j5HBbOrNEyaaRSztctflHgBtNtrV0APnny4p70El04Sc7vVZOWij00JypHZCkV' // Ensure you replace this with your actual publishable key
+            publishableKey: 'pk_live_51OaSWnEQO3gNE6xrKK1pHZXzWux71xpxXpA3nQNtNK30Vz43sCQeJzO7QuMk708tOGvGstsLbBS1jtMCIWZ14UCR00j1Bt80cF' // Live Key
         });
     } catch (error) {
         console.error("Error creating payment sheet:", error);
