@@ -69,6 +69,9 @@ const PayUI = () => {
         merchantCountryCode: 'US',
         testEnv: false,
       },
+      applePay: {
+        merchantCountryCode: 'US',
+      },
     });
 
     if (!error) {
@@ -106,6 +109,7 @@ const PayUI = () => {
   return (
    <StripeProvider
         publishableKey="pk_live_51OaSWnEQO3gNE6xrKK1pHZXzWux71xpxXpA3nQNtNK30Vz43sCQeJzO7QuMk708tOGvGstsLbBS1jtMCIWZ14UCR00j1Bt80cF"
+        merchantIdentifier='merchant.com.nagimo.nagimo'
     >
         
     <View style={styles.container}>
