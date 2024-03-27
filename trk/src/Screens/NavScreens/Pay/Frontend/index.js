@@ -44,11 +44,13 @@ const PayUI = () => {
         currency: 'usd',
       }),
     });
+    console.log(response);
     const data = await response.json();
     return data;
   };
 
   const initializePaymentSheet = async () => {
+    console.log('Here');
     const {
       paymentIntent,
       ephemeralKey,
@@ -96,7 +98,7 @@ const PayUI = () => {
 
   return (
    <StripeProvider
-        publishableKey="pk_test_51OaSWnEQO3gNE6xrupNXVOgHTxT3JGH5mj07j5HBbOrNEyaaRSztctflHgBtNtrV0APnny4p70El04Sc7vVZOWij00JypHZCkV"
+        publishableKey="pk_live_51OaSWnEQO3gNE6xrKK1pHZXzWux71xpxXpA3nQNtNK30Vz43sCQeJzO7QuMk708tOGvGstsLbBS1jtMCIWZ14UCR00j1Bt80cF"
     >
         
     <View style={styles.container}>
