@@ -40,6 +40,7 @@ import VideoGrid from '../Components/VideoGrid';
 import Notification from '../Screens/NavScreens/Notification/Frontend';
 import RoomsScreen from '../Components/RoomsScreen';
 import UsersScreen from '../Components/UsersScreen';
+import PayUI from '../Screens/NavScreens/Pay/Frontend';
 
 //Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
 //Added live tracker to other components
@@ -53,6 +54,13 @@ const ClimbInputStack = createStackNavigator();
 const FeedbackButton = ({ onPress, title, navigation }) => (
   <TouchableOpacity onPress={() => navigation.navigate('Developer_Feedback')} style={styles.button}>
     <Text style={styles.text}>{title}</Text>
+  </TouchableOpacity>
+);
+
+//Smaller Feedback Button
+const NagimoPlusButton = ({ onPress, title, navigation }) => (
+  <TouchableOpacity onPress={() => navigation.navigate('Payment_Portal')} style={styles.buttonplus}>
+    <Text style={styles.textplus}>{title}</Text>
   </TouchableOpacity>
 );
 
@@ -146,6 +154,19 @@ const styles = StyleSheet.create({
     padding: 5,
     marginRight: 10,
     marginLeft: 10,
+  },
+  buttonplus: {
+    backgroundColor: '#fe8100',
+    padding: 5,
+    marginRight: 10,
+    marginLeft: 10,
+    color:'white',
+    borderRadius: 5,
+  },
+  textplus: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 12,
   },
   button_tracker: {
     backgroundColor: 'white',
@@ -354,8 +375,8 @@ function CollectionStack() {
           headerTitleAlign: 'center',
           headerRight: () => (
             <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <FeedbackButton
-                title="Feedback"
+              <NagimoPlusButton
+                title="Nagimo+"
                 navigation={navigation}
               />
             </View>
@@ -366,6 +387,11 @@ function CollectionStack() {
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Payment_Portal"
+        component={PayUI}
+        options={{ title: 'Nagimo+', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Community"
