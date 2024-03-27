@@ -51,6 +51,7 @@ const PayUI = () => {
   };
 
   const initializePaymentSheet = async () => {
+    setLoading(true);
     const {
       paymentIntent,
       ephemeralKey,
@@ -66,31 +67,41 @@ const PayUI = () => {
       publishableKey,
       googlePay: {
         merchantCountryCode: 'US',
-        testsEnv: true, // use test environment
+        testEnv: false,
       },
     });
 
     if (!error) {
-      setLoading(true);
+      setLoading(false);
     } else {
       console.error(`Error initializing payment sheet: ${error.message}`);
       Alert.alert('Error', 'Unable to initialize payment sheet.');
+      setLoading(false);
     }
   };
 
   const openPaymentSheet = async () => {
+    // Check if currently loading, if so, alert the user and return early.
+    if (loading) {
+      Alert.alert('Please Wait', 'Payment process is initializing. Please wait a moment.');
+      return;
+    }
+  
+    setLoading(true); // Set loading state to true as we start the payment process
+  
     const { error } = await presentPaymentSheet();
-
+  
+    setLoading(false); // Reset loading state after attempting to present the payment sheet
+  
     if (error) {
       Alert.alert('Payment failed', error.message);
     } else {
       Alert.alert('Success', 'Payment successful!');
       // Handle post-payment logic here (e.g., navigate to a confirmation screen)
-      //HERE WE NEED TO ADD "PAID USER" to firebase
       setUser(prev => ({ ...prev, isPaid: true }));
       await UsersApi().updateUser(currentUser.uid, {isPaid: true});
     }
-  };
+  };  
 
   return (
    <StripeProvider
