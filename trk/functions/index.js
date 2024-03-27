@@ -256,9 +256,9 @@ exports.createPaymentSheet = functions.https.onRequest(async (req, res) => {
 
     try {
         // Assuming the request body includes amount and optionally currency
-        const { amount, currency = 'usd' } = req.body;
+        const { amount, currency = 'usd', email = 'nagimo.nyc@nagimo.org' } = req.body;
 
-        const customer = await stripe.customers.create();
+        const customer = await stripe.customers.create({email: email});
         const ephemeralKey = await stripe.ephemeralKeys.create(
             { customer: customer.id },
             { apiVersion: '2023-10-16' }

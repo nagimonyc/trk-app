@@ -28,8 +28,8 @@ const PayUI = () => {
         }
       }
     };
-  
     fetchData();
+    initializePaymentSheet();
   }, [currentUser]);  
 
   const fetchPaymentSheetParams = async () => {
@@ -42,6 +42,7 @@ const PayUI = () => {
         // Example amount and currency - adjust according to your needs
         amount: 299, // $2.99 (IN CENTS)
         currency: 'usd',
+        email: String(currentUser.email),
       }),
     });
     console.log(response);
@@ -50,7 +51,6 @@ const PayUI = () => {
   };
 
   const initializePaymentSheet = async () => {
-    console.log('Here');
     const {
       paymentIntent,
       ephemeralKey,
@@ -91,10 +91,6 @@ const PayUI = () => {
       await UsersApi().updateUser(currentUser.uid, {isPaid: true});
     }
   };
-
-  useEffect(() => {
-    initializePaymentSheet();
-  }, []);
 
   return (
    <StripeProvider
