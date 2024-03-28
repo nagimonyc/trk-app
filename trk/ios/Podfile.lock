@@ -972,10 +972,10 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30911.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleSignIn (7.0.0):
-    - AppAuth (~> 1.5)
-    - GTMAppAuth (< 3.0, >= 1.3)
-    - GTMSessionFetcher/Core (< 4.0, >= 1.1)
+  - GoogleSignIn (7.1.0):
+    - AppAuth (< 2.0, >= 1.7.3)
+    - GTMAppAuth (< 5.0, >= 4.1.1)
+    - GTMSessionFetcher/Core (~> 3.3)
   - GoogleUtilities/AppDelegateSwizzler (7.13.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -1082,9 +1082,9 @@ PODS:
     - gRPC-Core/Privacy (= 1.62.1)
   - gRPC-Core/Interface (1.62.1)
   - gRPC-Core/Privacy (1.62.1)
-  - GTMAppAuth (2.0.0):
-    - AppAuth/Core (~> 1.6)
-    - GTMSessionFetcher/Core (< 4.0, >= 1.5)
+  - GTMAppAuth (4.1.1):
+    - AppAuth/Core (~> 1.7)
+    - GTMSessionFetcher/Core (< 4.0, >= 3.3)
   - GTMSessionFetcher/Core (3.3.2)
   - hermes-engine (0.72.3):
     - hermes-engine/Pre-built (= 0.72.3)
@@ -1656,6 +1656,42 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.6.1)
+  - Stripe (23.25.1):
+    - StripeApplePay (= 23.25.1)
+    - StripeCore (= 23.25.1)
+    - StripePayments (= 23.25.1)
+    - StripePaymentsUI (= 23.25.1)
+    - StripeUICore (= 23.25.1)
+  - stripe-react-native (0.37.1):
+    - React-Core
+    - Stripe (~> 23.25.0)
+    - StripeApplePay (~> 23.25.0)
+    - StripeFinancialConnections (~> 23.25.0)
+    - StripePayments (~> 23.25.0)
+    - StripePaymentSheet (~> 23.25.0)
+    - StripePaymentsUI (~> 23.25.0)
+  - StripeApplePay (23.25.1):
+    - StripeCore (= 23.25.1)
+  - StripeCore (23.25.1)
+  - StripeFinancialConnections (23.25.1):
+    - StripeCore (= 23.25.1)
+    - StripeUICore (= 23.25.1)
+  - StripePayments (23.25.1):
+    - StripeCore (= 23.25.1)
+    - StripePayments/Stripe3DS2 (= 23.25.1)
+  - StripePayments/Stripe3DS2 (23.25.1):
+    - StripeCore (= 23.25.1)
+  - StripePaymentSheet (23.25.1):
+    - StripeApplePay (= 23.25.1)
+    - StripeCore (= 23.25.1)
+    - StripePayments (= 23.25.1)
+    - StripePaymentsUI (= 23.25.1)
+  - StripePaymentsUI (23.25.1):
+    - StripeCore (= 23.25.1)
+    - StripePayments (= 23.25.1)
+    - StripeUICore (= 23.25.1)
+  - StripeUICore (23.25.1):
+    - StripeCore (= 23.25.1)
   - TOCropViewController (2.6.1)
   - VisionCamera (3.8.2):
     - React
@@ -1738,6 +1774,7 @@ DEPENDENCIES:
   - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
+  - "stripe-react-native (from `../node_modules/@stripe/stripe-react-native`)"
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -1781,6 +1818,14 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
     - SocketRocket
+    - Stripe
+    - StripeApplePay
+    - StripeCore
+    - StripeFinancialConnections
+    - StripePayments
+    - StripePaymentSheet
+    - StripePaymentsUI
+    - StripeUICore
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -1927,6 +1972,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
+  stripe-react-native:
+    :path: "../node_modules/@stripe/stripe-react-native"
   VisionCamera:
     :path: "../node_modules/react-native-vision-camera"
   Yoga:
@@ -1961,11 +2008,11 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleAppMeasurement: 68afe759316673c6554dac35a0c7ae8f5d6cb4ed
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
-  GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
+  GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GoogleUtilities: d053d902a8edaa9904e1bd00c37535385b8ed152
   "gRPC-C++": 12f33a422dcab88dcd0c53e52cd549a929f0f244
   gRPC-Core: 6ec9002832e1e22c5bb8c54994b050b0ee4205c6
-  GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
+  GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 0e876eea9782ec6462e91ab872711c357322c94f
   hermes-engine: 10fbd3f62405c41ea07e71973ea61e1878d07322
   leveldb-library: 06a69cc7582d64b29424a63e085e683cc188230a
@@ -2042,10 +2089,19 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
+  Stripe: e9b0d9173c93462d77a304d343939ef80bebb913
+  stripe-react-native: 64992196ccc5c75d5337efeda57338808153da29
+  StripeApplePay: 5a0b798ce0982ad1dd4157808b9b8127a2de4703
+  StripeCore: fa5c73e634c2b0c887770ba73c0da5f945be3ad3
+  StripeFinancialConnections: d63054a6a47c09c980803f3552a2ec87ab71519a
+  StripePayments: 88e5338bf1259eda9d4e9b9b03e16c2cd4f0ee2c
+  StripePaymentSheet: 75716e2193acf7f2d47f4d8a0b3dbca4080c43a1
+  StripePaymentsUI: 03d3bb76f7b259692bce18529b5a697f8edd58d4
+  StripeUICore: 82e6cd08be79b4526274aa47dd27fecef0e3cc20
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   VisionCamera: 4b98b273902ac18491bb68481b6601f1f0da0f2d
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
 
-PODFILE CHECKSUM: b590eb84a1022c35f7509c566e23bd8246faea35
+PODFILE CHECKSUM: 88213a15b66998a6f79ec799126028e3866eb926
 
 COCOAPODS: 1.15.2
