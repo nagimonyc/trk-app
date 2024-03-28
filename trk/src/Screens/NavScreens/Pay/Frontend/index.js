@@ -4,10 +4,12 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-na
 import { StripeProvider, useStripe } from '@stripe/stripe-react-native';
 import { AuthContext } from '../../../../Utils/AuthContext';
 import UsersApi from '../../../../api/UsersApi';
+import analytics from '@react-native-firebase/analytics';
 
 const API_URL = 'https://us-central1-trk-app-505a1.cloudfunctions.net/createPaymentSheet';
 
 const PayUI = () => {
+  const { currentUser, role } = useContext(AuthContext);
   // const { initPaymentSheet, presentPaymentSheet } = useStripe();
   // const [loading, setLoading] = useState(false);
   // const {currentUser, role} = useContext(AuthContext);
@@ -104,7 +106,15 @@ const PayUI = () => {
   //     setUser(prev => ({ ...prev, isPaid: true }));
   //     await UsersApi().updateUser(currentUser.uid, {isPaid: true});
   //   }
-  // };  
+  // };
+  useEffect(() => {
+    analytics().logEvent('PayUI', {
+      screen: 'PayUI',
+      purpose: 'User is on PayUI screen',
+      user: currentUser.uid,
+      timestamp: new Date().toISOString()
+    });
+  }, []);
 
   return (
     //  <StripeProvider
