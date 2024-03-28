@@ -4,163 +4,175 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from 'react-na
 import { StripeProvider, useStripe } from '@stripe/stripe-react-native';
 import { AuthContext } from '../../../../Utils/AuthContext';
 import UsersApi from '../../../../api/UsersApi';
+import analytics from '@react-native-firebase/analytics';
 
 const API_URL = 'https://us-central1-trk-app-505a1.cloudfunctions.net/createPaymentSheet';
 
 const PayUI = () => {
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  const [loading, setLoading] = useState(false);
-  const {currentUser, role} = useContext(AuthContext);
-  const [user, setUser] = useState(null);
+  const { currentUser, role } = useContext(AuthContext);
+  // const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  // const [loading, setLoading] = useState(false);
+  // const {currentUser, role} = useContext(AuthContext);
+  // const [user, setUser] = useState(null);
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (currentUser) {
+  //       const { getUsersBySomeField } = UsersApi();
+  //       let user = await getUsersBySomeField('uid', currentUser.uid);
+  //       if (!user.empty) {
+  //         let userObj = user.docs[0].data();
+  //         if (userObj.isPaid) {
+  //           setUser(userObj);
+  //         } else {
+  //           setUser({ ...userObj, isPaid: false });
+  //         }
+  //       }
+  //     }
+  //   };
+  //   fetchData();
+  //   initializePaymentSheet();
+  // }, [currentUser]);  
+
+  // const fetchPaymentSheetParams = async () => {
+  //   const response = await fetch(API_URL, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       // Example amount and currency - adjust according to your needs
+  //       amount: 299, // $2.99 (IN CENTS)
+  //       currency: 'usd',
+  //       email: String(currentUser.email),
+  //     }),
+  //   });
+  //   console.log(response);
+  //   const data = await response.json();
+  //   return data;
+  // };
+
+  // const initializePaymentSheet = async () => {
+  //   setLoading(true);
+  //   const {
+  //     paymentIntent,
+  //     ephemeralKey,
+  //     customer,
+  //     publishableKey,
+  //   } = await fetchPaymentSheetParams();
+
+  //   const { error, paymentOption } = await initPaymentSheet({
+  //     merchantDisplayName: 'Nagimo Corp.',
+  //     customerId: customer,
+  //     customerEphemeralKeySecret: ephemeralKey,
+  //     paymentIntentClientSecret: paymentIntent,
+  //     publishableKey,
+  //     googlePay: {
+  //       merchantCountryCode: 'US',
+  //       testEnv: false,
+  //     },
+  //     applePay: {
+  //       merchantCountryCode: 'US',
+  //     },
+  //   });
+
+  //   if (!error) {
+  //     setLoading(false);
+  //   } else {
+  //     console.error(`Error initializing payment sheet: ${error.message}`);
+  //     Alert.alert('Error', 'Unable to initialize payment sheet.');
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const openPaymentSheet = async () => {
+  //   // Check if currently loading, if so, alert the user and return early.
+  //   if (loading) {
+  //     Alert.alert('Please Wait', 'Payment process is initializing. Please wait a moment.');
+  //     return;
+  //   }
+
+  //   setLoading(true); // Set loading state to true as we start the payment process
+
+  //   const { error } = await presentPaymentSheet();
+
+  //   setLoading(false); // Reset loading state after attempting to present the payment sheet
+
+  //   if (error) {
+  //     Alert.alert('Payment failed', error.message);
+  //   } else {
+  //     Alert.alert('Success', 'Payment successful!');
+  //     // Handle post-payment logic here (e.g., navigate to a confirmation screen)
+  //     setUser(prev => ({ ...prev, isPaid: true }));
+  //     await UsersApi().updateUser(currentUser.uid, {isPaid: true});
+  //   }
+  // };
   useEffect(() => {
-    const fetchData = async () => {
-      if (currentUser) {
-        const { getUsersBySomeField } = UsersApi();
-        let user = await getUsersBySomeField('uid', currentUser.uid);
-        if (!user.empty) {
-          let userObj = user.docs[0].data();
-          if (userObj.isPaid) {
-            setUser(userObj);
-          } else {
-            setUser({ ...userObj, isPaid: false });
-          }
-        }
-      }
-    };
-    fetchData();
-    initializePaymentSheet();
-  }, [currentUser]);  
-
-  const fetchPaymentSheetParams = async () => {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        // Example amount and currency - adjust according to your needs
-        amount: 299, // $2.99 (IN CENTS)
-        currency: 'usd',
-        email: String(currentUser.email),
-      }),
+    analytics().logEvent('PayUI', {
+      screen: 'PayUI',
+      purpose: 'User is on PayUI screen',
+      user: currentUser.uid,
+      timestamp: new Date().toISOString()
     });
-    console.log(response);
-    const data = await response.json();
-    return data;
-  };
-
-  const initializePaymentSheet = async () => {
-    setLoading(true);
-    const {
-      paymentIntent,
-      ephemeralKey,
-      customer,
-      publishableKey,
-    } = await fetchPaymentSheetParams();
-
-    const { error, paymentOption } = await initPaymentSheet({
-      merchantDisplayName: 'Nagimo Corp.',
-      customerId: customer,
-      customerEphemeralKeySecret: ephemeralKey,
-      paymentIntentClientSecret: paymentIntent,
-      publishableKey,
-      googlePay: {
-        merchantCountryCode: 'US',
-        testEnv: false,
-      },
-      applePay: {
-        merchantCountryCode: 'US',
-      },
-    });
-
-    if (!error) {
-      setLoading(false);
-    } else {
-      console.error(`Error initializing payment sheet: ${error.message}`);
-      Alert.alert('Error', 'Unable to initialize payment sheet.');
-      setLoading(false);
-    }
-  };
-
-  const openPaymentSheet = async () => {
-    // Check if currently loading, if so, alert the user and return early.
-    if (loading) {
-      Alert.alert('Please Wait', 'Payment process is initializing. Please wait a moment.');
-      return;
-    }
-  
-    setLoading(true); // Set loading state to true as we start the payment process
-  
-    const { error } = await presentPaymentSheet();
-  
-    setLoading(false); // Reset loading state after attempting to present the payment sheet
-  
-    if (error) {
-      Alert.alert('Payment failed', error.message);
-    } else {
-      Alert.alert('Success', 'Payment successful!');
-      // Handle post-payment logic here (e.g., navigate to a confirmation screen)
-      setUser(prev => ({ ...prev, isPaid: true }));
-      await UsersApi().updateUser(currentUser.uid, {isPaid: true});
-    }
-  };  
+  }, []);
 
   return (
-   <StripeProvider
-        publishableKey="pk_live_51OaSWnEQO3gNE6xrKK1pHZXzWux71xpxXpA3nQNtNK30Vz43sCQeJzO7QuMk708tOGvGstsLbBS1jtMCIWZ14UCR00j1Bt80cF"
-        merchantIdentifier='merchant.com.nagimo.nagimo'
-    >
-        
-    <View style={styles.container}>
-      {/* Title and other content */}
-      <Text style={styles.title}>Try Nagimo+</Text>
-      <View style={styles.imageContainer}>
-        <Image
-          source={require('../../../../../assets/Frame-11.png')}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
-      <View style={styles.bandeau}>
-        <Text style={styles.bandeauText}>WITH YOUR PURCHASE YOU GET:</Text>
-      </View>
-      <View style={styles.benefits}>
-        {/* Benefits content */}
-        <View style={{ flexDirection: 'row', marginTop: 30, alignItems: 'center' }}>
-          <Text style={{ fontSize: 24 }}>♾️</Text>
-          <Text style={{ fontSize: 16, color: 'black', marginLeft: 10, flexShrink: 1 }}>
-            Get <Text style={{ fontWeight: '700' }}>Unlimited Uploads</Text> to capture all that matters
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row', marginTop: 30, alignItems: 'center' }}>
-          <Text style={{ fontSize: 24 }}>✨</Text>
-          <Text style={{ fontSize: 16, color: 'black', marginLeft: 10 }}>
-            All your videos, in highest quality
-          </Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 30 }}>
-          <Text style={{ fontSize: 24 }}>🏷️</Text>
-          <Text style={{ fontSize: 16, color: 'black', marginLeft: 10 }}>
-            Get an exclusive label on community videos
-          </Text>
-        </View>
-      </View>
-      {/* Join Now Button */}
-      <TouchableOpacity
-          style={[
-            styles.joinNow,
-            (!user || user.isPaid) && styles.disabledJoinNow
-          ]}
-          onPress={openPaymentSheet}
-          disabled={(!user || user.isPaid)}
-        >
-        <Text style={styles.joinNowText}>
-          JOIN NOW <Text style={{ fontWeight: '300' }}>– $2.99 per month</Text>
-        </Text>
-      </TouchableOpacity>
+    //  <StripeProvider
+    //       publishableKey="pk_live_51OaSWnEQO3gNE6xrKK1pHZXzWux71xpxXpA3nQNtNK30Vz43sCQeJzO7QuMk708tOGvGstsLbBS1jtMCIWZ14UCR00j1Bt80cF"
+    //       merchantIdentifier='merchant.com.nagimo.nagimo'
+    //   >
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontSize: 32 }}>Coming soon! 🤓</Text>
     </View>
-    </StripeProvider>
+    // <View style={styles.container}>
+    //   {/* Title and other content */}
+    //   <Text style={styles.title}>Try Nagimo+</Text>
+    //   <View style={styles.imageContainer}>
+    //     <Image
+    //       source={require('../../../../../assets/Frame-11.png')}
+    //       style={styles.image}
+    //       resizeMode="cover"
+    //     />
+    //   </View>
+    //   <View style={styles.bandeau}>
+    //     <Text style={styles.bandeauText}>WITH YOUR PURCHASE YOU GET:</Text>
+    //   </View>
+    //   <View style={styles.benefits}>
+    //     {/* Benefits content */}
+    //     <View style={{ flexDirection: 'row', marginTop: 30, alignItems: 'center' }}>
+    //       <Text style={{ fontSize: 24 }}>♾️</Text>
+    //       <Text style={{ fontSize: 16, color: 'black', marginLeft: 10, flexShrink: 1 }}>
+    //         Get <Text style={{ fontWeight: '700' }}>Unlimited Uploads</Text> to capture all that matters
+    //       </Text>
+    //     </View>
+    //     <View style={{ flexDirection: 'row', marginTop: 30, alignItems: 'center' }}>
+    //       <Text style={{ fontSize: 24 }}>✨</Text>
+    //       <Text style={{ fontSize: 16, color: 'black', marginLeft: 10 }}>
+    //         All your videos, in highest quality
+    //       </Text>
+    //     </View>
+    //     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 30 }}>
+    //       <Text style={{ fontSize: 24 }}>🏷️</Text>
+    //       <Text style={{ fontSize: 16, color: 'black', marginLeft: 10 }}>
+    //         Get an exclusive label on community videos
+    //       </Text>
+    //     </View>
+    //   </View>
+    //   {/* Join Now Button */}
+    //   <TouchableOpacity
+    //     style={[
+    //       styles.joinNow,
+    //       (!user || user.isPaid) && styles.disabledJoinNow
+    //     ]}
+    //     onPress={openPaymentSheet}
+    //     disabled={(!user || user.isPaid)}
+    //   >
+    //     <Text style={styles.joinNowText}>
+    //       JOIN NOW <Text style={{ fontWeight: '300' }}>– $2.99 per month</Text>
+    //     </Text>
+    //   </TouchableOpacity>
+    // </View>
+    // </StripeProvider>
   );
 };
 
