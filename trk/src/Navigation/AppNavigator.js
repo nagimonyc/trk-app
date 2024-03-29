@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     padding: 5,
     marginRight: 10,
     marginLeft: 10,
-    color:'white',
+    color: 'white',
     borderRadius: 5,
   },
   textplus: {
@@ -399,6 +399,11 @@ function CollectionStack() {
         options={{ title: 'Community Posts', headerBackTitle: 'Collection', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
+        name="New_Share"
+        component={New_Share}
+        options={{ title: 'Share', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
         name="Feedback"
         component={FeedbackForm}
         options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
@@ -565,20 +570,20 @@ function AnalyticsStack() {
               </View>
             </View>
           ),
-         /* headerLeft: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <View style={{ display: 'flex', flexDirection: 'row' }}>
-                <MessageButton
-                  title="Messages"
-                  navigation={navigation}
-                />
-                 <FeedbackButton
-                title="Feedback"
-                navigation={navigation}
-              /> 
-                {/* NOTIFICATION ICON HERE 
-              </View>
-         </View> */
+          /* headerLeft: () => (
+             <View style={{ display: 'flex', flexDirection: 'row' }}>
+               <View style={{ display: 'flex', flexDirection: 'row' }}>
+                 <MessageButton
+                   title="Messages"
+                   navigation={navigation}
+                 />
+                  <FeedbackButton
+                 title="Feedback"
+                 navigation={navigation}
+               /> 
+                 {/* NOTIFICATION ICON HERE 
+               </View>
+          </View> */
         })
         }
       />
