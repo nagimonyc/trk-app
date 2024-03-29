@@ -596,14 +596,6 @@ const ClimberProfile = ({ navigation }) => {
             if (count) {
                 setCommentsLeft(count); // Update the state variable
             }
-
-            //To get User information, retained as is
-            const { getUsersBySomeField } = UsersApi();
-            let user = (await getUsersBySomeField('uid', currentUser.uid));
-            if (user) {
-                setUser(user.docs[0].data());
-            }
-
             //Gets all expired sessions as Session Objects
             let recentSessionObjects = (await SessionsApi().getRecentFiveSessionsObjects(currentUser.uid));
             const recentSessionObjectsFiltered = recentSessionObjects.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -676,6 +668,13 @@ const ClimberProfile = ({ navigation }) => {
     const fetchImageURL = async () => {
         try {
             if (currentUser) {
+                //To get User information, retained as is
+                //Get username first
+                const { getUsersBySomeField } = UsersApi();
+                let user = (await getUsersBySomeField('uid', currentUser.uid));
+                if (user) {
+                    setUser(user.docs[0].data());
+                }
                 //Get all taps made by the user (non-archived) and fetched videos from within that tap
                 const userObj = (await UsersApi().getUsersBySomeField("uid", currentUser.uid)).docs[0].data(); //Using the Videos associated with the user Object
                 if (userObj && userObj.videos && userObj.videos.length > 0) {
@@ -896,9 +895,14 @@ const ClimberProfile = ({ navigation }) => {
                         </View>
 
                         {/* Right Container for settings icon */}
+                        <View style={{justifyContent: 'center', alignItems: 'center'}}>
                         <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={{ paddingVertical: 20 }}>
                             <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('Stats_Section', {tapCount: tapCount, commentsLeft: commentsLeft, sessionsThisWeek: sessionsThisWeek, highestVGrade: highestVGrade, climbsThisWeek: climbsThisWeek})} style={{ paddingVertical: 20 }}>
+                            <Image source={require('../../../../../assets/stats.png')} style={{ width: 30, height: 30 }} />
+                        </TouchableOpacity>
+                        </View>
                     </View>
                     {/* Fun Stats 
                     <View style={{ marginTop: 20 }}>
