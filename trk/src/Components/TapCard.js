@@ -106,7 +106,7 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
                 setSelectedImageURL(url);
 
                 // Now 'url' is available, so we can correctly create the videoObject
-                const videoObject = { url: url, role: role };
+                const videoObject = { url: url, role: role, climb: tapObj.climb}; //Adding Climbs Videos have been Uploaded to
 
                 // Adding Video to User Tap
                 if (tapId) {

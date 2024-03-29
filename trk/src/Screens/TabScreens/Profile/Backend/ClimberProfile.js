@@ -69,7 +69,8 @@ const ClimberProfile = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [currentVideoUrl, setCurrentVideoUrl] = useState('');
 
-
+    //For hold section
+    const [climbs, setClimbs] = useState([]); //Map for Grade: All climbs in that grade
 
     // Define the tab switcher component
     const TabSwitcher = () => (
@@ -149,13 +150,64 @@ const ClimberProfile = ({ navigation }) => {
         </View>
         );
     };
+
+    const ClimbTile = ({ climb, onPressFunction }) => {
+        // Placeholder image if no image is available or if climb status is 'Unseen'
+        const placeholderImage = require('./../../../../../assets/question_box.png');
+        const imageSource = { uri: climb.climbImage };
+        console.log(imageSource);
+        // (climb.status !== 'Unseen')
+        //     ? 
+        //     : placeholderImage;
+        const borderColor = climb.status === 'Video Present' ? 'green' : 'white';
+    
+        return (
+            <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10, borderWidth: 3, borderColor: borderColor }]} onPress={() => {}}>
+                {/* {climb.status === 'Video Present' && //When Seen, But No Video Posted
+                    <Text style={{ position: 'absolute', color: '#fe8100', top: -20, right: 5, fontSize: 30, fontWeight: 'bold' }}>!</Text>} */}
+                <Image
+                    source={imageSource}
+                    style={styles.climbImage}
+                />
+            </TouchableOpacity>
+        );
+    };
     
     const renderProgressContent = () => {
         return (
             // Your Progress Tab Content Here
-            <View>
-                <Text style={{color: 'black'}}>Progress Content</Text>
-            </View>
+            <ScrollView
+            contentContainerStyle={styles.scrollViewContent}
+            style={{ marginHorizontal: 15}}
+            >
+            {Object.keys(climbs).sort((a, b) => {
+                    // Use the same sorting logic as before to ensure consistency
+                    const gradeA = parseInt(a.slice(1), 10);
+                    const gradeB = parseInt(b.slice(1), 10);
+                    return gradeA - gradeB;
+                }).map((grade) => ( // Use filteredClimbs here
+                    <View key={grade} style={styles.gradeSection}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'flex-end'}}>
+                            <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                                <Text style={[styles.gradeTitle]}>{grade}</Text>
+                            </View>
+                            <View style={[styles.gradeCountContainer, { paddingBottom: 1 }]}>
+                            </View>
+                        </View>
+                        <ScrollView horizontal={true} contentContainerStyle={{}} scrollEnabled={false}>
+                            <FlatList
+                                data={climbs[grade]}
+                                renderItem={({ item }) => <ClimbTile climb={item} onPressFunction={() => {}} />}
+                                keyExtractor={(item) => item.climbId.toString()} // Use a unique property from the item instead of the index
+                                numColumns={4}
+                                scrollEnabled={false} // Make sure scrolling is disabled if it's not needed
+                                columnWrapperStyle={styles.columnWrapper}
+                            />
+                        </ScrollView>
+                    </View>
+                ))
+                }
+        </ScrollView>
         );
     };
 
@@ -291,7 +343,8 @@ const ClimberProfile = ({ navigation }) => {
                 try {
                     setRefreshing(true);
                     await fetchImageURL(); // Your additional async function
-                    await handleTapHistory();
+                    await handleClimbHistory();
+                    //await handleTapHistory();
                 } catch (error) {
                     console.error('Error during focus effect:', error);
                 } finally {
@@ -301,7 +354,99 @@ const ClimberProfile = ({ navigation }) => {
     
             fetchData();
         }, [])
-    );    
+    );
+    
+
+    const handleClimbHistory = async () => {
+        try {
+            if(addedMedia.length == 0) {
+                return;
+            }
+            let climbSnapShot = []; // Array to hold all the fetched climb snapshots
+            //Goes through user's videos to get the climbs associated with them
+            for (let i = 0; i < addedMedia.length; i++) {
+                // Check if the current item has a climb property
+                if (addedMedia[i].climb) {
+                    let climbId = addedMedia[i].climb;
+                    try {
+                        const climbSnap = await ClimbsApi().getClimb(climbId);
+                        // Assuming climbSnap is the snapshot or data you want to accumulate
+                        // Add the fetched climbSnap to the climbSnapshots array
+                        const climbDataWithId = { ...climbSnap, climbId: climbId };
+                        climbSnapShot.push(climbDataWithId); //Adding ID
+                    } catch (error) {
+                        console.error("Failed to fetch climb data for climbId:", climbId, error);
+                        // Optionally handle the error, e.g., by logging or setting an error state
+                        // Continue to the next iteration even if fetching failed for this climbId
+                    }
+                } else {
+                    // Log or handle the case where no climb property is present
+                    console.log(`Item at index ${i} does not have a climb property.`);
+                    // The loop continues to the next iteration
+                }
+            }
+            let groupedClimbs = {}; // Object to hold the grouped climbs
+            if (climbSnapShot.length > 0) {
+                const climbDocs = climbSnapShot.filter(obj => obj._data.color_name != undefined);
+                for (let i = 0; i < climbDocs.length; i++) {
+                    const climbData = climbDocs[i]._data;
+                    let climbImage = '';
+                    if (climbData.images && climbData.images.length > 0) {
+                        //console.log(String(climbData.images[climbData.images.length-1].path));
+                        climbImage = await storage().ref(climbData.images[climbData.images.length - 1].path).getDownloadURL();
+                    }
+                    // Add status and sampleTap to the climb data
+                    const extendedClimbData = { ...climbData, climbImage, climbId: climbDocs[i].climbId};
+
+                    // Group the climb data by grade
+                    const gradeGroup = extendedClimbData.grade;
+                    if (!groupedClimbs[gradeGroup]) {
+                        groupedClimbs[gradeGroup] = [];
+                    }
+                    groupedClimbs[gradeGroup].push(extendedClimbData);
+                }
+            }
+            let sortedGroupedClimbs = {};
+            const sortedGrades = Object.keys(groupedClimbs).sort((a, b) => {
+                // Extract the numerical part of the grade by removing the first character and parse it as an integer
+                const gradeA = parseInt(a.slice(1), 10);
+                const gradeB = parseInt(b.slice(1), 10);
+                return gradeA - gradeB;
+            });
+            sortedGrades.forEach(grade => {
+                sortedGroupedClimbs[grade] = groupedClimbs[grade];
+            });
+            // Set the sorted climbs in the state
+            setClimbs(sortedGroupedClimbs);
+        } catch (error) {
+            console.error("Error fetching climbs for user:", error);
+        }
+    };
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //Get active sessions in the same manner. Fetch sessions through the session object (order by timestamp and fetch last 5)- for pagination
     const handleTapHistory = async () => {
@@ -441,7 +586,7 @@ const ClimberProfile = ({ navigation }) => {
                 //Get all taps made by the user (non-archived) and fetched videos from within that tap
                 const userObj = (await UsersApi().getUsersBySomeField("uid", currentUser.uid)).docs[0].data(); //Using the Videos associated with the user Object
                 if (userObj && userObj.videos && userObj.videos.length > 0) {
-                    setAddedMedia(userObj.videos.concat(userObj.videos).concat(userObj.videos));
+                    setAddedMedia(userObj.videos);
                 }
             }
             else {
@@ -461,9 +606,9 @@ const ClimberProfile = ({ navigation }) => {
                 
                 // Call the first async function
                 await fetchImageURL();
-                
+                await handleClimbHistory();
                 // Then call handleTapHistory and wait for it to finish
-                await handleTapHistory();
+                //await handleTapHistory();
             } catch (error) {
                 console.error('Error during refresh:', error);
             } finally {
@@ -966,6 +1111,55 @@ const styles = StyleSheet.create({
         padding: 2,
         fontWeight: 500,
         zIndex: 1, // Try increasing this if the label is not appearing on top.
+    },
+    scrollViewContent: {
+        paddingBottom: 10, // Add padding at the bottom for scrollable content
+    },
+    gradeSection: {
+        marginBottom: 15,
+    },
+    gradeTitle: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#000',
+        width: '100%',
+        marginBottom: -2,
+        // textAlign: 'center'
+
+    },
+    gradeCountContainer: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#C7C7C7',
+        width: '81%',
+        textAlign: 'right',
+        // Add padding or height if needed to ensure the border is visible
+        marginBottom: 5,
+        justifyContent: 'center'
+    },
+    gradeCount: {
+        fontSize: 16,
+        color: 'gray',
+        fontWeight: '600',
+        textAlign: 'right',
+    },
+    climbTile: {
+        height: 75, // Adjust the height as needed
+        margin: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0', // Placeholder background color
+        // borderRadius: 10,
+        // borderColor: 'blue'
+    },
+    columnWrapper: {
+        // justifyContent: 'flex-start',
+        // alignSelf: 'flex-end'
+        marginTop: 15,
+    },
+    climbImage: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain',
     },
 });
 
