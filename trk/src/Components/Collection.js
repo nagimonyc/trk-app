@@ -60,16 +60,20 @@ const Collection = () => {
                 const gymSnapshot = await GymsApi().fetchGyms();
                 const gymOptions = gymSnapshot.map(doc => ({
                     label: doc.data().Name, // Assuming the gyms collection documents have a Name field
-                    value: doc.id,
+                    value: doc.id
                 }));
-
+                const cachedGym = await AsyncStorage.getItem('gymId');
                 // Find the gym with the label "Movement Gowanus"
                 const defaultGym = gymOptions.find(gym => gym.label === "Movement Gowanus");
 
                 setGyms(gymOptions);
 
                 // If the "Movement Gowanus" gym exists, set it as the selected gym
-                if (defaultGym) {
+                if (cachedGym) {
+                    let gymId = String(JSON.parse(cachedGym)).trim();
+                    setSelectedGymId(gymId);
+                }
+                else {
                     setSelectedGymId(defaultGym.value);
                 }
             } catch (error) {
@@ -125,10 +129,6 @@ const Collection = () => {
 
     const handleClimbHistory = async () => {
         if (!selectedGymId) {
-            // No gym selected yet, so clear the climbs data or handle accordingly
-            setClimbs([]);
-            setAllClimbs([]);
-            setUnseenCounts([]);
             return;
         }
         try {
@@ -201,6 +201,7 @@ const Collection = () => {
             await AsyncStorage.setItem('climbs', JSON.stringify(sortedGroupedClimbs));
             await AsyncStorage.setItem('allClimbs', JSON.stringify(allClimbsTemp));
             await AsyncStorage.setItem('unseenCounts', JSON.stringify(unseenCountsTemp));
+            await AsyncStorage.setItem('gymId', JSON.stringify(selectedGymId));
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
