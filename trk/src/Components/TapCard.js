@@ -12,6 +12,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Video from 'react-native-video';
 import ClimbsApi from '../api/ClimbsApi';
+import UsersApi from '../api/UsersApi';
 
 //Callback function passed from Parent (Record Screen), to UNBLUR IN REAL TIME
 //TapCard component- Can upload Video, that unblurs the section (MESSAGING CHANGES!)- NO FEATURES IMPLEMENTED
@@ -116,6 +117,16 @@ const TapCard = ({ climb, tapId, tapObj, tapTimestamp, blurred = true, call }) =
                         videos: newArray,
                     };
                     await TapsApi().updateTap(tapId, updatedTap);
+                }
+                //Adding Videos to the User Object
+                if (currentUser) {
+                    const tapDataResult = await UsersApi().getUsersBySomeField("uid", currentUser.uid);
+                    let obj = tapDataResult.docs[0].data();
+                    const newArray = ((obj && obj.videos && obj.videos.length > 0) ? obj.videos.concat([videoObject]) : [videoObject]);
+                    const updatedTap = {
+                        videos: newArray,
+                    };
+                    await UsersApi().updateUser(currentUser.uid, updatedTap);
                 }
 
                 // Adding Video to Overall Climb

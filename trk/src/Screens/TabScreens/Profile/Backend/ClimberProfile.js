@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Linking, Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image } from "react-native";
+import { Linking, Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image, Dimensions, Modal, } from "react-native";
 import { AuthContext } from "../../../../Utils/AuthContext";
 import TapHistory from "../../../../Components/TapHistory";
 import TapsApi from "../../../../api/TapsApi";
@@ -17,6 +17,8 @@ import UsersApi from "../../../../api/UsersApi";
 import storage from '@react-native-firebase/storage';
 import SessionsApi from "../../../../api/SessionsApi";
 import LineGraphComponent from "../../../../Components/LineGraphComponent";
+import Video from 'react-native-video';
+import { FlatList } from "react-native-gesture-handler";
 
 //MADE CHANGES TO NOW SHOW USERNAME AND PROFILE PIC (WITH EDIT BUTTON TO LEAD TO EDITING PAGE)
 //Revamped how sessions are created (Only last 5 sessions are fetched as of now)- Next PR will implement pagination
@@ -56,6 +58,18 @@ const ClimberProfile = ({ navigation }) => {
     const [commentsLeft, setCommentsLeft] = useState(0);
     // const [tapCount, setTapCount] = useState(0);
 
+    //For your videos
+    const [addedMedia, setAddedMedia] = useState([]);  //Your Media
+    const { width: deviceWidth } = Dimensions.get('window');
+    // Calculate single video width (33.33% of device width)
+    const videoWidth = deviceWidth * 0.3333;
+    // Calculate video height to maintain a 16:9 aspect ratio
+    const videoHeight = videoWidth * (16 / 9);
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [currentVideoUrl, setCurrentVideoUrl] = useState('');
+
+
 
     // Define the tab switcher component
     const TabSwitcher = () => (
@@ -74,6 +88,76 @@ const ClimberProfile = ({ navigation }) => {
             </TouchableOpacity>
         </View>
     );
+
+
+    const TabSwitcherVideos = () => (
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 0}}>
+            <TouchableOpacity
+                onPress={() => setActiveTab('Activity')}
+                style={[styles.tabButton, activeTab === 'Activity' ? styles.tabActive : {}]}
+            >
+                <Image
+                source={require('../../../../../assets/my_videos.png')}
+                style={{ width: 30, height: 20 }}
+                />
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => setActiveTab('Progress')}
+                style={[styles.tabButton, activeTab === 'Progress' ? styles.tabActive : {}]}
+            >
+                <Image
+                source={require('../../../../../assets/hold.png')}
+                style={{ width: 30, height: 20 }}
+                />
+            </TouchableOpacity>
+        </View>
+    );
+
+    const renderActivityContent = () => {
+        return (
+            // Your Activity Tab Content Here
+            <View style={{ flex: 1 }}>
+            <FlatList
+                data={addedMedia}
+                renderItem={({ item }) => {
+                    // Determine if the item is an object (new format) or just a string (old format)
+                    const isObject = typeof item === 'object' && item !== null && item.url;
+                    const videoUrl = isObject ? item.url : item; // Use item.url if object, else use item directly
+                    const videoRole = isObject ? item.role : ''; // Default to empty string if not available
+                    return (
+                        <TouchableOpacity
+                            onPress={() => {
+                                setCurrentVideoUrl(videoUrl);
+                                setModalVisible(true);
+                            }}
+                        >
+                            <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5, position: 'relative' }}>
+                                {/* Conditional rendering based on role */}
+                                {videoRole == "setter" && (
+                                    <Text style={[styles.videoLabel]}>
+                                        By {videoRole.charAt(0).toUpperCase() + videoRole.slice(1)}
+                                    </Text>
+                                )}
+                                <Video source={{ uri: videoUrl }} style={{ width: '100%', height: '100%' }} repeat={false} muted={true} />
+                            </View>
+                        </TouchableOpacity>
+                    );
+                }}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={3} // Since you want 3 videos per row
+            />
+        </View>
+        );
+    };
+    
+    const renderProgressContent = () => {
+        return (
+            // Your Progress Tab Content Here
+            <View>
+                <Text style={{color: 'black'}}>Progress Content</Text>
+            </View>
+        );
+    };
 
     useEffect(() => {
         if (climbsThisWeek && climbsThisWeek.length > 0) {
@@ -203,12 +287,21 @@ const ClimberProfile = ({ navigation }) => {
 
     useFocusEffect(
         React.useCallback(() => {
-            //console.log('Loading Profile...'); //Loading icon on initial loads (was confusing, and seemed like data was missing otherwise)
-            setRefreshing(true);
-            handleTapHistory().then(() => setRefreshing(false));
+            const fetchData = async () => {
+                try {
+                    setRefreshing(true);
+                    await fetchImageURL(); // Your additional async function
+                    await handleTapHistory();
+                } catch (error) {
+                    console.error('Error during focus effect:', error);
+                } finally {
+                    setRefreshing(false);
+                }
+            };
+    
+            fetchData();
         }, [])
-    );
-
+    );    
 
     //Get active sessions in the same manner. Fetch sessions through the session object (order by timestamp and fetch last 5)- for pagination
     const handleTapHistory = async () => {
@@ -236,7 +329,7 @@ const ClimberProfile = ({ navigation }) => {
                 let climb = await getClimb(tap.climb); // Assuming getClimb returns the climb document
                 if (climb) {
                     let grade = climb.data().grade; // Assuming climb data has a grade field
-                    console.log(`Grade for climbId ${tap.climb}: ${grade}`);
+                    //console.log(`Grade for climbId ${tap.climb}: ${grade}`);
                     // Add the grade to the array
                     grades.push(grade);
                 }
@@ -341,12 +434,47 @@ const ClimberProfile = ({ navigation }) => {
         }
     };
 
-    //New Refreshing logic for drop-down reloading
+    //Gets Your Media and Media Associated with the Climb!
+    const fetchImageURL = async () => {
+        try {
+            if (currentUser) {
+                //Get all taps made by the user (non-archived) and fetched videos from within that tap
+                const userObj = (await UsersApi().getUsersBySomeField("uid", currentUser.uid)).docs[0].data(); //Using the Videos associated with the user Object
+                if (userObj && userObj.videos && userObj.videos.length > 0) {
+                    setAddedMedia(userObj.videos.concat(userObj.videos).concat(userObj.videos));
+                }
+            }
+            else {
+                Alert.alert("Error", "There is no current User!");
+                return;
+            } 
+        } catch (error) {
+            console.error('Failed to fetch image URL:', error);
+        }
+    };
+
     const onRefresh = React.useCallback(() => {
-        //console.log('Refreshing...');
-        setRefreshing(true);
-        handleTapHistory().then(() => setRefreshing(false));
-    }, []);
+        const fetchData = async () => {
+            try {
+                // Start the refreshing state
+                setRefreshing(true);
+                
+                // Call the first async function
+                await fetchImageURL();
+                
+                // Then call handleTapHistory and wait for it to finish
+                await handleTapHistory();
+            } catch (error) {
+                console.error('Error during refresh:', error);
+            } finally {
+                // Stop the refreshing state in either case
+                setRefreshing(false);
+            }
+        };
+        
+        // Execute the fetchData function
+        fetchData();
+    }, []); // Make sure to include any dependencies needed for your async functions    
 
     // Helper function to format timestamp
     const formatTimestamp = (timestamp) => {
@@ -507,7 +635,7 @@ const ClimberProfile = ({ navigation }) => {
         // </SafeAreaView>
 
         <View style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}>
+            <View style={{ flexGrow: 1, paddingBottom: 100 }}>
                 <SafeAreaView style={[styles.container]}>
                     {/* profile section */}
                     <View style={{ height: 115, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', paddingHorizontal: 15 }}>
@@ -534,7 +662,7 @@ const ClimberProfile = ({ navigation }) => {
                             <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
                         </TouchableOpacity>
                     </View>
-                    {/* Fun Stats */}
+                    {/* Fun Stats 
                     <View style={{ marginTop: 20 }}>
                         <Text style={{ paddingHorizontal: 15, color: 'black', fontSize: 16, fontWeight: '700' }}>Fun Stats</Text>
                         <View style={{ width: '100%', backgroundColor: 'white', marginTop: 10 }}>
@@ -543,7 +671,6 @@ const ClimberProfile = ({ navigation }) => {
                                     <Text style={{ color: 'black' }}>Climbs Found</Text>
                                     <Text style={{ color: 'black' }}>{tapCount}</Text>
                                 </View>
-                                {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{ paddingHorizontal: 15 }}>
@@ -551,7 +678,6 @@ const ClimberProfile = ({ navigation }) => {
                                     <Text style={{ color: 'black' }}>Route Setters Smiling (Reviews Left)</Text>
                                     <Text style={{ color: 'black' }}>{commentsLeft}</Text>
                                 </View>
-                                {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{ paddingHorizontal: 15 }}>
@@ -559,7 +685,6 @@ const ClimberProfile = ({ navigation }) => {
                                     <Text style={{ color: 'black' }}>Climbing Sessions per Week</Text>
                                     <Text style={{ color: 'black' }}>{sessionsThisWeek.length}</Text>
                                 </View>
-                                {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{ paddingHorizontal: 15 }}>
@@ -567,7 +692,6 @@ const ClimberProfile = ({ navigation }) => {
                                     <Text style={{ color: 'black' }}>Best Effort</Text>
                                     <Text style={{ color: 'black' }}>{highestVGrade}</Text>
                                 </View>
-                                {/* Divider */}
                                 <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
                             </View>
                             <View style={{
@@ -589,9 +713,12 @@ const ClimberProfile = ({ navigation }) => {
                             </View>
                         </View>
                     </View>
-                    {/* More (graph) */}
                     <MoreSection />
-
+                    */}
+                <TabSwitcherVideos />
+                <View style={{flex: 1, marginTop: 0}}>
+                    {activeTab === 'Activity' ? renderActivityContent() : renderProgressContent()}
+                </View>
                 </SafeAreaView >
                 {/* call me 🤙 */}
                 <View style={{
@@ -607,7 +734,41 @@ const ClimberProfile = ({ navigation }) => {
                         <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
                     </TouchableOpacity>
                 </View>
-            </ScrollView >
+            </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <TouchableOpacity
+                    style={styles.centeredView}
+                    activeOpacity={1}
+                    onPressOut={() => setModalVisible(!modalVisible)} // This allows touching outside the modal to close it
+                >
+                    <View style={styles.modalView} onStartShouldSetResponder={() => true}>
+                        <Video
+                            source={{ uri: currentVideoUrl }}
+                            style={styles.modalVideo}
+                            resizeMode="contain"
+                            repeat={true}
+                            controls={true}
+                            autoplay={true}
+                            volume={1.0}
+                        />
+                        <View style={styles.closeButtonContainer}>
+                            <TouchableOpacity
+                                style={styles.buttonClose}
+                                onPress={() => setModalVisible(!modalVisible)}
+                            >
+                                <Text style={styles.textStyle}>✕</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+                </Modal>
         </View>
     );
 }
@@ -749,6 +910,62 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: 'black',
         fontWeight: '500',
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "flex-start",
+        paddingTop: 80,
+        alignItems: "center",
+        backgroundColor: 'rgba(255,255,255,0.8)',
+    },
+    modalView: {
+        backgroundColor: "black",
+        borderRadius: 20,
+        padding: 10,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        width: '90%',
+        height: '85%',
+    },
+    modalVideo: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 20,
+    },
+    closeButtonContainer: {
+        backgroundColor: '#FF6165',
+        width: 30,
+        height: 30,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        top: -5,
+        right: -5,
+        zIndex: 2000,
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    videoLabel: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        backgroundColor: 'rgba(238, 135, 51, 1)',
+        color: 'white',
+        fontSize: 10,
+        padding: 2,
+        fontWeight: 500,
+        zIndex: 1, // Try increasing this if the label is not appearing on top.
     },
 });
 

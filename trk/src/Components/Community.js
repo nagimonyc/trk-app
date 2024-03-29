@@ -7,6 +7,7 @@ import Video from 'react-native-video';
 import { ActivityIndicator } from 'react-native-paper';
 import storage from '@react-native-firebase/storage';
 import { FlatList } from "react-native-gesture-handler";
+import UsersApi from "../api/UsersApi";
 
 const Community = ({ route }) => {
     const { currentUser, role } = useContext(AuthContext);
@@ -30,8 +31,8 @@ const Community = ({ route }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [currentVideoUrl, setCurrentVideoUrl] = useState('');
 
-    const checkDisabled = (item) => {
-        return addedMediaAll.includes(item);
+    const checkDisabled = (urlToCheck) => {
+        return addedMediaAll.some(item => item.url === urlToCheck);
     };
 
     const [isCurrentVideoPrivate, setIsCurrentVideoPrivate] = useState(!checkDisabled(currentVideoUrl));
@@ -51,14 +52,9 @@ const Community = ({ route }) => {
                     const climbImage = await storage().ref(climb.images[climb.images.length - 1].path).getDownloadURL();
                     setClimbImageURL(climbImage);
                     //Get the last video uploaded by that user for that climb
-                    const snapshot = await TapsApi().getClimbsByIdUser(tapObj.climb, currentUser.uid);
-                    if (!snapshot.empty) {
-                        for (let i = 0; i < snapshot.docs.length; i = i + 1) {
-                            let temp = snapshot.docs[i].data();
-                            if (temp.videos && temp.videos.length > 0) {
-                                setAddedMedia(prev => prev.concat(temp.videos));
-                            }
-                        }
+                    const userObj = (await UsersApi().getUsersBySomeField("uid", currentUser.uid)).docs[0].data(); //Using the Videos associated with the user Object
+                    if (userObj && userObj.videos && userObj.videos.length > 0) {
+                        setAddedMedia(userObj.videos);
                     }
                     //Get All Videos Associated with that Climb (COMMUNITY)
                     const climbObj = (await ClimbsApi().getClimb(tapObj.climb)).data();
@@ -89,12 +85,12 @@ const Community = ({ route }) => {
                         (async () => {
                             try {
                                 // Filter out the videoUrl from addedMediaAll
-                                const updatedMedia = addedMediaAll.filter(item => item !== videoUrl);
+                                const updatedMedia = addedMediaAll.filter(item => item.url !== videoUrl);
                                 setAddedMediaAll(updatedMedia);
                                 //Remove from Server
                                 const climbObj = await ClimbsApi().getClimb(tapObj.climb).then(response => response.data());
                                 if (climbObj && climbObj.videos) {
-                                    const updatedVideos = climbObj.videos.filter(item => item !== videoUrl);
+                                    const updatedVideos = climbObj.videos.filter(item => item.url !== videoUrl);
                                     const newClimb = { videos: updatedVideos }
                                     // Assuming you have a method to update the climb object with the new videos array
                                     await ClimbsApi().updateClimb(tapObj.climb, newClimb);
@@ -177,28 +173,31 @@ const Community = ({ route }) => {
                     <FlatList
                         data={addedMedia}
                         renderItem={({ item }) => {
-                            const videoUrl = item; // Assuming 'item' is the URL for the video in the older code structure
+                            // Determine if the item is an object (new format) or just a string (old format)
+                            const isObject = typeof item === 'object' && item !== null && item.url;
+                            const videoUrl = isObject ? item.url : item; // Use item.url if object, else use item directly
+                            const videoRole = isObject ? item.role : ''; // Default to empty string if not available
                             return (
                                 <TouchableOpacity
                                     onPress={() => {
-                                        // Play the video if it's currently paused, otherwise pause it
-                                        setCurrentVideoUrl(currentVideoUrl === videoUrl ? '' : videoUrl);
+                                        setCurrentVideoUrl(videoUrl);
+                                        setModalVisible(true);
                                     }}
-                                    style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5 }}
                                 >
-                                    <Video
-                                        source={{ uri: videoUrl }}
-                                        style={{ width: '100%', height: '100%' }}
-                                        resizeMode="cover"
-                                        repeat={true}
-                                        muted={true}
-                                        paused={currentVideoUrl !== videoUrl} // Pause the video if it's not the current one
-                                    />
+                                    <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5, position: 'relative' }}>
+                                        {/* Conditional rendering based on role */}
+                                        {videoRole == "setter" && (
+                                            <Text style={[styles.videoLabel]}>
+                                                By {videoRole.charAt(0).toUpperCase() + videoRole.slice(1)}
+                                            </Text>
+                                        )}
+                                        <Video source={{ uri: videoUrl }} style={{ width: '100%', height: '100%' }} repeat={false} muted={true} />
+                                    </View>
                                 </TouchableOpacity>
                             );
                         }}
                         keyExtractor={(item, index) => index.toString()}
-                        numColumns={3} // 3 videos per row as per your original setup
+                        numColumns={3} // Since you want 3 videos per row
                     />
                 </View>
             )}
