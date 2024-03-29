@@ -400,6 +400,11 @@ function CollectionStack() {
         options={{ title: 'Community Posts', headerBackTitle: 'Collection', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
+        name="New_Share"
+        component={New_Share}
+        options={{ title: 'Share', headerBackTitle: 'Record', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
         name="Feedback"
         component={FeedbackForm}
         options={{ title: 'Feedback Form', headerBackTitle: 'Climb Detail', headerTitleAlign: 'center' }}
