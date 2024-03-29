@@ -122,7 +122,7 @@ const PayUI = () => {
     //       merchantIdentifier='merchant.com.nagimo.nagimo'
     //   >
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text style={{ fontSize: 32 }}>Coming soon! 🤓</Text>
+      <Text style={{ fontSize: 32, color: 'black'}}>Coming soon! 🤓</Text>
     </View>
     // <View style={styles.container}>
     //   {/* Title and other content */}

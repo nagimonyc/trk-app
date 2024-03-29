@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Linking, Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image, Dimensions, Modal, } from "react-native";
+import { Linking, Platform, SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Button, Alert, Image, Dimensions, Modal, TextInput } from "react-native";
 import { AuthContext } from "../../../../Utils/AuthContext";
 import TapHistory from "../../../../Components/TapHistory";
 import TapsApi from "../../../../api/TapsApi";
@@ -71,6 +71,53 @@ const ClimberProfile = ({ navigation }) => {
 
     //For hold section
     const [climbs, setClimbs] = useState([]); //Map for Grade: All climbs in that grade
+
+    //Filtering Climbs
+    const [filteredClimbs, setFilteredClimbs] = useState({});
+    const [searchQuery, setSearchQuery] = useState('');
+    const [allClimbs, setAllClimbs] = useState([]); //List of Climb Objects for Searching
+
+    useEffect(() => {
+        if (searchQuery.trim() === '') {
+            setFilteredClimbs(climbs); // If search query is empty, show all climbs
+        } else {
+            // Split the search query into individual terms
+            const searchTerms = searchQuery.toLowerCase().split(' ');
+
+            // Filter the climbs that match all of the search terms
+            const filtered = allClimbs.filter(climb =>
+                searchTerms.every(term =>
+                    climb.name.toLowerCase().includes(term) ||
+                    climb.color_name.toLowerCase().includes(term) ||
+                    climb.grade.toLowerCase().includes(term)
+                )
+            );
+
+            // Regroup the filtered climbs by grade
+            const groupedByGrade = filtered.reduce((acc, climb) => {
+                const { grade } = climb;
+                if (!acc[grade]) {
+                    acc[grade] = [];
+                }
+                acc[grade].push(climb);
+                return acc;
+            }, {});
+
+            // Sort the grouped climbs by grade
+            let sortedFilteredClimbs = {};
+            const sortedFilteredGrades = Object.keys(groupedByGrade).sort((a, b) => {
+                const gradeA = parseInt(a.slice(1), 10);
+                const gradeB = parseInt(b.slice(1), 10);
+                return gradeA - gradeB;
+            });
+
+            sortedFilteredGrades.forEach(grade => {
+                sortedFilteredClimbs[grade] = groupedByGrade[grade];
+            });
+
+            setFilteredClimbs(sortedFilteredClimbs); // Update the filtered climbs
+        }
+    }, [searchQuery, allClimbs]);
 
     // Define the tab switcher component
     const TabSwitcher = () => (
@@ -147,6 +194,14 @@ const ClimberProfile = ({ navigation }) => {
                 keyExtractor={(item, index) => index.toString()}
                 numColumns={3} // Since you want 3 videos per row
             />
+            {/* call me 🤙 */}
+            <View style={{paddingVertical: 20}}>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More & more features coming soon ♥</Text>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have feature ideas or feedback :)</Text>
+                    <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
+                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
+                    </TouchableOpacity>
+                </View>
         </View>
         );
     };
@@ -155,7 +210,7 @@ const ClimberProfile = ({ navigation }) => {
         // Placeholder image if no image is available or if climb status is 'Unseen'
         const placeholderImage = require('./../../../../../assets/question_box.png');
         const imageSource = { uri: climb.climbImage };
-        console.log(imageSource);
+        //console.log(imageSource);
         // (climb.status !== 'Unseen')
         //     ? 
         //     : placeholderImage;
@@ -176,11 +231,28 @@ const ClimberProfile = ({ navigation }) => {
     const renderProgressContent = () => {
         return (
             // Your Progress Tab Content Here
+            <View style={{flex: 1}}>
+                <View style={{ backgroundColor: 'white', width: '100%', height: 55, justifyContent: 'center' }}>
+                <View style={styles.inputContainer}>
+                    <Image
+                        source={require('./../../../../../assets/search.png')} // Replace './path-to-your-image.png' with the path to your image
+                        style={styles.icon}
+                        resizeMode="contain"
+                    />
+                    <TextInput
+                        placeholder={`Try "Green V4"`}
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        style={styles.textInput}
+                        placeholderTextColor={'gray'}
+                    />
+                </View>
+                </View>
             <ScrollView
             contentContainerStyle={styles.scrollViewContent}
             style={{ marginHorizontal: 15}}
-            >
-            {Object.keys(climbs).sort((a, b) => {
+            >    
+            {Object.keys(filteredClimbs).sort((a, b) => {
                     // Use the same sorting logic as before to ensure consistency
                     const gradeA = parseInt(a.slice(1), 10);
                     const gradeB = parseInt(b.slice(1), 10);
@@ -207,7 +279,17 @@ const ClimberProfile = ({ navigation }) => {
                     </View>
                 ))
                 }
+                {/* call me 🤙 */}
+        <View style={{paddingVertical: 20}}>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More & more features coming soon ♥</Text>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have feature ideas or feedback :)</Text>
+                    <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
+                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
+                    </TouchableOpacity>
+                </View>
         </ScrollView>
+        
+        </View>
         );
     };
 
@@ -343,8 +425,8 @@ const ClimberProfile = ({ navigation }) => {
                 try {
                     setRefreshing(true);
                     await fetchImageURL(); // Your additional async function
-                    await handleClimbHistory();
-                    //await handleTapHistory();
+                    //await handleClimbHistory();
+                    await handleTapHistory();
                 } catch (error) {
                     console.error('Error during focus effect:', error);
                 } finally {
@@ -356,9 +438,16 @@ const ClimberProfile = ({ navigation }) => {
         }, [])
     );
     
+    useEffect(() => {
+        // Simply call handleClimbHistory as it's already defined.
+        handleClimbHistory();
+    }, [addedMedia]); // This effect runs whenever addedMedia changes.
+    
+    
 
     const handleClimbHistory = async () => {
         try {
+            console.log('Running Handle Climb History');
             if(addedMedia.length == 0) {
                 return;
             }
@@ -386,6 +475,7 @@ const ClimberProfile = ({ navigation }) => {
                 }
             }
             let groupedClimbs = {}; // Object to hold the grouped climbs
+            let allClimbsTemp = [] //For all Climbs
             if (climbSnapShot.length > 0) {
                 const climbDocs = climbSnapShot.filter(obj => obj._data.color_name != undefined);
                 for (let i = 0; i < climbDocs.length; i++) {
@@ -404,6 +494,7 @@ const ClimberProfile = ({ navigation }) => {
                         groupedClimbs[gradeGroup] = [];
                     }
                     groupedClimbs[gradeGroup].push(extendedClimbData);
+                    allClimbsTemp.push(extendedClimbData);
                 }
             }
             let sortedGroupedClimbs = {};
@@ -418,6 +509,8 @@ const ClimberProfile = ({ navigation }) => {
             });
             // Set the sorted climbs in the state
             setClimbs(sortedGroupedClimbs);
+            setAllClimbs(allClimbsTemp);
+            setFilteredClimbs(sortedGroupedClimbs);
         } catch (error) {
             console.error("Error fetching climbs for user:", error);
         }
@@ -503,14 +596,6 @@ const ClimberProfile = ({ navigation }) => {
             if (count) {
                 setCommentsLeft(count); // Update the state variable
             }
-
-            //To get User information, retained as is
-            const { getUsersBySomeField } = UsersApi();
-            let user = (await getUsersBySomeField('uid', currentUser.uid));
-            if (user) {
-                setUser(user.docs[0].data());
-            }
-
             //Gets all expired sessions as Session Objects
             let recentSessionObjects = (await SessionsApi().getRecentFiveSessionsObjects(currentUser.uid));
             const recentSessionObjectsFiltered = recentSessionObjects.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -583,6 +668,13 @@ const ClimberProfile = ({ navigation }) => {
     const fetchImageURL = async () => {
         try {
             if (currentUser) {
+                //To get User information, retained as is
+                //Get username first
+                const { getUsersBySomeField } = UsersApi();
+                let user = (await getUsersBySomeField('uid', currentUser.uid));
+                if (user) {
+                    setUser(user.docs[0].data());
+                }
                 //Get all taps made by the user (non-archived) and fetched videos from within that tap
                 const userObj = (await UsersApi().getUsersBySomeField("uid", currentUser.uid)).docs[0].data(); //Using the Videos associated with the user Object
                 if (userObj && userObj.videos && userObj.videos.length > 0) {
@@ -606,9 +698,9 @@ const ClimberProfile = ({ navigation }) => {
                 
                 // Call the first async function
                 await fetchImageURL();
-                await handleClimbHistory();
+                //await handleClimbHistory();
                 // Then call handleTapHistory and wait for it to finish
-                //await handleTapHistory();
+                await handleTapHistory();
             } catch (error) {
                 console.error('Error during refresh:', error);
             } finally {
@@ -779,8 +871,8 @@ const ClimberProfile = ({ navigation }) => {
         //     </ScrollView>
         // </SafeAreaView>
 
-        <View style={{ flex: 1 }}>
-            <View style={{ flexGrow: 1, paddingBottom: 100 }}>
+        <View style={{ flex: 1}}>
+            <View style={{ flexGrow: 1}}>
                 <SafeAreaView style={[styles.container]}>
                     {/* profile section */}
                     <View style={{ height: 115, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', paddingHorizontal: 15 }}>
@@ -803,9 +895,14 @@ const ClimberProfile = ({ navigation }) => {
                         </View>
 
                         {/* Right Container for settings icon */}
+                        <View style={{justifyContent: 'center', alignItems: 'center'}}>
                         <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={{ paddingVertical: 20 }}>
                             <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('Stats_Section', {tapCount: tapCount, commentsLeft: commentsLeft, sessionsThisWeek: sessionsThisWeek, highestVGrade: highestVGrade, climbsThisWeek: climbsThisWeek})} style={{ paddingVertical: 20 }}>
+                            <Image source={require('../../../../../assets/stats.png')} style={{ width: 30, height: 30 }} />
+                        </TouchableOpacity>
+                        </View>
                     </View>
                     {/* Fun Stats 
                     <View style={{ marginTop: 20 }}>
@@ -861,24 +958,10 @@ const ClimberProfile = ({ navigation }) => {
                     <MoreSection />
                     */}
                 <TabSwitcherVideos />
-                <View style={{flex: 1, marginTop: 0}}>
+                <View style={{flex: 1, marginTop: 0,}}>
                     {activeTab === 'Activity' ? renderActivityContent() : renderProgressContent()}
                 </View>
                 </SafeAreaView >
-                {/* call me 🤙 */}
-                <View style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    marginBottom: 25
-                }}>
-                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More & more features coming soon ♥</Text>
-                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have feature ideas or feedback :)</Text>
-                    <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
-                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
-                    </TouchableOpacity>
-                </View>
             </View>
             <Modal
                 animationType="slide"
@@ -1160,6 +1243,29 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         objectFit: 'contain',
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        height: '65%',
+        backgroundColor: '#EEEEF0', // Match the gray box color
+        borderRadius: 10, // Match the border radius from your design
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        marginHorizontal: 15
+    },
+    icon: {
+        width: 16, // Adjust as needed
+        height: '100%', // Adjust as needed
+        marginRight: 10,
+    },
+    textInput: {
+        flex: 1,
+        fontSize: 14, // Adjust as needed
+        color: '#000', // Text color
+        height: '100%',
+        margin: 0,
+        padding: 0
+        // Remove border if you previously had one
     },
 });
 

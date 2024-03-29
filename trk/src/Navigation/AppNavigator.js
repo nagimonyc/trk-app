@@ -41,6 +41,7 @@ import Notification from '../Screens/NavScreens/Notification/Frontend';
 import RoomsScreen from '../Components/RoomsScreen';
 import UsersScreen from '../Components/UsersScreen';
 import PayUI from '../Screens/NavScreens/Pay/Frontend';
+import Stats from '../Components/Stats_Profile';
 
 //Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
 //Added live tracker to other components
@@ -449,6 +450,11 @@ function ProfileStack() {
         name="Payment_Portal"
         component={PayUI}
         options={{ title: 'Nagimo+', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Stats_Section"
+        component={Stats}
+        options={{ title: 'Stats', headerTitleAlign: 'center' }}
       />
       <Stack.Screen
         name="Community"
