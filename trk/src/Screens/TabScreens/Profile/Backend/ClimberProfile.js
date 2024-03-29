@@ -138,7 +138,7 @@ const ClimberProfile = ({ navigation }) => {
                                         By {videoRole.charAt(0).toUpperCase() + videoRole.slice(1)}
                                     </Text>
                                 )}
-                                <Video source={{ uri: videoUrl }} style={{ width: '100%', height: '100%' }} repeat={false} muted={true} />
+                                <Video source={{ uri: videoUrl }} style={{ width: '100%', height: '100%' }} repeat={false} muted={true} paused={true}/>
                             </View>
                         </TouchableOpacity>
                     );
