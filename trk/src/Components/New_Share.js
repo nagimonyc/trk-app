@@ -285,6 +285,7 @@ const New_Share = ({route}) => {
                                     style={{ width: '100%', height: '100%' }} 
                                     repeat={true} 
                                     muted={true} 
+                                    paused={true}
                                 />
                             </View>
                         </TouchableOpacity>
