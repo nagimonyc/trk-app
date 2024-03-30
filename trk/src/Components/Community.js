@@ -54,8 +54,11 @@ const Community = ({ route }) => {
                     //Get the last video uploaded by that user for that climb
                     const userObj = (await UsersApi().getUsersBySomeField("uid", currentUser.uid)).docs[0].data(); //Using the Videos associated with the user Object
                     if (userObj && userObj.videos && userObj.videos.length > 0) {
-                        setAddedMedia(userObj.videos);
-                    }
+                        let selectedVideos = userObj.videos;
+                        // Assuming climb.climbId is defined and you want to filter based on it
+                        let filtered = selectedVideos.filter(obj => obj.climb && obj.climb === climb.climbId);
+                        setAddedMedia(filtered);
+                    }    
                     //Get All Videos Associated with that Climb (COMMUNITY)
                     const climbObj = (await ClimbsApi().getClimb(tapObj.climb)).data();
                     if (climbObj && climbObj.videos && climbObj.videos.length > 0) {

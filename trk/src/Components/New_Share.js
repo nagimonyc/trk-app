@@ -17,6 +17,7 @@ import TapsApi from "../api/TapsApi";
 import ClimbsApi from "../api/ClimbsApi";
 import { FlatList } from "react-native-gesture-handler";
 import Video from 'react-native-video';
+import UsersApi from "../api/UsersApi";
 
 //Placeholder Component for this PR.
 const New_Share = ({route}) => {
@@ -24,6 +25,7 @@ const New_Share = ({route}) => {
     const viewRef = useRef();
     const data = route.params;
     const { climb, tapId, tapObj} = data;
+    console.log('Share Climb: ', climb);
 
     const [routeSetterName, setRouteSetterName] = useState('Eddie P.');
 
@@ -50,22 +52,15 @@ const New_Share = ({route}) => {
                 const climbImage = await storage().ref(climb.images[climb.images.length-1].path).getDownloadURL();
                 setClimbImageURL(climbImage);
                 //Get the last video uploaded by that user for that climb
-                const snapshot = await TapsApi().getClimbsByIdUser(tapObj.climb, currentUser.uid);
-                if (!snapshot.empty){
-                    let flag = 0
-                    for (let i = 0; i < snapshot.docs.length; i = i +1) {
-                        let temp = snapshot.docs[i].data();
-                        if (temp.videos && temp.videos.length > 0) {
-                            if (flag == 0) {
-                                setSelectedImageURL(temp.videos[0]);
-                                //break; //CAN CHANGE BUT UI LOOKS UGLY WITH FLATLIST!
-                                flag = 1
-                            }
-                            setAddedMedia(prev => prev.concat(temp.videos));
-                        }
-                    }
-                }
-                
+                const userObj = (await UsersApi().getUsersBySomeField("uid", currentUser.uid)).docs[0].data(); //Using the Videos associated with the user Object
+                if (userObj && userObj.videos && userObj.videos.length > 0) {
+                    let selectedVideos = userObj.videos;
+                    // Assuming climb.climbId is defined and you want to filter based on it
+                    let filtered = selectedVideos.filter(obj => obj.climb && obj.climb === climb.climbId);
+                    // Extract just the URLs from the filtered objects
+                    let urls = filtered.map(obj => obj.url);
+                    setAddedMedia(urls);
+                }                
                 }
             } catch (error) {
                 console.error('Failed to fetch image URL:', error);
@@ -290,6 +285,7 @@ const New_Share = ({route}) => {
                                     style={{ width: '100%', height: '100%' }} 
                                     repeat={true} 
                                     muted={true} 
+                                    paused={true}
                                 />
                             </View>
                         </TouchableOpacity>
