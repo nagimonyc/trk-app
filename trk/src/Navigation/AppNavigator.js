@@ -372,7 +372,7 @@ function CollectionStack() {
         name="Collection"
         component={Collection}
         options={({ navigation }) => ({
-          title: 'Your Membership',
+          title: 'Collection',
           headerBackTitleVisible: null,
           headerTitleAlign: 'center',
         })}
