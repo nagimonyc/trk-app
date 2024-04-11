@@ -34,6 +34,7 @@ import FollowScreen from '../Screens/TabScreens/Follow';
 import Community from '../Components/Community';
 import New_Share from '../Components/New_Share';
 import Collection from '../Components/Collection';
+import Membership from '../Screens/TabScreens/Membership/Frontend';
 
 import VideoGrid from '../Components/VideoGrid';
 
@@ -374,14 +375,6 @@ function CollectionStack() {
           title: 'Collection',
           headerBackTitleVisible: null,
           headerTitleAlign: 'center',
-          headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <NagimoPlusButton
-                title="Nagimo+"
-                navigation={navigation}
-              />
-            </View>
-          ),
         })}
       />
       <Stack.Screen
@@ -651,6 +644,19 @@ function ClimbInputStackScreen() {
   );
 }
 
+// function Membership_Stack() {
+//   console.log('[TEST] MembershipStack called');
+//   return (
+//     <Stack.Navigator>
+//       <Stack.Screen
+//         name="Membership"
+//         component={Membership}
+//         options={{ title: 'Membership', headerTitleAlign: 'center' }}
+//       />
+//     </Stack.Navigator>
+//   )
+// }
+
 
 function AppTabs() {
   console.log('[TEST] AppTabs called');
@@ -730,23 +736,43 @@ function AppTabs() {
         </>
       )}
 
-      {role !== 'setter' && (<Tab.Screen
-        name="Collection_Stack"
-        component={CollectionStack}
-        options={{
-          title: 'Collection',
-          headerShown: false,
-          tabBarIcon: ({ size, focused, color }) => {
-            return (
-              <Image
-                style={{ width: size, height: size - 2 }}
-                source={require('../../assets/card_collec_icon.png')}
-              />
-            );
-          },
-        }}
+      {role !== 'setter' && (
+        // <Tab.Screen
+        //   name="Collection_Stack"
+        //   component={CollectionStack}
+        //   options={{
+        //     title: 'Membership',
+        //     headerShown: false,
+        //     tabBarIcon: ({ size, focused, color }) => {
+        //       return (
+        //         <Image
+        //           style={{ width: size, height: size - 2 }}
+        //           source={require('../../assets/card_collec_icon.png')}
+        //         />
+        //       );
+        //     },
+        //   }}
 
-      />)}
+        // />
+        <Tab.Screen
+          name='Membership_Stack'
+          component={Membership}
+          options={{
+            title: 'Membership',
+            headerShown: true,
+            tabBarIcon: ({ size, focused, color }) => {
+              return (
+                <Image
+                  style={{ width: size, height: size - 2 }}
+                  source={require('../../assets/card_collec_icon.png')}
+                />
+              );
+            },
+          }}
+        />
+      )
+
+      }
 
 
       {/* {role !== 'setter' && (
