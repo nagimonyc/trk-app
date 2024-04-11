@@ -434,16 +434,9 @@ function ProfileStack() {
         component={UserProfile}
         options={({ navigation }) => ({
           title: 'Profile',
+          // headerShown: false,
           headerTitleAlign: 'center',
           headerBackTitleVisible: false,
-          headerRight: () => (
-            <View style={{ display: 'flex', flexDirection: 'row' }}>
-              <NagimoPlusButton
-                title="Nagimo+"
-                navigation={navigation}
-              />
-            </View>
-          ),
         })}
       />
       <Stack.Screen

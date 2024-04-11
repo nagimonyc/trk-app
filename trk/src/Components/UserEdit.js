@@ -50,13 +50,13 @@ const UserEdit = ({ route }) => {
     const toggleQR = () => {
         setShowQR(!showQR);
     };
-    
-    useEffect(() => {
-        if (user && user.bio && user.bio.trim() !== '') {
-            setInitialBio(user.bio);
-            setBio(user.bio);
-        }
-    }, [user]);
+
+    // useEffect(() => {
+    //     if (user && user.bio && user.bio.trim() !== '') {
+    //         setInitialBio(user.bio);
+    //         setBio(user.bio);
+    //     }
+    // }, [user]);
 
     //When the data loads, fetches the image of the latest climb to display for the session
     useEffect(() => {
@@ -171,21 +171,21 @@ const UserEdit = ({ route }) => {
                     return;
                 }
             }
-            if (initialBio !== bio) {
-                //Simple rules for bio
-                if (bio.trim() === '') {
-                    Alert.alert("Error", "Bio cannot be empty!");
-                    return;
-                }
-                try {
-                    await UsersApi().updateUser(currentUser.uid, { bio: bio.trim() });
-                    setInitialBio(bio);
-                } catch (error) {
-                    console.error(error);
-                    Alert.alert("Error", "Couldn't update profile.");
-                    return;
-                }
-            }
+            // if (initialBio !== bio) {
+            //     //Simple rules for bio
+            //     if (bio.trim() === '') {
+            //         Alert.alert("Error", "Bio cannot be empty!");
+            //         return;
+            //     }
+            //     try {
+            //         await UsersApi().updateUser(currentUser.uid, { bio: bio.trim() });
+            //         setInitialBio(bio);
+            //     } catch (error) {
+            //         console.error(error);
+            //         Alert.alert("Error", "Couldn't update profile.");
+            //         return;
+            //     }
+            // }
             Alert.alert("Success", "Profile updated!");
             //console.log("Session updated");
             navigation.popToTop();
@@ -203,8 +203,8 @@ const UserEdit = ({ route }) => {
             <View style={{ display: 'flex', width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', flex: 1 }}>
                 <ScrollView style={{ display: 'flex', flexDirection: 'column', padding: 10, flex: 1, width: '100%' }}>
                     <View style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                        <View style={{ width: '95%', height: 400, display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderRadius: 10, padding: 10 }}>
-                            <View style={{ width: '100%', display: 'flex', flexDirection: 'column', height: '25%', paddingBottom: 20, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'black', borderBottomWidth: 0.5, borderRadius: 0, width: '100%', paddingTop: 10 }}>
+                        <View style={{ width: '95%', height: 300, display: 'flex', flexDirection: 'column', backgroundColor: 'white', borderRadius: 10, padding: 10 }}>
+                            <View style={{ width: '100%', display: 'flex', flexDirection: 'column', height: '30%', paddingBottom: 20, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'black', borderBottomWidth: 0.5, borderRadius: 0, width: '100%', paddingTop: 10 }}>
                                 {climbImageUrl ? (
                                     <View style={{ position: 'relative' }}>
                                         <TouchableOpacity onPress={selectImageLogic}>
@@ -216,38 +216,38 @@ const UserEdit = ({ route }) => {
                                     </View>
                                 ) : <ActivityIndicator color="#3498db" />}
                             </View>
-                            <View style={{ display: 'flex', flexDirection: 'row', height: '15%', width: '100%', padding: 10, justifyContent: 'center', alignItems: 'flex-start' }}>
+                            <View style={{ display: 'flex', flexDirection: 'row', height: '35%', width: '100%', padding: 10, justifyContent: 'center', alignItems: 'flex-start' }}>
                                 <View style={{ color: 'black', display: 'flex', width: '25%', height: '100%', justifyContent: 'center', alignItems: 'flex-start' }}><Text style={{ fontSize: 13, color: 'black', fontWeight: '500' }}>Email</Text></View>
                                 <View style={{ display: 'flex', width: '75%', fontSize: 13, color: 'black', height: '100%', justifyContent: 'center', paddingLeft: 20 }}><Text style={{ color: 'black' }}>{currentUser.email}</Text></View>
                             </View>
-                            <View style={{ display: 'flex', flexDirection: 'row', height: '15%', width: '100%', padding: 10, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                <View style={{ color: 'black', display: 'flex', width: '25%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}><Text style={{ fontSize: 13, color: 'black', fontWeight: '500' }}>Username</Text></View>
+                            <View style={{ display: 'flex', flexDirection: 'row', height: '35%', width: '100%', padding: 10, justifyContent: 'center', alignItems: 'flex-start' }}>
+                                <View style={{ color: 'black', display: 'flex', width: '25%', height: '100%', justifyContent: 'center', alignItems: 'flex-start' }}><Text style={{ fontSize: 13, color: 'black', fontWeight: '500' }}>Username</Text></View>
                                 <TextInput style={{ display: 'flex', width: '75%', fontSize: 13, color: 'black', height: '100%', justifyContent: 'center', paddingLeft: 20 }} placeholderTextColor="black" defaultValue={(user && user.username ? user.username : '')} onChangeText={(text) => { setUsername(text.trim()) }}></TextInput>
                             </View>
-                            <View style={{ display: 'flex', flexDirection: 'row', height: '45%', width: '100%', padding: 10, justifyContent: 'center', alignItems: 'flex-start'}}>
-                                <View style={{ color: 'black', display: 'flex', width: '25%', height: '100%', justifyContent: 'center', alignItems: 'flex-start'}}><Text style={{ fontSize: 13, color: 'black', fontWeight: '500' }}>Bio</Text></View>
-                                <TextInput style={{ display: 'flex', width: '75%', fontSize: 13, color: 'black', height: '100%', justifyContent: 'center', paddingLeft: 20, borderWidth: 1, borderColor: 'black', borderRadius: 10}} 
-                                placeholder="I\'m a routesetter!"
-                                multiline
-                                numberOfLines={4} // Adjust based on your needs
-                                defaultValue={bio}
-                                onChangeText={text => setBio(text)}
-                                textAlignVertical="top"
+                            {/* <View style={{ display: 'flex', flexDirection: 'row', height: '45%', width: '100%', padding: 10, justifyContent: 'center', alignItems: 'flex-start' }}>
+                                <View style={{ color: 'black', display: 'flex', width: '25%', height: '100%', justifyContent: 'center', alignItems: 'flex-start' }}><Text style={{ fontSize: 13, color: 'black', fontWeight: '500' }}>Bio</Text></View>
+                                <TextInput style={{ display: 'flex', width: '75%', fontSize: 13, color: 'black', height: '100%', justifyContent: 'center', paddingLeft: 20, borderWidth: 1, borderColor: 'black', borderRadius: 10 }}
+                                    placeholder="I\'m a routesetter!"
+                                    multiline
+                                    numberOfLines={4} // Adjust based on your needs
+                                    defaultValue={bio}
+                                    onChangeText={text => setBio(text)}
+                                    textAlignVertical="top"
                                 ></TextInput>
-                            </View>
+                            </View> */}
                         </View>
-                        <View style={{ width: '100%', display: 'flex', flexDirection: 'column', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 20}}>
+                        {/* <View style={{ width: '100%', display: 'flex', flexDirection: 'column', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 20 }}>
                             <TouchableOpacity
                                 style={{ padding: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f0f0' }}
                                 onPress={toggleQR}
                             >
-                                <Text style={{color: 'black'}}>Show QR Code</Text>
+                                <Text style={{ color: 'black' }}>Show QR Code</Text>
                             </TouchableOpacity>
                             {
                                 showQR && (
                                     < QRCodeStyled
                                         data={user.uid}
-                                        style={{ backgroundColor: 'white', borderRadius: 36, overflow: 'hidden', marginBottom: 20}}
+                                        style={{ backgroundColor: 'white', borderRadius: 36, overflow: 'hidden', marginBottom: 20 }}
                                         padding={20}
                                         pieceSize={8}
                                         pieceScale={0.7}
@@ -290,15 +290,16 @@ const UserEdit = ({ route }) => {
                                 )
                             }
 
-                            {/* <View style={{ display: 'flex', flexDirection: 'column', width: '100%', justifyContent: 'center', marginVertical: 10, alignItems: 'center' }}>
+
+
+                            
+                        </View> */}
+                        {/* <View style={{ display: 'flex', flexDirection: 'column', width: '100%', justifyContent: 'center', marginVertical: 10, alignItems: 'center' }}>
                                 <Text style={{ color: 'black', fontWeight: '500', paddingHorizontal: 20, fontSize: 18 }}>My Nagimo Code</Text>
                             </View> */}
-                            {/* <View style={{ display: 'flex', flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                        {/* <View style={{ display: 'flex', flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: 'black', paddingTop: 20, fontWeight: '500', paddingHorizontal: 20, paddingBottom: 10, fontSize: 15 }}>{(user && user.username ? user.username : '')}</Text>
                             </View> */}
-
-
-                        </View>
                     </View>
                 </ScrollView>
                 <View style={{ justifyContent: 'center', alignItems: 'center', padding: 10, width: '100%', paddingHorizontal: 10, backgroundColor: 'white' }}>
