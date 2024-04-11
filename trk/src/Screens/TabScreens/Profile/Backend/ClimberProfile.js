@@ -139,14 +139,14 @@ const ClimberProfile = ({ navigation }) => {
 
 
     const TabSwitcherVideos = () => (
-        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 0}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 0 }}>
             <TouchableOpacity
                 onPress={() => setActiveTab('Activity')}
                 style={[styles.tabButton, activeTab === 'Activity' ? styles.tabActive : {}]}
             >
                 <Image
-                source={require('../../../../../assets/my_videos.png')}
-                style={{ width: 30, height: 20 }}
+                    source={require('../../../../../assets/my_videos.png')}
+                    style={{ width: 30, height: 20 }}
                 />
             </TouchableOpacity>
             <TouchableOpacity
@@ -154,8 +154,8 @@ const ClimberProfile = ({ navigation }) => {
                 style={[styles.tabButton, activeTab === 'Progress' ? styles.tabActive : {}]}
             >
                 <Image
-                source={require('../../../../../assets/hold.png')}
-                style={{ width: 30, height: 20 }}
+                    source={require('../../../../../assets/hold.png')}
+                    style={{ width: 30, height: 20 }}
                 />
             </TouchableOpacity>
         </View>
@@ -165,44 +165,44 @@ const ClimberProfile = ({ navigation }) => {
         return (
             // Your Activity Tab Content Here
             <View style={{ flex: 1 }}>
-            <FlatList
-                data={addedMedia}
-                renderItem={({ item }) => {
-                    // Determine if the item is an object (new format) or just a string (old format)
-                    const isObject = typeof item === 'object' && item !== null && item.url;
-                    const videoUrl = isObject ? item.url : item; // Use item.url if object, else use item directly
-                    const videoRole = isObject ? item.role : ''; // Default to empty string if not available
-                    return (
-                        <TouchableOpacity
-                            onPress={() => {
-                                setCurrentVideoUrl(videoUrl);
-                                setModalVisible(true);
-                            }}
-                        >
-                            <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5, position: 'relative' }}>
-                                {/* Conditional rendering based on role */}
-                                {videoRole == "setter" && (
-                                    <Text style={[styles.videoLabel]}>
-                                        By {videoRole.charAt(0).toUpperCase() + videoRole.slice(1)}
-                                    </Text>
-                                )}
-                                <Video source={{ uri: videoUrl }} style={{ width: '100%', height: '100%' }} repeat={false} muted={true} paused={true}/>
-                            </View>
-                        </TouchableOpacity>
-                    );
-                }}
-                keyExtractor={(item, index) => index.toString()}
-                numColumns={3} // Since you want 3 videos per row
-            />
-            {/* call me 🤙 */}
-            <View style={{paddingVertical: 20}}>
-                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More & more features coming soon ♥</Text>
-                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have feature ideas or feedback :)</Text>
+                <FlatList
+                    data={addedMedia}
+                    renderItem={({ item }) => {
+                        // Determine if the item is an object (new format) or just a string (old format)
+                        const isObject = typeof item === 'object' && item !== null && item.url;
+                        const videoUrl = isObject ? item.url : item; // Use item.url if object, else use item directly
+                        const videoRole = isObject ? item.role : ''; // Default to empty string if not available
+                        return (
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setCurrentVideoUrl(videoUrl);
+                                    setModalVisible(true);
+                                }}
+                            >
+                                <View style={{ width: videoWidth, height: videoHeight, backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'black', borderWidth: 0.5, position: 'relative' }}>
+                                    {/* Conditional rendering based on role */}
+                                    {videoRole == "setter" && (
+                                        <Text style={[styles.videoLabel]}>
+                                            By {videoRole.charAt(0).toUpperCase() + videoRole.slice(1)}
+                                        </Text>
+                                    )}
+                                    <Video source={{ uri: videoUrl }} style={{ width: '100%', height: '100%' }} repeat={false} muted={true} paused={true} />
+                                </View>
+                            </TouchableOpacity>
+                        );
+                    }}
+                    keyExtractor={(item, index) => index.toString()}
+                    numColumns={3} // Since you want 3 videos per row
+                />
+                {/* call me 🤙 */}
+                <View style={{ paddingVertical: 20 }}>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More features coming soon ♥</Text>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have ideas or feedback :)</Text>
                     <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
                         <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
                     </TouchableOpacity>
                 </View>
-        </View>
+            </View>
         );
     };
 
@@ -215,9 +215,9 @@ const ClimberProfile = ({ navigation }) => {
         //     ? 
         //     : placeholderImage;
         const borderColor = climb.status === 'Video Present' ? 'green' : 'white';
-    
+
         return (
-            <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10, borderWidth: 3, borderColor: borderColor }]} onPress={() => {}}>
+            <TouchableOpacity style={[styles.climbTile, { width: Dimensions.get('window').width / 4 - 20, backgroundColor: 'white', borderRadius: 10, borderWidth: 3, borderColor: borderColor }]} onPress={() => { }}>
                 {/* {climb.status === 'Video Present' && //When Seen, But No Video Posted
                     <Text style={{ position: 'absolute', color: '#fe8100', top: -20, right: 5, fontSize: 30, fontWeight: 'bold' }}>!</Text>} */}
                 <Image
@@ -227,69 +227,69 @@ const ClimberProfile = ({ navigation }) => {
             </TouchableOpacity>
         );
     };
-    
+
     const renderProgressContent = () => {
         return (
             // Your Progress Tab Content Here
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
                 <View style={{ backgroundColor: 'white', width: '100%', height: 55, justifyContent: 'center' }}>
-                <View style={styles.inputContainer}>
-                    <Image
-                        source={require('./../../../../../assets/search.png')} // Replace './path-to-your-image.png' with the path to your image
-                        style={styles.icon}
-                        resizeMode="contain"
-                    />
-                    <TextInput
-                        placeholder={`Try "Green V4"`}
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                        style={styles.textInput}
-                        placeholderTextColor={'gray'}
-                    />
-                </View>
-                </View>
-            <ScrollView
-            contentContainerStyle={styles.scrollViewContent}
-            style={{ marginHorizontal: 15}}
-            >    
-            {Object.keys(filteredClimbs).sort((a, b) => {
-                    // Use the same sorting logic as before to ensure consistency
-                    const gradeA = parseInt(a.slice(1), 10);
-                    const gradeB = parseInt(b.slice(1), 10);
-                    return gradeA - gradeB;
-                }).map((grade) => ( // Use filteredClimbs here
-                    <View key={grade} style={styles.gradeSection}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'flex-end'}}>
-                            <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
-                                <Text style={[styles.gradeTitle]}>{grade}</Text>
-                            </View>
-                            <View style={[styles.gradeCountContainer, { paddingBottom: 1 }]}>
-                            </View>
-                        </View>
-                        <ScrollView horizontal={true} contentContainerStyle={{}} scrollEnabled={false}>
-                            <FlatList
-                                data={climbs[grade]}
-                                renderItem={({ item }) => <ClimbTile climb={item} onPressFunction={() => {}} />}
-                                keyExtractor={(item) => item.climbId.toString()} // Use a unique property from the item instead of the index
-                                numColumns={4}
-                                scrollEnabled={false} // Make sure scrolling is disabled if it's not needed
-                                columnWrapperStyle={styles.columnWrapper}
-                            />
-                        </ScrollView>
+                    <View style={styles.inputContainer}>
+                        <Image
+                            source={require('./../../../../../assets/search.png')} // Replace './path-to-your-image.png' with the path to your image
+                            style={styles.icon}
+                            resizeMode="contain"
+                        />
+                        <TextInput
+                            placeholder={`Try "Green V4"`}
+                            value={searchQuery}
+                            onChangeText={setSearchQuery}
+                            style={styles.textInput}
+                            placeholderTextColor={'gray'}
+                        />
                     </View>
-                ))
-                }
-                {/* call me 🤙 */}
-        <View style={{paddingVertical: 20}}>
-                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More & more features coming soon ♥</Text>
-                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have feature ideas or feedback :)</Text>
-                    <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
-                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
-                    </TouchableOpacity>
                 </View>
-        </ScrollView>
-        
-        </View>
+                <ScrollView
+                    contentContainerStyle={styles.scrollViewContent}
+                    style={{ marginHorizontal: 15 }}
+                >
+                    {Object.keys(filteredClimbs).sort((a, b) => {
+                        // Use the same sorting logic as before to ensure consistency
+                        const gradeA = parseInt(a.slice(1), 10);
+                        const gradeB = parseInt(b.slice(1), 10);
+                        return gradeA - gradeB;
+                    }).map((grade) => ( // Use filteredClimbs here
+                        <View key={grade} style={styles.gradeSection}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'flex-end' }}>
+                                <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                                    <Text style={[styles.gradeTitle]}>{grade}</Text>
+                                </View>
+                                <View style={[styles.gradeCountContainer, { paddingBottom: 1 }]}>
+                                </View>
+                            </View>
+                            <ScrollView horizontal={true} contentContainerStyle={{}} scrollEnabled={false}>
+                                <FlatList
+                                    data={climbs[grade]}
+                                    renderItem={({ item }) => <ClimbTile climb={item} onPressFunction={() => { }} />}
+                                    keyExtractor={(item) => item.climbId.toString()} // Use a unique property from the item instead of the index
+                                    numColumns={4}
+                                    scrollEnabled={false} // Make sure scrolling is disabled if it's not needed
+                                    columnWrapperStyle={styles.columnWrapper}
+                                />
+                            </ScrollView>
+                        </View>
+                    ))
+                    }
+                    {/* call me 🤙 */}
+                    <View style={{ paddingVertical: 20 }}>
+                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More & more features coming soon ♥</Text>
+                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have feature ideas or feedback :)</Text>
+                        <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
+                            <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+
+            </View>
         );
     };
 
@@ -433,22 +433,22 @@ const ClimberProfile = ({ navigation }) => {
                     setRefreshing(false);
                 }
             };
-    
+
             fetchData();
         }, [])
     );
-    
+
     useEffect(() => {
         // Simply call handleClimbHistory as it's already defined.
         handleClimbHistory();
     }, [addedMedia]); // This effect runs whenever addedMedia changes.
-    
-    
+
+
 
     const handleClimbHistory = async () => {
         try {
             console.log('Running Handle Climb History');
-            if(addedMedia.length == 0) {
+            if (addedMedia.length == 0) {
                 return;
             }
             let climbSnapShot = []; // Array to hold all the fetched climb snapshots
@@ -486,7 +486,7 @@ const ClimberProfile = ({ navigation }) => {
                         climbImage = await storage().ref(climbData.images[climbData.images.length - 1].path).getDownloadURL();
                     }
                     // Add status and sampleTap to the climb data
-                    const extendedClimbData = { ...climbData, climbImage, climbId: climbDocs[i].climbId};
+                    const extendedClimbData = { ...climbData, climbImage, climbId: climbDocs[i].climbId };
 
                     // Group the climb data by grade
                     const gradeGroup = extendedClimbData.grade;
@@ -515,7 +515,7 @@ const ClimberProfile = ({ navigation }) => {
             console.error("Error fetching climbs for user:", error);
         }
     };
-    
+
 
 
 
@@ -684,7 +684,7 @@ const ClimberProfile = ({ navigation }) => {
             else {
                 Alert.alert("Error", "There is no current User!");
                 return;
-            } 
+            }
         } catch (error) {
             console.error('Failed to fetch image URL:', error);
         }
@@ -695,7 +695,7 @@ const ClimberProfile = ({ navigation }) => {
             try {
                 // Start the refreshing state
                 setRefreshing(true);
-                
+
                 // Call the first async function
                 await fetchImageURL();
                 //await handleClimbHistory();
@@ -708,7 +708,7 @@ const ClimberProfile = ({ navigation }) => {
                 setRefreshing(false);
             }
         };
-        
+
         // Execute the fetchData function
         fetchData();
     }, []); // Make sure to include any dependencies needed for your async functions    
@@ -871,13 +871,13 @@ const ClimberProfile = ({ navigation }) => {
         //     </ScrollView>
         // </SafeAreaView>
 
-        <View style={{ flex: 1}}>
-            <View style={{ flexGrow: 1}}>
+        <View style={{ flex: 1 }}>
+            <View style={{ flexGrow: 1 }}>
                 <SafeAreaView style={[styles.container]}>
                     {/* profile section */}
-                    <View style={{ height: 115, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: 'white', paddingHorizontal: 15 }}>
+                    <View style={{ height: 225, backgroundColor: 'white', paddingHorizontal: 15 }}>
                         {/* Left Container for photo and text */}
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 30 }}>
                             {/* photo */}
                             <TouchableOpacity style={[styles.initialCircle]} onPress={() => { navigation.navigate('Edit_User', { user: user }) }}>
                                 {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ height: '100%', width: '100%', borderRadius: 10 }} resizeMode="contain" />)}
@@ -887,21 +887,50 @@ const ClimberProfile = ({ navigation }) => {
                                 </View>
                             </TouchableOpacity>
                             {/* text */}
-                            <View style={{ marginLeft: 15 }}>
-                                <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>
+                            <View style={{}}>
+                                <Text style={{ color: 'black', fontSize: 30, fontWeight: '700', marginTop: 15 }}>
                                     {user && user.username ? user.username : ''}
                                 </Text>
                             </View>
                         </View>
+                        <View style={{ flexDirection: 'row', marginTop: 15 }}>
+                            <View style={{ alignItems: 'center', flex: 1 }}>
+                                <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>Active</Text>
+                                <Text style={{ color: '#696969' }}>Membership</Text>
+                            </View>
+                            {/* divider */}
+                            <View style={{ borderLeftWidth: 1, borderLeftColor: '#D5D5D5', marginVertical: 5 }}></View>
+
+                            <View style={{ alignItems: 'center', flex: 1 }}>
+                                <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>May 10</Text>
+                                <Text style={{ color: '#696969' }}>Cycle renewal</Text>
+                            </View>
+                        </View>
 
                         {/* Right Container for settings icon */}
-                        <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={{ paddingVertical: 20 }}>
-                            <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate('Stats_Section', {tapCount: tapCount, commentsLeft: commentsLeft, sessionsThisWeek: sessionsThisWeek, highestVGrade: highestVGrade, climbsThisWeek: climbsThisWeek})} style={{ paddingVertical: 20 }}>
-                            <Image source={require('../../../../../assets/stats.png')} style={{ width: 30, height: 30 }} />
-                        </TouchableOpacity>
+                        {/* <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={{ paddingVertical: 20 }}>
+                                <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate('Stats_Section', { tapCount: tapCount, commentsLeft: commentsLeft, sessionsThisWeek: sessionsThisWeek, highestVGrade: highestVGrade, climbsThisWeek: climbsThisWeek })} style={{ paddingVertical: 20 }}>
+                                <Image source={require('../../../../../assets/stats.png')} style={{ width: 30, height: 30 }} />
+                            </TouchableOpacity>
+                        </View> */}
+                    </View>
+                    <View style={{ width: '100%', backgroundColor: 'white' }}>
+                        <View style={{ paddingHorizontal: 15, marginTop: 20 }}>
+                            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
+                                        <Image source={require('../../../../../assets/clarity_settings-solid.png')} style={{ width: 25, height: 25 }} />
+                                        <Text style={{ color: 'black', marginLeft: 15, fontWeight: 600, fontSize: 16 }}>Settings</Text>
+                                    </View>
+                                    <View style={{ alignItems: 'center', marginRight: 5 }}>
+                                        <Image source={require('../../../../../assets/material-symbols_chevron-right.png')} style={{ width: 25, height: 25 }} />
+                                    </View>
+                                </View>
+                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
+                            </TouchableOpacity>
                         </View>
                     </View>
                     {/* Fun Stats 
@@ -957,13 +986,13 @@ const ClimberProfile = ({ navigation }) => {
                     </View>
                     <MoreSection />
                     */}
-                <TabSwitcherVideos />
-                <View style={{flex: 1, marginTop: 0,}}>
-                    {activeTab === 'Activity' ? renderActivityContent() : renderProgressContent()}
-                </View>
+                    {/* <TabSwitcherVideos /> */}
+                    <View style={{ flex: 1, marginTop: 0, }}>
+                        {activeTab === 'Activity' ? renderActivityContent() : renderProgressContent()}
+                    </View>
                 </SafeAreaView >
-            </View>
-            <Modal
+            </View >
+            {/* <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
@@ -996,8 +1025,8 @@ const ClimberProfile = ({ navigation }) => {
                         </View>
                     </View>
                 </TouchableOpacity>
-                </Modal>
-        </View>
+            </Modal> */}
+        </View >
     );
 }
 //Sessions are now passed to SessionTapHistory (displaying logic only now)
@@ -1085,8 +1114,8 @@ const styles = StyleSheet.create({
     },
     initialCircle: {
         backgroundColor: '#D9D9D9',
-        width: 75,
-        height: 75,
+        width: 80,
+        height: 80,
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',

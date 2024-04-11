@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect  } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { SafeAreaView, View, Text, StyleSheet, Button, Alert, TouchableOpacity, Switch } from "react-native";
 import { AuthContext } from "../Utils/AuthContext";
 import firestore from '@react-native-firebase/firestore';
@@ -19,7 +19,7 @@ const Settings = () => {
                 {
                     text: "Yes", onPress: async () => {
                         try {
-    
+
                             const userUID = currentUser.uid;
                             await firestore().collection('users').doc(userUID).delete();
                             const user = firebase.auth().currentUser;
@@ -40,7 +40,7 @@ const Settings = () => {
     const [nyuCompIsEnabled, setNyuCompIsEnabled] = useState(false);
 
     useEffect(() => {
-         console.log(currentUser);
+        console.log(currentUser);
         const fetchSettings = async () => {
             const userUID = currentUser.uid;
             const doc = await firestore().collection('users').doc(userUID).get();
@@ -71,25 +71,25 @@ const Settings = () => {
     return (
         <SafeAreaView style={styles.container}>
 
-           {role === 'climber' && (<View style={styles.switchContainer}>
+            {/* {role === 'climber' && (<View style={styles.switchContainer}>
                 <Text style={({marginBottom: 10, fontSize: 15, color: 'black'})}>NYU tryouts?</Text>
                 <Switch onValueChange={toggleSwitchNyu} value={nyuCompIsEnabled}  trackColor={{false: 'rgba(0,0,0,0.3)', true: 'rgba(0,0,0,0.1)'}}
                 thumbColor={'#fe8100'}/>
 
-            </View>)}
+            </View>)} */}
             <View style={styles.innerContainer}>
-            <TouchableOpacity 
-                style={[styles.button, { backgroundColor: '#D2122E' }]} 
-                onPress={handleDeleteAccount}
-            >
-                <Text style={styles.buttonText}>Delete Account</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style={[styles.button, { backgroundColor: '#fe8100'}]} 
-                onPress={SignOut}
-            >
-                <Text style={styles.buttonText}>Sign Out</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: '#D2122E' }]}
+                    onPress={handleDeleteAccount}
+                >
+                    <Text style={styles.buttonText}>Delete Account</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: '#fe8100' }]}
+                    onPress={SignOut}
+                >
+                    <Text style={styles.buttonText}>Sign Out</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
@@ -99,33 +99,33 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 20,
-        justifyContent: 'flex-end', 
+        justifyContent: 'flex-end',
     },
     innerContainer: {
-        flexDirection: 'row',      
-        justifyContent: 'space-between', 
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'flex-end',
-        marginBottom: 20,          
+        marginBottom: 20,
     },
     button: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        borderRadius: 20,  
-        alignItems: 'center', 
+        borderRadius: 20,
+        alignItems: 'center',
         justifyContent: 'center',
-        width: '45%',  
+        width: '45%',
     },
     buttonText: {
-        color: 'white',  
+        color: 'white',
         fontSize: 15,
         fontWeight: '400'
-    }, 
+    },
     switchContainer: {
-            alignItems: 'center',
-            marginTop: 20,
-            marginBottom: 100,
-          },
-    
+        alignItems: 'center',
+        marginTop: 20,
+        marginBottom: 100,
+    },
+
 
 });
 
