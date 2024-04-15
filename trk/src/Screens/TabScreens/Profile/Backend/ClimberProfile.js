@@ -872,44 +872,42 @@ const ClimberProfile = ({ navigation }) => {
         //     </ScrollView>
         // </SafeAreaView>
 
-        <View style={{ flex: 1 }}>
-            <View style={{ flexGrow: 1 }}>
-                <SafeAreaView style={[styles.container]}>
-                    {/* profile section */}
-                    <View style={{ height: 225, backgroundColor: 'white', paddingHorizontal: 15 }}>
-                        {/* Left Container for photo and text */}
-                        <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 30 }}>
-                            {/* photo */}
-                            <TouchableOpacity style={[styles.initialCircle]} onPress={() => { navigation.navigate('Edit_User', { user: user }) }}>
-                                {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ height: '100%', width: '100%', borderRadius: 10 }} resizeMode="contain" />)}
-                                {!climbImageUrl && (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
-                                <View style={{ position: 'absolute', bottom: -5, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor: 'black' }}>
-                                    <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }} resizeMode="contain" />
-                                </View>
-                            </TouchableOpacity>
-                            {/* text */}
-                            <View style={{}}>
-                                <Text style={{ color: 'black', fontSize: 30, fontWeight: '700', marginTop: 15 }}>
-                                    {user && user.username ? user.username : ''}
-                                </Text>
-                            </View>
+        <SafeAreaView style={[styles.container]}>
+            {/* profile section */}
+            <View style={{ height: 225, backgroundColor: 'white', paddingHorizontal: 15 }}>
+                {/* Left Container for photo and text */}
+                <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 30 }}>
+                    {/* photo */}
+                    <TouchableOpacity style={[styles.initialCircle]} onPress={() => { navigation.navigate('Edit_User', { user: user }) }}>
+                        {climbImageUrl && (<Image source={{ uri: climbImageUrl }} style={{ height: '100%', width: '100%', borderRadius: 10 }} resizeMode="contain" />)}
+                        {!climbImageUrl && (<Text style={styles.any_text}>{currentUser.email.charAt(0).toUpperCase()}</Text>)}
+                        <View style={{ position: 'absolute', bottom: -5, right: -10, backgroundColor: 'white', borderRadius: 50, padding: 5, borderWidth: 0.5, borderColor: 'black' }}>
+                            <Image source={require('./../../../../../assets/editPen.png')} style={{ width: 10, height: 10 }} resizeMode="contain" />
                         </View>
-                        <View style={{ flexDirection: 'row', marginTop: 15 }}>
-                            <View style={{ alignItems: 'center', flex: 1 }}>
-                                <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>Active</Text>
-                                <Text style={{ color: '#696969' }}>Membership</Text>
-                            </View>
-                            {/* divider */}
-                            <View style={{ borderLeftWidth: 1, borderLeftColor: '#D5D5D5', marginVertical: 5 }}></View>
+                    </TouchableOpacity>
+                    {/* text */}
+                    <View style={{}}>
+                        <Text style={{ color: 'black', fontSize: 30, fontWeight: '700', marginTop: 15 }}>
+                            {user && user.username ? user.username : ''}
+                        </Text>
+                    </View>
+                </View>
+                <View style={{ flexDirection: 'row', marginTop: 15 }}>
+                    <View style={{ alignItems: 'center', flex: 1 }}>
+                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>Active</Text>
+                        <Text style={{ color: '#696969' }}>Membership</Text>
+                    </View>
+                    {/* divider */}
+                    <View style={{ borderLeftWidth: 1, borderLeftColor: '#D5D5D5', marginVertical: 5 }}></View>
 
-                            <View style={{ alignItems: 'center', flex: 1 }}>
-                                <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>May 10</Text>
-                                <Text style={{ color: '#696969' }}>Cycle renewal</Text>
-                            </View>
-                        </View>
+                    <View style={{ alignItems: 'center', flex: 1 }}>
+                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>May 10</Text>
+                        <Text style={{ color: '#696969' }}>Cycle renewal</Text>
+                    </View>
+                </View>
 
-                        {/* Right Container for settings icon */}
-                        {/* <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                {/* Right Container for settings icon */}
+                {/* <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={{ paddingVertical: 20 }}>
                                 <Image source={require('../../../../../assets/settings.png')} style={{ width: 30, height: 30 }} />
                             </TouchableOpacity>
@@ -917,24 +915,24 @@ const ClimberProfile = ({ navigation }) => {
                                 <Image source={require('../../../../../assets/stats.png')} style={{ width: 30, height: 30 }} />
                             </TouchableOpacity>
                         </View> */}
-                    </View>
-                    <View style={{ width: '100%', backgroundColor: 'white' }}>
-                        <View style={{ paddingHorizontal: 15, marginTop: 20 }}>
-                            <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
-                                        <Image source={require('../../../../../assets/clarity_settings-solid.png')} style={{ width: 25, height: 25 }} />
-                                        <Text style={{ color: 'black', marginLeft: 15, fontWeight: 600, fontSize: 16 }}>Settings</Text>
-                                    </View>
-                                    <View style={{ alignItems: 'center', marginRight: 5 }}>
-                                        <Image source={require('../../../../../assets/material-symbols_chevron-right.png')} style={{ width: 25, height: 25 }} />
-                                    </View>
-                                </View>
-                                <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
-                            </TouchableOpacity>
+            </View>
+            <View style={{ width: '100%', backgroundColor: 'white' }}>
+                <View style={{ paddingHorizontal: 15, marginTop: 20 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
+                                <Image source={require('../../../../../assets/clarity_settings-solid.png')} style={{ width: 25, height: 25 }} />
+                                <Text style={{ color: 'black', marginLeft: 15, fontWeight: 600, fontSize: 16 }}>Settings</Text>
+                            </View>
+                            <View style={{ alignItems: 'center', marginRight: 5 }}>
+                                <Image source={require('../../../../../assets/material-symbols_chevron-right.png')} style={{ width: 25, height: 25 }} />
+                            </View>
                         </View>
-                    </View>
-                    {/* Fun Stats 
+                        <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
+                    </TouchableOpacity>
+                </View>
+            </View>
+            {/* Fun Stats 
                     <View style={{ marginTop: 20 }}>
                         <Text style={{ paddingHorizontal: 15, color: 'black', fontSize: 16, fontWeight: '700' }}>Fun Stats</Text>
                         <View style={{ width: '100%', backgroundColor: 'white', marginTop: 10 }}>
@@ -987,20 +985,21 @@ const ClimberProfile = ({ navigation }) => {
                     </View>
                     <MoreSection />
                     */}
-                    {/* <TabSwitcherVideos /> */}
-                    {/* <View style={{ flex: 1, marginTop: 0, }}>
+            {/* <TabSwitcherVideos /> */}
+            {/* <View style={{ flex: 1, marginTop: 0, }}>
                         {activeTab === 'Activity' ? renderActivityContent() : renderProgressContent()}
                     </View> */}
-                    <View style={{ paddingVertical: 20 }}>
-                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More features coming soon ♥</Text>
-                        <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have ideas or feedback :)</Text>
-                        <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
-                            <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
-                        </TouchableOpacity>
-                    </View>
-                </SafeAreaView >
-            </View >
-            {/* <Modal
+            <View style={{ paddingVertical: 20, flex: 1, justifyContent: 'flex-end' }}>
+                <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>More gyms coming soon ♥</Text>
+                <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, marginBottom: 5 }}>Contact me if you have ideas or feedback :)</Text>
+                <TouchableOpacity onPress={() => Linking.openURL('sms:+13474534258')}>
+                    <Text style={{ textAlign: 'center', color: '#525252', fontSize: 12, textDecorationLine: 'underline' }}>(347) 453-4258</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView >
+    );
+}
+{/* <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
@@ -1034,9 +1033,6 @@ const ClimberProfile = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
             </Modal> */}
-        </View >
-    );
-}
 //Sessions are now passed to SessionTapHistory (displaying logic only now)
 //Two session histories for active session, and older sessions.
 
