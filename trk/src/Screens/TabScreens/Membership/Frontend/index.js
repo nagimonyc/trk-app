@@ -11,6 +11,7 @@ import { Image, StyleSheet } from 'react-native';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { launchCamera } from 'react-native-image-picker';
 import { Alert } from "react-native";
+import LinearGradient from "react-native-linear-gradient";
 
 const Membership = () => {
     const [gyms, setGyms] = useState([]);
@@ -224,16 +225,12 @@ const Membership = () => {
 
     return (
         <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding: 20, marginTop: 40 }}>
-            <View style={{
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                width: '90%',
-                height: '80%',
-                backgroundColor: '#CACACA',
-                borderRadius: 20,
-                flexDirection: 'column'
-            }}>
-                <View style={{ width: '100%', alignItems: 'center', backgroundColor: 'transparent' }}>
+            {user && user.paid ? (
+                <LinearGradient
+                    colors={['#FFFFFF', '#FF8100']} // White to orange gradient
+                    style={styles.gradientStyle}
+                >
+                    <View style={{ width: '100%', alignItems: 'center', backgroundColor: 'transparent' }}>
                 <Image
                     source={require('../../../../../assets/long-logo.png')}
                     style={{ width: '40%', height: undefined, aspectRatio: 5, marginTop: 10, marginBottom: 20}} // Adjust the aspectRatio according to your logo's aspect ratio
@@ -241,8 +238,8 @@ const Membership = () => {
                 />
                 </View>
                 <View style={{
-                width: '70%',
-                height: '70%',
+                width: '60%',
+                height: '60%',
                 justifyContent: 'center',
                 alignItems: 'center',
                 marginBottom: 10,
@@ -252,16 +249,84 @@ const Membership = () => {
                     <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />
                 ) : (
                     <TouchableOpacity onPress={uploadSelfie} style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', backgroundColor: 'white'}}>
-                    <Text style={{ color: 'black', fontSize: 50 }}>+</Text>
+                        <View style={{ position: 'relative', width: 75, height: 75 }}>
+                            <Image source={require('../../../../../assets/user_box.png')} style={{ width: '100%', height: '100%' }} />
+                            <View style={{ position: 'absolute', top: -30, right: -20, width: 25, height: 25 }}>
+                                <Image source={require('../../../../../assets/info_icon.png')} style={{ width: '100%', height: '100%' }} />
+                            </View>
+                        </View>
                     </TouchableOpacity>
                 )}
                 </View>
                 <Text style={{
                 color: 'black',
                 fontSize: 20,
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                marginTop: 15,
                 }}>{user ? user.username : 'No User'}</Text>
+                {user && user.paid && (
+                <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#397538', width: '60%', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20,}}>MEMBER</Text>
+                </View>)}
+                {(!user || !user.paid) && (
+                <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#FF8100', width: '60%', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20,}}>NOT A MEMBER</Text>
+                </View>)}
+                </LinearGradient>
+            ) : (
+                <View style={{
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    width: '90%',
+                    height: '85%',
+                    backgroundColor: '#CACACA',
+                    borderRadius: 20,
+                    flexDirection: 'column'
+                }}>
+                    <View style={{ width: '100%', alignItems: 'center', backgroundColor: 'transparent' }}>
+                <Image
+                    source={require('../../../../../assets/long-logo.png')}
+                    style={{ width: '40%', height: undefined, aspectRatio: 5, marginTop: 10, marginBottom: 20}} // Adjust the aspectRatio according to your logo's aspect ratio
+                    resizeMode="contain"
+                />
+                </View>
+                <View style={{
+                width: '60%',
+                height: '60%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 10,
+                backgroundColor: climbImageUrl ? 'transparent' : 'white'
+                }}>
+                {climbImageUrl ? (
+                    <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />
+                ) : (
+                    <TouchableOpacity onPress={uploadSelfie} style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', backgroundColor: 'white'}}>
+            <View style={{ position: 'relative', width: 75, height: 75 }}>
+                <Image source={require('../../../../../assets/user_box.png')} style={{ width: '100%', height: '100%' }} />
+                <View style={{ position: 'absolute', top: -30, right: -20, width: 25, height: 25 }}>
+                    <Image source={require('../../../../../assets/info_icon.png')} style={{ width: '100%', height: '100%' }} />
+                </View>
             </View>
+        </TouchableOpacity>
+                )}
+                </View>
+                <Text style={{
+                color: 'black',
+                fontSize: 20,
+                fontWeight: 'bold',
+                marginTop: 15,
+                }}>{user ? user.username : 'No User'}</Text>
+                {user && user.paid && (
+                <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#397538', width: '60%', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20,}}>MEMBER</Text>
+                </View>)}
+                {(!user || !user.paid) && (
+                <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#FF8100', width: '60%', justifyContent: 'center', alignItems: 'center'}}>
+                <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20,}}>NOT A MEMBER</Text>
+                </View>)}
+                </View>
+            )}
             {!climbImageUrl && (
                 <TouchableOpacity onPress={uploadSelfie} style={{ padding: 10, backgroundColor: '#FF8100', borderRadius: 5, marginTop: 30 }}>
                 <Text style={{ color: 'white' }}>Add photo to unlock membership</Text>
@@ -276,5 +341,16 @@ const Membership = () => {
 
     );
 }
+
+const styles = StyleSheet.create({
+    gradientStyle: {
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        width: '90%',
+        height: '85%',
+        borderRadius: 20,
+        flexDirection: 'column'
+    },
+});
 
 export default Membership;
