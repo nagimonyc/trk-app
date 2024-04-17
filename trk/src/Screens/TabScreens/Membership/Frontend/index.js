@@ -32,7 +32,7 @@ const Membership = () => {
             fetchData();
         }, [])
     );
-    /*
+    
     useEffect(() => {
         const loadImages = async () => {
             try {
@@ -53,7 +53,6 @@ const Membership = () => {
         };
         loadImages();
     }, [user]);
-*/
 
     //To fetch the climb image of the latest climb
     const loadImageUrl = async (imagePath) => {
