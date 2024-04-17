@@ -676,6 +676,7 @@ const ClimberProfile = ({ navigation }) => {
                 if (user) {
                     setUser(user.docs[0].data());
                 }
+                //console.log('User: ', user.docs[0].data());
                 // //Get all taps made by the user (non-archived) and fetched videos from within that tap
                 // const userObj = (await UsersApi().getUsersBySomeField("uid", currentUser.uid)).docs[0].data(); //Using the Videos associated with the user Object
                 // if (userObj && userObj.videos && userObj.videos.length > 0) {
@@ -894,14 +895,14 @@ const ClimberProfile = ({ navigation }) => {
                 </View>
                 <View style={{ flexDirection: 'row', marginTop: 15 }}>
                     <View style={{ alignItems: 'center', flex: 1 }}>
-                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>Active</Text>
+                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{user && user.paid? 'Active': 'Inactive'}</Text>
                         <Text style={{ color: '#696969' }}>Membership</Text>
                     </View>
                     {/* divider */}
                     <View style={{ borderLeftWidth: 1, borderLeftColor: '#D5D5D5', marginVertical: 5 }}></View>
 
                     <View style={{ alignItems: 'center', flex: 1 }}>
-                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>May 10</Text>
+                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{user && user.paid? 'May 10': 'N/A'}</Text>
                         <Text style={{ color: '#696969' }}>Cycle renewal</Text>
                     </View>
                 </View>
