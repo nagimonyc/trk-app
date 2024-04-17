@@ -282,6 +282,56 @@ exports.createPaymentSheet = functions.https.onRequest(async (req, res) => {
     }
 });
 
+//Stripe Functions (Server Side)
+exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
+    // CORS headers
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET, POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        res.status(204).send('');
+        return;
+    } else if (req.method !== "POST") {
+        res.status(405).send('Method Not Allowed');
+        return;
+    }
+
+    try {
+        // Assuming the request body includes amount and optionally currency
+        const { amount, currency = 'usd', email = 'nagimo.nyc@nagimo.org' } = req.body;
+        const customer = await stripe.customers.create({email: email});
+        const session = await stripe.checkout.sessions.create({
+            line_items: [{
+              price_data: {
+                currency: currency,
+                product_data: {
+                  name: 'Nagimo+ Membership',
+                },
+                unit_amount: amount,
+              },
+              quantity: 1,
+            }],
+            mode: 'payment',
+            ui_mode: 'embedded',
+            redirect_on_completion: 'never', //Change this if we need to get any particular information
+          });
+      
+          res.json({clientSecret: session.client_secret});
+
+    } catch (error) {
+        console.error("Error creating checkout session:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+
+
+
+
+
+
 //Notification styling and packaging
 async function sendNotificationToUser(fcmToken, tapId, userId) {
     const message = {
