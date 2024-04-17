@@ -59,7 +59,7 @@
     "react-native-nfc-manager": "^3.14.6",
     "react-native-pager-view": "^6.2.3",
     "react-native-paper": "^5.11.1",
-    "react-native-permissions": "^4.0.4",
+    "react-native-permissions": "^2.2.0",
     "react-native-qrcode-scanner": "^1.5.5",
     "react-native-qrcode-styled": "^0.3.0",
     "react-native-reanimated": "^3.4.2",

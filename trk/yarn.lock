@@ -7948,10 +7948,10 @@ react-native-permissions@^2.0.2:
   resolved "https://registry.npmjs.org/react-native-permissions/-/react-native-permissions-2.2.2.tgz"
   integrity sha512-ihf4shQDSX5Oo9ChQXb9kr13mmyyNem5MaEvOpr3dCjhBOBWyEMztXm9/uPK1Qg5PsNpaYLa1KpcPZDCw87LXg==
 
-react-native-permissions@^4.0.4:
-  version "4.0.4"
-  resolved "https://registry.npmjs.org/react-native-permissions/-/react-native-permissions-4.0.4.tgz"
-  integrity sha512-7xU71u1Xe239F7DCvO3rfuqthzOa52v5Nvd0OQ5OpEkL9S9UGhWMLRw0b7OC9zti846puTGJDnjy8FvXiAzgxQ==
+react-native-permissions@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/react-native-permissions/-/react-native-permissions-2.2.0.tgz"
+  integrity sha512-y5GvcYdEe9PEWVM12UgdkNI/BVvjEU6SZGN7zBpoalTczSlWGQ4SeD2dBz9KfCu1jg5l1752sKDAggTjaq3QKQ==
 
 react-native-qrcode-scanner@^1.5.5:
   version "1.5.5"
@@ -8049,7 +8049,7 @@ react-native-vision-camera@^3.8.2:
   resolved "https://registry.npmjs.org/react-native-vision-camera/-/react-native-vision-camera-3.8.2.tgz"
   integrity sha512-MY39l2e3hNRPUefn2JPShOFExcw0PblbAcUGvJrIfS9pMzdIyceo0umRAx8lOGXzDUAdb+xy/tFWb8zGxKimCQ==
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.72.3, "react-native@>= 0.30.0", "react-native@>= 0.50.0", react-native@>=0.40.0, react-native@>=0.57, react-native@>=0.59, react-native@>=0.60.0, react-native@>=0.61.3, react-native@>=0.62, react-native@>=0.64, react-native@>=0.69, react-native@>=0.70.0:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", react-native@^0.72.3, "react-native@>= 0.30.0", "react-native@>= 0.50.0", react-native@>=0.40.0, react-native@>=0.57, react-native@>=0.59, react-native@>=0.60.0, react-native@>=0.61.3, react-native@>=0.62, react-native@>=0.64, react-native@>=0.69:
   version "0.72.3"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.72.3.tgz"
   integrity sha512-QqISi+JVmCssNP2FlQ4MWhlc4O/I00MRE1/GClvyZ8h/6kdsyk/sOirkYdZqX3+DrJfI3q+OnyMnsyaXIQ/5tQ==
@@ -8129,7 +8129,7 @@ react-test-renderer@18.2.0:
     react-shallow-renderer "^16.15.0"
     scheduler "^0.23.0"
 
-react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17 || ^18", react@^18.0, react@^18.0.0, react@^18.2.0, "react@> 16.7.0", "react@>= 15.2.1", react@>=16.0, react@>=16.11.0, react@>=16.3.0, react@>=16.8, react@>=16.8.6, react@>=17.0.0, react@>=18.0, react@>=18.1.0, react@18.2.0:
+react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17 || ^18", react@^18.0, react@^18.0.0, react@^18.2.0, "react@> 16.7.0", "react@>= 15.2.1", react@>=16.0, react@>=16.11.0, react@>=16.3.0, react@>=16.8, react@>=16.8.6, react@>=17.0.0, react@>=18.0, react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==

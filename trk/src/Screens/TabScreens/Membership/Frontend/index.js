@@ -8,6 +8,9 @@ import { AuthContext } from "../../../../Utils/AuthContext";
 import UsersApi from "../../../../api/UsersApi";
 import storage from '@react-native-firebase/storage';
 import { Image, StyleSheet } from 'react-native';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { launchCamera } from 'react-native-image-picker';
+import { Alert } from "react-native";
 
 const Membership = () => {
     const [gyms, setGyms] = useState([]);
@@ -155,6 +158,70 @@ const Membership = () => {
     );
     */
 
+    const requestCameraPermission = async () => {
+        const permission = Platform.OS === 'ios' ? 
+            PERMISSIONS.IOS.CAMERA :
+            PERMISSIONS.ANDROID.CAMERA;
+
+        try {
+            const result = await check(permission);
+            if (result === RESULTS.GRANTED) return true;
+
+            const requestResult = await request(permission);
+            return requestResult === RESULTS.GRANTED;
+        } catch (error) {
+            console.log(error);
+            return false;
+        }
+    };
+
+    const uploadImage = async (imagePath) => {
+        const filename = imagePath.split('/').pop().replace(/\.jpg/gi, "").replace(/-/g, "");
+        const storageRef = storage().ref(`climb_images/${filename}`);
+        await storageRef.putFile(imagePath);
+        return { id: filename, path: storageRef.fullPath, timestamp: new Date().toISOString() };
+    };
+
+    const uploadSelfie = async () => {
+        const hasPermission = await requestCameraPermission();
+
+        if (hasPermission) {
+            const options = {
+                saveToPhotos: true,
+                mediaType: 'photo',
+                includeBase64: false,
+            };
+
+            launchCamera(options, async (response) => {
+                if (response.didCancel) {
+                    console.log('User cancelled camera picker');
+                } else if (response.error) {
+                    console.log('CameraPicker Error: ', response.error);
+                } else {
+                    // Ensure the assets array exists and has at least one item
+                    if (response.assets && response.assets.length > 0) {
+                        const source = { uri: response.assets[0].uri };
+                        setClimbImageUrl(response.assets[0].uri);
+                        //console.log(source);
+                        try {
+                            const uploadedImage = await uploadImage(response.assets[0].uri);
+                            await UsersApi().updateUser(currentUser.uid, { image: [uploadedImage] });
+                            //console.log('Profile Pic updated for: ', currentUser.id);
+                        } catch (error) {
+                            console.error(error);
+                            Alert.alert("Error", "Couldn't update profile picture.");
+                            return;
+                        }
+                    } else {
+                        console.log('No assets found in response');
+                    }
+                }                
+            });
+        } else {
+            Alert.alert('Permissions not granted', 'Camera permission is required to take a photo.');
+        }
+    };
+
     return (
         <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding: 20, marginTop: 40 }}>
             <View style={{
@@ -184,7 +251,7 @@ const Membership = () => {
                 {climbImageUrl ? (
                     <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />
                 ) : (
-                    <TouchableOpacity onPress={() => { }} style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={uploadSelfie} style={{ justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', backgroundColor: 'white'}}>
                     <Text style={{ color: 'black', fontSize: 50 }}>+</Text>
                     </TouchableOpacity>
                 )}
@@ -196,7 +263,7 @@ const Membership = () => {
                 }}>{user ? user.username : 'No User'}</Text>
             </View>
             {!climbImageUrl && (
-                <TouchableOpacity onPress={() => { }} style={{ padding: 10, backgroundColor: '#FF8100', borderRadius: 5, marginTop: 30 }}>
+                <TouchableOpacity onPress={uploadSelfie} style={{ padding: 10, backgroundColor: '#FF8100', borderRadius: 5, marginTop: 30 }}>
                 <Text style={{ color: 'white' }}>Add photo to unlock membership</Text>
                 </TouchableOpacity>
             )}
