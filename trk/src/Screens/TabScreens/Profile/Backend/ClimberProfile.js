@@ -59,12 +59,12 @@ const ClimberProfile = ({ navigation }) => {
     // const [tapCount, setTapCount] = useState(0);
 
     //For your videos
-    const [addedMedia, setAddedMedia] = useState([]);  //Your Media
-    const { width: deviceWidth } = Dimensions.get('window');
+    // const [addedMedia, setAddedMedia] = useState([]);  //Your Media
+    // const { width: deviceWidth } = Dimensions.get('window');
     // Calculate single video width (33.33% of device width)
-    const videoWidth = deviceWidth * 0.3333;
+    // const videoWidth = deviceWidth * 0.3333;
     // Calculate video height to maintain a 16:9 aspect ratio
-    const videoHeight = videoWidth * (16 / 9);
+    // const videoHeight = videoWidth * (16 / 9);
 
     const [modalVisible, setModalVisible] = useState(false);
     const [currentVideoUrl, setCurrentVideoUrl] = useState('');
@@ -895,14 +895,14 @@ const ClimberProfile = ({ navigation }) => {
                 </View>
                 <View style={{ flexDirection: 'row', marginTop: 15 }}>
                     <View style={{ alignItems: 'center', flex: 1 }}>
-                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{user && user.paid? 'Active': 'Inactive'}</Text>
+                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{user && user.paid ? 'Active' : 'Inactive'}</Text>
                         <Text style={{ color: '#696969' }}>Membership</Text>
                     </View>
                     {/* divider */}
                     <View style={{ borderLeftWidth: 1, borderLeftColor: '#D5D5D5', marginVertical: 5 }}></View>
 
                     <View style={{ alignItems: 'center', flex: 1 }}>
-                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{user && user.paid? 'May 10': 'N/A'}</Text>
+                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{user && user.paid ? 'May 10' : 'N/A'}</Text>
                         <Text style={{ color: '#696969' }}>Cycle renewal</Text>
                     </View>
                 </View>

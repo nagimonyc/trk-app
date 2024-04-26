@@ -258,7 +258,7 @@ exports.createPaymentSheet = functions.https.onRequest(async (req, res) => {
         // Assuming the request body includes amount and optionally currency
         const { amount, currency = 'usd', email = 'nagimo.nyc@nagimo.org' } = req.body;
 
-        const customer = await stripe.customers.create({email: email});
+        const customer = await stripe.customers.create({ email: email });
         const ephemeralKey = await stripe.ephemeralKeys.create(
             { customer: customer.id },
             { apiVersion: '2023-10-16' }
@@ -299,35 +299,27 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
 
     try {
         // Assuming the request body includes amount and optionally currency
-        const { amount, currency = 'usd', email = 'nagimo.nyc@nagimo.org' } = req.body;
-        const customer = await stripe.customers.create({email: email});
+        const { email = 'nagimo.nyc@nagimo.org', metadata } = req.body;
+        const customer = await stripe.customers.create({ email: email });
         const session = await stripe.checkout.sessions.create({
             line_items: [{
-              price_data: {
-                currency: currency,
-                product_data: {
-                  name: 'Nagimo+ Membership',
-                },
-                unit_amount: amount,
-              },
-              quantity: 1,
+                price: 'price_1P9Z16EQO3gNE6xrN2e4Cq4n',  // Replace with your actual price ID
+                quantity: 1,
             }],
-            mode: 'payment',
+            mode: 'subscription',
+            metadata: metadata,
             ui_mode: 'embedded',
             redirect_on_completion: 'never', //Change this if we need to get any particular information
-          });
-      
-          res.json({clientSecret: session.client_secret});
+            customer: customer.id,
+        });
+
+        res.json({ clientSecret: session.client_secret });
 
     } catch (error) {
         console.error("Error creating checkout session:", error);
         res.status(500).send("Internal Server Error");
     }
 });
-
-
-
-
 
 
 
