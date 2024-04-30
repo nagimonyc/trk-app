@@ -13,34 +13,34 @@ function UsersApi() {
 
     function getUsersByForSearch(searchQuery) {
         return ref.where('username', '>=', searchQuery)
-        .where('username', '<=', searchQuery + '\uf8ff')
-        .where('role', '==', 'climber')
-        .limit(10)
-        .get();
+            .where('username', '<=', searchQuery + '\uf8ff')
+            .where('role', '==', 'climber')
+            .limit(10)
+            .get();
     }
 
     function getUsersByForSearchEmail(searchQuery) {
         return ref.where('email', '>=', searchQuery)
-        .where('email', '<=', searchQuery + '\uf8ff')
-        .where('role', '==', 'climber')
-        .limit(10)
-        .get();
+            .where('email', '<=', searchQuery + '\uf8ff')
+            .where('role', '==', 'climber')
+            .limit(10)
+            .get();
     }
 
     function getUsersByForSearchSetter(searchQuery) {
         return ref.where('username', '>=', searchQuery)
-        .where('username', '<=', searchQuery + '\uf8ff')
-        .where('role', '==', 'setter')
-        .limit(10)
-        .get();
+            .where('username', '<=', searchQuery + '\uf8ff')
+            .where('role', '==', 'setter')
+            .limit(10)
+            .get();
     }
 
     function getUsersByForSearchEmailSetter(searchQuery) {
         return ref.where('email', '>=', searchQuery)
-        .where('email', '<=', searchQuery + '\uf8ff')
-        .where('role', '==', 'setter')
-        .limit(10)
-        .get();
+            .where('email', '<=', searchQuery + '\uf8ff')
+            .where('role', '==', 'setter')
+            .limit(10)
+            .get();
     }
 
     //To update the user collection (usernames, etc)

@@ -839,7 +839,7 @@ async function requestUserPermission() {
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
-    console.log('Authorization status:', authStatus);
+    // console.log('Authorization status:', authStatus);
     // Now fetch the FCM token
     const fcmToken = await messaging().getToken();
     if (fcmToken) {

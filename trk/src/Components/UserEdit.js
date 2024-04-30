@@ -47,16 +47,6 @@ const UserEdit = ({ route }) => {
             throw error;
         }
     };
-    const toggleQR = () => {
-        setShowQR(!showQR);
-    };
-
-    // useEffect(() => {
-    //     if (user && user.bio && user.bio.trim() !== '') {
-    //         setInitialBio(user.bio);
-    //         setBio(user.bio);
-    //     }
-    // }, [user]);
 
     //When the data loads, fetches the image of the latest climb to display for the session
     useEffect(() => {
@@ -224,82 +214,7 @@ const UserEdit = ({ route }) => {
                                 <View style={{ color: 'black', display: 'flex', width: '25%', height: '100%', justifyContent: 'center', alignItems: 'flex-start' }}><Text style={{ fontSize: 13, color: 'black', fontWeight: '500' }}>Username</Text></View>
                                 <TextInput style={{ display: 'flex', width: '75%', fontSize: 13, color: 'black', height: '100%', justifyContent: 'center', paddingLeft: 20 }} placeholderTextColor="black" defaultValue={(user && user.username ? user.username : '')} onChangeText={(text) => { setUsername(text.trim()) }}></TextInput>
                             </View>
-                            {/* <View style={{ display: 'flex', flexDirection: 'row', height: '45%', width: '100%', padding: 10, justifyContent: 'center', alignItems: 'flex-start' }}>
-                                <View style={{ color: 'black', display: 'flex', width: '25%', height: '100%', justifyContent: 'center', alignItems: 'flex-start' }}><Text style={{ fontSize: 13, color: 'black', fontWeight: '500' }}>Bio</Text></View>
-                                <TextInput style={{ display: 'flex', width: '75%', fontSize: 13, color: 'black', height: '100%', justifyContent: 'center', paddingLeft: 20, borderWidth: 1, borderColor: 'black', borderRadius: 10 }}
-                                    placeholder="I\'m a routesetter!"
-                                    multiline
-                                    numberOfLines={4} // Adjust based on your needs
-                                    defaultValue={bio}
-                                    onChangeText={text => setBio(text)}
-                                    textAlignVertical="top"
-                                ></TextInput>
-                            </View> */}
                         </View>
-                        {/* <View style={{ width: '100%', display: 'flex', flexDirection: 'column', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginVertical: 20 }}>
-                            <TouchableOpacity
-                                style={{ padding: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f0f0f0' }}
-                                onPress={toggleQR}
-                            >
-                                <Text style={{ color: 'black' }}>Show QR Code</Text>
-                            </TouchableOpacity>
-                            {
-                                showQR && (
-                                    < QRCodeStyled
-                                        data={user.uid}
-                                        style={{ backgroundColor: 'white', borderRadius: 36, overflow: 'hidden', marginBottom: 20 }}
-                                        padding={20}
-                                        pieceSize={8}
-                                        pieceScale={0.7}
-                                        pieceBorderRadius={3}
-                                        isPiecesGlued
-                                        errorCorrectionLevel={'H'}
-                                        preserveAspectRatio="none"
-                                        gradient={{
-                                            type: 'radial',
-                                            options: {
-                                                center: [0.5, 0.5],
-                                                radius: [0.35, 0.35],
-                                                colors: ['#ffffff', '#fe8100'],
-                                                locations: [0, 0],
-                                            },
-                                        }}
-                                        outerEyesOptions={{
-                                            topLeft: {
-                                                borderRadius: [20, 20, 20, 20],
-                                            },
-                                            topRight: {
-                                                borderRadius: [20, 20, 20, 20],
-                                            },
-                                            bottomLeft: {
-                                                borderRadius: [20, 20, 20, 20],
-                                            },
-                                        }}
-                                        innerEyesOptions={{
-                                            borderRadius: 8,
-                                            scale: 0.85,
-                                        }}
-                                        logo={{
-                                            href: require('../../assets/nagimo-logo2.png'),
-                                            padding: 10,
-                                            opacity: 0,
-                                            //hidePieces: false
-                                        }}
-                                        children={() => { return (<View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 20 }}>{climbImageUrl ? <Image source={{ uri: climbImageUrl }} width={70} height={70} borderRadius={10} /> : <ActivityIndicator color="#3498db" />}</View>); }}
-                                    />
-                                )
-                            }
-
-
-
-                            
-                        </View> */}
-                        {/* <View style={{ display: 'flex', flexDirection: 'column', width: '100%', justifyContent: 'center', marginVertical: 10, alignItems: 'center' }}>
-                                <Text style={{ color: 'black', fontWeight: '500', paddingHorizontal: 20, fontSize: 18 }}>My Nagimo Code</Text>
-                            </View> */}
-                        {/* <View style={{ display: 'flex', flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                                <Text style={{ color: 'black', paddingTop: 20, fontWeight: '500', paddingHorizontal: 20, paddingBottom: 10, fontSize: 15 }}>{(user && user.username ? user.username : '')}</Text>
-                            </View> */}
                     </View>
                 </ScrollView>
                 <View style={{ justifyContent: 'center', alignItems: 'center', padding: 10, width: '100%', paddingHorizontal: 10, backgroundColor: 'white' }}>

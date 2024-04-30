@@ -297,10 +297,26 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
         return;
     }
 
+    const { email, metadata } = req.body;
+    const userId = metadata.userId; // Assuming userId is passed in metadata for linking
+
     try {
-        // Assuming the request body includes amount and optionally currency
-        const { email = 'nagimo.nyc@nagimo.org', metadata } = req.body;
-        const customer = await stripe.customers.create({ email: email });
+        let customer;
+        // Check if user already has a Stripe customer ID
+        const userRef = admin.firestore().collection('users').doc(userId);
+        const doc = await userRef.get();
+
+        if (doc.exists && doc.data().stripeCustomerId) {
+            // Use existing customer ID
+            customer = { id: doc.data().stripeCustomerId };
+        } else {
+            // Create a new customer in Stripe
+            customer = await stripe.customers.create({ email });
+            // Store the customer ID in Firestore
+            await userRef.set({ stripeCustomerId: customer.id }, { merge: true });
+        }
+
+        // Create a new checkout session with the customer ID and no redirection
         const session = await stripe.checkout.sessions.create({
             line_items: [{
                 price: 'price_1P9Z16EQO3gNE6xrN2e4Cq4n',  // Replace with your actual price ID
@@ -308,16 +324,50 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
             }],
             mode: 'subscription',
             metadata: metadata,
-            ui_mode: 'embedded',
-            redirect_on_completion: 'never', //Change this if we need to get any particular information
             customer: customer.id,
+            ui_mode: 'embedded',
+            redirect_on_completion: 'never',
         });
 
-        res.json({ clientSecret: session.client_secret });
-
+        // Return session details to the client
+        res.json({ sessionId: session.id, clientSecret: session.client_secret, stripeCustomerId: customer.id });
     } catch (error) {
         console.error("Error creating checkout session:", error);
         res.status(500).send("Internal Server Error");
+    }
+});
+
+
+
+exports.getMembershipDetails = functions.https.onRequest(async (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).send('Method Not Allowed');
+    }
+
+    try {
+        const { customerId } = req.body;
+        if (!customerId) {
+            return res.status(400).send('No customer ID provided');
+        }
+
+        const subscriptions = await stripe.subscriptions.list({
+            customer: customerId,
+            status: 'all',
+            expand: ['data.default_payment_method'],
+        });
+
+        if (subscriptions.data.length === 0) {
+            return res.status(404).send('No subscriptions found for this customer');
+        }
+
+        const subscription = subscriptions.data[0];
+        res.send({
+            status: subscription.status,
+            current_period_end: subscription.current_period_end,
+        });
+    } catch (error) {
+        console.error('Failed to retrieve subscription:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
