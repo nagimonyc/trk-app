@@ -14,6 +14,8 @@ const ClimberProfile = ({ navigation }) => {
     const [user, setUser] = useState(null);
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const fullName = currentUser.firstName ? `${currentUser.firstName} ${currentUser.lastName}` : currentUser.username;
+
 
 
     useFocusEffect(
@@ -146,7 +148,7 @@ const ClimberProfile = ({ navigation }) => {
                     {/* text */}
                     <View style={{}}>
                         <Text style={{ color: 'black', fontSize: 30, fontWeight: '700', marginTop: 15 }}>
-                            {user && user.username ? user.username : ''}
+                            {fullName}
                         </Text>
                     </View>
                 </View>

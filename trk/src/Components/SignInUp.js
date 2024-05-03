@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     width: 345,
     height: 50,
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: 'black'
   },
   googleIcon: {
     width: 20,

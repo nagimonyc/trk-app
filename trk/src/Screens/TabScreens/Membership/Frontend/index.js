@@ -10,6 +10,7 @@ const Membership = () => {
     const [user, setUser] = useState(null);
     const { currentUser } = useContext(AuthContext);
     const [climbImageUrl, setClimbImageUrl] = useState(null);
+    const fullName = currentUser.firstName ? user.firstName + ' ' + user.lastName : '';
 
     useEffect(() => {
         if (currentUser) {
@@ -63,7 +64,7 @@ const Membership = () => {
     };
 
     return (
-        <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding: 20, marginTop: 40 }}>
+        <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding: 20, marginTop: 25 }}>
             {user && user.isMember ? (
                 <LinearGradient
                     colors={['#FFFFFF', '#FF8100']} // White to orange gradient
@@ -77,7 +78,7 @@ const Membership = () => {
                         />
                     </View>
                     <View style={{
-                        width: '60%',
+                        width: '70%',
                         height: '60%',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -99,10 +100,10 @@ const Membership = () => {
                     </View>
                     <Text style={{
                         color: 'black',
-                        fontSize: 20,
+                        fontSize: 28,
                         fontWeight: 'bold',
                         marginTop: 15,
-                    }}>{user ? user.username : 'No User'}</Text>
+                    }}>{user.firstName != undefined ? fullName : ''}</Text>
                     {user && user.isMember && (
                         <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#397538', width: '60%', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, }}>MEMBER</Text>
@@ -150,12 +151,14 @@ const Membership = () => {
                             </TouchableOpacity>
                         )}
                     </View>
+                    {console.log('currentUser', currentUser)}
+                    {console.log('user', user)}
                     <Text style={{
                         color: 'black',
                         fontSize: 20,
                         fontWeight: 'bold',
                         marginTop: 15,
-                    }}>{user ? user.username : 'No User'}</Text>
+                    }}>{user ? fullName : ''}</Text>
                     {user && user.isMember && (
                         <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#397538', width: '60%', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, }}>MEMBER</Text>
@@ -171,9 +174,16 @@ const Membership = () => {
                     <Text style={{ color: 'white' }}>Add photo to unlock membership</Text>
                 </TouchableOpacity>
             )}
-            {climbImageUrl && (
-                <View style={{ padding: 10, borderRadius: 5, marginTop: 30 }}>
-                    <Text style={{ color: 'black' }}>Show membership to staff</Text>
+            {climbImageUrl && currentUser.isMember && (
+                <View style={{ padding: 10, borderRadius: 5, marginTop: 15, flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <Image source={require('../../../../../assets/zondicons_information-solid.png')} style={{ width: 20, height: 20 }} />
+                    <Text style={{ color: 'black', marginLeft: 10 }}>Show membership to staff</Text>
+                </View>
+            )}
+            {climbImageUrl && !currentUser.isMember && (
+                <View style={{ padding: 10, borderRadius: 5, marginTop: 15, flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <Image source={require('../../../../../assets/zondicons_information-solid.png')} style={{ width: 20, height: 20 }} />
+                    <Text style={{ color: 'black', marginLeft: 10 }}>Purchase Membership to Activate Card</Text>
                 </View>
             )}
         </View>
@@ -186,7 +196,8 @@ const styles = StyleSheet.create({
         height: '85%',
         borderRadius: 20,
         flexDirection: 'column',
-        padding: 20
+        padding: 20,
+        alignItems: 'center'
     }
 });
 
