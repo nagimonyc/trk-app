@@ -14,7 +14,7 @@ const UserProfile = ({ navigation }) => {
         <SafeAreaView style={styles.container}>
             <View style={styles.innerContainer}>
 
-                {role === 'climber' ? <ClimberProfile navigation={navigation} /> : <SetterProfile navigation={navigation} />}
+                <ClimberProfile navigation={navigation} />
             </View>
         </SafeAreaView>
     );

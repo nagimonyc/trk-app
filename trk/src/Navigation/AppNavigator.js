@@ -432,7 +432,7 @@ function ProfileStack() {
           headerBackTitleVisible: false,
         })}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Developer_Feedback"
         component={DeveloperFeedbackForm}
         options={{ title: 'Developer Feedback', headerTitleAlign: 'center' }}
@@ -473,7 +473,7 @@ function ProfileStack() {
               navigation={navigation}
             />)
         })}
-      />
+      /> */}
       <Stack.Screen
         name="Edit_User"
         component={UserEdit}
@@ -485,7 +485,7 @@ function ProfileStack() {
             />)
         })}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Detail"
         component={ClimbDetailScreen}
         options={{ title: 'Climb Detail', headerBackTitle: 'Profile', headerTitleAlign: 'center' }}
@@ -499,10 +499,10 @@ function ProfileStack() {
         name="ClimbInputData"
         component={ClimbInputData}
         options={{ title: 'Climb Data', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
-      />
+      /> */}
 
       <Stack.Screen name="Settings" component={Settings} />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Feedback"
         component={FeedbackForm}
         options={{ title: 'Feedback Form', headerBackTitle: 'Back', headerTitleAlign: 'center' }}
@@ -521,7 +521,7 @@ function ProfileStack() {
         name="Climbs_Tracker"
         component={LiveClimbTracker}
         options={{ title: 'Climb Tracker', headerTitleAlign: 'center' }}
-      />
+      /> */}
     </Stack.Navigator>
   );
 }
