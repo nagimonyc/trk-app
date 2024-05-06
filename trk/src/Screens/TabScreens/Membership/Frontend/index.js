@@ -10,7 +10,7 @@ const Membership = () => {
     const [user, setUser] = useState(null);
     const { currentUser } = useContext(AuthContext);
     const [climbImageUrl, setClimbImageUrl] = useState(null);
-    const fullName = currentUser.firstName ? user.firstName + ' ' + user.lastName : '';
+    const fullName = currentUser.firstName ? currentUser.firstName + ' ' + currentUser.lastName : '';
 
     useEffect(() => {
         if (currentUser) {
