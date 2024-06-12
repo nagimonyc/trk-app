@@ -319,10 +319,13 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
         // Create a new checkout session with the customer ID and no redirection
         const session = await stripe.checkout.sessions.create({
             line_items: [{
-                price: 'price_1P9Z16EQO3gNE6xrN2e4Cq4n',  // Replace with your actual price ID
+                price: 'price_1PQxlfEQO3gNE6xr8UsKHtcN',  // Replace with your actual price ID
                 quantity: 1,
             }],
-            mode: 'subscription',
+            phone_number_collection: {
+                enabled: true,
+            },
+            mode: 'payment',
             metadata: metadata,
             customer: customer.id,
             ui_mode: 'embedded',
