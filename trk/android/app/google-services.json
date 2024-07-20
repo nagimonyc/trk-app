@@ -14,7 +14,23 @@
       },
       "oauth_client": [
         {
-          "client_id": "786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com",
+          "client_id": "786555738802-gkgfn47t62799sjol3l26q9g1h21ti13.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nagimo.Nagimo",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "786555738802-pef5glnms8mlu80s28q91jisa9nkh1l5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nagimo.Nagimo",
+            "certificate_hash": "a1c2a98f2172b159fc4acf61cd0781ea3cc54ddf"
+          }
+        },
+        {
+          "client_id": "786555738802-pisnqupfbs7oqfqvba5vb5b83dvf8jfn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -53,7 +69,23 @@
       },
       "oauth_client": [
         {
-          "client_id": "786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com",
+          "client_id": "786555738802-5br6dclev5prrbqjln4sgalomncbu5ar.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nagimo.trk",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "786555738802-nt50t3u6lmhnpt2l7768t7nah01hmkji.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nagimo.trk",
+            "certificate_hash": "a1c2a98f2172b159fc4acf61cd0781ea3cc54ddf"
+          }
+        },
+        {
+          "client_id": "786555738802-pisnqupfbs7oqfqvba5vb5b83dvf8jfn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

@@ -40,7 +40,7 @@ const Settings = () => {
     const [nyuCompIsEnabled, setNyuCompIsEnabled] = useState(false);
 
     useEffect(() => {
-        console.log(currentUser);
+        // console.log(currentUser);
         const fetchSettings = async () => {
             const userUID = currentUser.uid;
             const doc = await firestore().collection('users').doc(userUID).get();

@@ -10,16 +10,23 @@ const Membership = () => {
     const [user, setUser] = useState(null);
     const { currentUser } = useContext(AuthContext);
     const [climbImageUrl, setClimbImageUrl] = useState(null);
-    const fullName = currentUser.firstName ? currentUser.firstName + ' ' + currentUser.lastName : '';
+    const fullName = currentUser ? (currentUser.firstName ? currentUser.firstName + ' ' + currentUser.lastName : '') : '';
 
     useEffect(() => {
         if (currentUser) {
             const fetchUserDetails = async () => {
-                const { getUsersBySomeField } = UsersApi();
-                const userData = await getUsersBySomeField('uid', currentUser.uid);
-                if (userData && userData.docs.length > 0) {
-                    setUser(userData.docs[0].data());
-                    fetchImageURL(userData.docs[0].data().image[0].path);
+                try {
+                    const { getUsersBySomeField } = UsersApi();
+                    const userData = await getUsersBySomeField('uid', currentUser.uid);
+                    if (userData && userData.docs.length > 0) {
+                        const userDoc = userData.docs[0].data();
+                        setUser(userDoc);
+                        if (userDoc.image && userDoc.image.length > 0) {
+                            fetchImageURL(userDoc.image[0].path);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error fetching user details: ", error);
                 }
             };
             fetchUserDetails();
@@ -48,6 +55,7 @@ const Membership = () => {
             if (image) {
                 const uploadResult = await uploadImage(image.path);
                 UsersApi().updateUser(currentUser.uid, { image: [uploadResult] });
+                fetchImageURL(uploadResult.path);
             }
         } catch (error) {
             if (error.code !== 'E_PICKER_CANCELLED') {
@@ -103,15 +111,17 @@ const Membership = () => {
                         fontSize: 28,
                         fontWeight: 'bold',
                         marginTop: 15,
-                    }}>{user.firstName != undefined ? fullName : ''}</Text>
-                    {user && user.isMember && (
+                    }}>{fullName}</Text>
+                    {user.isMember && (
                         <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#397538', width: '60%', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, }}>MEMBER</Text>
-                        </View>)}
-                    {(!user || !user.isMember) && (
+                        </View>
+                    )}
+                    {!user.isMember && (
                         <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#FF8100', width: '60%', justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, }}>NOT A MEMBER</Text>
-                        </View>)}
+                        </View>
+                    )}
                 </LinearGradient>
             ) : (
                 <View style={{
@@ -151,8 +161,6 @@ const Membership = () => {
                             </TouchableOpacity>
                         )}
                     </View>
-                    {console.log('currentUser', currentUser)}
-                    {console.log('user', user)}
                     <Text style={{
                         color: 'black',
                         fontSize: 20,
@@ -174,13 +182,13 @@ const Membership = () => {
                     <Text style={{ color: 'white' }}>Add photo to unlock membership</Text>
                 </TouchableOpacity>
             )}
-            {climbImageUrl && currentUser.isMember && (
+            {climbImageUrl && user && user.isMember && (
                 <View style={{ padding: 10, borderRadius: 5, marginTop: 15, flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                     <Image source={require('../../../../../assets/zondicons_information-solid.png')} style={{ width: 20, height: 20 }} />
                     <Text style={{ color: 'black', marginLeft: 10 }}>Show membership to staff</Text>
                 </View>
             )}
-            {climbImageUrl && !currentUser.isMember && (
+            {climbImageUrl && (!user || !user.isMember) && (
                 <View style={{ padding: 10, borderRadius: 5, marginTop: 15, flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                     <Image source={require('../../../../../assets/zondicons_information-solid.png')} style={{ width: 20, height: 20 }} />
                     <Text style={{ color: 'black', marginLeft: 10 }}>Purchase Membership to Activate Card</Text>

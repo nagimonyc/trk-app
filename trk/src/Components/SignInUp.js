@@ -6,17 +6,12 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 GoogleSignin.configure({
-  webClientId: '786555738802-5g0r4c2i0dho0lcne6j7c3h0p744pnk0.apps.googleusercontent.com', // Use your actual web client ID
+  webClientId: '786555738802-pisnqupfbs7oqfqvba5vb5b83dvf8jfn.apps.googleusercontent.com',
 });
 
 const SignInUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [setterIsEnabled, setSetterIsEnabled] = useState(false);
-  const [nyuCompIsEnabled, setNyuCompIsEnabled] = useState(false);
-
-  const toggleSwitchSetter = () => setSetterIsEnabled(previousState => !previousState);
-  const toggleSwitchNyu = () => setNyuCompIsEnabled(previousState => !previousState);
 
   const handleSignIn = () => {
     if (!email.trim() || !password.trim()) {
@@ -32,7 +27,6 @@ const SignInUp = () => {
       });
   };
 
-
   const handleSignUp = () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'Email and password must not be empty');
@@ -45,12 +39,10 @@ const SignInUp = () => {
         firestore().collection('users').doc(user.uid).set({
           email: user.email,
           uid: user.uid,
-          role: setterIsEnabled ? 'setter' : 'climber',
-          taps: 0,
-          nyuComp: nyuCompIsEnabled,
           timestamp: new Date(),
           username: user.email.split('@')[0],
           isNewUser: true,
+          origin: 'app - signup',
         })
           .then(() => {
             console.log('User added to Firestore');
@@ -76,37 +68,98 @@ const SignInUp = () => {
   const onGoogleButtonPress = async () => {
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-      const { idToken } = await GoogleSignin.signIn();
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
-      const userCredential = await auth().signInWithCredential(googleCredential);
-      console.log('Signed in with Google!');
+      const data = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
 
-      // Handle Firestore user data management
-      manageFirestoreUserData(userCredential);
+      auth()
+        .signInWithCredential(googleCredential)
+        .then(userCredential => {
+          console.log('Signed in with Google!', userCredential);
+          manageFirestoreUserData(userCredential);
+        })
+        .catch(async error => {
+          if (error.code === 'auth/account-exists-with-different-credential') {
+            // Handle account linking
+            const email = error.email;
+            const pendingCred = googleCredential;
+            console.log('Account exists with different credential:', email);
+
+            const methods = await auth().fetchSignInMethodsForEmail(email);
+            console.log('Sign-in methods for email:', methods);
+
+            if (methods.includes(auth.EmailAuthProvider.EMAIL_PASSWORD_SIGN_IN_METHOD)) {
+              const password = prompt('Please provide the password for ' + email);
+
+              auth()
+                .signInWithEmailAndPassword(email, password)
+                .then(userCredential => {
+                  return userCredential.user.linkWithCredential(pendingCred);
+                })
+                .then(userCredential => {
+                  console.log('Accounts successfully linked', userCredential);
+                  manageFirestoreUserData(userCredential);
+                })
+                .catch(linkError => {
+                  console.error('Error linking accounts', linkError);
+                  Alert.alert('Error linking accounts', linkError.message);
+                });
+            } else {
+              Alert.alert('Sign in using the method you originally registered with');
+            }
+          } else {
+            console.error('Google Sign-In Error', error);
+            Alert.alert('Google Sign-In Error', error.message);
+          }
+        });
     } catch (error) {
       console.error('Google Sign-In Error', error);
       Alert.alert('Google Sign-In Error', error.message);
     }
   };
 
+
   // Separate function to manage Firestore user data
   const manageFirestoreUserData = (userCredential) => {
-    if (userCredential.additionalUserInfo.isNewUser) {
-      firestore().collection('users').doc(userCredential.user.uid).set({
-        email: userCredential.user.email,
-        uid: userCredential.user.uid,
-        role: setterIsEnabled ? 'setter' : 'climber',
-        taps: 0,
-        nyuComp: nyuCompIsEnabled,
-        timestamp: new Date(),
-        username: userCredential.user.email.split('@')[0],
-        isNewUser: true,
-      })
-        .then(() => console.log('User added to Firestore'))
-        .catch((error) => console.error('Error adding user to Firestore:', error));
+    try {
+      if (!userCredential) {
+        console.error('User credential is undefined');
+        return;
+      }
+
+      // useful logs. Google holds lots of info on the user, could be used later on.
+      // console.log('User signed in:', userCredential);
+      // console.log('User details:', userCredential.user);
+      // console.log('Additional user info:', userCredential.additionalUserInfo);
+
+      const userRef = firestore().collection('users').doc(userCredential.user.uid);
+
+      if (userCredential.additionalUserInfo.isNewUser) {
+        console.log('User is new');
+        userRef.set({
+          email: userCredential.user.email,
+          uid: userCredential.user.uid,
+          origin: 'app - Google',
+          timestamp: new Date(),
+          username: userCredential.user.email.split('@')[0],
+          isNewUser: true,
+        })
+          .then(() => console.log('New user added to Firestore'))
+          .catch((error) => console.error('Error adding new user to Firestore:', error));
+      } else {
+        console.log('User is existing');
+        userRef.update({
+          isNewUser: false,
+          origin: 'web then app',
+        })
+          .then(() => console.log('Existing user updated in Firestore'))
+          .catch((error) => console.error('Error updating existing user in Firestore:', error));
+      }
+    } catch (error) {
+      console.error('Error in manageFirestoreUserData:', error);
     }
   };
+
 
   async function onAppleButtonPress() {
     const appleAuthRequestResponse = await appleAuth.performRequest({
@@ -122,7 +175,7 @@ const SignInUp = () => {
     const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
 
     const userCredential = await auth().signInWithCredential(appleCredential);
-    //To handle user object creation
+    // To handle user object creation
     manageFirestoreUserData(userCredential);
   }
 
