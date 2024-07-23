@@ -282,7 +282,6 @@ exports.createPaymentSheet = functions.https.onRequest(async (req, res) => {
     }
 });
 
-//Stripe Functions (Server Side)
 exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
     // CORS headers
     res.set('Access-Control-Allow-Origin', '*');
@@ -316,7 +315,7 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
             await userRef.set({ stripeCustomerId: customer.id }, { merge: true });
         }
 
-        // Create a new checkout session with the customer ID and no redirection
+        // Create a new checkout session with the customer ID and promotion code support
         const session = await stripe.checkout.sessions.create({
             line_items: [{
                 price: 'price_1PYr0PEQO3gNE6xr7mThAMNa',  // Replace with your actual price ID
@@ -330,6 +329,7 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
             customer: customer.id,
             ui_mode: 'embedded',
             redirect_on_completion: 'never',
+            allow_promotion_codes: true, // Enable promotion codes
         });
 
         // Return session details to the client
@@ -339,6 +339,10 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+
+
+
 
 
 
