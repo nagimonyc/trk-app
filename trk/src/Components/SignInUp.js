@@ -119,6 +119,8 @@ const SignInUp = () => {
   };
 
 
+
+
   // Separate function to manage Firestore user data
   const manageFirestoreUserData = (userCredential) => {
     try {
