@@ -506,8 +506,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = trk/trk.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 41;
-				DEVELOPMENT_TEAM = F482H28QU6;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = F482H28QU6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = trk/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Nagimo;
@@ -525,6 +527,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagimo.trk;
 				PRODUCT_NAME = trk;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Nagimo Dev";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -538,8 +542,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = trk/trk.entitlements;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 41;
-				DEVELOPMENT_TEAM = F482H28QU6;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = F482H28QU6;
 				INFOPLIST_FILE = trk/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Nagimo;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
@@ -556,6 +562,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nagimo.trk;
 				PRODUCT_NAME = trk;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Nagimo Dev";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
