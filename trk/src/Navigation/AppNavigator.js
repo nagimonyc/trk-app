@@ -35,6 +35,7 @@ import Community from '../Components/Community';
 import New_Share from '../Components/New_Share';
 import Collection from '../Components/Collection';
 import Membership from '../Screens/TabScreens/Membership/Frontend';
+import GymSelection from '../Screens/TabScreens/Membership/Frontend/GymSelection';
 
 import VideoGrid from '../Components/VideoGrid';
 
@@ -644,24 +645,41 @@ function ClimbInputStackScreen() {
   );
 }
 
-// function Membership_Stack() {
-//   console.log('[TEST] MembershipStack called');
-//   return (
-//     <Stack.Navigator>
-//       <Stack.Screen
-//         name="Membership"
-//         component={Membership}
-//         options={{ title: 'Membership', headerTitleAlign: 'center' }}
-//       />
-//     </Stack.Navigator>
-//   )
-// }
+function FullMembershipStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="gymSelection"
+        component={GymSelection}
+        options={{ title: 'Membership', headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Membership"
+        component={Membership}
+        options={{ title: 'Card', headerTitleAlign: 'center' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function BasicMembershipStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Membership"
+        component={Membership}
+        options={{ title: 'Card', headerTitleAlign: 'center' }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 
 function AppTabs() {
   console.log('[TEST] AppTabs called');
-  const { role } = useContext(AuthContext);
+  const { role, currentUser } = useContext(AuthContext);
   const initialRouteName = role === 'setter' ? 'AnalyticsTab' : 'Record';
+  const hasFullAccess = currentUser?.image && currentUser?.isMember;
 
   return (
     <Tab.Navigator initialRouteName={initialRouteName}>
@@ -755,19 +773,17 @@ function AppTabs() {
 
         // />
         <Tab.Screen
-          name='Membership_Stack'
-          component={Membership}
+          name="Membership_Stack"
+          component={hasFullAccess ? FullMembershipStack : BasicMembershipStack}
           options={{
             title: 'Membership',
-            headerShown: true,
-            tabBarIcon: ({ size, focused, color }) => {
-              return (
-                <Image
-                  style={{ width: size, height: size - 2 }}
-                  source={require('../../assets/card_collec_icon.png')}
-                />
-              );
-            },
+            headerShown: false,
+            tabBarIcon: ({ size }) => (
+              <Image
+                style={{ width: size, height: size - 2 }}
+                source={require('../../assets/card_collec_icon.png')}
+              />
+            ),
           }}
         />
       )
