@@ -41,6 +41,9 @@ const GymSelection = () => {
                     <TouchableOpacity onPress={() => handleGymSelection('GP81')} style={styles.button}>
                         <Text style={styles.buttonText}>GP81</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleGymSelection('Test')} style={styles.button}>
+                        <Text style={styles.buttonText}>Test</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
