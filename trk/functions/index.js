@@ -318,7 +318,7 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
         // Create a new checkout session with the customer ID and promotion code support
         const session = await stripe.checkout.sessions.create({
             line_items: [{
-                price: 'price_1PYr0PEQO3gNE6xr7mThAMNa',  // Replace with your actual price ID
+                price: 'price_1PuFeREQO3gNE6xru74cWpgX',  // Replace with your actual price ID
                 quantity: 1,
             }],
             phone_number_collection: {
