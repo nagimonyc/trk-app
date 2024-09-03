@@ -12,6 +12,7 @@
     "postinstall": "npm run nodeify"
   },
   "dependencies": {
+    "@animatereactnative/marquee": "^0.2.0",
     "@flyerhq/react-native-chat-ui": "^1.4.3",
     "@flyerhq/react-native-firebase-chat-core": "^1.4.2",
     "@google-cloud/tasks": "^4.0.1",
@@ -61,7 +62,7 @@
     "react-native-paper": "^5.11.1",
     "react-native-qrcode-scanner": "^1.5.5",
     "react-native-qrcode-styled": "^0.3.0",
-    "react-native-reanimated": "^3.4.2",
+    "react-native-reanimated": "^3.15.1",
     "react-native-safe-area-context": "^4.7.1",
     "react-native-screens": "^3.29.0",
     "react-native-share": "^10.0.2",
