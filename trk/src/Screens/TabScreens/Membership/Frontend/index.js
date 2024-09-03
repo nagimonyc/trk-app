@@ -5,7 +5,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 import { AuthContext } from "../../../../Utils/AuthContext";
 import UsersApi from "../../../../api/UsersApi";
-import Banner from "../../../../Components/Banner";
 import { Marquee } from "@animatereactnative/marquee";
 import { useRoute } from '@react-navigation/native';
 
@@ -109,7 +108,6 @@ const Membership = ({ route }) => {
 
     return (
         <View style={{ flex: 1 }}>
-            {/* <Banner /> */}
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding: 20, marginTop: 25 }}>
                 {user && user.isMember ? (
                     <LinearGradient
