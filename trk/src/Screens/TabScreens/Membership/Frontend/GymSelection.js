@@ -21,7 +21,7 @@ const GymSelection = () => {
         }
 
         // Navigate to Membership screen
-        navigation.navigate('Membership');
+        navigation.navigate('Membership', { gymName });
     };
 
     return (
@@ -38,8 +38,11 @@ const GymSelection = () => {
                     <TouchableOpacity onPress={() => handleGymSelection('Brooklyn Boulders')} style={styles.button}>
                         <Text style={styles.buttonText}>Brooklyn Boulders</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleGymSelection('GP81')} style={styles.button}>
+                    {/* <TouchableOpacity onPress={() => handleGymSelection('GP81')} style={styles.button}>
                         <Text style={styles.buttonText}>GP81</Text>
+                    </TouchableOpacity> */}
+                    <TouchableOpacity onPress={() => handleGymSelection('Island Rock')} style={styles.button}>
+                        <Text style={styles.buttonText}>Island Rock</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleGymSelection('Test')} style={styles.button}>
                         <Text style={styles.buttonText}>Test</Text>

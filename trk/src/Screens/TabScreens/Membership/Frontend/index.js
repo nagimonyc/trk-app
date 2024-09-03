@@ -7,12 +7,17 @@ import { AuthContext } from "../../../../Utils/AuthContext";
 import UsersApi from "../../../../api/UsersApi";
 import Banner from "../../../../Components/Banner";
 import { Marquee } from "@animatereactnative/marquee";
+import { useRoute } from '@react-navigation/native';
 
-const Membership = () => {
+
+const Membership = ({ route }) => {
+    const { gymName } = route.params;
     const [user, setUser] = useState(null);
     const { currentUser } = useContext(AuthContext);
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const fullName = currentUser ? (currentUser.firstName ? currentUser.firstName + ' ' + currentUser.lastName : '') : '';
+    const [currentTime, setCurrentTime] = useState(new Date()); // State for current time
+
 
     useEffect(() => {
         if (currentUser) {
@@ -73,6 +78,35 @@ const Membership = () => {
         return { id: filename, path: storageRef.fullPath, timestamp: new Date().toISOString() };
     };
 
+
+    // Select the image based on the gym name
+    const getGymImage = (gymName) => {
+        switch (gymName) {
+            case 'MetroRock':
+                return require('../../../../../assets/MetroRock-logo.png');
+            case 'Bouldering Project':
+                return require('../../../../../assets/logo-bp-2.png');
+            case 'Brooklyn Boulders':
+                return require('../../../../../assets/BKB-logo.png');
+            case 'GP81':
+                return require('../../../../../assets/GP81-logo.png');
+            case 'Island Rock':
+                return require('../../../../../assets/islandRock-logo.png');
+            case 'Test':
+                return require('../../../../../assets/islandRock-logo.png');
+            default:
+                return require('../../../../../assets/GP81-logo.png'); // Default image if gymName doesn't match
+        }
+    };
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date()); // Update time every second
+        }, 1000);
+
+        return () => clearInterval(timer); // Clean up the interval on component unmount
+    }, []);
+
     return (
         <View style={{ flex: 1 }}>
             {/* <Banner /> */}
@@ -82,18 +116,26 @@ const Membership = () => {
                         colors={['#FFFFFF', '#FF8100']} // White to orange gradient
                         style={styles.gradientStyle}
                     >
-                        <Marquee spacing={20} speed={0.5}>
-                            <View style={{ flexDirection: 'row', width: 250, justifyContent: 'space-around', alignItems: 'center' }}>
+                        <Marquee spacing={20} speed={0.5} style={{ width: '100%', marginVertical: 5, height: 50, justifyContent: 'center' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'space-around', width: 400 }}>
+                                {/* First Image */}
                                 <Image
                                     source={require('../../../../../assets/long-logo.png')}
-                                    style={{ width: '50%', height: 20, aspectRatio: 5, marginTop: 10, marginBottom: 20 }} // Adjust the aspectRatio according to your logo's aspect ratio
+                                    style={{ width: '33.3%', height: '100%', alignSelf: 'center' }} // Flexible width, adjusts to fill available space
                                     resizeMode="contain"
                                 />
+
+                                {/* Second Image */}
                                 <Image
-                                    source={require('../../../../../assets/BKB-logo.png')}
-                                    style={{ width: '40%', height: 20, aspectRatio: 5, marginTop: 10, marginBottom: 20 }} // Adjust the aspectRatio according to your logo's aspect ratio
+                                    source={getGymImage(gymName)}
+                                    style={{ width: '33.3%', height: '100%' }} // Flexible width, adjusts to fill available space
                                     resizeMode="contain"
                                 />
+                                {/* Text */}
+                                {/* Time with seconds */}
+                                <Text style={{ width: '33.3%', fontSize: 16, color: 'black', fontWeight: '600', textAlign: 'center' }}>
+                                    {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                </Text>
                             </View>
                         </Marquee>
                         <View style={{
@@ -216,8 +258,8 @@ const styles = StyleSheet.create({
         height: '85%',
         borderRadius: 20,
         flexDirection: 'column',
-        padding: 20,
-        alignItems: 'center'
+        // padding: 20,
+        alignItems: 'center',
     }
 });
 
