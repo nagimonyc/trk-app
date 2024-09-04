@@ -357,23 +357,77 @@ exports.getMembershipDetails = functions.https.onRequest(async (req, res) => {
             return res.status(400).send('No customer ID provided');
         }
 
-        const subscriptions = await stripe.subscriptions.list({
+        // First, check for scheduled subscriptions (not_started)
+        const schedules = await stripe.subscriptionSchedules.list({
             customer: customerId,
-            status: 'all',
-            expand: ['data.default_payment_method'],
         });
 
-        if (subscriptions.data.length === 0) {
-            return res.status(404).send('No subscriptions found for this customer');
+        if (schedules.data.length > 0) {
+            console.log(`Found ${schedules.data.length} subscription schedules for customer ID: ${customerId}`);
+            const upcomingSchedule = schedules.data.find(schedule => schedule.status === 'not_started');
+
+            if (upcomingSchedule) {
+                // Extract details from the scheduled subscription phase
+                const scheduledPhase = upcomingSchedule.phases[0];
+                console.log('Scheduled Subscription Phase:', JSON.stringify(scheduledPhase, null, 2));
+
+                // Check the metadata to determine the type of scheduled subscription
+                const membershipType = scheduledPhase.metadata && scheduledPhase.metadata.membership_type
+                    ? scheduledPhase.metadata.membership_type
+                    : 'scheduled';  // Default to 'scheduled' if no metadata
+
+                return res.send({
+                    status: membershipType, // This could be "Frozen" or "PaidEarly"
+                    current_period_start: scheduledPhase.start_date,  // You might want to format this timestamp
+                    current_period_end: scheduledPhase.end_date,      // You might want to format this timestamp
+                    subscription: null  // Indicating that it's not yet started
+                });
+            }
         }
 
-        const subscription = subscriptions.data[0];
-        res.send({
-            status: subscription.status,
-            current_period_end: subscription.current_period_end,
+        // If no scheduled subscriptions, then check for active or canceled ones
+        const subscriptions = await stripe.subscriptions.list({
+            customer: customerId,
+            status: 'all', // This will include canceled subscriptions
+            expand: ['data.default_payment_method', 'data.pending_update'],
         });
+
+        let activeSubscription = null;
+        let canceledSubscription = null;
+
+        if (subscriptions.data.length > 0) {
+            // Look for an active subscription
+            activeSubscription = subscriptions.data.find(sub => sub.status === 'active' || sub.status === 'trialing');
+
+            // Look for a canceled subscription
+            canceledSubscription = subscriptions.data.find(sub => sub.status === 'canceled');
+        }
+
+        if (activeSubscription) {
+            // If there's an active subscription, return it
+            console.log('Active subscription found:', JSON.stringify(activeSubscription, null, 2));
+            return res.send({
+                status: activeSubscription.status,
+                current_period_start: activeSubscription.current_period_start,
+                current_period_end: activeSubscription.current_period_end,
+            });
+        }
+
+        if (canceledSubscription) {
+            // If there's a canceled subscription, return it
+            console.log('Canceled subscription found:', JSON.stringify(canceledSubscription, null, 2));
+            return res.send({
+                status: canceledSubscription.status,
+                current_period_start: canceledSubscription.current_period_start,
+                current_period_end: canceledSubscription.current_period_end,
+            });
+        }
+
+        console.log('No active, canceled, or scheduled subscriptions found for this customer.');
+        return res.status(404).send('No active, canceled, or scheduled subscriptions found for this customer.');
+
     } catch (error) {
-        console.error('Failed to retrieve subscription:', error);
+        console.error('Failed to retrieve subscription or schedule:', error);
         res.status(500).send('Internal Server Error');
     }
 });
