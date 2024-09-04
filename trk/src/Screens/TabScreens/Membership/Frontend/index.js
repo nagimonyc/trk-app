@@ -10,7 +10,7 @@ import { useRoute } from '@react-navigation/native';
 
 
 const Membership = ({ route }) => {
-    const { gymName } = route.params;
+    const gymName = route?.params?.gymName || null;
     const [user, setUser] = useState(null);
     const { currentUser } = useContext(AuthContext);
     const [climbImageUrl, setClimbImageUrl] = useState(null);

@@ -6,9 +6,6 @@ import UsersApi from "../../../../api/UsersApi";
 import storage from '@react-native-firebase/storage';
 import admin from '@react-native-firebase/app';
 
-
-//MADE CHANGES TO NOW SHOW USERNAME AND PROFILE PIC (WITH EDIT BUTTON TO LEAD TO EDITING PAGE)
-//Revamped how sessions are created (Only last 5 sessions are fetched as of now)- Next PR will implement pagination
 const ClimberProfile = ({ navigation }) => {
     const { tapCount, currentUser } = useContext(AuthContext);
     const [user, setUser] = useState(null);
@@ -40,16 +37,41 @@ const ClimberProfile = ({ navigation }) => {
     const fetchUserData = async () => {
         try {
             if (currentUser) {
-                const userDoc = await admin.firestore().collection('users').doc(currentUser.uid).get();
+                const userRef = admin.firestore().collection('users').doc(currentUser.uid);
+                const userDoc = await userRef.get();
+
                 if (userDoc.exists) {
                     const userData = userDoc.data();
-                    setUser(userData);
 
-                    // Assuming userData.stripeCustomerId exists and is valid
+                    // Keep existing subscription data and display it
+                    if (userData.subscriptionStatus) {
+                        const storedSubscription = {
+                            status: userData.subscriptionStatus,
+                            current_period_start: userData.currentPeriodStart,
+                            current_period_end: userData.currentPeriodEnd,
+                        };
+                        setUser({ ...userData, subscriptionDetails: storedSubscription });
+                    } else {
+                        setUser(userData); // In case there's no stored subscription yet
+                    }
+
+                    // Fetch fresh subscription info from Stripe in the background and update Firestore
                     if (userData.stripeCustomerId) {
                         const subscription = await fetchStripeSubscription(userData.stripeCustomerId);
-                        userData.subscriptionDetails = subscription;
-                        setUser(userData);  // Update user state with subscription details
+
+                        // Update user data and UI with new subscription details
+                        const updatedUserData = {
+                            ...userData,
+                            subscriptionDetails: subscription,
+                        };
+                        setUser(updatedUserData);
+
+                        // Persist updated subscription details to Firestore
+                        await userRef.update({
+                            subscriptionStatus: subscription.status,
+                            currentPeriodStart: subscription.current_period_start,
+                            currentPeriodEnd: subscription.current_period_end,
+                        });
                     }
                 }
             } else {
@@ -127,6 +149,59 @@ const ClimberProfile = ({ navigation }) => {
         }
     };
 
+    const getSubscriptionText = (StripeStatus, start, end) => {
+        if (!StripeStatus) {
+            return {
+                status: 'No Membership',
+                label: 'No active membership',
+                date: 'N/A',
+            };
+        }
+
+        // const { status, current_period_start, current_period_end } = subscriptionDetails;
+        const status = StripeStatus;
+        const current_period_start = start;
+        const current_period_end = end;
+        switch (status) {
+            case 'active':
+                return {
+                    status: 'Active',
+                    label: 'Cycle renewal',
+                    date: formatDateToEasternTime(current_period_end),
+                };
+            case 'trialing':
+                return {
+                    status: 'Trialing',
+                    label: 'Trial period ends',
+                    date: formatDateToEasternTime(current_period_end),
+                };
+            case 'scheduled':
+                return {
+                    status: 'Scheduled',
+                    label: 'Cycle starts',
+                    date: formatDateToEasternTime(current_period_start),
+                };
+            case 'Frozen':
+                return {
+                    status: 'Frozen',
+                    label: 'Frozen until',
+                    date: formatDateToEasternTime(current_period_start),
+                };
+            case 'canceled':
+                return {
+                    status: 'Cancelled',
+                    label: 'Membership cancelled',
+                    date: formatDateToEasternTime(current_period_end),
+                };
+            default:
+                return {
+                    status: 'Inactive',
+                    label: 'No active subscription',
+                    date: 'N/A',
+                };
+        }
+    };
+
 
     //Scroll View Added for Drag Down Refresh
     return (
@@ -152,18 +227,26 @@ const ClimberProfile = ({ navigation }) => {
                         </Text>
                     </View>
                 </View>
+                {/* Subscription Status and Date */}
                 <View style={{ flexDirection: 'row', marginTop: 15 }}>
                     <View style={{ alignItems: 'center', flex: 1 }}>
-                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{user && user.subscriptionDetails ? `${capitalizeFirstLetter(user.subscriptionDetails.status)}` : 'Inactive'}</Text>
+                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>
+                            {user?.subscriptionDetails ? capitalizeFirstLetter(user.subscriptionDetails.status) : 'Inactive'}
+                        </Text>
                         <Text style={{ color: '#696969' }}>Membership</Text>
                     </View>
-                    {/* divider */}
                     <View style={{ borderLeftWidth: 1, borderLeftColor: '#D5D5D5', marginVertical: 5 }}></View>
-
                     <View style={{ alignItems: 'center', flex: 1 }}>
-                        {/* HERE CHATGPT */}
-                        <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>{user && user.subscriptionDetails ? `${formatDateToEasternTime(user.subscriptionDetails.current_period_end)}` : 'N/A'}</Text>
-                        <Text style={{ color: '#696969' }}>Cycle renewal</Text>
+                        {user?.subscriptionDetails && (
+                            <>
+                                <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>
+                                    {getSubscriptionText(user.subscriptionDetails.status, user.subscriptionDetails.current_period_start, user.subscriptionDetails.current_period_end).date}
+                                </Text>
+                                <Text style={{ color: '#696969' }}>
+                                    {getSubscriptionText(user.subscriptionDetails.status, user.subscriptionDetails.current_period_start, user.subscriptionDetails.current_period_end).label}
+                                </Text>
+                            </>
+                        )}
                     </View>
                 </View>
             </View>
