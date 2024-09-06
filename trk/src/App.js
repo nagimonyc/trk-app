@@ -28,7 +28,7 @@ function App(props) {
   return (
     <PaperProvider>
       {currentUser ? <AppNavigator /> : <AuthScreen />}
-      {/* <Toast /> */}
+      <Toast />
     </PaperProvider>
   );
 }
