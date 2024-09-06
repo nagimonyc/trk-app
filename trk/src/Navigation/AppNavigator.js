@@ -20,68 +20,6 @@ import GymSelection from '../Screens/TabScreens/Membership/Frontend/GymSelection
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const styles = StyleSheet.create({
-  notificationBadge: {
-    position: 'absolute',
-    right: -1, // adjust the position as needed
-    top: -3,  // adjust the position as needed
-    backgroundColor: 'red',
-    borderRadius: 7.5, // Half of the width and height to make it a circle
-    width: 15, // Set a width and height that work for your design
-    height: 15, // Set a width and height that work for your design
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  notificationText: {
-    color: 'white',
-    fontSize: 10, // Make sure the font size allows the text to fit in the badge
-    fontWeight: 'bold',
-    textAlign: 'center', // Center the text horizontally
-    lineHeight: 15, // Match the height of the badge for vertical centering
-  },
-  button: {
-    backgroundColor: 'white',
-    padding: 5,
-    marginRight: 10,
-    marginLeft: 10,
-  },
-  buttonplus: {
-    backgroundColor: '#fe8100',
-    padding: 5,
-    marginRight: 10,
-    marginLeft: 10,
-    color: 'white',
-    borderRadius: 5,
-  },
-  textplus: {
-    color: 'white',
-    textAlign: 'center',
-    fontSize: 12,
-  },
-  button_tracker: {
-    backgroundColor: 'white',
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-    marginLeft: 10,
-    borderColor: '#fe8100',
-    borderWidth: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#4c6a78',
-    textAlign: 'center',
-    fontSize: 12,
-  },
-  text_tracker: {
-    color: '#fe8100',
-    textAlign: 'center',
-  }
-});
-
-
 function ProfileStack() {
   console.log('[TEST] ProfileStack called');
   return (
@@ -106,10 +44,6 @@ function ProfileStack() {
     </Stack.Navigator>
   );
 }
-
-
-
-
 
 
 function FullMembershipStack() {
@@ -202,9 +136,6 @@ async function requestUserPermission() {
     }
   }
 }
-
-
-
 function AppNav(props) {
   console.log('[TEST] AppNav called');
 

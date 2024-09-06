@@ -195,8 +195,6 @@ const SignInUp = () => {
       });
   };
 
-  const onGoogleButtonPressAndroidOnly = Platform.OS === 'android' ? onGoogleButtonPress : undefined;
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.logoView}>
@@ -256,12 +254,6 @@ const SignInUp = () => {
           <Text onPress={handleForgotPassword} style={styles.forgotPasswordText}>
             Reset your password
           </Text>
-          {/* <View style={styles.switchContainer}>
-            <Text>Setter?</Text>
-            <Switch onValueChange={toggleSwitchSetter} value={setterIsEnabled} />
-            <Text>NYU Comp?</Text>
-            <Switch onValueChange={toggleSwitchNyu} value={nyuCompIsEnabled} />
-          </View> */}
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
