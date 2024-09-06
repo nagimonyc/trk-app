@@ -11,7 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { addClimb } from '../../../../Actions/tapActions';
 import tapMessage from '../../../../../assets/tagMessages.json';
-import NetInfo from '@react-native-community/netinfo';
+// import NetInfo from '@react-native-community/netinfo';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
@@ -100,7 +100,7 @@ export const useHomeScreenLogic = (props) => {
         }, [])
     );
     const selectRandomMessage = useCallback(() => {
-        let message;  
+        let message;
         if (role === 'setter') {
             message = tapMessage.RouteSetter[randomIndex(tapMessage.RouteSetter)]
         }
@@ -143,19 +143,19 @@ export const useHomeScreenLogic = (props) => {
         ).start();
     };
 
-    const checkConnectivity = (climbId) => {
-        NetInfo.fetch().then(state => {
-            //console.log("Is connected?", state.isConnected);
-            if (state.isConnected) {
-                //console.log('Navigating');
-                //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true});
-                addClimbWithNetwork(climbId[0]); //No Navigation to Climb Detail, done in record itself
-            } else {
-                dispatch(addClimb(climbId[0], currentUser, role));
-                Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]); //Offline Processing done as usual
-            }
-        });
-    };
+    // const checkConnectivity = (climbId) => {
+    //     NetInfo.fetch().then(state => {
+    //         //console.log("Is connected?", state.isConnected);
+    //         if (state.isConnected) {
+    //             //console.log('Navigating');
+    //             //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true});
+    //             addClimbWithNetwork(climbId[0]); //No Navigation to Climb Detail, done in record itself
+    //         } else {
+    //             dispatch(addClimb(climbId[0], currentUser, role));
+    //             Alert.alert('Offline Action', 'Your action is saved and will be processed when you\'re online.', [{ text: 'OK' }]); //Offline Processing done as usual
+    //         }
+    //     });
+    // };
 
 
 
@@ -420,8 +420,8 @@ export const useHomeScreenLogic = (props) => {
                         throw new Error('Climb data not found');
                     }
                 } else {
-                checkConnectivity(climbId);
-                //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
+                    // checkConnectivity(climbId);
+                    //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
                 }
             } else {
                 throw new Error('Invalid climb ID');
