@@ -221,7 +221,7 @@ const SignInUp = () => {
           />
           <Text style={[{ color: '#7c7c7c', alignSelf: 'flex-start', }]}>Password must contain at least 6 characters.</Text>
           <View style={styles.authButtonsContainer}>
-            <TouchableOpacity onPress={handleSignIn} style={[styles.enterButton, { backgroundColor: 'white', borderColor: '#C3C3C3', marginLeft: 7 }]}>
+            <TouchableOpacity onPress={handleSignIn} style={[styles.enterButton, { backgroundColor: 'white', borderColor: 'C1C1C1', marginLeft: 7 }]}>
               <Text style={[styles.enterText, { color: 'black' }]}>Log In</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignUp} style={[styles.enterButton, { backgroundColor: '#ff8100', borderColor: '#ff8100', marginRight: 7 }]}>
