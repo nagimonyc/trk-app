@@ -44,6 +44,7 @@ import RoomsScreen from '../Components/RoomsScreen';
 import UsersScreen from '../Components/UsersScreen';
 import PayUI from '../Screens/NavScreens/Pay/Frontend';
 import Stats from '../Components/Stats_Profile';
+import Freeze from 'src/Screens/TabScreens/Profile/Frontend/freeze';
 
 //Created FollowPage, and altered name of Tracker (now Live Taps)-> as discussed in the meeting
 //Added live tracker to other components
@@ -475,6 +476,10 @@ function ProfileStack() {
             />)
         })}
       /> */}
+      <Stack.Screen
+        name="Edit Membership"
+        component={Freeze}
+      />
       <Stack.Screen
         name="Edit_User"
         component={UserEdit}
