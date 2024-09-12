@@ -59,7 +59,7 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Nagimo includes a climb photo in the user's climb post</string>
+	<string>Nagimo includes a climb photo in the user&apos;s climb post</string>
 	<key>NSFileProviderDomainUsageDescription</key>
 	<string>Share climb performance image</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -70,6 +70,9 @@
 	<string>Nagimo accesses your photo library to save your profile picture, personalizing your user experience.</string>
 	<key>UIAppFonts</key>
 	<array>
+		<string>DMSans-SemiBold.ttf</string>
+		<string>DMSans-Medium.ttf</string>
+		<string>DMSans-Bold.ttf</string>
 		<string>MaterialCommunityIcons.ttf</string>
 		<string>DMSans-Regular.ttf</string>
 	</array>
