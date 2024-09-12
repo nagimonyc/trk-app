@@ -14,7 +14,6 @@ const ClimberProfile = ({ navigation }) => {
     const fullName = currentUser.firstName ? `${currentUser.firstName} ${currentUser.lastName}` : currentUser.username;
 
 
-
     useFocusEffect(
         React.useCallback(() => {
             const fetchData = async () => {
@@ -29,7 +28,6 @@ const ClimberProfile = ({ navigation }) => {
                     setRefreshing(false);
                 }
             };
-
             fetchData();
         }, [])
     );
@@ -49,6 +47,8 @@ const ClimberProfile = ({ navigation }) => {
                             status: userData.subscriptionStatus,
                             current_period_start: userData.currentPeriodStart,
                             current_period_end: userData.currentPeriodEnd,
+                            isPaused: userData.isPaused,  // Include pause status if present
+                            resumeDate: userData.resumeDate, // Include resume date if present
                         };
                         setUser({ ...userData, subscriptionDetails: storedSubscription });
                     } else {
@@ -68,9 +68,12 @@ const ClimberProfile = ({ navigation }) => {
 
                         // Persist updated subscription details to Firestore
                         await userRef.update({
+                            subscriptionId: subscription.subscriptionId,
                             subscriptionStatus: subscription.status,
                             currentPeriodStart: subscription.current_period_start,
                             currentPeriodEnd: subscription.current_period_end,
+                            isPaused: subscription.isPaused || false,  // Save the paused status
+                            resumeDate: subscription.resumeDate || null, // Save the resume date if paused
                         });
                     }
                 }
@@ -108,6 +111,7 @@ const ClimberProfile = ({ navigation }) => {
             throw error;
         }
     };
+
     const formatDateToEasternTime = (unixTimestamp) => {
         const date = new Date(unixTimestamp * 1000);
         return date.toLocaleString('en-US', { timeZone: 'UTC', month: 'long', day: '2-digit' });
@@ -149,49 +153,75 @@ const ClimberProfile = ({ navigation }) => {
         }
     };
 
-    const getSubscriptionText = (StripeStatus, start, end) => {
-        if (!StripeStatus) {
+    const getSubscriptionText = (StripeStatus, current_period_start, current_period_end, isPaused, resumeDate) => {
+        const currentDate = new Date().getTime() / 1000;  // Obtenir la date actuelle en timestamp UNIX
+        const nextBillingCycle = current_period_end;  // Date de fin du cycle de facturation
+        const resumeDateTimestamp = resumeDate ? new Date(resumeDate).getTime() / 1000 : null;
+
+        // Priorité au statut de Stripe s'il est "cancelled"
+        if (StripeStatus === 'canceled') {
+            if (currentDate <= nextBillingCycle) {
+                return {
+                    status: 'Active',
+                    label: 'Cancels on',
+                    date: formatDateToEasternTime(nextBillingCycle),  // La date de fin du cycle si annulée
+                };
+            } else {
+                // Après la date de fin du cycle, on passe à "Cancelled"
+                return {
+                    status: 'Cancelled',
+                    label: 'Membership cancelled',
+                    date: formatDateToEasternTime(nextBillingCycle),  // Afficher la date d'annulation
+                };
+            }
+        }
+
+        // Si le gel est en place et que nous sommes après la fin du cycle de facturation, mais avant la date de reprise
+        if (isPaused && resumeDateTimestamp && currentDate > nextBillingCycle && currentDate < resumeDateTimestamp) {
             return {
-                status: 'No Membership',
-                label: 'No active membership',
-                date: 'N/A',
+                status: 'Frozen',
+                label: 'Frozen until',
+                date: formatDateToEasternTime(resumeDateTimestamp),
             };
         }
 
-        // const { status, current_period_start, current_period_end } = subscriptionDetails;
-        const status = StripeStatus;
-        const current_period_start = start;
-        const current_period_end = end;
-        switch (status) {
+        // Si un gel est programmé et que l'utilisateur est encore dans sa période active actuelle
+        if (resumeDateTimestamp && currentDate <= nextBillingCycle) {
+            return {
+                status: 'Active',  // Le statut est toujours actif mais avec un freeze en attente
+                label: 'Freeze starts',
+                date: formatDateToEasternTime(nextBillingCycle),  // Date à laquelle le freeze commencera (fin du cycle actuel)
+            };
+        }
+
+        // Si nous sommes avant la fin du cycle de facturation, l'abonnement est toujours actif
+        if (currentDate <= nextBillingCycle) {
+            return {
+                status: 'Active',
+                label: 'Cycle renewal',
+                date: formatDateToEasternTime(nextBillingCycle),  // Date de renouvellement
+            };
+        }
+
+        // Par défaut, renvoyer le statut de Stripe
+        switch (StripeStatus) {
             case 'active':
                 return {
                     status: 'Active',
                     label: 'Cycle renewal',
-                    date: formatDateToEasternTime(current_period_end),
+                    date: formatDateToEasternTime(nextBillingCycle),
                 };
             case 'trialing':
                 return {
                     status: 'Trialing',
                     label: 'Trial period ends',
-                    date: formatDateToEasternTime(current_period_end),
+                    date: formatDateToEasternTime(nextBillingCycle),
                 };
             case 'scheduled':
                 return {
                     status: 'Scheduled',
                     label: 'Cycle starts',
                     date: formatDateToEasternTime(current_period_start),
-                };
-            case 'Frozen':
-                return {
-                    status: 'Frozen',
-                    label: 'Frozen until',
-                    date: formatDateToEasternTime(current_period_start),
-                };
-            case 'canceled':
-                return {
-                    status: 'Cancelled',
-                    label: 'Membership cancelled',
-                    date: formatDateToEasternTime(current_period_end),
                 };
             default:
                 return {
@@ -201,7 +231,6 @@ const ClimberProfile = ({ navigation }) => {
                 };
         }
     };
-
 
     //Scroll View Added for Drag Down Refresh
     return (
@@ -231,7 +260,13 @@ const ClimberProfile = ({ navigation }) => {
                 <View style={{ flexDirection: 'row', marginTop: 15 }}>
                     <View style={{ alignItems: 'center', flex: 1 }}>
                         <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>
-                            {user?.subscriptionDetails ? capitalizeFirstLetter(user.subscriptionDetails.status) : 'Inactive'}
+                            {user?.subscriptionDetails ? capitalizeFirstLetter(getSubscriptionText(
+                                user.subscriptionDetails.status,
+                                user.subscriptionDetails.current_period_start,
+                                user.subscriptionDetails.current_period_end,
+                                user.subscriptionDetails.isPaused,  // Check si c'est en pause
+                                user.subscriptionDetails.resumeDate // Date de reprise si en pause
+                            ).status) : 'Inactive'}
                         </Text>
                         <Text style={{ color: '#696969' }}>Membership</Text>
                     </View>
@@ -240,11 +275,32 @@ const ClimberProfile = ({ navigation }) => {
                         {user?.subscriptionDetails && (
                             <>
                                 <Text style={{ color: 'black', fontSize: 18, fontWeight: '700' }}>
-                                    {getSubscriptionText(user.subscriptionDetails.status, user.subscriptionDetails.current_period_start, user.subscriptionDetails.current_period_end).date}
+                                    {getSubscriptionText(
+                                        user.subscriptionDetails.status,
+                                        user.subscriptionDetails.current_period_start,
+                                        user.subscriptionDetails.current_period_end,
+                                        user.subscriptionDetails.isPaused,
+                                        user.subscriptionDetails.resumeDate
+                                    ).date}
                                 </Text>
-                                <Text style={{ color: '#696969' }}>
-                                    {getSubscriptionText(user.subscriptionDetails.status, user.subscriptionDetails.current_period_start, user.subscriptionDetails.current_period_end).label}
+                                <Text style={{
+                                    color: getSubscriptionText(
+                                        user.subscriptionDetails.status,
+                                        user.subscriptionDetails.current_period_start,
+                                        user.subscriptionDetails.current_period_end,
+                                        user.subscriptionDetails.isPaused,
+                                        user.subscriptionDetails.resumeDate
+                                    ).label === 'Freeze starts' ? 'green' : '#696969' // Mettre en vert si "Freeze starts"
+                                }}>
+                                    {getSubscriptionText(
+                                        user.subscriptionDetails.status,
+                                        user.subscriptionDetails.current_period_start,
+                                        user.subscriptionDetails.current_period_end,
+                                        user.subscriptionDetails.isPaused,
+                                        user.subscriptionDetails.resumeDate
+                                    ).label}
                                 </Text>
+                                {/* <Text>{user.subscriptionId}</Text> */}
                             </>
                         )}
                     </View>
@@ -252,6 +308,18 @@ const ClimberProfile = ({ navigation }) => {
             </View>
             <View style={{ width: '100%', backgroundColor: 'white' }}>
                 <View style={{ paddingHorizontal: 15, marginTop: 20 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Account', { subscriptionId: user.subscriptionId })}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
+                                <Image source={require('../../../../../assets/carbon_account.png')} style={{ width: 25, height: 25 }} />
+                                <Text style={{ color: 'black', marginLeft: 15, fontWeight: 600, fontSize: 16 }}>Account</Text>
+                            </View>
+                            <View style={{ alignItems: 'center', marginRight: 5 }}>
+                                <Image source={require('../../../../../assets/material-symbols_chevron-right.png')} style={{ width: 25, height: 25 }} />
+                            </View>
+                        </View>
+                        <View style={{ height: 1, backgroundColor: '#e0e0e0' }} />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>

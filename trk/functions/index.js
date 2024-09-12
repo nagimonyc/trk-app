@@ -340,12 +340,6 @@ exports.createCheckoutSession = functions.https.onRequest(async (req, res) => {
     }
 });
 
-
-
-
-
-
-
 exports.getMembershipDetails = functions.https.onRequest(async (req, res) => {
     if (req.method !== 'POST') {
         return res.status(405).send('Method Not Allowed');
@@ -357,66 +351,88 @@ exports.getMembershipDetails = functions.https.onRequest(async (req, res) => {
             return res.status(400).send('No customer ID provided');
         }
 
-        // First, check for scheduled subscriptions (not_started)
-        const schedules = await stripe.subscriptionSchedules.list({
-            customer: customerId,
-        });
+        console.log(`Fetching subscription schedules for customer ID: ${customerId}`);
 
-        if (schedules.data.length > 0) {
+        // Fetch planned (not_started) subscriptions first
+        let schedules;
+        try {
+            schedules = await stripe.subscriptionSchedules.list({
+                customer: customerId,
+            });
+        } catch (err) {
+            console.error('Error fetching subscription schedules:', err);
+            return res.status(500).send('Error fetching subscription schedules');
+        }
+
+        if (schedules && schedules.data.length > 0) {
             console.log(`Found ${schedules.data.length} subscription schedules for customer ID: ${customerId}`);
             const upcomingSchedule = schedules.data.find(schedule => schedule.status === 'not_started');
 
             if (upcomingSchedule) {
-                // Extract details from the scheduled subscription phase
+                // Extract the details of the planned subscription phase
                 const scheduledPhase = upcomingSchedule.phases[0];
                 console.log('Scheduled Subscription Phase:', JSON.stringify(scheduledPhase, null, 2));
 
-                // Check the metadata to determine the type of scheduled subscription
                 const membershipType = scheduledPhase.metadata && scheduledPhase.metadata.membership_type
                     ? scheduledPhase.metadata.membership_type
-                    : 'scheduled';  // Default to 'scheduled' if no metadata
+                    : 'scheduled';  // Default to 'scheduled' if no metadata is found
 
+                console.log('Found upcoming schedule with ID:', upcomingSchedule.id);
                 return res.send({
-                    status: membershipType, // This could be "Frozen" or "PaidEarly"
-                    current_period_start: scheduledPhase.start_date,  // You might want to format this timestamp
-                    current_period_end: scheduledPhase.end_date,      // You might want to format this timestamp
-                    subscription: null  // Indicating that it's not yet started
+                    subscriptionId: upcomingSchedule.id,
+                    status: membershipType,
+                    current_period_start: scheduledPhase.start_date,
+                    current_period_end: scheduledPhase.end_date,
+                    subscription: null
                 });
             }
         }
 
-        // If no scheduled subscriptions, then check for active or canceled ones
-        const subscriptions = await stripe.subscriptions.list({
-            customer: customerId,
-            status: 'all', // This will include canceled subscriptions
-            expand: ['data.default_payment_method', 'data.pending_update'],
-        });
+        console.log(`No upcoming subscription schedules for customer ID: ${customerId}`);
+
+        // If no planned subscription, check active or canceled subscriptions
+        let subscriptions;
+        try {
+            subscriptions = await stripe.subscriptions.list({
+                customer: customerId,
+                status: 'all', // Includes canceled subscriptions
+                expand: ['data.default_payment_method', 'data.pending_update'],
+            });
+        } catch (err) {
+            console.error('Error fetching subscriptions:', err);
+            return res.status(500).send('Error fetching subscriptions');
+        }
 
         let activeSubscription = null;
         let canceledSubscription = null;
 
         if (subscriptions.data.length > 0) {
-            // Look for an active subscription
+            // Find an active subscription
             activeSubscription = subscriptions.data.find(sub => sub.status === 'active' || sub.status === 'trialing');
-
-            // Look for a canceled subscription
             canceledSubscription = subscriptions.data.find(sub => sub.status === 'canceled');
         }
 
         if (activeSubscription) {
-            // If there's an active subscription, return it
-            console.log('Active subscription found:', JSON.stringify(activeSubscription, null, 2));
+            console.log('Found active subscription with ID:', activeSubscription.id);
+
+            // Check if the subscription is paused
+            const isPaused = activeSubscription.pause_collection ? true : false;
+            const resumeDate = activeSubscription.pause_collection ? activeSubscription.pause_collection.resumes_at : null;
+
             return res.send({
+                subscriptionId: activeSubscription.id,
                 status: activeSubscription.status,
                 current_period_start: activeSubscription.current_period_start,
                 current_period_end: activeSubscription.current_period_end,
+                isPaused: isPaused,
+                resumeDate: resumeDate
             });
         }
 
         if (canceledSubscription) {
-            // If there's a canceled subscription, return it
-            console.log('Canceled subscription found:', JSON.stringify(canceledSubscription, null, 2));
+            console.log('Found canceled subscription with ID:', canceledSubscription.id);
             return res.send({
+                subscriptionId: canceledSubscription.id,
                 status: canceledSubscription.status,
                 current_period_start: canceledSubscription.current_period_start,
                 current_period_end: canceledSubscription.current_period_end,
@@ -432,8 +448,293 @@ exports.getMembershipDetails = functions.https.onRequest(async (req, res) => {
     }
 });
 
+exports.pauseSubscription = functions.https.onRequest(async (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).send('Method Not Allowed');
+    }
+
+    const { subscriptionId, endDate } = req.body;
+
+    if (!subscriptionId || !endDate) {
+        return res.status(400).send('Subscription ID and End Date are required');
+    }
+
+    console.log('END DATE IS:', endDate);
+
+    try {
+        // Manually parse the date as UTC by splitting the date string and constructing the UTC date.
+        const [month, day, year] = endDate.split(' ');
+
+        const endDateObj = new Date(Date.UTC(
+            parseInt(year),                      // Year (e.g., 2024)
+            new Date(`${month} 1, ${year}`).getMonth(),  // Convert month name to number (0-based)
+            parseInt(day)                        // Day of the month
+        ));
+
+        // Add one day to the parsed end date
+        endDateObj.setUTCDate(endDateObj.getUTCDate() + 1);
+
+        // Validate if the date is correctly parsed
+        if (isNaN(endDateObj.getTime())) {
+            return res.status(400).send({
+                success: false,
+                error: 'Invalid date format for endDate. Please provide a valid date in a recognizable format.'
+            });
+        }
+
+        const endDateTimestamp = Math.floor(endDateObj.getTime() / 1000); // Convert to Unix timestamp
+
+        // Check if endDate is in the past
+        if (endDateTimestamp <= Math.floor(Date.now() / 1000)) {
+            return res.status(400).send({
+                success: false,
+                error: 'End date must be in the future.'
+            });
+        }
+
+        console.log('END DATE TIMESTAMP IS:', endDateTimestamp);
+
+        // Pause subscription until the provided endDate
+        const subscription = await stripe.subscriptions.update(subscriptionId, {
+            pause_collection: {
+                behavior: 'void', // Options: 'void', 'mark_uncollectible', or 'keep_as_draft'
+                resumes_at: endDateTimestamp
+            }
+        });
+
+        return res.status(200).send({
+            success: true,
+            message: `Subscription paused until ${endDate}`,
+            subscription
+        });
+    } catch (error) {
+        console.error('Error pausing subscription:', error);
+        return res.status(500).send({
+            success: false,
+            error: 'Failed to pause subscription',
+            details: error.message // Include detailed error for easier debugging
+        });
+    }
+});
+
+exports.cancelSubscription = functions.https.onRequest(async (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).send('Method Not Allowed');
+    }
+
+    const { subscriptionId } = req.body;
+
+    if (!subscriptionId) {
+        return res.status(400).send('No subscription ID provided');
+    }
+
+    try {
+        // Cancel the subscription on Stripe
+        const subscription = await stripe.subscriptions.cancel(subscriptionId);
+
+        // Return the canceled subscription details
+        return res.status(200).send({
+            success: true,
+            message: "Subscription canceled successfully",
+            subscription
+        });
+    } catch (error) {
+        console.error('Error canceling subscription:', error);
+        return res.status(500).send({
+            success: false,
+            error: 'Failed to cancel subscription'
+        });
+    }
+});
 
 
+exports.scheduleResumeTask = functions.https.onRequest(async (req, res) => {
+    const { subscriptionId, userId, resumeDate } = req.body;
+
+    // Ensure required parameters are present
+    if (!subscriptionId || !userId || !resumeDate) {
+        return res.status(400).send('Missing required parameters');
+    }
+
+    const projectId = 'trk-app-505a1';
+    const queue = 'resumeQueue';
+    const location = 'us-central1'; // Update if different
+    const url = 'https://us-central1-trk-app-505a1.cloudfunctions.net/resumeSubscription';
+
+    const parent = client.queuePath(projectId, location, queue);
+
+    const targetResumeTime = new Date(resumeDate);
+    const currentTime = new Date();
+    const timeDiffInHours = (targetResumeTime - currentTime) / (1000 * 60 * 60); // Calculate time difference in hours
+
+    // If the task is less than or equal to 720 hours (30 days) in the future
+    if (timeDiffInHours <= 720) {
+        try {
+            await scheduleTask(parent, url, subscriptionId, targetResumeTime, userId);
+            return res.status(200).send({
+                success: true,
+                message: `Task scheduled for ${resumeDate}`
+            });
+        } catch (error) {
+            console.error('Error scheduling task:', error);
+            return res.status(500).send({ success: false, error: 'Failed to schedule task' });
+        }
+    } else {
+        // If the task is more than 30 days in the future, break it into 30-day chunks
+        let intermediateDate = new Date(currentTime.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+        try {
+            await scheduleIntermediateTask(parent, url, subscriptionId, intermediateDate, targetResumeTime, userId);
+            return res.status(200).send({
+                success: true,
+                message: `Intermediate task scheduled to break into chunks until ${resumeDate}`
+            });
+        } catch (error) {
+            console.error('Error scheduling intermediate task:', error);
+            return res.status(500).send({ success: false, error: 'Failed to schedule intermediate task' });
+        }
+    }
+});
+
+// Helper function to schedule the task
+async function scheduleTask(parent, url, subscriptionId, targetDate, userId) {
+    const payload = { subscriptionId };
+    const convertedPayload = Buffer.from(JSON.stringify(payload)).toString('base64');
+    const resumeTime = Math.floor(targetDate.getTime() / 1000);
+
+    const task = {
+        httpRequest: {
+            httpMethod: 'POST',
+            url: url,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: convertedPayload,
+        },
+        scheduleTime: { seconds: resumeTime },
+    };
+
+    const [response] = await client.createTask({ parent, task });
+    const taskId = response.name.split('/').pop();
+
+    // Store the task ID in Firestore under the user's document
+    await admin.firestore().collection('users').doc(userId).update({ taskId });
+}
+
+// Helper function to schedule an intermediate task
+async function scheduleIntermediateTask(parent, url, subscriptionId, intermediateDate, finalResumeDate, userId) {
+    const intermediatePayload = {
+        subscriptionId,
+        nextResumeDate: finalResumeDate // Carry forward the final resume date
+    };
+
+    const convertedPayload = Buffer.from(JSON.stringify(intermediatePayload)).toString('base64');
+    const intermediateTime = Math.floor(intermediateDate.getTime() / 1000);
+
+    const task = {
+        httpRequest: {
+            httpMethod: 'POST',
+            url: 'https://us-central1-trk-app-505a1.cloudfunctions.net/scheduleResumeTask', // Recursive call to create next task
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: convertedPayload,
+        },
+        scheduleTime: { seconds: intermediateTime },
+    };
+
+    const [response] = await client.createTask({ parent, task });
+    const taskId = response.name.split('/').pop();
+
+    // Store the task ID in Firestore
+    await admin.firestore().collection('users').doc(userId).update({ taskId });
+}
+
+exports.resumeSubscription = functions.https.onRequest(async (req, res) => {
+    const { subscriptionId } = req.body;
+
+    if (!subscriptionId) {
+        return res.status(400).send('No subscription ID provided');
+    }
+
+    try {
+        // Resume subscription by clearing the pause collection
+        const subscription = await stripe.subscriptions.update(subscriptionId, {
+            pause_collection: null, // This resumes the subscription
+        });
+
+        res.status(200).send({
+            success: true,
+            message: 'Subscription resumed successfully',
+            subscription,
+        });
+    } catch (error) {
+        console.error('Error resuming subscription:', error);
+        res.status(500).send({
+            success: false,
+            error: 'Failed to resume subscription',
+        });
+    }
+});
+
+
+exports.cancelScheduledResumeTask = functions.https.onRequest(async (req, res) => {
+    const { userId, subscriptionId } = req.body;
+
+    if (!userId || !subscriptionId) {
+        return res.status(400).send('User ID and Subscription ID are required');
+    }
+
+    try {
+        // Retrieve Task ID from Firestore
+        const userDoc = await admin.firestore().collection('users').doc(userId).get();
+        const taskId = userDoc.data().taskId;
+
+        // Step 1: Cancel the task in Google Cloud Tasks
+        if (taskId) {
+            const projectId = 'trk-app-505a1';
+            const queue = 'resumeQueue';
+            const location = 'us-central1';
+
+            const taskPath = client.taskPath(projectId, location, queue, taskId);
+            await client.deleteTask({ name: taskPath }); // Cancel the task
+
+            // Remove Task ID from Firestore after deletion
+            await admin.firestore().collection('users').doc(userId).update({
+                taskId: admin.firestore.FieldValue.delete()
+            });
+
+            console.log('Task canceled and Task ID removed from Firestore.');
+        } else {
+            console.log('No task found to cancel.');
+        }
+
+        // Step 2: Update Stripe to remove the pause collection
+        const subscription = await stripe.subscriptions.update(subscriptionId, {
+            pause_collection: null, // This resumes the subscription by removing the pause
+        });
+
+        console.log('Pause collection removed from subscription in Stripe.');
+
+        // Step 3: Update Firestore to reflect that the membership is no longer paused
+        await admin.firestore().collection('users').doc(userId).update({
+            isPaused: false,
+            resumeDate: null
+        });
+
+        console.log('User subscription updated in Firestore.');
+
+        res.status(200).send({
+            success: true,
+            message: 'Scheduled task canceled, Stripe subscription updated, and Firestore data cleared.'
+        });
+    } catch (error) {
+        console.error('Error canceling task or updating subscription:', error);
+        res.status(500).send({
+            success: false,
+            error: 'Failed to cancel scheduled task or update subscription.'
+        });
+    }
+});
 
 //Notification styling and packaging
 async function sendNotificationToUser(fcmToken, tapId, userId) {
@@ -469,4 +770,3 @@ async function sendNotificationToUser(fcmToken, tapId, userId) {
 
     await admin.messaging().send(message);
 }
-
