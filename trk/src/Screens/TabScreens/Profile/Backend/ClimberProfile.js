@@ -195,7 +195,7 @@ const ClimberProfile = ({ navigation }) => {
         }
 
         // Si nous sommes avant la fin du cycle de facturation, l'abonnement est toujours actif
-        if (currentDate <= nextBillingCycle) {
+        if (StripeStatus !== 'scheduled' && currentDate <= nextBillingCycle) {
             return {
                 status: 'Active',
                 label: 'Cycle renewal',

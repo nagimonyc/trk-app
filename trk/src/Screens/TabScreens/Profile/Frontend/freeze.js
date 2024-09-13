@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { AuthContext } from '../../../../Utils/AuthContext';
 import { formatDateToEasternTime } from '../../../../Utils/dateHelpers'; // Assuming both helper functions exist
@@ -24,6 +24,20 @@ const Freeze = ({ navigation }) => {
             setFreezeConfirmed(true);
         }
     }, [currentUser]);
+
+    const isValidUnixTimestamp = (timestamp) => {
+        const date = new Date(timestamp * 1000);
+        return date instanceof Date && !isNaN(date);
+    };
+
+    const formatDateConditionally = (date) => {
+        if (isValidUnixTimestamp(date)) {
+            return formatDateToEasternTime(date);
+        } else {
+            // Assuming the date is already in a readable format or needs another type of formatting
+            return date;
+        }
+    };
 
     const showEndDatePicker = () => {
         setEndDatePickerVisibility(true);
@@ -137,6 +151,8 @@ const Freeze = ({ navigation }) => {
 
     const title = freezeConfirmed ? 'Manage Freeze' : 'Freeze Plan';
 
+    const formattedResumeDate = formatDateConditionally(currentUser?.resumeDate);
+
     return (
         <View style={{ marginHorizontal: 15 }}>
             <Text style={styles.title}>{title}</Text>
@@ -148,7 +164,7 @@ const Freeze = ({ navigation }) => {
             {freezeConfirmed ? (
                 <>
                     <Text style={styles.infoText}>
-                        Currently, your membership will be frozen from {getFormattedBillingCycleEndDate()} until {endDate}.
+                        Currently, your membership will be frozen from {getFormattedBillingCycleEndDate()} until {formattedResumeDate}.
                     </Text>
 
                     <View style={styles.buttonContainer}>
@@ -196,6 +212,7 @@ const Freeze = ({ navigation }) => {
         </View>
     );
 };
+// fronzen, date 1, date 2 -> orange Nagimo
 
 const styles = StyleSheet.create({
     title: {
@@ -211,7 +228,7 @@ const styles = StyleSheet.create({
         color: '#686868',
     },
     infoText: {
-        fontFamily: "DMSans-Regular",
+        fontFamily: "DMSans-SemiBold",
         fontSize: 14,
         marginTop: 10,
         color: '#007AFF',
