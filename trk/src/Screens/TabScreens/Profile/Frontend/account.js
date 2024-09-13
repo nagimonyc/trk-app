@@ -3,16 +3,16 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from "react-na
 import nagimoLogo from '../../../../../assets/nagimo-logo.png';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from "../../../../Utils/AuthContext";
-import { formatDateToEasternTime, calculateDaysBetween } from '../../../../Utils/dateHelpers'; // Assuming you have date utility functions
+import { formatDateToEasternTime, calculateDaysBetween } from '../../../../Utils/dateHelpers';
 
 const Account = ({ route }) => {
     const navigation = useNavigation();
     const [isCanceling, setIsCanceling] = useState(false);
+    const [localIsCancelled, setLocalIsCancelled] = useState(false);  // Local state to track cancellation
     const subscriptionId = route.params.subscriptionId;
     const { currentUser } = useContext(AuthContext);
 
-    // Check if the subscription is already canceled
-    const isCancelled = currentUser.subscriptionStatus === "canceled";
+    const isCancelled = currentUser.subscriptionStatus === "canceled";  // Check if the subscription is already canceled
     const isPaused = currentUser.isPaused;
     const currentPeriodEnd = currentUser.currentPeriodEnd;
     const resumeDate = currentUser.resumeDate;
@@ -23,16 +23,13 @@ const Account = ({ route }) => {
     let renewalText = '';
 
     if (isPaused && resumeDate && Date.now() / 1000 > currentPeriodEnd) {
-        // If the membership is frozen and we are past the current billing cycle but before the resume date
         membershipText = 'Membership frozen';
         renewalText = `Freeze ends ${formatDateToEasternTime(resumeDate)}`;
     } else if (isPaused && Date.now() / 1000 <= currentPeriodEnd) {
-        // If the membership is active but a freeze is scheduled
         daysLeft = calculateDaysBetween(Date.now(), currentPeriodEnd * 1000);
         membershipText = `${daysLeft} days left`;
         renewalText = `Freeze starts ${formatDateToEasternTime(currentPeriodEnd)}`;
     } else if (Date.now() / 1000 <= currentPeriodEnd) {
-        // If the membership is active and no freeze is in effect
         daysLeft = calculateDaysBetween(Date.now(), currentPeriodEnd * 1000);
         membershipText = `${daysLeft} days left`;
         renewalText = `Renews ${formatDateToEasternTime(currentPeriodEnd)}`;
@@ -70,6 +67,9 @@ const Account = ({ route }) => {
 
             // Notify the user about successful cancellation
             Alert.alert('Success', 'Your subscription and any scheduled task have been canceled.');
+
+            // Update the local state to reflect that the subscription is canceled
+            setLocalIsCancelled(true);
         } catch (error) {
             console.error('Failed to cancel subscription or task:', error);
             Alert.alert('Error', 'Failed to cancel subscription or task.');
@@ -77,7 +77,6 @@ const Account = ({ route }) => {
             setIsCanceling(false);
         }
     };
-
 
     // Confirmation pop-up before cancellation
     const confirmCancel = () => {
@@ -95,7 +94,6 @@ const Account = ({ route }) => {
     return (
         <View style={{ marginHorizontal: 15 }}>
             <Text style={styles.title}>Account</Text>
-            {/* box */}
             <View style={{ borderWidth: 1, borderRadius: 5, borderColor: '#D6D6D6', marginTop: 30, backgroundColor: '#FCF7F3' }}>
                 <View style={{ flexDirection: 'row', margin: 15 }}>
                     <View style={{ flex: 0.2 }}>
@@ -113,16 +111,14 @@ const Account = ({ route }) => {
                         <TouchableOpacity
                             style={[
                                 styles.freezeButton,
-                                isCancelled ? styles.disabledButton : null // Applique un style désactivé si annulé
+                                isCancelled || localIsCancelled || isCanceling ? styles.disabledButton : null
                             ]}
                             onPress={() => {
-                                if (isCancelled) {
+                                if (isCancelled || localIsCancelled) {
                                     Alert.alert('Action not allowed', 'Your subscription is cancelled. You cannot freeze your plan.');
                                 } else if (isPaused) {
-                                    // Si l'abonnement est en pause, gérer la gestion du gel
                                     navigation.navigate('Freeze', { subscriptionId: subscriptionId, userId: currentUser.uid });
                                 } else {
-                                    // Montrer une alerte si l'abonnement n'est pas encore gelé
                                     Alert.alert(
                                         "Freeze Membership",
                                         "You can freeze your membership from the next billing cycle until your chosen end date. Your billing cycle will reset to the end date.",
@@ -134,7 +130,7 @@ const Account = ({ route }) => {
                                     );
                                 }
                             }}
-                            disabled={isCancelled} // Désactive le bouton si l'abonnement est annulé
+                            disabled={isCancelled || localIsCancelled || isCanceling} // Disable the button if canceled
                         >
                             <Text style={styles.buttonText}>
                                 {isPaused ? 'Manage Freeze' : 'Freeze plan'}
@@ -145,13 +141,13 @@ const Account = ({ route }) => {
                         <TouchableOpacity
                             style={[
                                 styles.cancelButton,
-                                isCancelled || isCanceling ? styles.disabledButton : null // Applique le style désactivé
+                                isCancelled || localIsCancelled || isCanceling ? styles.disabledButton : null
                             ]}
                             onPress={confirmCancel}
-                            disabled={isCancelled || isCanceling} // Désactive le bouton si annulé ou en cours d'annulation
+                            disabled={isCancelled || localIsCancelled || isCanceling}
                         >
                             <Text style={styles.buttonText}>
-                                {isCancelled ? 'Cancelled' : isCanceling ? 'Canceling...' : 'Cancel plan'}
+                                {isCancelled || localIsCancelled ? 'Cancelled' : isCanceling ? 'Canceling...' : 'Cancel plan'}
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -168,7 +164,7 @@ const styles = StyleSheet.create({
     freezeButton: { height: 32.5, borderRadius: 15, backgroundColor: 'black', alignItems: 'center', justifyContent: 'center' },
     cancelButton: { height: 32.5, borderRadius: 15, backgroundColor: '#ff6633', alignItems: 'center', justifyContent: 'center' },
     buttonText: { fontFamily: "DMSans-SemiBold", fontSize: 14, color: 'white' },
-    disabledButton: { backgroundColor: '#d3d3d3' } // Gray out button when disabled
+    disabledButton: { backgroundColor: '#d3d3d3' }
 });
 
 export default Account;
