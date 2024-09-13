@@ -95,7 +95,7 @@ const Freeze = ({ navigation }) => {
             const userRef = admin.firestore().collection('users').doc(currentUser.uid);
             await userRef.update({
                 isPaused: true,
-                resumeDate: Math.floor(new Date(endDate).getTime() / 1000)
+                resumeDate: endDate
             });
 
             setFreezeConfirmed(true);
