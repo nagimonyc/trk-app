@@ -6,7 +6,6 @@ import storage from '@react-native-firebase/storage';
 import { AuthContext } from "../../../../Utils/AuthContext";
 import UsersApi from "../../../../api/UsersApi";
 import { Marquee } from "@animatereactnative/marquee";
-import { useRoute } from '@react-navigation/native';
 
 
 const Membership = ({ route }) => {
@@ -20,22 +19,7 @@ const Membership = ({ route }) => {
 
     useEffect(() => {
         if (currentUser) {
-            const fetchUserDetails = async () => {
-                try {
-                    const { getUsersBySomeField } = UsersApi();
-                    const userData = await getUsersBySomeField('uid', currentUser.uid);
-                    if (userData && userData.docs.length > 0) {
-                        const userDoc = userData.docs[0].data();
-                        setUser(userDoc);
-                        if (userDoc.image && userDoc.image.length > 0) {
-                            fetchImageURL(userDoc.image[0].path);
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error fetching user details: ", error);
-                }
-            };
-            fetchUserDetails();
+            fetchAndUpdateUserData();
         }
     }, [currentUser]);
 
@@ -77,6 +61,88 @@ const Membership = ({ route }) => {
         return { id: filename, path: storageRef.fullPath, timestamp: new Date().toISOString() };
     };
 
+    const fetchStripeSubscription = async (customerId) => {
+        try {
+            const response = await fetch(`https://us-central1-trk-app-505a1.cloudfunctions.net/getMembershipDetails`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ customerId }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            if (response.headers.get("content-type")?.includes("application/json")) {
+                return await response.json();
+            } else {
+                let responseBody = await response.text();
+                throw new Error('Expected JSON response, got: ' + responseBody);
+            }
+        } catch (error) {
+            console.error('Failed to fetch subscription details:', error);
+            throw error;
+        }
+    };
+
+
+    const fetchAndUpdateUserData = async () => {
+        try {
+            const { getUsersBySomeField, updateUser } = UsersApi();
+            const userDataResponse = await getUsersBySomeField('uid', currentUser.uid);
+
+            if (userDataResponse && userDataResponse.docs.length > 0) {
+                let userData = userDataResponse.docs[0].data();
+
+                // Fetch image URL if image exists
+                if (userData.image && userData.image.length > 0) {
+                    await fetchImageURL(userData.image[0].path);
+                }
+
+                // Keep existing subscription data and display it
+                if (userData.subscriptionStatus) {
+                    const storedSubscription = {
+                        status: userData.subscriptionStatus,
+                        current_period_start: userData.currentPeriodStart,
+                        current_period_end: userData.currentPeriodEnd,
+                        isPaused: userData.isPaused,
+                        resumeDate: userData.resumeDate,
+                    };
+                    userData = { ...userData, subscriptionDetails: storedSubscription };
+                }
+
+                // Fetch fresh subscription info from Stripe and update Firestore
+                if (userData.stripeCustomerId) {
+                    const subscription = await fetchStripeSubscription(userData.stripeCustomerId);
+
+                    // Update user data with new subscription details
+                    userData = {
+                        ...userData,
+                        subscriptionDetails: subscription,
+                    };
+
+                    // Persist updated subscription details to Firestore
+                    await updateUser(currentUser.uid, {
+                        subscriptionId: subscription.subscriptionId,
+                        subscriptionStatus: subscription.status,
+                        currentPeriodStart: subscription.current_period_start,
+                        currentPeriodEnd: subscription.current_period_end,
+                        isPaused: subscription.isPaused || false,
+                        resumeDate: subscription.resumeDate || null,
+                    });
+                }
+
+                // Finally, set the user state
+                setUser(userData);
+            } else {
+                console.error('User data not found');
+            }
+        } catch (error) {
+            console.error('Failed to fetch and update user data:', error);
+        }
+    };
 
     // Select the image based on the gym name
     const getGymImage = (gymName) => {
@@ -91,8 +157,10 @@ const Membership = ({ route }) => {
                 return require('../../../../../assets/GP81-logo.png');
             case 'Island Rock':
                 return require('../../../../../assets/islandRock-logo.png');
+            case 'Method':
+                return require('../../../../../assets/method-logo.png');
             case 'Test':
-                return require('../../../../../assets/islandRock-logo.png');
+                return require('../../../../../assets/method-logo.png');
             default:
                 return require('../../../../../assets/GP81-logo.png'); // Default image if gymName doesn't match
         }
@@ -109,7 +177,7 @@ const Membership = ({ route }) => {
     return (
         <View style={{ flex: 1 }}>
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center', padding: 20, marginTop: 25 }}>
-                {user && user.isMember ? (
+                {currentUser && currentUser.subscriptionStatus == "active" ? (
                     <LinearGradient
                         colors={['#FFFFFF', '#FF8100']} // White to orange gradient
                         style={styles.gradientStyle}
@@ -163,12 +231,12 @@ const Membership = ({ route }) => {
                             fontWeight: 'bold',
                             marginTop: 15,
                         }}>{fullName}</Text>
-                        {user.isMember && (
+                        {currentUser.subscriptionStatus == "active" && (
                             <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#397538', width: '60%', justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, }}>MEMBER</Text>
                             </View>
                         )}
-                        {!user.isMember && (
+                        {!currentUser.subscriptionStatus == "active" && (
                             <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#FF8100', width: '60%', justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, }}>NOT A MEMBER</Text>
                             </View>
@@ -217,12 +285,12 @@ const Membership = ({ route }) => {
                             fontSize: 20,
                             fontWeight: 'bold',
                             marginTop: 15,
-                        }}>{user ? fullName : ''}</Text>
-                        {user && user.isMember && (
+                        }}>{currentUser ? fullName : ''}</Text>
+                        {currentUser && currentUser.subscriptionStatus == "active" && (
                             <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#397538', width: '60%', justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, }}>MEMBER</Text>
                             </View>)}
-                        {(!user || !user.isMember) && (
+                        {(!currentUser || !currentUser.subscriptionStatus == "active") && (
                             <View style={{ padding: 15, borderRadius: 5, marginTop: 15, backgroundColor: '#FF8100', width: '60%', justifyContent: 'center', alignItems: 'center' }}>
                                 <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 20, }}>NOT A MEMBER</Text>
                             </View>)}
@@ -233,13 +301,13 @@ const Membership = ({ route }) => {
                         <Text style={{ color: 'white' }}>Add photo to unlock membership</Text>
                     </TouchableOpacity>
                 )}
-                {climbImageUrl && user && user.isMember && (
+                {climbImageUrl && currentUser && currentUser.subscriptionStatus == "active" && (
                     <View style={{ padding: 10, borderRadius: 5, marginTop: 15, flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                         <Image source={require('../../../../../assets/zondicons_information-solid.png')} style={{ width: 20, height: 20 }} />
                         <Text style={{ color: 'black', marginLeft: 10 }}>Show membership to staff</Text>
                     </View>
                 )}
-                {climbImageUrl && (!user || !user.isMember) && (
+                {climbImageUrl && (!currentUser || !currentUser.subscriptionStatus == "active") && (
                     <View style={{ padding: 10, borderRadius: 5, marginTop: 15, flex: 1, flexDirection: 'row', alignItems: 'center' }}>
                         <Image source={require('../../../../../assets/zondicons_information-solid.png')} style={{ width: 20, height: 20 }} />
                         <Text style={{ color: 'black', marginLeft: 10 }}>Purchase Membership to Activate Card</Text>
