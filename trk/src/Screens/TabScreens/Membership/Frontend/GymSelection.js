@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import analytics from '@react-native-firebase/analytics';
 import { AuthContext } from "../../../../Utils/AuthContext";
@@ -25,10 +25,13 @@ const GymSelection = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={{ marginHorizontal: 15 }}>
+        <View style={[styles.container, { flex: 1 }]}>
+            <View style={{ marginHorizontal: 15, flex: 1 }}>
                 <Text style={styles.title}>Where are you climbing today?</Text>
-                <View style={{ display: 'flex', width: '100%', height: '100%', marginTop: 30 }}>
+                <ScrollView
+                    style={{ marginTop: 30, flex: 1 }}
+                    contentContainerStyle={{ paddingBottom: 30 }}
+                >
                     <TouchableOpacity onPress={() => handleGymSelection('MetroRock')} style={styles.button}>
                         <Text style={styles.buttonText}>MetroRock</Text>
                     </TouchableOpacity>
@@ -38,16 +41,21 @@ const GymSelection = () => {
                     <TouchableOpacity onPress={() => handleGymSelection('Brooklyn Boulders')} style={styles.button}>
                         <Text style={styles.buttonText}>Brooklyn Boulders</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleGymSelection('Method')} style={styles.button}>
+                        <Text style={styles.buttonText}>Method</Text>
+                    </TouchableOpacity>
+                    {/* Uncomment if needed */}
                     {/* <TouchableOpacity onPress={() => handleGymSelection('GP81')} style={styles.button}>
-                        <Text style={styles.buttonText}>GP81</Text>
-                    </TouchableOpacity> */}
+              <Text style={styles.buttonText}>GP81</Text>
+          </TouchableOpacity> */}
                     <TouchableOpacity onPress={() => handleGymSelection('Island Rock')} style={styles.button}>
                         <Text style={styles.buttonText}>Island Rock</Text>
                     </TouchableOpacity>
+                    {/* Uncomment if needed */}
                     {/* <TouchableOpacity onPress={() => handleGymSelection('Test')} style={styles.button}>
-                        <Text style={styles.buttonText}>Test</Text>
-                    </TouchableOpacity> */}
-                </View>
+              <Text style={styles.buttonText}>Test</Text>
+          </TouchableOpacity> */}
+                </ScrollView>
             </View>
         </View>
     );
@@ -55,14 +63,14 @@ const GymSelection = () => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#FCF7F3'
+        backgroundColor: '#FCF7F3',
     },
     title: {
         fontFamily: "DMSans-Regular",
         fontSize: 40,
         marginTop: 30,
         fontWeight: '500',
-        color: 'black'
+        color: 'black',
     },
     button: {
         alignItems: 'center',
