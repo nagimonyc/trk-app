@@ -52,9 +52,9 @@ const GymSelection = () => {
                         <Text style={styles.buttonText}>Island Rock</Text>
                     </TouchableOpacity>
                     {/* Uncomment if needed */}
-                    {/* <TouchableOpacity onPress={() => handleGymSelection('Test')} style={styles.button}>
-              <Text style={styles.buttonText}>Test</Text>
-          </TouchableOpacity> */}
+                    <TouchableOpacity onPress={() => handleGymSelection('Test')} style={styles.button}>
+                        <Text style={styles.buttonText}>Test</Text>
+                    </TouchableOpacity>
                 </ScrollView>
             </View>
         </View>

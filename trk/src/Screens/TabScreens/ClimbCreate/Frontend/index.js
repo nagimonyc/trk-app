@@ -88,7 +88,7 @@ const ClimbInputData = (props) => {
 
   //For the Sets Dropdown
   const [setsOpen, setSetsOpen] = useState(false);
-  const [set, setSet] = useState(null);
+  const [set, setSet] = useState("Commercial");
   const [selectedValue, setSelectedValue] = useState(null);
   const [reload, setReload] = useState(false); //To reload with new sets
 
@@ -108,7 +108,7 @@ const ClimbInputData = (props) => {
       console.log(type);
       setSelectedClimbTypes([...selectedClimbTypes, type]); // Add type
     }
-  };  
+  };
 
   const yourCancelFunction = () => {
     NfcManager.cancelTechnologyRequest()
@@ -124,7 +124,7 @@ const ClimbInputData = (props) => {
       Alert.alert("Validation Error", "Grade must be 5 characters or less.");
       return false;
     }
-    if (selectedClimbTypes.length  == 0) {
+    if (selectedClimbTypes.length == 0) {
       Alert.alert("Validation Error", "Add what kind of climb this is.");
       return false;
     }
@@ -151,19 +151,19 @@ const ClimbInputData = (props) => {
     // Initial fetch for the first gym ID
     SetsApi().fetchSets('TDrC1lRRjbMuMI06pONY').then(sets => {
       const formattedSets = sets.map(doc => ({ label: doc.data().name, value: doc.id }));
-      
+
       // Fetch for the second gym ID (Gowanus)
       SetsApi().fetchSets('dSlDcmXq4WHD5iyvYXFi').then(secondSets => {
         const formattedSecondSets = secondSets.map(doc => ({ label: doc.data().name, value: doc.id }));
-        
+
         // Combine the results from both gym IDs
         const combinedSets = [...formattedSets, ...formattedSecondSets];
-        
+
         setSetItems(combinedSets); // Update the state with the combined list
       });
     });
   }, [reload]); // Dependency array to re-run the effect if needed
-  
+
 
 
   //To create custom sets
@@ -521,14 +521,14 @@ const ClimbInputData = (props) => {
 
               />
               {false && (<>
-              <Text style={styles.label}>IFSC Score</Text>
-              <TextInput
-                style={styles.input}
-                value={ifsc}
-                onChangeText={setIfsc}
-                placeholderTextColor={"#b1b1b3"}
-                placeholder="Enter score"
-              /></>)}
+                <Text style={styles.label}>IFSC Score</Text>
+                <TextInput
+                  style={styles.input}
+                  value={ifsc}
+                  onChangeText={setIfsc}
+                  placeholderTextColor={"#b1b1b3"}
+                  placeholder="Enter score"
+                /></>)}
 
               <Text style={styles.label}>Gym</Text>
 
@@ -620,67 +620,67 @@ const ClimbInputData = (props) => {
 
               />
 
-              <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'stretch', padding: 0,}}>
-                  <Text style={[styles.label, { color: '#000000' }]}>RIC (Risk, Intensity, Complexity)</Text>
-                  <View>
-                      <Slider
-                          style={{ width: '100%', height: 40 }}
-                          minimumValue={0}
-                          maximumValue={5}
-                          minimumTrackTintColor="#000000"
-                          maximumTrackTintColor="#000000"
-                          thumbTintColor="#000000"
-                          step={1} // This ensures the slider moves in steps of 1
-                          onValueChange={(value) => setRisk(Math.round(value))} // Rounds the value to ensure it's an integer
-                          value={risk}
-                      />
-                      <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15}}>Risk: {risk}</Text>
-                  </View>
+              <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'stretch', padding: 0, }}>
+                <Text style={[styles.label, { color: '#000000' }]}>RIC (Risk, Intensity, Complexity)</Text>
+                <View>
+                  <Slider
+                    style={{ width: '100%', height: 40 }}
+                    minimumValue={0}
+                    maximumValue={5}
+                    minimumTrackTintColor="#000000"
+                    maximumTrackTintColor="#000000"
+                    thumbTintColor="#000000"
+                    step={1} // This ensures the slider moves in steps of 1
+                    onValueChange={(value) => setRisk(Math.round(value))} // Rounds the value to ensure it's an integer
+                    value={risk}
+                  />
+                  <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15 }}>Risk: {risk}</Text>
+                </View>
 
-                  <View>
-                      <Slider
-                          style={{ width: '100%', height: 40 }}
-                          minimumValue={0}
-                          maximumValue={5}
-                          minimumTrackTintColor="#000000"
-                          maximumTrackTintColor="#000000"
-                          thumbTintColor="#000000"
-                          step={1} // This ensures the slider moves in steps of 1
-                          onValueChange={(value) => setIntensity(Math.round(value))} // Rounds the value to ensure it's an integer
-                          value={intensity}
-                      />
-                      <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15}}>Intensity: {intensity}</Text>
-                  </View>
+                <View>
+                  <Slider
+                    style={{ width: '100%', height: 40 }}
+                    minimumValue={0}
+                    maximumValue={5}
+                    minimumTrackTintColor="#000000"
+                    maximumTrackTintColor="#000000"
+                    thumbTintColor="#000000"
+                    step={1} // This ensures the slider moves in steps of 1
+                    onValueChange={(value) => setIntensity(Math.round(value))} // Rounds the value to ensure it's an integer
+                    value={intensity}
+                  />
+                  <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15 }}>Intensity: {intensity}</Text>
+                </View>
 
-                  <View>
-                      <Slider
-                          style={{ width: '100%', height: 40 }}
-                          minimumValue={0}
-                          maximumValue={5}
-                          minimumTrackTintColor="#000000"
-                          maximumTrackTintColor="#000000"
-                          thumbTintColor="#000000"
-                          step={1} // This ensures the slider moves in steps of 1
-                          onValueChange={(value) => setComplexity(Math.round(value))} // Rounds the value to ensure it's an integer
-                          value={complexity}
-                      />
-                      <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15}}>Complexity: {complexity}</Text>
-                  </View>
+                <View>
+                  <Slider
+                    style={{ width: '100%', height: 40 }}
+                    minimumValue={0}
+                    maximumValue={5}
+                    minimumTrackTintColor="#000000"
+                    maximumTrackTintColor="#000000"
+                    thumbTintColor="#000000"
+                    step={1} // This ensures the slider moves in steps of 1
+                    onValueChange={(value) => setComplexity(Math.round(value))} // Rounds the value to ensure it's an integer
+                    value={complexity}
+                  />
+                  <Text style={{ textAlign: 'center', color: '#000000', fontSize: 15 }}>Complexity: {complexity}</Text>
+                </View>
               </View>
 
-              <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'stretch', padding: 0, marginTop: 25}}>
-                  <Text style={[styles.label, { color: '#000000' }]}>What kind of climb?</Text>
-                      <View style={styles.climbTypeContainer}>
-                        {["Power", "Technical", "Balance", "Sloppers", "Pinches", "Crimpy", "Static", "Dynamic"].map((type) => (
-                          <TouchableOpacity
-                            key={type}
-                            style={[styles.climbTypeButton, selectedClimbTypes.includes(type) ? styles.climbTypeSelected : {}]}
-                            onPress={() => handleClimbTypeSelection(type)}
-                          >
-                            <Text style={styles.climbTypeButtonText}>{type}</Text>
-                          </TouchableOpacity>
-                        ))}
-                      </View>
+              <View style={{ flex: 1, justifyContent: 'space-around', alignItems: 'stretch', padding: 0, marginTop: 25 }}>
+                <Text style={[styles.label, { color: '#000000' }]}>What kind of climb?</Text>
+                <View style={styles.climbTypeContainer}>
+                  {["Power", "Technical", "Balance", "Sloppers", "Pinches", "Crimpy", "Static", "Dynamic"].map((type) => (
+                    <TouchableOpacity
+                      key={type}
+                      style={[styles.climbTypeButton, selectedClimbTypes.includes(type) ? styles.climbTypeSelected : {}]}
+                      onPress={() => handleClimbTypeSelection(type)}
+                    >
+                      <Text style={styles.climbTypeButtonText}>{type}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               </View>
 
 
@@ -722,7 +722,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start', // This will help space the items evenly
     alignItems: 'flex-start', // Ensures alignment is consistent
     marginBottom: 20,
-  },  
+  },
   climbTypeButton: {
     backgroundColor: '#d3d3d3', // Light gray background for unselected
     padding: 10,
@@ -737,7 +737,7 @@ const styles = StyleSheet.create({
   },
   climbTypeButtonText: {
     color: '#fff', // White text
-  },  
+  },
   container: {
     flex: 1,
     marginBottom: 25
