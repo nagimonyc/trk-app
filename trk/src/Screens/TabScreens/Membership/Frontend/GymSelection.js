@@ -41,15 +41,15 @@ const GymSelection = () => {
                     <TouchableOpacity onPress={() => handleGymSelection('Brooklyn Boulders')} style={styles.button}>
                         <Text style={styles.buttonText}>Brooklyn Boulders</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleGymSelection('Method')} style={styles.button}>
+                        <Text style={styles.buttonText}>Method</Text>
+                    </TouchableOpacity>
                     {/* Uncomment if needed */}
                     {/* <TouchableOpacity onPress={() => handleGymSelection('GP81')} style={styles.button}>
               <Text style={styles.buttonText}>GP81</Text>
           </TouchableOpacity> */}
                     <TouchableOpacity onPress={() => handleGymSelection('Island Rock')} style={styles.button}>
                         <Text style={styles.buttonText}>Island Rock</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleGymSelection('Method')} style={styles.button}>
-                        <Text style={styles.buttonText}>Method</Text>
                     </TouchableOpacity>
                     {/* Uncomment if needed */}
                     {/* <TouchableOpacity onPress={() => handleGymSelection('Test')} style={styles.button}>
