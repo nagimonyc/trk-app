@@ -394,59 +394,30 @@ export const useHomeScreenLogic = (props) => {
     async function identifyClimb() {
         let isReading = true;  // Flag to indicate NFC reading is in progress
 
-        if (Platform.OS === 'android') {
-            androidPromptRef.current.setVisible(true);
+        if (Platform.OS === 'android' && androidPromptRef.current) {
+            androidPromptRef.current.setVisible(true);  // Show the Android-specific NFC prompt
         }
 
         try {
-            await NfcManager.requestTechnology(NfcTech.NfcA);
-            const climbId = await readClimb();
-            isReading = false;  // Clear the flag on successful read
+            await NfcManager.requestTechnology(NfcTech.NfcA);  // Adjust this for your NFC tech
+
+            const climbId = await readClimb();  // Assuming readClimb returns the ID
 
             if (climbId && climbId[0]) {
-                if (role === 'setter') {
-                    // Fetch and display climb information directly for setters
-                    const climbDataResult = await ClimbsApi().getClimb(climbId[0]);
-
-                    if (climbDataResult && climbDataResult._data) {
-                        setClimb(climbDataResult._data);
-
-                        setTimeout(() => {
-                            setClimb(null);
-                        }, 10000);
-
-                        // Optionally, handle additional UI logic or state updates here
-                    } else {
-                        throw new Error('Climb data not found');
-                    }
-                } else {
-                    // checkConnectivity(climbId);
-                    //navigation.navigate('Detail', { climbId: climbId[0], isFromHome: true });
-                }
+                console.log('Climb ID:', climbId);
+                return climbId[2];  // Return the climbId
             } else {
                 throw new Error('Invalid climb ID');
             }
         } catch (ex) {
-            if (isReading) {
-                Alert.alert('Action', 'Climb tagging cancelled.', [{ text: 'OK' }]);
-            } else {
-                Alert.alert('Error', ex.message || 'Climb not found!', [{ text: 'OK' }]);
-            }
+            Alert.alert('Error', ex.message || 'Climb not found!', [{ text: 'OK' }]);
+            return null;
         } finally {
             NfcManager.cancelTechnologyRequest();
-            if (Platform.OS === 'android') {
-                androidPromptRef.current.setVisible(false);
+            if (Platform.OS === 'android' && androidPromptRef.current) {
+                androidPromptRef.current.setVisible(false);  // Hide the Android-specific NFC prompt
             }
         }
-
-        if (Platform.OS === 'android') {
-            androidPromptRef.current.setVisible(false);
-        }
-
-        analytics().logEvent('Tap_to_Track_pressed', {
-            user_id: currentUser.uid,
-            timestamp: new Date().toISOString()
-        });
     }
 
     function renderNfcButtons() {
@@ -509,6 +480,7 @@ export const useHomeScreenLogic = (props) => {
         tapId,
         climb,
         tapObj,
+        identifyClimb,
     };
 };
 //Have leveraged the abilities of the new session mock object

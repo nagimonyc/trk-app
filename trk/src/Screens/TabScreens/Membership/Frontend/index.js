@@ -6,16 +6,20 @@ import storage from '@react-native-firebase/storage';
 import { AuthContext } from "../../../../Utils/AuthContext";
 import UsersApi from "../../../../api/UsersApi";
 import { Marquee } from "@animatereactnative/marquee";
+import logic from "../../Record/Backend/logic";
+import analytics from '@react-native-firebase/analytics';
 
-
-const Membership = ({ route }) => {
+const Membership = ({ route, navigation }) => {
     const gymName = route?.params?.gymName || null;
     const [user, setUser] = useState(null);
     const { currentUser } = useContext(AuthContext);
     const [climbImageUrl, setClimbImageUrl] = useState(null);
     const fullName = currentUser ? (currentUser.firstName ? currentUser.firstName + ' ' + currentUser.lastName : '') : '';
     const [currentTime, setCurrentTime] = useState(new Date()); // State for current time
+    const [isPixelated, setIsPixelated] = useState(true); // State to track if pixelation is active
 
+
+    const { identifyClimb } = logic({ navigation });
 
     useEffect(() => {
         if (currentUser) {
@@ -86,7 +90,6 @@ const Membership = ({ route }) => {
             throw error;
         }
     };
-
 
     const fetchAndUpdateUserData = async () => {
         try {
@@ -166,6 +169,98 @@ const Membership = ({ route }) => {
         }
     };
 
+    // New function to render the pixelated overlay
+    const renderPixelatedOverlay = () => {
+        return (
+            <View style={styles.pixelatedOverlay}>
+                {Array.from({ length: 100 }).map((_, index) => (
+                    <View key={index} style={styles.pixelBox}></View>
+                ))}
+            </View>
+        );
+    };
+
+
+    const handleGymSelection = async (gymName) => {
+        const timestamp = new Date().toISOString();
+
+        if (currentUser) {
+            // Log event to Firebase Analytics with gym name
+            await analytics().logEvent('gym_visit', {
+                user_id: currentUser.uid,
+                gym_name: gymName,
+                timestamp: timestamp,
+            });
+        }
+
+        // Navigate to Membership screen
+        navigation.navigate('Membership', { gymName });
+    };
+
+    const logNfcInteraction = async (gymName) => {
+        try {
+            const { getUsersBySomeField, updateUser } = UsersApi();
+            const userDataResponse = await getUsersBySomeField('uid', currentUser.uid);
+
+            if (!userDataResponse || userDataResponse.docs.length === 0) {
+                console.error('User data not found');
+                return false;
+            }
+
+            const userData = userDataResponse.docs[0].data();
+            const nfcInteractions = userData.nfcInteractions || {};
+
+            // Vérifie si c'est la première interaction pour ce gymnase
+            if (!nfcInteractions[gymName]) {
+                const firstVisitTime = new Date().toISOString();
+
+                // Enregistre l'interaction NFC pour la première fois
+                nfcInteractions[gymName] = { firstVisit: firstVisitTime };
+
+                await updateUser(currentUser.uid, {
+                    nfcInteractions: nfcInteractions
+                });
+
+                console.log(`First NFC interaction logged for gym: ${gymName} at ${firstVisitTime}`);
+                return true;  // C'était la première fois
+            }
+
+            return false;  // Ce n'était pas la première fois
+        } catch (error) {
+            console.error('Error logging NFC interaction:', error);
+            return false;  // Return false if there was an error
+        }
+    };
+
+
+    const doSomething = async () => {
+        try {
+            const climbId = await identifyClimb();  // Await the NFC result
+
+            if (climbId) {
+                console.log("Climb ID found:", climbId);
+                setIsPixelated(false);  // Remove pixelation
+
+                const gymName = climbId;  // Utilise l'ID du gymnase ou nom dans `climbId[2]`
+
+                const isFirstInteraction = await logNfcInteraction(gymName);  // Log la première interaction
+
+                // Log dans Google Analytics
+                await analytics().logEvent('gym_visit', {
+                    user_id: currentUser.uid,
+                    gym_name: gymName,
+                    is_first_time: isFirstInteraction,  // Flag pour savoir si c'est la première fois
+                    timestamp: new Date().toISOString(),
+                });
+
+            } else {
+                console.log("No Climb ID found.");
+            }
+        } catch (error) {
+            console.error("Error identifying climb:", error);
+        }
+    };
+
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(new Date()); // Update time every second
@@ -204,14 +299,8 @@ const Membership = ({ route }) => {
                                 </Text>
                             </View>
                         </Marquee>
-                        <View style={{
-                            width: '70%',
-                            height: '60%',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginBottom: 10,
-                            backgroundColor: climbImageUrl ? 'transparent' : 'white'
-                        }}>
+                        <TouchableOpacity onPress={() => doSomething()} style={styles.membershipCard}>
+                            {/* Always render the image or placeholder */}
                             {climbImageUrl ? (
                                 <Image source={{ uri: climbImageUrl }} style={{ width: '100%', height: '100%' }} />
                             ) : (
@@ -224,7 +313,10 @@ const Membership = ({ route }) => {
                                     </View>
                                 </TouchableOpacity>
                             )}
-                        </View>
+
+                            {/* Render pixelated overlay if pixelation is still active */}
+                            {isPixelated && renderPixelatedOverlay()}
+                        </TouchableOpacity>
                         <Text style={{
                             color: 'black',
                             fontSize: 28,
@@ -326,7 +418,30 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         // padding: 20,
         alignItems: 'center',
-    }
+    },
+    membershipCard: {
+        width: '70%',
+        height: '60%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        position: 'relative', // Ensure that pixelation overlay is positioned properly
+    },
+    pixelatedOverlay: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        zIndex: 1, // Ensure it's on top
+    },
+    pixelBox: {
+        width: '10%', // Adjust the size to control pixelation density
+        height: '10%',
+        backgroundColor: '#CACACA', // The color of each pixel box
+        borderWidth: 1,
+        borderColor: '#E0E0E0', // Optional: to simulate grid lines between pixels
+    },
 });
 
 export default Membership;

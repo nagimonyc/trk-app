@@ -707,7 +707,7 @@ function AppTabs() {
         }}
 
       /> */}
-      {role === 'setter' && (
+      {currentUser.role === 'setter' && (
         <>
           <Tab.Screen
             name="AnalyticsTab"
